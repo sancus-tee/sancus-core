@@ -1,0 +1,143 @@
+#!/bin/bash
+#------------------------------------------------------------------------------
+# Copyright (C) 2001 Authors
+#
+# This source file may be used and distributed without restriction provided
+# that this copyright statement is not removed from the file and that any
+# derivative work contains the original copyright notice and the associated
+# disclaimer.
+#
+# This source file is free software; you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published
+# by the Free Software Foundation; either version 2.1 of the License, or
+# (at your option) any later version.
+#
+# This source is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+# License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this source; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+#
+#------------------------------------------------------------------------------
+# 
+# File Name: msp430sim
+# 
+# Author(s):
+#             - Olivier Girard,    olgirard@gmail.com
+#
+#------------------------------------------------------------------------------
+# $Rev$
+# $LastChangedBy$
+# $LastChangedDate$
+#------------------------------------------------------------------------------
+
+###############################################################################
+#                            Parameter Check                                  #
+###############################################################################
+EXPECTED_ARGS=1
+if [ $# -ne $EXPECTED_ARGS ]; then
+  echo "ERROR    : wrong number of arguments"
+  echo "USAGE    : msp430sim <test name>"
+  echo "Example  : msp430sim c-jump_jge"
+  echo ""
+  echo "In order to switch the verilog simulator, the MYVLOG environment"
+  echo "variable can be set to the following values:"
+  echo ""
+  echo "                  - iverilog  : Icarus Verilog  (default)"
+  echo "                  - cver      : CVer"
+  echo "                  - verilog   : Verilog-XL"
+  echo "                  - ncverilog : NC-Verilog"
+  echo "                  - vcs       : VCS"
+  echo "                  - vsim      : Modelsim"
+  echo ""
+  exit 1
+fi
+
+
+###############################################################################
+#                     Check if the required files exist                       #
+###############################################################################
+asmfile=../src/$1.s43;
+verfile=../src/$1.v;
+submitfile=../src/submit.f;
+incfile=../../../rtl/verilog/openMSP430_defines.v;
+deffile=../bin/template.def;
+
+if [ ! -e $asmfile ]; then
+    echo "Assembler file $asmfile doesn't exist: $asmfile"
+    exit 1
+fi
+if [ ! -e $verfile ]; then
+    echo "Verilog stimulus file $verfile doesn't exist: $verfile"
+    exit 1
+fi
+if [ ! -e $submitfile ]; then
+    echo "Verilog submit file $submitfile doesn't exist: $submitfile"
+    exit 1
+fi
+if [ ! -e $deffile ]; then
+    echo "Linker definition file template doesn't exist: $deffile"
+    exit 1
+fi
+
+
+###############################################################################
+#                               Cleanup                                       #
+###############################################################################
+echo "Cleanup..."
+rm -rf *.vcd
+rm -rf *.vpd
+rm -rf *.trn
+rm -rf *.dsn
+rm -rf pmem.*
+rm -rf stimulus.v
+
+
+###############################################################################
+#                              Run simulation                                 #
+###############################################################################
+echo " ======================================================="
+echo "| Start simulation:             $1"
+echo " ======================================================="
+
+# Create links
+ln -s $asmfile pmem.s43
+ln -s $verfile stimulus.v
+
+# Make local copy of the openMSP403 configuration file and remove comments
+cp  $incfile  ./pmem.inc
+sed -i "/^\/\// s,.*,," pmem.inc
+
+# Get Program Memory size
+pmemunit=`grep PMEM_SIZE_ pmem.inc | grep -v ifdef | grep -v "//" | cut -d'_' -f4`
+pmemsize=`grep PMEM_SIZE_ pmem.inc | grep -v ifdef | grep -v "//" | cut -d'_' -f3`
+pmemsize=${pmemsize/p/.}
+if [ $pmemunit == "KB" ]
+  then
+    pmemsize=`echo "pmemsize=$pmemsize * 1024; pmemsize /= 1; pmemsize" | bc`
+fi
+
+# Get Data Memory size
+dmemunit=`grep DMEM_SIZE_ pmem.inc | grep -v ifdef | grep -v "//" | cut -d'_' -f4`
+dmemsize=`grep DMEM_SIZE_ pmem.inc | grep -v ifdef | grep -v "//" | cut -d'_' -f3`
+dmemsize=${dmemsize/p/.}
+if [ $dmemunit == "KB" ]
+  then
+    dmemsize=`echo "dmemsize=$dmemsize * 1024; dmemsize /= 1; dmemsize" | bc`
+fi
+
+
+# Compile assembler code
+echo "Compile, link & generate IHEX file (Program Memory: $pmemsize B, Data Memory: $dmemsize B)..."
+../bin/asm2ihex.sh  pmem pmem.s43 $deffile $pmemsize $dmemsize
+
+# Generate Program memory file
+echo "Convert IHEX file to Verilog MEMH format..."
+../bin/ihex2mem.tcl -ihex pmem.ihex -out pmem.mem -mem_size $pmemsize
+
+# Start verilog simulation
+echo "Start Verilog simulation..."
+../bin/rtlsim.sh    stimulus.v pmem.mem $submitfile

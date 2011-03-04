@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Enable/Disable waveform dumping
+OMSP_NODUMP=0
+export OMSP_NODUMP
+
+../bin/msp430sim mpy_basic
