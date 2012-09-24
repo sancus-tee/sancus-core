@@ -60,6 +60,7 @@
 //                     Uncomment the required memory size
 //-------------------------------------------------------
 //`define PMEM_SIZE_CUSTOM
+//`define PMEM_SIZE_60_KB
 //`define PMEM_SIZE_59_KB
 //`define PMEM_SIZE_55_KB
 //`define PMEM_SIZE_54_KB
@@ -432,6 +433,10 @@
 //==================================================
 
 // Program Memory Size
+`ifdef PMEM_SIZE_60_KB
+  `define PMEM_AWIDTH      15
+  `define PMEM_SIZE     61440
+`endif
 `ifdef PMEM_SIZE_59_KB
   `define PMEM_AWIDTH      15
   `define PMEM_SIZE     60416
