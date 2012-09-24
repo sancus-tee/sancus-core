@@ -57,3 +57,4 @@
 ../../../rtl/verilog/omsp_wakeup_cell.v
 ../../../rtl/verilog/omsp_clock_gate.v
 ../../../rtl/verilog/omsp_clock_mux.v
+../../../rtl/verilog/omsp_spm.v

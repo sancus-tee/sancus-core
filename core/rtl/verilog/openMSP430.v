@@ -152,7 +152,7 @@ wire                inst_mov;
 wire         [15:0] inst_dest;
 wire         [15:0] inst_dext;
 wire         [15:0] inst_sext;
-wire          [7:0] inst_so;
+wire          [8:0] inst_so;
 wire         [15:0] inst_src;
 wire          [2:0] inst_type;
 wire          [7:0] inst_jmp;
@@ -219,7 +219,8 @@ wire         [15:0] per_dout_wdog;
 wire         [15:0] per_dout_mpy;
 wire         [15:0] per_dout_clk;
 
-   
+wire                enable_spm;
+
 //=============================================================================
 // 2)  GLOBAL CLOCK & RESET MANAGEMENT
 //=============================================================================
@@ -300,6 +301,7 @@ omsp_frontend frontend_0 (
     .nmi_acc      (nmi_acc),       // Non-Maskable interrupt request accepted
     .pc           (pc),            // Program counter
     .pc_nxt       (pc_nxt),        // Next PC value (for CALL & IRQ)
+    .enable_spm   (enable_spm),
 			     
 // INPUTs
     .cpu_en_s     (cpu_en_s),      // Enable CPU code execution (synchronous)
@@ -367,7 +369,8 @@ omsp_execution_unit execution_unit_0 (
     .pc           (pc),            // Program counter
     .pc_nxt       (pc_nxt),        // Next PC value (for CALL & IRQ)
     .puc_rst      (puc_rst),       // Main system reset
-    .scan_enable  (scan_enable)    // Scan enable (active during scan shifting)
+    .scan_enable  (scan_enable),   // Scan enable (active during scan shifting)
+    .enable_spm   (enable_spm)
 );
 
 
@@ -414,6 +417,15 @@ omsp_mem_backbone mem_backbone_0 (
     .puc_rst      (puc_rst),       // Main system reset
     .scan_enable  (scan_enable)    // Scan enable (active during scan shifting)
 );
+
+// omsp_mmu mmu_0(
+//     .mclk       (mclk),
+//     .pc         (pc),
+//     .eu_mab     (eu_mab),
+//     .eu_mb_en   (eu_mb_en),
+//     .eu_mb_wr   (eu_mb_wr),
+//     .eu_mdb_out (eu_mdb_out)
+// );
 
 
 //=============================================================================

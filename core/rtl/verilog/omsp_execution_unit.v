@@ -85,7 +85,8 @@ module  omsp_execution_unit (
     pc,                            // Program counter
     pc_nxt,                        // Next PC value (for CALL & IRQ)
     puc_rst,                       // Main system reset
-    scan_enable                    // Scan enable (active during scan shifting)
+    scan_enable,                   // Scan enable (active during scan shifting)
+    enable_spm
 );
 
 // OUTPUTs
@@ -120,7 +121,7 @@ input               inst_irq_rst;  // Decoded Inst: reset interrupt
 input         [7:0] inst_jmp;      // Decoded Inst: Conditional jump
 input               inst_mov;      // Decoded Inst: mov instruction
 input        [15:0] inst_sext;     // Decoded Inst: source extended instruction word
-input         [7:0] inst_so;       // Decoded Inst: Single-operand arithmetic
+input         [8:0] inst_so;       // Decoded Inst: Single-operand arithmetic
 input        [15:0] inst_src;      // Decoded Inst: source (one hot)
 input         [2:0] inst_type;     // Decoded Instruction type
 input               mclk;          // Main system clock
@@ -129,6 +130,7 @@ input        [15:0] pc;            // Program counter
 input        [15:0] pc_nxt;        // Next PC value (for CALL & IRQ)
 input               puc_rst;       // Main system reset
 input               scan_enable;   // Scan enable (active during scan shifting)
+input               enable_spm;
 
 
 //=============================================================================
@@ -175,20 +177,33 @@ wire reg_incr     =  (exec_done          & inst_as[`INDIR_I]) |
 
 assign dbg_reg_din = reg_dest;
 
+//wires for spm
+wire [15:0] spm_public_start;
+wire [15:0] spm_public_end;
+wire [15:0] spm_private_start;
+wire [15:0] spm_private_end;
+wire        spm_enabled;
+
+wire        update_spm = (e_state == `E_EXEC) & inst_so[`PROT];
 
 omsp_register_file register_file_0 (
 
 // OUTPUTs
-    .cpuoff       (cpuoff),       // Turns off the CPU
-    .gie          (gie),          // General interrupt enable
-    .oscoff       (oscoff),       // Turns off LFXT1 clock input
-    .pc_sw        (pc_sw),        // Program counter software value
-    .pc_sw_wr     (pc_sw_wr),     // Program counter software write
-    .reg_dest     (reg_dest),     // Selected register destination content
-    .reg_src      (reg_src),      // Selected register source content
-    .scg0         (scg0),         // System clock generator 1. Turns off the DCO
-    .scg1         (scg1),         // System clock generator 1. Turns off the SMCLK
-    .status       (status),       // R2 Status {V,N,Z,C}
+    .cpuoff             (cpuoff),       // Turns off the CPU
+    .gie                (gie),          // General interrupt enable
+    .oscoff             (oscoff),       // Turns off LFXT1 clock input
+    .pc_sw              (pc_sw),        // Program counter software value
+    .pc_sw_wr           (pc_sw_wr),     // Program counter software write
+    .reg_dest           (reg_dest),     // Selected register destination content
+    .reg_src            (reg_src),      // Selected register source content
+    .scg0               (scg0),         // System clock generator 1. Turns off the DCO
+    .scg1               (scg1),         // System clock generator 1. Turns off the SMCLK
+    .status             (status),       // R2 Status {V,N,Z,C}
+    .spm_public_start   (spm_public_start),
+    .spm_public_end     (spm_public_end),
+    .spm_private_start  (spm_private_start),
+    .spm_private_end    (spm_private_end),
+    .spm_enabled        (spm_enabled),
 
 // INPUTs
     .alu_stat     (alu_stat),     // ALU Status {V,N,Z,C}
@@ -207,7 +222,9 @@ omsp_register_file register_file_0 (
     .reg_sr_clr   (reg_sr_clr),   // Status register clear for interrupts
     .reg_sr_wr    (reg_sr_wr),    // Status Register update for RETI instruction
     .reg_incr     (reg_incr),     // Increment source register
-    .scan_enable  (scan_enable)   // Scan enable (active during scan shifting)
+    .scan_enable  (scan_enable),  // Scan enable (active during scan shifting)
+    .update_spm   (update_spm),
+    .enable_spm   (enable_spm)
 );
 
 
@@ -411,6 +428,21 @@ always @(posedge mclk_mdb_in_buf or posedge puc_rst)
 
 assign mdb_in_val = mdb_in_buf_valid ? mdb_in_buf : mdb_in_bw;
 
+//SPM
+
+omsp_spm spm_0(
+    .mclk               (mclk),
+    .pc                 (pc),
+    .eu_mab             (mab),
+    .eu_mb_en           (mb_en),
+    .eu_mb_wr           (mb_wr),
+    .eu_mdb_out         (mdb_out),
+    .spm_public_start   (spm_public_start),
+    .spm_public_end     (spm_public_end),
+    .spm_private_start  (spm_private_start),
+    .spm_private_end    (spm_private_end),
+    .spm_enabled        (spm_enabled)
+);
 
 endmodule // omsp_execution_unit
 

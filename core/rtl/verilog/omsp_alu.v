@@ -79,7 +79,7 @@ input               exec_cycle;    // Instruction execution cycle
 input        [11:0] inst_alu;      // ALU control signals
 input               inst_bw;       // Decoded Inst: byte width
 input         [7:0] inst_jmp;      // Decoded Inst: Conditional jump
-input         [7:0] inst_so;       // Single-operand arithmetic
+input         [8:0] inst_so;       // Single-operand arithmetic
 input        [15:0] op_dst;        // Destination operand
 input        [15:0] op_src;        // Source operand
 input         [3:0] status;        // R2 Status {V,N,Z,C}

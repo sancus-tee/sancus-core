@@ -36,9 +36,9 @@
 //              - Olivier Girard,    olgirard@gmail.com
 //
 //----------------------------------------------------------------------------
-// $Rev$
-// $LastChangedBy$
-// $LastChangedDate$
+// $Rev: 134 $
+// $LastChangedBy: olivier.girard $
+// $LastChangedDate: 2012-03-22 21:31:06 +0100 (Thu, 22 Mar 2012) $
 //----------------------------------------------------------------------------
 `ifdef OMSP_NO_INCLUDE
 `else
@@ -73,6 +73,7 @@ module  omsp_frontend (
     nmi_acc,                       // Non-Maskable interrupt request accepted
     pc,                            // Program counter
     pc_nxt,                        // Next PC value (for CALL & IRQ)
+    enable_spm,
 
 // INPUTs
     cpu_en_s,                      // Enable CPU code execution (synchronous)
@@ -111,7 +112,7 @@ output              inst_irq_rst;  // Decoded Inst: Reset interrupt
 output        [7:0] inst_jmp;      // Decoded Inst: Conditional jump
 output              inst_mov;      // Decoded Inst: mov instruction
 output       [15:0] inst_sext;     // Decoded Inst: source extended instruction word
-output        [7:0] inst_so;       // Decoded Inst: Single-operand arithmetic
+output        [8:0] inst_so;       // Decoded Inst: Single-operand arithmetic
 output       [15:0] inst_src;      // Decoded Inst: source (one hot)
 output        [2:0] inst_type;     // Decoded Instruction type
 output       [13:0] irq_acc;       // Interrupt request accepted (one-hot signal)
@@ -122,6 +123,7 @@ output              mclk_wkup;     // Main System Clock wake-up (asynchronous)
 output              nmi_acc;       // Non-Maskable interrupt request accepted
 output       [15:0] pc;            // Program counter
 output       [15:0] pc_nxt;        // Next PC value (for CALL & IRQ)
+output              enable_spm;
 
 // INPUTs
 //=========
@@ -511,11 +513,11 @@ always @(posedge mclk_decode or posedge puc_rst)
 // 8'b01000000: RETI
 // 8'b10000000: IRQ
 
-reg   [7:0] inst_so;
-wire  [7:0] inst_so_nxt = irq_detect ? 8'h80 : (one_hot8(ir[9:7]) & {8{inst_type_nxt[`INST_SO]}});
+reg   [8:0] inst_so;
+wire  [8:0] inst_so_nxt = irq_detect ? 9'h100 : ({1'b0, one_hot8(ir[9:7])} & {9{inst_type_nxt[`INST_SO]}});
 
 always @(posedge mclk_decode or posedge puc_rst)
-  if (puc_rst)     inst_so <= 8'h00;
+  if (puc_rst)     inst_so <= 9'h00;
 `ifdef CLOCK_GATING
   else             inst_so <= inst_so_nxt;
 `else
@@ -769,6 +771,13 @@ always @(posedge mclk_decode or posedge puc_rst)
   else if (decode) inst_sz     <= inst_sz_nxt;
 `endif
 
+wire enable_spm_nxt = ir[0];
+reg enable_spm;
+
+always @(posedge mclk)
+begin
+    enable_spm <= enable_spm_nxt;
+end
 
 //=============================================================================
 // 7)  EXECUTION-UNIT STATE MACHINE

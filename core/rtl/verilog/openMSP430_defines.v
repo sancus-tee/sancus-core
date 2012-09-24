@@ -615,7 +615,8 @@
 `define PUSH   4
 `define CALL   5
 `define RETI   6
-`define IRQ    7
+`define PROT   7
+`define IRQ    8
 
 // Conditional jump
 `define JNE    0
