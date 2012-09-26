@@ -58,11 +58,10 @@ module  omsp_register_file (
     scg0,                         // System clock generator 1. Turns off the DCO
     scg1,                         // System clock generator 1. Turns off the SMCLK
     status,                       // R2 Status {V,N,Z,C}
-    spm_public_start,
-    spm_public_end,
-    spm_private_start,
-    spm_private_end,
-    spm_enabled,
+    r12,
+    r13,
+    r14,
+    r15,
 
 // INPUTs
     alu_stat,                     // ALU Status {V,N,Z,C}
@@ -82,8 +81,6 @@ module  omsp_register_file (
     reg_sr_clr,                   // Status register clear for interrupts
     reg_incr,                     // Increment source register
     scan_enable,                  // Scan enable (active during scan shifting)
-    update_spm,
-    enable_spm
 );
 
 // OUTPUTs
@@ -98,11 +95,10 @@ output       [15:0] reg_src;      // Selected register source content
 output              scg0;         // System clock generator 1. Turns off the DCO
 output              scg1;         // System clock generator 1. Turns off the SMCLK
 output        [3:0] status;       // R2 Status {V,N,Z,C}
-output       [15:0] spm_public_start;
-output       [15:0] spm_public_end;
-output       [15:0] spm_private_start;
-output       [15:0] spm_private_end;
-output              spm_enabled;
+output       [15:0] r12;
+output       [15:0] r13;
+output       [15:0] r14;
+output       [15:0] r15;
 
 // INPUTs
 //=========
@@ -123,9 +119,6 @@ input               reg_sr_wr;    // Status register update for RETI instruction
 input               reg_sr_clr;   // Status register clear for interrupts
 input               reg_incr;     // Increment source register
 input               scan_enable;  // Scan enable (active during scan shifting)
-input               update_spm;
-input               enable_spm;
-
 
 //=============================================================================
 // 1)  AUTOINCREMENT UNIT
@@ -622,38 +615,6 @@ assign reg_dest = (r0      & {16{inst_dest[0]}})  |
                   (r13     & {16{inst_dest[13]}}) | 
                   (r14     & {16{inst_dest[14]}}) | 
                   (r15     & {16{inst_dest[15]}});
-
-// SPM registers
-reg [15:0] spm_public_start;
-reg [15:0] spm_public_end;
-reg [15:0] spm_private_start;
-reg [15:0] spm_private_end;
-reg        spm_enabled;
-
-always @(posedge mclk)
-begin
-    if (update_spm)
-    begin
-        if (enable_spm)
-        begin
-            spm_public_start <= r12;
-            spm_public_end <= r13;
-            spm_private_start <= r14;
-            spm_private_end <= r15;
-            spm_enabled <= 1;
-            $display("New SPM config: %h %h %h %h", r12, r13, r14, r15);
-        end
-        else
-        begin
-            spm_public_start <= 0;
-            spm_public_end <= 0;
-            spm_private_start <= 0;
-            spm_private_end <= 0;
-            spm_enabled <= 0;
-            $display("SPM disabled");
-        end
-    end
-end
 
 endmodule // omsp_register_file
 

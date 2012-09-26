@@ -178,11 +178,10 @@ wire reg_incr     =  (exec_done          & inst_as[`INDIR_I]) |
 assign dbg_reg_din = reg_dest;
 
 //wires for spm
-wire [15:0] spm_public_start;
-wire [15:0] spm_public_end;
-wire [15:0] spm_private_start;
-wire [15:0] spm_private_end;
-wire        spm_enabled;
+wire [15:0] r12;
+wire [15:0] r13;
+wire [15:0] r14;
+wire [15:0] r15;
 
 wire        update_spm = (e_state == `E_EXEC) & inst_so[`PROT];
 
@@ -199,11 +198,10 @@ omsp_register_file register_file_0 (
     .scg0               (scg0),         // System clock generator 1. Turns off the DCO
     .scg1               (scg1),         // System clock generator 1. Turns off the SMCLK
     .status             (status),       // R2 Status {V,N,Z,C}
-    .spm_public_start   (spm_public_start),
-    .spm_public_end     (spm_public_end),
-    .spm_private_start  (spm_private_start),
-    .spm_private_end    (spm_private_end),
-    .spm_enabled        (spm_enabled),
+    .r12                (r12),
+    .r13                (r13),
+    .r14                (r14),
+    .r15                (r15),
 
 // INPUTs
     .alu_stat     (alu_stat),     // ALU Status {V,N,Z,C}
@@ -222,9 +220,7 @@ omsp_register_file register_file_0 (
     .reg_sr_clr   (reg_sr_clr),   // Status register clear for interrupts
     .reg_sr_wr    (reg_sr_wr),    // Status Register update for RETI instruction
     .reg_incr     (reg_incr),     // Increment source register
-    .scan_enable  (scan_enable),  // Scan enable (active during scan shifting)
-    .update_spm   (update_spm),
-    .enable_spm   (enable_spm)
+    .scan_enable  (scan_enable)   // Scan enable (active during scan shifting)
 );
 
 
@@ -437,11 +433,12 @@ omsp_spm spm_0(
     .eu_mb_en           (mb_en),
     .eu_mb_wr           (mb_wr),
     .eu_mdb_out         (mdb_out),
-    .spm_public_start   (spm_public_start),
-    .spm_public_end     (spm_public_end),
-    .spm_private_start  (spm_private_start),
-    .spm_private_end    (spm_private_end),
-    .spm_enabled        (spm_enabled)
+    .update_spm         (update_spm),
+    .enable_spm         (enable_spm),
+    .r12                (r12),
+    .r13                (r13),
+    .r14                (r14),
+    .r15                (r15)
 );
 
 endmodule // omsp_execution_unit
