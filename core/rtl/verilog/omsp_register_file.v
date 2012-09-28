@@ -80,7 +80,7 @@ module  omsp_register_file (
     reg_sr_wr,                    // Status register update for RETI instruction
     reg_sr_clr,                   // Status register clear for interrupts
     reg_incr,                     // Increment source register
-    scan_enable,                  // Scan enable (active during scan shifting)
+    scan_enable                   // Scan enable (active during scan shifting)
 );
 
 // OUTPUTs

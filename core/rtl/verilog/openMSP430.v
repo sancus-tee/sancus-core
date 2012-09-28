@@ -418,16 +418,6 @@ omsp_mem_backbone mem_backbone_0 (
     .scan_enable  (scan_enable)    // Scan enable (active during scan shifting)
 );
 
-// omsp_mmu mmu_0(
-//     .mclk       (mclk),
-//     .pc         (pc),
-//     .eu_mab     (eu_mab),
-//     .eu_mb_en   (eu_mb_en),
-//     .eu_mb_wr   (eu_mb_wr),
-//     .eu_mdb_out (eu_mdb_out)
-// );
-
-
 //=============================================================================
 // 6)  SPECIAL FUNCTION REGISTERS
 //=============================================================================

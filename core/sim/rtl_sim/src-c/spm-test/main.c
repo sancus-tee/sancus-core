@@ -36,7 +36,7 @@ void protect_spm()
     puts("...OK");
 }
 
-void unprotect_spm()
+void __spm unprotect_spm()
 {
     puts("Unprotecting SPM");
     asm(".word 0x1380");
@@ -56,9 +56,10 @@ int main(void)
 
     write_secret();
     protect_spm();
+    protect_spm();
     spm();
     write_secret();
-//     unprotect_spm();
+    unprotect_spm();
     write_secret();
 
     puts("main() done");

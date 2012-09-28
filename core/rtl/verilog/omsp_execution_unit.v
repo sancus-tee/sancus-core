@@ -426,13 +426,12 @@ assign mdb_in_val = mdb_in_buf_valid ? mdb_in_buf : mdb_in_bw;
 
 //SPM
 
-omsp_spm spm_0(
+omsp_spm_control spm_control_0(
     .mclk               (mclk),
     .pc                 (pc),
     .eu_mab             (mab),
     .eu_mb_en           (mb_en),
     .eu_mb_wr           (mb_wr),
-    .eu_mdb_out         (mdb_out),
     .update_spm         (update_spm),
     .enable_spm         (enable_spm),
     .r12                (r12),
