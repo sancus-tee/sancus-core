@@ -74,6 +74,7 @@ module  omsp_frontend (
     pc,                            // Program counter
     pc_nxt,                        // Next PC value (for CALL & IRQ)
     enable_spm,
+    current_inst_pc,
 
 // INPUTs
     cpu_en_s,                      // Enable CPU code execution (synchronous)
@@ -124,6 +125,7 @@ output              nmi_acc;       // Non-Maskable interrupt request accepted
 output       [15:0] pc;            // Program counter
 output       [15:0] pc_nxt;        // Next PC value (for CALL & IRQ)
 output              enable_spm;
+output       [15:0] current_inst_pc;
 
 // INPUTs
 //=========
@@ -261,6 +263,11 @@ reg    dbg_halt_st;
 always @(posedge mclk or posedge puc_rst)
   if (puc_rst)  dbg_halt_st <= 1'b0;
   else          dbg_halt_st <= cpu_halt_cmd & (i_state_nxt==I_IDLE);
+
+reg [15:0] current_inst_pc;
+always @(posedge mclk or posedge puc_rst)
+  if (puc_rst)      current_inst_pc <= 0;
+  else if (decode)  current_inst_pc <= pc;
 
 
 //=============================================================================

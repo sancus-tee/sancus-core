@@ -6,6 +6,7 @@
 module omsp_spm(
     mclk,
     pc,
+    prev_pc,
     eu_mab,
     eu_mb_en,
     eu_mb_wr,
@@ -21,6 +22,7 @@ module omsp_spm(
 
 input        mclk;
 input [15:0] pc;        // Program Counter
+input [15:0] prev_pc;
 input [15:0] eu_mab;    // Execution Unit Memory address bus
 input        eu_mb_en;  // Execution Unit Memory bus enable
 input  [1:0] eu_mb_wr;  // Execution Unit Memory bus write transfer
@@ -39,6 +41,14 @@ reg [15:0] public_end;
 reg [15:0] secret_start;
 reg [15:0] secret_end;
 reg        enabled;
+
+function exec_spm;
+    input [15:0] current_pc;
+
+    begin
+        exec_spm = current_pc >= public_start & current_pc < public_end;
+    end
+endfunction
 
 initial
 begin
@@ -75,8 +85,18 @@ begin
     end
 end
 
-wire exec_public = (pc >= public_start) & (pc < public_end);
+wire exec_public = exec_spm(pc);
 wire access_secret = eu_mb_en & (eu_mab >= secret_start) & (eu_mab < secret_end);
-wire violation = enabled & access_secret & ~exec_public;
+wire mem_violation = access_secret & ~exec_public;
+wire exec_violation = exec_public & ~exec_spm(prev_pc) & (pc != public_start);
+wire violation = enabled & (mem_violation | exec_violation);
+
+always @(posedge mclk)
+begin
+    if (mem_violation)
+        $display("mem violation @%h, from %h", eu_mab, pc);
+    else if (exec_violation)
+        $display("exec violation %h -> %h", prev_pc, pc);
+end
 
 endmodule

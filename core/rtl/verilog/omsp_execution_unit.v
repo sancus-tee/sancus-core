@@ -86,7 +86,8 @@ module  omsp_execution_unit (
     pc_nxt,                        // Next PC value (for CALL & IRQ)
     puc_rst,                       // Main system reset
     scan_enable,                   // Scan enable (active during scan shifting)
-    enable_spm
+    enable_spm,
+    current_inst_pc
 );
 
 // OUTPUTs
@@ -131,6 +132,7 @@ input        [15:0] pc_nxt;        // Next PC value (for CALL & IRQ)
 input               puc_rst;       // Main system reset
 input               scan_enable;   // Scan enable (active during scan shifting)
 input               enable_spm;
+input        [15:0] current_inst_pc;
 
 
 //=============================================================================
@@ -428,7 +430,7 @@ assign mdb_in_val = mdb_in_buf_valid ? mdb_in_buf : mdb_in_bw;
 
 omsp_spm_control spm_control_0(
     .mclk               (mclk),
-    .pc                 (pc),
+    .pc                 (current_inst_pc),
     .eu_mab             (mab),
     .eu_mb_en           (mb_en),
     .eu_mb_wr           (mb_wr),

@@ -6,6 +6,7 @@
 module omsp_spm_control(
     mclk,
     pc,
+    decode,
     eu_mab,
     eu_mb_en,
     eu_mb_wr,
@@ -19,6 +20,7 @@ module omsp_spm_control(
 
 input        mclk;
 input [15:0] pc;        // Program Counter
+input        decode;
 input [15:0] eu_mab;    // Execution Unit Memory address bus
 input        eu_mb_en;  // Execution Unit Memory bus enable
 input  [1:0] eu_mb_wr;  // Execution Unit Memory bus write transfer
@@ -42,6 +44,8 @@ wire [0:`NB_SPMS-1] spms_violation;
 // helper wire to detect a violation
 wire violation;
 
+reg [15:0] current_pc, prev_pc;
+
 assign spms_update = (spms_first_disabled |       // update first disabled SPM
                       {`NB_SPMS{~enable_spm}}) &  // or all for a disable request
                      {`NB_SPMS{update_spm}};      // of course, there should be a request
@@ -58,12 +62,22 @@ endgenerate
 always @(posedge mclk)
 begin
     if (violation)
-        $display("Illegal access at %h from %h", eu_mab, pc);
+    begin
+//         $display("prev:%h, curr:%h", prev_pc, current_pc);
+//         $display("Illegal access at %h from %h", eu_mab, pc);
+    end
+end
+
+always @(pc)
+begin
+    prev_pc <= current_pc;
+    current_pc <= pc;
 end
 
 omsp_spm omsp_spms[0:`NB_SPMS-1](
     .mclk               (mclk),
     .pc                 (pc),
+    .prev_pc            (prev_pc),
     .eu_mab             (eu_mab),
     .eu_mb_en           (eu_mb_en),
     .eu_mb_wr           (eu_mb_wr),
