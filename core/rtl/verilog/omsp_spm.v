@@ -12,6 +12,7 @@ module omsp_spm(
     eu_mb_wr,
     update_spm,
     enable_spm,
+    check_new_spm,
     r12,
     r13,
     r14,
@@ -28,6 +29,7 @@ input        eu_mb_en;  // Execution Unit Memory bus enable
 input  [1:0] eu_mb_wr;  // Execution Unit Memory bus write transfer
 input        update_spm;
 input        enable_spm;
+input        check_new_spm;
 input [15:0] r12;
 input [15:0] r13;
 input [15:0] r14;
@@ -50,6 +52,17 @@ function exec_spm;
     end
 endfunction
 
+function do_overlap;
+    input [15:0] start_a;
+    input [15:0] end_a;
+    input [15:0] start_b;
+    input [15:0] end_b;
+
+    begin
+        do_overlap = (start_a < end_b) & (end_a >= start_b);
+    end
+endfunction
+
 initial
 begin
     public_start = 0;
@@ -65,12 +78,19 @@ begin
     begin
         if (enable_spm)
         begin
-            public_start <= r12;
-            public_end <= r13;
-            secret_start <= r14;
-            secret_end <= r15;
-            enabled <= 1;
-            $display("New SPM config: %h %h %h %h", r12, r13, r14, r15);
+            if ((r12 < r13) & (r14 < r15))
+            begin
+                public_start <= r12;
+                public_end <= r13;
+                secret_start <= r14;
+                secret_end <= r15;
+                enabled <= 1;
+                $display("New SPM config: %h %h %h %h", r12, r13, r14, r15);
+            end
+            else
+            begin
+                $display("Invalid SPM config: %h %h %h %h", r12, r13, r14, r15);
+            end
         end
         else if (pc >= public_start && pc < public_end)
         begin
@@ -81,7 +101,6 @@ begin
             enabled <= 0;
             $display("SPM disabled");
         end
-        else if (enabled) $display("%h %h %h", public_start, pc, public_end);
     end
 end
 
@@ -89,7 +108,12 @@ wire exec_public = exec_spm(pc);
 wire access_secret = eu_mb_en & (eu_mab >= secret_start) & (eu_mab < secret_end);
 wire mem_violation = access_secret & ~exec_public;
 wire exec_violation = exec_public & ~exec_spm(prev_pc) & (pc != public_start);
-wire violation = enabled & (mem_violation | exec_violation);
+wire create_violation = check_new_spm &
+                        (do_overlap(r12, r13, public_start, public_end) |
+                         do_overlap(r12, r13, secret_start, secret_end) |
+                         do_overlap(r14, r15, public_start, public_end) |
+                         do_overlap(r14, r15, secret_start, secret_end));
+wire violation = enabled & (mem_violation | exec_violation | create_violation);
 
 always @(posedge mclk)
 begin
@@ -97,6 +121,12 @@ begin
         $display("mem violation @%h, from %h", eu_mab, pc);
     else if (exec_violation)
         $display("exec violation %h -> %h", prev_pc, pc);
+    else if (create_violation)
+    begin
+        $display("create violation:");
+        $display("\tme:  %h %h %h %h", public_start, public_end, secret_start, secret_end);
+        $display("\tnew: %h %h %h %h", r12, r13, r14, r15);
+    end
 end
 
 endmodule

@@ -35,6 +35,8 @@ input [15:0] r15;
 // SPM is being created, only one bit will be 1. if an SPM is being destroyed,
 // all bits will be 1 since only the SPMs know which one is being destroyed
 wire [0:`NB_SPMS-1] spms_update;
+// indicates which SPMs should check for an overlap violation
+wire [0:`NB_SPMS-1] spms_check;
 // helper wire. one-hot encoding of the first disabled SPM
 wire [0:`NB_SPMS-1] spms_first_disabled;
 // output of the SPM array. indicates which SPMs are enabled
@@ -49,6 +51,9 @@ reg [15:0] current_pc, prev_pc;
 assign spms_update = (spms_first_disabled |       // update first disabled SPM
                       {`NB_SPMS{~enable_spm}}) &  // or all for a disable request
                      {`NB_SPMS{update_spm}};      // of course, there should be a request
+
+assign spms_check = (update_spm & enable_spm) ? (~spms_update & spms_enabled)
+                                              : `NB_SPMS'b0;
 
 assign violation = |spms_violation;
 
@@ -83,6 +88,7 @@ omsp_spm omsp_spms[0:`NB_SPMS-1](
     .eu_mb_wr           (eu_mb_wr),
     .update_spm         (spms_update),
     .enable_spm         (enable_spm),
+    .check_new_spm      (spms_check),
     .r12                (r12),
     .r13                (r13),
     .r14                (r14),
