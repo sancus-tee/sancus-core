@@ -73,6 +73,7 @@ module  openMSP430 (
     puc_rst,                       // Main system reset
     smclk,                         // ASIC ONLY: SMCLK
     smclk_en,                      // FPGA ONLY: SMCLK enable
+    spm_violation,
 
 // INPUTs
     cpu_en,                        // Enable CPU code execution (asynchronous and non-glitchy)
@@ -118,7 +119,7 @@ output         [1:0] pmem_wen;     // Program Memory write enable (low active) (
 output               puc_rst;      // Main system reset
 output               smclk;        // ASIC ONLY: SMCLK
 output               smclk_en;     // FPGA ONLY: SMCLK enable
-
+output               spm_violation;
 
 // INPUTs
 //=========
@@ -226,6 +227,17 @@ wire         [15:0] current_inst_pc;
 // 2)  GLOBAL CLOCK & RESET MANAGEMENT
 //=============================================================================
 
+wire spm_violation;
+reg spm_violation_s;
+
+always @(posedge mclk or posedge puc_rst)
+    if (puc_rst)
+        spm_violation_s <= 0;
+    else
+        spm_violation_s <= spm_violation;
+
+wire low_reset = reset_n & !spm_violation_s;
+
 omsp_clock_module clock_module_0 (
 
 // OUTPUTs
@@ -261,7 +273,7 @@ omsp_clock_module clock_module_0 (
     .per_din      (per_din),       // Peripheral data input
     .per_en       (per_en),        // Peripheral enable (high active)
     .per_we       (per_we),        // Peripheral write enable (high active)
-    .reset_n      (reset_n),       // Reset Pin (low active, asynchronous)
+    .reset_n      (low_reset),     // Reset Pin (low active, asynchronous)
     .scan_enable  (scan_enable),   // Scan enable (active during scan shifting)
     .scan_mode    (scan_mode),     // Scan mode
     .scg0         (scg0),          // System clock generator 1. Turns off the DCO
@@ -345,6 +357,7 @@ omsp_execution_unit execution_unit_0 (
     .pc_sw_wr     (pc_sw_wr),      // Program counter software write
     .scg0         (scg0),          // System clock generator 1. Turns off the DCO
     .scg1         (scg1),          // System clock generator 1. Turns off the SMCLK
+    .spm_violation(spm_violation),
 
 // INPUTs
     .dbg_halt_st  (dbg_halt_st),   // Halt/Run status from CPU

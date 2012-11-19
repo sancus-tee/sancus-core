@@ -60,6 +60,7 @@ module  omsp_execution_unit (
     pc_sw_wr,                      // Program counter software write
     scg0,                          // System clock generator 1. Turns off the DCO
     scg1,                          // System clock generator 1. Turns off the SMCLK
+    spm_violation,
 
 // INPUTs
     dbg_halt_st,                   // Halt/Run status from CPU
@@ -104,6 +105,7 @@ output       [15:0] pc_sw;         // Program counter software value
 output              pc_sw_wr;      // Program counter software write
 output              scg0;          // System clock generator 1. Turns off the DCO
 output              scg1;          // System clock generator 1. Turns off the SMCLK
+output              spm_violation;
 
 // INPUTs
 //=========
@@ -427,9 +429,11 @@ always @(posedge mclk_mdb_in_buf or posedge puc_rst)
 assign mdb_in_val = mdb_in_buf_valid ? mdb_in_buf : mdb_in_bw;
 
 //SPM
+wire spm_violation;
 
 omsp_spm_control spm_control_0(
     .mclk               (mclk),
+    .puc_rst            (puc_rst),
     .pc                 (current_inst_pc),
     .eu_mab             (mab),
     .eu_mb_en           (mb_en),
@@ -439,7 +443,8 @@ omsp_spm_control spm_control_0(
     .r12                (r12),
     .r13                (r13),
     .r14                (r14),
-    .r15                (r15)
+    .r15                (r15),
+    .violation          (spm_violation)
 );
 
 endmodule // omsp_execution_unit

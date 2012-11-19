@@ -60,7 +60,7 @@
 //                     Uncomment the required memory size
 //-------------------------------------------------------
 //`define PMEM_SIZE_CUSTOM
-`define PMEM_SIZE_60_KB
+//`define PMEM_SIZE_60_KB
 //`define PMEM_SIZE_59_KB
 //`define PMEM_SIZE_55_KB
 //`define PMEM_SIZE_54_KB
@@ -72,7 +72,7 @@
 //`define PMEM_SIZE_16_KB
 //`define PMEM_SIZE_12_KB
 //`define PMEM_SIZE_8_KB
-//`define PMEM_SIZE_4_KB
+`define PMEM_SIZE_4_KB
 //`define PMEM_SIZE_2_KB
 //`define PMEM_SIZE_1_KB
 

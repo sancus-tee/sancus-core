@@ -5,8 +5,8 @@
 
 module omsp_spm_control(
     mclk,
+    puc_rst,
     pc,
-    decode,
     eu_mab,
     eu_mb_en,
     eu_mb_wr,
@@ -15,12 +15,13 @@ module omsp_spm_control(
     r12,
     r13,
     r14,
-    r15
+    r15,
+    violation
 );
 
 input        mclk;
+input        puc_rst;
 input [15:0] pc;        // Program Counter
-input        decode;
 input [15:0] eu_mab;    // Execution Unit Memory address bus
 input        eu_mb_en;  // Execution Unit Memory bus enable
 input  [1:0] eu_mb_wr;  // Execution Unit Memory bus write transfer
@@ -30,6 +31,7 @@ input [15:0] r12;
 input [15:0] r13;
 input [15:0] r14;
 input [15:0] r15;
+output       violation;
 
 // input to the SPM array. indicates which SPM(s) should be updated. when a new
 // SPM is being created, only one bit will be 1. if an SPM is being destroyed,
@@ -64,15 +66,6 @@ generate
         assign spms_first_disabled[i] = ~spms_enabled[i] & ~|spms_first_disabled[0:i-1];
 endgenerate
 
-always @(posedge mclk)
-begin
-    if (violation)
-    begin
-//         $display("prev:%h, curr:%h", prev_pc, current_pc);
-//         $display("Illegal access at %h from %h", eu_mab, pc);
-    end
-end
-
 always @(pc)
 begin
     prev_pc <= current_pc;
@@ -81,6 +74,7 @@ end
 
 omsp_spm omsp_spms[0:`NB_SPMS-1](
     .mclk               (mclk),
+    .puc_rst            (puc_rst),
     .pc                 (pc),
     .prev_pc            (prev_pc),
     .eu_mab             (eu_mab),
