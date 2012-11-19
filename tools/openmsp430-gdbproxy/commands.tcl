@@ -205,7 +205,7 @@ proc rsp_m {cmd} {
     foreach {brk_addr brk_val} [array get mem_breakpoint] {
 	set brk_addr_dec    [format %d "0x$brk_addr"]
 	set brk_addr_offset [expr $brk_addr_dec-$addr_start]
-	if {(0<=$brk_addr_offset) && ($brk_addr_offset<=$length)} {
+	if {(0<=$brk_addr_offset) && ($brk_addr_offset<$length)} {
 	    set data [lreplace $data $brk_addr_offset $brk_addr_offset "0x$mem_breakpoint($brk_addr)"]
 	}
     }
