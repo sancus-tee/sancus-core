@@ -67,9 +67,9 @@ SECTIONS
      . = ALIGN(2);
      *(.text .text.* .gnu.linkonce.t.*)
      . = ALIGN(2);
-     spm_public_start = .;
-     *(.spm.public)
-     spm_public_end = .;
+     #define SPM_DEFINE_TEXT
+     #include "spm.x"
+     #undef SPM_DEFINE_TEXT
      . = ALIGN(2);
   }  > REGION_TEXT
   .rodata   :
@@ -85,9 +85,9 @@ SECTIONS
      PROVIDE (__data_start = .) ;
      *(.data .data.* .gnu.linkonce.d.*)
      . = ALIGN(2);
-     spm_secret_start = .;
-     *(.spm.secret);
-     spm_secret_end = .;
+     #define SPM_DEFINE_DATA
+     #include "spm.x"
+     #undef SPM_DEFINE_DATA
      . = ALIGN(2);
      _edata = . ;  /* Past last read-write (loadable) segment */
   }  > REGION_DATA AT > REGION_TEXT

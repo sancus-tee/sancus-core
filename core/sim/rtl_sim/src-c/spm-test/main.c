@@ -1,47 +1,12 @@
 #include <stdio.h>
 #include <msp430.h>
 
-#define __spm __attribute__((section(".spm.public")))
-#define __secret __attribute__((section(".spm.secret")))
+#include "spm.h"
+#include "spm_support.h"
 
-extern char spm_public_start, spm_public_end, spm_secret_start, spm_secret_end;
+#define get_reg(x) asm("mov r4, %0" : "=m"(x));
 
-int __secret secret = 0;
-
-void __spm spm()
-{
-    puts("Writing secret from spm...");
-    secret = 0xbabe;
-    puts("...OK");
-}
-
-void write_secret()
-{
-    puts("Writing secret from unprotected...");
-    secret = 0xdead;
-    puts("...OK");
-}
-
-void protect_spm()
-{
-    puts("Protecting SPM");
-    asm("mov %0, r12\n"
-        "mov %1, r13\n"
-        "mov %2, r14\n"
-        "mov %3, r15\n"
-        ".word 0x1381\n"
-        :
-        : "i"(&spm_public_start), "i"(&spm_public_end),
-          "i"(&spm_secret_start), "i"(&spm_secret_end));
-    puts("...OK");
-}
-
-void __spm unprotect_spm()
-{
-    puts("Unprotecting SPM");
-    asm(".word 0x1380");
-    puts("...OK");
-}
+extern int secret;
 
 void init_io()
 {
@@ -49,21 +14,41 @@ void init_io()
     P2DIR = 0xff;
 }
 
-int main(void)
+void protect_spm()
 {
-    init_io();
-    puts("main() started");
+    puts("Protecting SPM...");
 
-    write_secret();
+    asm("mov %0, r12\n\t"
+        "mov %1, r13\n\t"
+        "mov %2, r14\n\t"
+        "mov %3, r15\n\t"
+        ".word 0x1381"
+        :
+        : "i"(spm_text_start), "i"(spm_text_end),
+          "i"(spm_data_start), "i"(spm_data_end)
+        : "r12", "r13", "r14", "r15");
+//     puts("...done");
+}
+
+int __attribute__((section(".init9"), aligned(2))) main(void)
+{
+    int i = 0;
+    void* reg;
+    struct Foo foo = {1, 2, 3, 4, 5, 6, 7, 8};
+    puts("main() started");
+    init_io();
+
     protect_spm();
-    protect_spm();
-    spm();
-    write_secret();
-    unprotect_spm();
-    write_secret();
+    //protect_spm();
+
+    spm0();
+    //i = spm1(foo);
+    //printf("spm1=%d\n", i);
+
+    puts("writing secret");
+    secret = 0xdead;
 
     puts("main() done");
-    P2OUT = 0xff;
     return 0;
 }
 

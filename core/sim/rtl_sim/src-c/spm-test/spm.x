@@ -1,0 +1,17 @@
+#include "spm_support.h"
+
+#ifdef SPM_DEFINE_TEXT
+
+SPM_TEXT_START = ABSOLUTE(.);
+*(SPM_ENTRY_SECTION)
+. = ALIGN(2);
+*(SPM_TEXT_SECTION)
+SPM_TEXT_END = ABSOLUTE(.);
+
+#elif defined SPM_DEFINE_DATA
+
+SPM_DATA_START = ABSOLUTE(.);
+*(SPM_DATA_SECTION)
+SPM_DATA_END = ABSOLUTE(.);
+
+#endif

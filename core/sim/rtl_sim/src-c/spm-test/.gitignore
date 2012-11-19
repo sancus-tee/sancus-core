@@ -1,2 +1,8 @@
 main.o
 spm-test.elf
+linker.xpp
+main.s
+spm.bc
+spm.s
+spm2.bc
+unprotected.s

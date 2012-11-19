@@ -9,7 +9,7 @@ begin
     //---------------------------------------
     // Check CPU configuration
     //---------------------------------------
-    if ((`PMEM_SIZE !== 61440) || (`DMEM_SIZE !== 2048))
+    if ((`PMEM_SIZE !== 4096) || (`DMEM_SIZE !== 2048))
     begin
         $display(" ===============================================");
         $display("|               SIMULATION ERROR                |");
