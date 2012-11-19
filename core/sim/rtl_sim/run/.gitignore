@@ -3,3 +3,4 @@ simv
 stdout.txt
 stimulus.v
 tb_openMSP430.vcd
+signals.gtkw
