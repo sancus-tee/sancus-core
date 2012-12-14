@@ -61,6 +61,7 @@ module  omsp_execution_unit (
     scg0,                          // System clock generator 1. Turns off the DCO
     scg1,                          // System clock generator 1. Turns off the SMCLK
     spm_violation,
+    hash_busy,
 
 // INPUTs
     dbg_halt_st,                   // Halt/Run status from CPU
@@ -87,7 +88,7 @@ module  omsp_execution_unit (
     pc_nxt,                        // Next PC value (for CALL & IRQ)
     puc_rst,                       // Main system reset
     scan_enable,                   // Scan enable (active during scan shifting)
-    enable_spm,
+    spm_command,
     current_inst_pc
 );
 
@@ -106,6 +107,7 @@ output              pc_sw_wr;      // Program counter software write
 output              scg0;          // System clock generator 1. Turns off the DCO
 output              scg1;          // System clock generator 1. Turns off the SMCLK
 output              spm_violation;
+output              hash_busy;
 
 // INPUTs
 //=========
@@ -133,7 +135,7 @@ input        [15:0] pc;            // Program counter
 input        [15:0] pc_nxt;        // Next PC value (for CALL & IRQ)
 input               puc_rst;       // Main system reset
 input               scan_enable;   // Scan enable (active during scan shifting)
-input               enable_spm;
+input         [7:0] spm_command;
 input        [15:0] current_inst_pc;
 
 
@@ -187,7 +189,11 @@ wire [15:0] r13;
 wire [15:0] r14;
 wire [15:0] r15;
 
-wire        update_spm = (e_state == `E_EXEC) & inst_so[`PROT];
+wire do_spm_inst = (e_state == `E_EXEC) & inst_so[`SPM];
+wire disable_spm = spm_command[`SPM_DISABLE];
+wire enable_spm  = spm_command[`SPM_ENABLE];
+wire hash_spm    = spm_command[`SPM_HASH];
+wire update_spm  = do_spm_inst & (disable_spm | enable_spm);
 
 omsp_register_file register_file_0 (
 
@@ -348,18 +354,21 @@ assign      mb_en     = ((e_state==`E_IRQ_1)  & ~inst_irq_rst)        |
                         ((e_state==`E_EXEC)   &  inst_so[`RETI])      |
                         ((e_state==`E_DST_RD) & ~inst_type[`INST_SO]
                                               & ~inst_mov)            |
-                         (e_state==`E_DST_WR);
+                         (e_state==`E_DST_WR)                         |
+                          sha512_mb_en;
 
 wire  [1:0] mb_wr_msk =  inst_alu[`EXEC_NO_WR]  ? 2'b00 :
                         ~inst_bw                ? 2'b11 :
                          alu_out_add[0]         ? 2'b10 : 2'b01;
-assign      mb_wr     = ({2{(e_state==`E_IRQ_1)}}  |
+wire  [1:0] eu_mb_wr  = ({2{(e_state==`E_IRQ_1)}}  |
                          {2{(e_state==`E_IRQ_3)}}  |
                          {2{(e_state==`E_DST_WR)}} |
                          {2{(e_state==`E_SRC_WR)}}) & mb_wr_msk;
 
+assign      mb_wr     = sha512_mb_en ? sha512_mb_wr : eu_mb_wr;
+
 // Memory address bus
-assign      mab       = alu_out_add[15:0];
+assign      mab       = sha512_mb_en ? sha512_mab : alu_out_add[15:0];
 
 // Memory data bus output
 reg  [15:0] mdb_out_nxt;
@@ -385,7 +394,8 @@ always @(posedge mclk_mdb_out_nxt or posedge puc_rst)
            (e_state==`E_IRQ_0) | (e_state==`E_IRQ_2)) mdb_out_nxt <= alu_out;
 `endif
 
-assign      mdb_out = inst_bw ? {2{mdb_out_nxt[7:0]}} : mdb_out_nxt;
+assign      mdb_out = sha512_mb_en ? sha512_mdb_out :
+                      inst_bw      ? {2{mdb_out_nxt[7:0]}} : mdb_out_nxt;
 
 // Format memory data bus input depending on BW
 reg        mab_lsb;
@@ -431,6 +441,10 @@ assign mdb_in_val = mdb_in_buf_valid ? mdb_in_buf : mdb_in_bw;
 //SPM
 wire spm_violation;
 
+wire spm_select_valid;
+wire  [1:0] spm_request;
+wire [15:0] spm_requested_data;
+
 omsp_spm_control spm_control_0(
     .mclk               (mclk),
     .puc_rst            (puc_rst),
@@ -444,7 +458,34 @@ omsp_spm_control spm_control_0(
     .r13                (r13),
     .r14                (r14),
     .r15                (r15),
-    .violation          (spm_violation)
+    .data_request       (spm_request),
+    .violation          (spm_violation),
+    .spm_select_valid   (spm_select_valid),
+    .requested_data     (spm_requested_data)
+);
+
+wire sha512_start = do_spm_inst && spm_select_valid && hash_spm;
+wire [15:0] sha512_mab;
+wire [15:0] sha512_mdb_out;
+wire        sha512_mb_en;
+wire  [1:0] sha512_mb_wr;
+
+wire        hash_busy;
+
+omsp_sha512_control sha512_control(
+    .clk          (mclk),
+    .rst          (puc_rst),
+    .start        (sha512_start),
+    .hash_address (r15),
+    .spm_data     (spm_requested_data),
+    .mem_data     (mdb_in),
+
+    .spm_request  (spm_request),
+    .mab          (sha512_mab),
+    .mb_en        (sha512_mb_en),
+    .mb_wr        (sha512_mb_wr),
+    .mdb_out      (sha512_mdb_out),
+    .busy         (hash_busy)
 );
 
 endmodule // omsp_execution_unit

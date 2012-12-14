@@ -73,7 +73,7 @@ module  omsp_frontend (
     nmi_acc,                       // Non-Maskable interrupt request accepted
     pc,                            // Program counter
     pc_nxt,                        // Next PC value (for CALL & IRQ)
-    enable_spm,
+    spm_command,
     current_inst_pc,
 
 // INPUTs
@@ -94,7 +94,8 @@ module  omsp_frontend (
     scan_enable,                   // Scan enable (active during scan shifting)
     wdt_irq,                       // Watchdog-timer interrupt
     wdt_wkup,                      // Watchdog Wakeup
-    wkup                           // System Wake-up (asynchronous)
+    wkup,                          // System Wake-up (asynchronous)
+    hash_busy
 );
 
 // OUTPUTs
@@ -124,7 +125,7 @@ output              mclk_wkup;     // Main System Clock wake-up (asynchronous)
 output              nmi_acc;       // Non-Maskable interrupt request accepted
 output       [15:0] pc;            // Program counter
 output       [15:0] pc_nxt;        // Next PC value (for CALL & IRQ)
-output              enable_spm;
+output        [7:0] spm_command;
 output       [15:0] current_inst_pc;
 
 // INPUTs
@@ -147,6 +148,7 @@ input               scan_enable;   // Scan enable (active during scan shifting)
 input               wdt_irq;       // Watchdog-timer interrupt
 input               wdt_wkup;      // Watchdog Wakeup
 input               wkup;          // System Wake-up (asynchronous)
+input               hash_busy;
 
 
 //=============================================================================
@@ -205,6 +207,7 @@ parameter E_DST_WR    = `E_DST_WR;
 parameter E_EXEC      = `E_EXEC;
 parameter E_JUMP      = `E_JUMP;
 parameter E_IDLE      = `E_IDLE;
+parameter E_HASH      = `E_HASH;
 
 
 //=============================================================================
@@ -511,14 +514,15 @@ always @(posedge mclk_decode or posedge puc_rst)
 //----------------------------------------
 // Instructions are encoded in a one hot fashion as following:
 //
-// 8'b00000001: RRC
-// 8'b00000010: SWPB
-// 8'b00000100: RRA
-// 8'b00001000: SXT
-// 8'b00010000: PUSH
-// 8'b00100000: CALL
-// 8'b01000000: RETI
-// 8'b10000000: IRQ
+// 9'b000000001: RRC
+// 9'b000000010: SWPB
+// 9'b000000100: RRA
+// 9'b000001000: SXT
+// 9'b000010000: PUSH
+// 9'b000100000: CALL
+// 9'b001000000: RETI
+// 9'b010000000: SPM
+// 9'b100000000: IRQ
 
 reg   [8:0] inst_so;
 wire  [8:0] inst_so_nxt = irq_detect ? 9'h100 : ({1'b0, one_hot8(ir[9:7])} & {9{inst_type_nxt[`INST_SO]}});
@@ -529,6 +533,21 @@ always @(posedge mclk_decode or posedge puc_rst)
   else             inst_so <= inst_so_nxt;
 `else
   else if (decode) inst_so <= inst_so_nxt;
+`endif
+
+// SPM command decoding
+// 8'b00000001: disable SPM
+// 8'b00000010: enable SPM
+// 8'b00000100: hash SPM
+reg  [7:0] spm_command;
+wire [7:0] spm_command_nxt = one_hot8(ir[2:0]) & {8{inst_so_nxt[`SPM]}};
+
+always @(posedge mclk_decode or posedge puc_rst)
+  if (puc_rst)     spm_command <= 8'h00;
+`ifdef CLOCK_GATING
+  else             spm_command <= spm_command_nxt;
+`else
+  else if (decode) spm_command <= spm_command_nxt;
 `endif
 
 //
@@ -778,14 +797,6 @@ always @(posedge mclk_decode or posedge puc_rst)
   else if (decode) inst_sz     <= inst_sz_nxt;
 `endif
 
-wire enable_spm_nxt = ir[0];
-reg enable_spm;
-
-always @(posedge mclk)
-begin
-    enable_spm <= enable_spm_nxt;
-end
-
 //=============================================================================
 // 7)  EXECUTION-UNIT STATE MACHINE
 //=============================================================================
@@ -830,6 +841,8 @@ always @(posedge mclk or posedge puc_rst)
   else if (e_state==E_DST_RD) exec_dext_rdy <= 1'b0;
   else if (inst_dext_rdy)     exec_dext_rdy <= 1'b1;
 
+wire exec_hash = spm_command[`SPM_HASH];
+
 // Execution first state
 wire [3:0] e_first_state = ~dbg_halt_st  & inst_so_nxt[`IRQ] ? E_IRQ_0  :
                             cpu_halt_cmd | (i_state==I_IDLE) ? E_IDLE   :
@@ -844,9 +857,7 @@ wire [3:0] e_first_state = ~dbg_halt_st  & inst_so_nxt[`IRQ] ? E_IRQ_0  :
 //--------------------------------
 
 // States Transitions
-always @(e_state       or dst_acalc     or dst_rd   or inst_sext_rdy or
-         inst_dext_rdy or exec_dext_rdy or exec_jmp or exec_dst_wr   or
-         e_first_state or exec_src_wr)
+always @(*)
     case(e_state)
       E_IDLE   : e_state_nxt =  e_first_state;
       E_IRQ_0  : e_state_nxt =  E_IRQ_1;
@@ -867,7 +878,10 @@ always @(e_state       or dst_acalc     or dst_rd   or inst_sext_rdy or
 
       E_EXEC   : e_state_nxt =  exec_dst_wr       ? E_DST_WR :
                                 exec_jmp          ? E_JUMP   :
-                                exec_src_wr       ? E_SRC_WR : e_first_state;
+                                exec_src_wr       ? E_SRC_WR :
+                                exec_hash         ? E_HASH   : e_first_state;
+
+      E_HASH   : e_state_nxt =  hash_busy         ? E_HASH   : e_first_state;
 
       E_JUMP   : e_state_nxt =  e_first_state;
       E_DST_WR : e_state_nxt =  exec_jmp          ? E_JUMP   : e_first_state;
@@ -888,7 +902,8 @@ always @(posedge mclk or posedge puc_rst)
 
 wire exec_done = exec_jmp        ? (e_state==E_JUMP)   :
                  exec_dst_wr     ? (e_state==E_DST_WR) :
-                 exec_src_wr     ? (e_state==E_SRC_WR) : (e_state==E_EXEC);
+                 exec_src_wr     ? (e_state==E_SRC_WR) :
+                 exec_hash       ? (e_state_nxt!=E_HASH)          : (e_state==E_EXEC);
 
 
 //=============================================================================

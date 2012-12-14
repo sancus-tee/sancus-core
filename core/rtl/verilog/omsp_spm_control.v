@@ -16,7 +16,10 @@ module omsp_spm_control(
     r13,
     r14,
     r15,
-    violation
+    data_request,
+    violation,
+    spm_select_valid,
+    requested_data
 );
 
 input        mclk;
@@ -31,7 +34,11 @@ input [15:0] r12;
 input [15:0] r13;
 input [15:0] r14;
 input [15:0] r15;
-output       violation;
+input  [1:0] data_request;
+
+output            violation;
+output            spm_select_valid;
+output reg [15:0] requested_data;
 
 // input to the SPM array. indicates which SPM(s) should be updated. when a new
 // SPM is being created, only one bit will be 1. if an SPM is being destroyed,
@@ -47,6 +54,9 @@ wire [0:`NB_SPMS-1] spms_enabled;
 wire [0:`NB_SPMS-1] spms_violation;
 // helper wire to detect a violation
 wire violation;
+
+wire [0:`NB_SPMS-1] spms_selected;
+wire [16*`NB_SPMS-1:0] spms_requested_data;
 
 reg [15:0] current_pc, prev_pc;
 
@@ -65,6 +75,18 @@ generate
     for (i = 1; i < `NB_SPMS; i = i + 1)
         assign spms_first_disabled[i] = ~spms_enabled[i] & ~|spms_first_disabled[0:i-1];
 endgenerate
+
+generate
+    for (i = 0; i < `NB_SPMS; i = i + 1)
+        always @(*)
+            if (spms_selected[`NB_SPMS-i-1])
+                requested_data = spms_requested_data[(i+1)*16-1:i*16];
+endgenerate
+
+assign spm_select_valid = |spms_selected;
+// always @(*)
+//     if (!spm_select_valid)
+//         requested_data = 16'b0;
 
 always @(pc)
 begin
@@ -87,8 +109,12 @@ omsp_spm omsp_spms[0:`NB_SPMS-1](
     .r13                (r13),
     .r14                (r14),
     .r15                (r15),
+    .data_request       (data_request),
+
     .enabled            (spms_enabled),
-    .violation          (spms_violation)
+    .violation          (spms_violation),
+    .selected           (spms_selected),
+    .requested_data     (spms_requested_data)
 );
 
 endmodule

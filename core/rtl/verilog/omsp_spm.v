@@ -18,8 +18,12 @@ module omsp_spm(
     r13,
     r14,
     r15,
+    data_request,
+
     enabled,
-    violation
+    violation,
+    selected,
+    requested_data
 );
 
 input        mclk;
@@ -36,9 +40,12 @@ input [15:0] r12;
 input [15:0] r13;
 input [15:0] r14;
 input [15:0] r15;
+input  [1:0] data_request;
 
-output       enabled;
-output       violation;
+output            enabled;
+output            violation;
+output            selected;
+output reg [15:0] requested_data;
 
 reg [15:0] public_start;
 reg [15:0] public_end;
@@ -127,16 +134,29 @@ wire violation = enabled & (mem_violation | exec_violation | create_violation);
 
 always @(posedge mclk)
 begin
-    if (mem_violation)
-        $display("mem violation @%h, from %h", eu_mab, pc);
-    else if (exec_violation)
-        $display("exec violation %h -> %h", prev_pc, pc);
-    else if (create_violation)
+    if (violation)
     begin
-        $display("create violation:");
-        $display("\tme:  %h %h %h %h", public_start, public_end, secret_start, secret_end);
-        $display("\tnew: %h %h %h %h", r12, r13, r14, r15);
+        if (mem_violation)
+            $display("mem violation @%h, from %h", eu_mab, pc);
+        else if (exec_violation)
+            $display("exec violation %h -> %h", prev_pc, pc);
+        else if (create_violation)
+        begin
+            $display("create violation:");
+            $display("\tme:  %h %h %h %h", public_start, public_end, secret_start, secret_end);
+            $display("\tnew: %h %h %h %h", r12, r13, r14, r15);
+        end
     end
 end
+
+assign selected = enabled & (r14 == public_start);
+
+always @(*)
+  case (data_request)
+    `SPM_REQ_PUBSTART: requested_data = public_start;
+    `SPM_REQ_PUBEND:   requested_data = public_end;
+    `SPM_REQ_SECSTART: requested_data = secret_start;
+    `SPM_REQ_SECEND:   requested_data = secret_end;
+  endcase
 
 endmodule

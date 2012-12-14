@@ -220,8 +220,10 @@ wire         [15:0] per_dout_wdog;
 wire         [15:0] per_dout_mpy;
 wire         [15:0] per_dout_clk;
 
-wire                enable_spm;
+wire          [7:0] spm_command;
 wire         [15:0] current_inst_pc;
+
+wire                hash_busy;
 
 //=============================================================================
 // 2)  GLOBAL CLOCK & RESET MANAGEMENT
@@ -314,7 +316,7 @@ omsp_frontend frontend_0 (
     .nmi_acc      (nmi_acc),       // Non-Maskable interrupt request accepted
     .pc           (pc),            // Program counter
     .pc_nxt       (pc_nxt),        // Next PC value (for CALL & IRQ)
-    .enable_spm   (enable_spm),
+    .spm_command  (spm_command),
     .current_inst_pc (current_inst_pc),
 			     
 // INPUTs
@@ -335,7 +337,8 @@ omsp_frontend frontend_0 (
     .scan_enable  (scan_enable),   // Scan enable (active during scan shifting)
     .wdt_irq      (wdt_irq),       // Watchdog-timer interrupt
     .wdt_wkup     (wdt_wkup),      // Watchdog Wakeup
-    .wkup         (wkup)           // System Wake-up (asynchronous)
+    .wkup         (wkup),          // System Wake-up (asynchronous)
+    .hash_busy    (hash_busy)
 );
 
 
@@ -358,6 +361,7 @@ omsp_execution_unit execution_unit_0 (
     .scg0         (scg0),          // System clock generator 1. Turns off the DCO
     .scg1         (scg1),          // System clock generator 1. Turns off the SMCLK
     .spm_violation(spm_violation),
+    .hash_busy    (hash_busy),
 
 // INPUTs
     .dbg_halt_st  (dbg_halt_st),   // Halt/Run status from CPU
@@ -385,7 +389,7 @@ omsp_execution_unit execution_unit_0 (
     .pc_nxt       (pc_nxt),        // Next PC value (for CALL & IRQ)
     .puc_rst      (puc_rst),       // Main system reset
     .scan_enable  (scan_enable),   // Scan enable (active during scan shifting)
-    .enable_spm   (enable_spm),
+    .spm_command  (spm_command),
     .current_inst_pc (current_inst_pc)
 );
 

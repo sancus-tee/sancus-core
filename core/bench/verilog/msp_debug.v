@@ -163,6 +163,7 @@ always @(e_state_bin)
       4'hB    : e_state =  "EXEC";
       4'hC    : e_state =  "JUMP";
       4'hD    : e_state =  "IDLE";
+      4'hE    : e_state =  "HASH";
       default : e_state =  "xxxx";
     endcase
 
@@ -430,7 +431,12 @@ always @(inst_type or inst_name or inst_bw or inst_as or inst_ad)
        inst_full = "NOP";
      if (opcode==`DBG_SWBRK_OP)
        inst_full = "SBREAK";
-		   
+     if (opcode==16'h1380)
+       inst_full = "UNPROT";
+     if (opcode==16'h1381)
+       inst_full = "PROT";
+     if (opcode==16'h1382)
+       inst_full = "HASH";
   end
    
 

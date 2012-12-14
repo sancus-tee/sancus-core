@@ -615,8 +615,13 @@
 `define PUSH   4
 `define CALL   5
 `define RETI   6
-`define PROT   7
+`define SPM    7
 `define IRQ    8
+
+// SPM commands
+`define SPM_DISABLE 0
+`define SPM_ENABLE  1
+`define SPM_HASH    2
 
 // Conditional jump
 `define JNE    0
@@ -676,6 +681,7 @@
 `define E_EXEC      4'hB
 `define E_JUMP      4'hC
 `define E_IDLE      4'hD
+`define E_HASH      4'hE
 
 // ALU control signals
 `define ALU_SRC_INV   0
@@ -728,6 +734,12 @@
 `define DIVMx       5:4
 `define SELS        3
 `define DIVSx       2:1
+
+// SPM data requests
+`define SPM_REQ_PUBSTART 2'b00
+`define SPM_REQ_PUBEND   2'b01
+`define SPM_REQ_SECSTART 2'b10
+`define SPM_REQ_SECEND   2'b11
 
 // MCLK Clock gate
 `ifdef CPUOFF_EN

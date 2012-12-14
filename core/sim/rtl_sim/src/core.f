@@ -59,3 +59,10 @@
 ../../../rtl/verilog/omsp_clock_mux.v
 ../../../rtl/verilog/omsp_spm_control.v
 ../../../rtl/verilog/omsp_spm.v
+../../../rtl/verilog/omsp_sha512.v
+../../../rtl/verilog/omsp_sha512_padder.v
+../../../rtl/verilog/omsp_sha512_frontend.v
+../../../rtl/verilog/omsp_sha512_control.v
+../../../rtl/verilog/omsp_shift_16to32.v
+../../../rtl/verilog/omsp_shift_32to16.v
+../../../rtl/verilog/omsp_clock_div2.v
