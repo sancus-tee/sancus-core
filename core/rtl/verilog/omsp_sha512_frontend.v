@@ -66,7 +66,7 @@ omsp_shift_32to16 hash_shift(
 
 reg [1:0] prev_data_sizes;
 always @(posedge clk or posedge rst)
-  if (rst)
+  if (rst || first_write)
     prev_data_sizes <= 2'b00;
   else if (write_cycle)
     if (prev_data_sizes == 2'b11)

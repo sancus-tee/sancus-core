@@ -44,24 +44,24 @@ assign busy = state != IDLE || start;
 reg [4:0] state, state_next, resume_state;
 always @(*)
   case (state)
-    IDLE:         state_next = start ? READ_PS : IDLE;
+    IDLE:         state_next = start           ? READ_PS      : IDLE;
     READ_PS:      state_next = READ_PE;
     READ_PE:      state_next = READ_SS;
     READ_SS:      state_next = READ_SE;
     READ_SE:      state_next = WRITE_START;
     WRITE_START:  state_next = WRITE_MEM;
-    WRITE_MEM:    state_next = write_mem_done  ? WRITE_PS   :
-                               sha512_ready    ? WRITE_MEM  : WRITE_WAIT;
-    WRITE_PS:     state_next = sha512_ready    ? WRITE_PE   : WRITE_WAIT;
-    WRITE_PE:     state_next = sha512_ready    ? WRITE_SS   : WRITE_WAIT;
-    WRITE_SS:     state_next = sha512_ready    ? WRITE_SE   : WRITE_WAIT;
+    WRITE_MEM:    state_next = !sha512_ready   ? WRITE_WAIT   :
+                               write_mem_done  ? WRITE_PS     : WRITE_MEM;
+    WRITE_PS:     state_next = sha512_ready    ? WRITE_PE     : WRITE_WAIT;
+    WRITE_PE:     state_next = sha512_ready    ? WRITE_SS     : WRITE_WAIT;
+    WRITE_SS:     state_next = sha512_ready    ? WRITE_SE     : WRITE_WAIT;
     WRITE_SE:     state_next = WRITE_DONE;
-    WRITE_WAIT:   state_next = sha512_ready    ? WRITE_WAIT : resume_state;
-    WRITE_DONE:   state_next = sha512_busy     ? WRITE_DONE : CHECK_START;
+    WRITE_WAIT:   state_next = sha512_ready    ? resume_state : WRITE_WAIT;
+    WRITE_DONE:   state_next = sha512_busy     ? WRITE_DONE   : CHECK_START;
     CHECK_START:  state_next = CHECK_WAIT;
-    CHECK_WAIT:   state_next = read_count_zero ? CHECK_HASH : CHECK_WAIT;
-    CHECK_HASH:   state_next = read_count_zero ? DONE       :
-                               check_fail      ? DONE       : CHECK_HASH;
+    CHECK_WAIT:   state_next = read_count_zero ? CHECK_HASH   : CHECK_WAIT;
+    CHECK_HASH:   state_next = read_count_zero ? DONE         :
+                               check_fail      ? DONE         : CHECK_HASH;
     DONE:         state_next = IDLE;
   endcase
 
@@ -78,6 +78,7 @@ always @(posedge clk or posedge rst)
     case (state)
       WRITE_MEM: resume_state <= write_mem_done ? WRITE_PS : WRITE_MEM;
       WRITE_PS:  resume_state <= WRITE_PE;
+      WRITE_PE:  resume_state <= WRITE_SS;
       WRITE_SS:  resume_state <= WRITE_SE;
     endcase
 
@@ -114,9 +115,10 @@ always @(*)
     WRITE_MEM,
     WRITE_PS,
     WRITE_PE,
-    WRITE_SS:   sha512_cmd = 2'b10;
+    WRITE_SS,
+    WRITE_WAIT:  sha512_cmd = 2'b10;
     CHECK_START: sha512_cmd = 2'b01;
-    default:    sha512_cmd = 2'b00;
+    default:     sha512_cmd = 2'b00;
   endcase
 
 always @(posedge clk or posedge rst)
@@ -124,13 +126,14 @@ always @(posedge clk or posedge rst)
     mab <= 16'b0;
   else
     case (state_next)
-      WRITE_START:  mab <= public_start;
+      WRITE_START:   mab <= public_start;
       CHECK_START:   mab <= hash_address;
       WRITE_MEM,
       CHECK_HASH:    mab <= mab + 2;
     endcase
 
-assign mb_en = (state_next == WRITE_MEM) || (state_next == CHECK_HASH);
+assign mb_en = (state_next == WRITE_MEM && !write_mem_done) ||
+               (state_next == CHECK_HASH);
 assign mb_wr = 2'b00;
 
 reg [15:0] sha512_data;
