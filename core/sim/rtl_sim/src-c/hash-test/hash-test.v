@@ -9,17 +9,20 @@ begin
     //---------------------------------------
     // Check CPU configuration
     //---------------------------------------
-//     if ((`PMEM_SIZE !== 4096) || (`DMEM_SIZE !== 2048))
-//     begin
-//         $display(" ===============================================");
-//         $display("|               SIMULATION ERROR                |");
-//         $display("|                                               |");
-//         $display("|  Core must be configured for:                 |");
-//         $display("|               - 60kB program memory           |");
-//         $display("|               - 2kB data memory              |");
-//         $display(" ===============================================");
-//         $finish;
-//     end
+    if ((`PMEM_SIZE !== 24576) || (`DMEM_SIZE !== 16384))
+    begin
+        $display(" ===============================================");
+        $display("|               SIMULATION ERROR                |");
+        $display("|                                               |");
+        $display("|  Core must be configured for:                 |");
+        $display("|               - 24kB program memory           |");
+        $display("|               - 16kB data memory              |");
+        $display(" ===============================================");
+        $finish;
+    end
+
+    @(posedge p2_dout[0]);
+    $finish;
 end
 
 always @(posedge p1_dout[7])

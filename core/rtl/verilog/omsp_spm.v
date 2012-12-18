@@ -14,6 +14,7 @@ module omsp_spm(
     update_spm,
     enable_spm,
     check_new_spm,
+    next_id,
     r12,
     r13,
     r14,
@@ -36,17 +37,19 @@ input  [1:0] eu_mb_wr;  // Execution Unit Memory bus write transfer
 input        update_spm;
 input        enable_spm;
 input        check_new_spm;
+input [15:0] next_id;
 input [15:0] r12;
 input [15:0] r13;
 input [15:0] r14;
 input [15:0] r15;
-input  [1:0] data_request;
+input  [2:0] data_request;
 
 output            enabled;
 output            violation;
 output            selected;
 output reg [15:0] requested_data;
 
+reg [15:0] id;
 reg [15:0] public_start;
 reg [15:0] public_end;
 reg [15:0] secret_start;
@@ -85,6 +88,7 @@ always @(posedge mclk or posedge puc_rst)
 begin
     if (puc_rst)
     begin
+        id <= 0;
         public_start <= 0;
         public_end <= 0;
         secret_start <= 0;
@@ -97,6 +101,7 @@ begin
         begin
             if ((r12 < r13) & (r14 < r15))
             begin
+                id <= next_id;
                 public_start <= r12;
                 public_end <= r13;
                 secret_start <= r14;
@@ -111,6 +116,7 @@ begin
         end
         else if (pc >= public_start && pc < public_end)
         begin
+            id <= 0;
             public_start <= 0;
             public_end <= 0;
             secret_start <= 0;
@@ -157,6 +163,7 @@ always @(*)
     `SPM_REQ_PUBEND:   requested_data = public_end;
     `SPM_REQ_SECSTART: requested_data = secret_start;
     `SPM_REQ_SECEND:   requested_data = secret_end;
+    `SPM_REQ_ID:       requested_data = id;
   endcase
 
 endmodule

@@ -34,7 +34,7 @@ input [15:0] r12;
 input [15:0] r13;
 input [15:0] r14;
 input [15:0] r15;
-input  [1:0] data_request;
+input  [2:0] data_request;
 
 output            violation;
 output            spm_select_valid;
@@ -59,6 +59,7 @@ wire [0:`NB_SPMS-1] spms_selected;
 wire [16*`NB_SPMS-1:0] spms_requested_data;
 
 reg [15:0] current_pc, prev_pc;
+reg [15:0] next_id;
 
 assign spms_update = (spms_first_disabled |       // update first disabled SPM
                       {`NB_SPMS{~enable_spm}}) &  // or all for a disable request
@@ -67,7 +68,13 @@ assign spms_update = (spms_first_disabled |       // update first disabled SPM
 assign spms_check = (update_spm & enable_spm) ? (~spms_update & spms_enabled)
                                               : `NB_SPMS'b0;
 
-assign violation = |spms_violation;
+always @(posedge mclk or posedge puc_rst)
+    if (puc_rst)
+        next_id <= 16'h1;
+    else if (update_spm && enable_spm)
+        next_id <= next_id + 16'h1;
+
+assign violation = |spms_violation || (next_id == 16'h0);
 
 generate
     genvar i;
@@ -84,9 +91,6 @@ generate
 endgenerate
 
 assign spm_select_valid = |spms_selected;
-// always @(*)
-//     if (!spm_select_valid)
-//         requested_data = 16'b0;
 
 always @(pc)
 begin
@@ -105,6 +109,7 @@ omsp_spm omsp_spms[0:`NB_SPMS-1](
     .update_spm         (spms_update),
     .enable_spm         (enable_spm),
     .check_new_spm      (spms_check),
+    .next_id            (next_id),
     .r12                (r12),
     .r13                (r13),
     .r14                (r14),

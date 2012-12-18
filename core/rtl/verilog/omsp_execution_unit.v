@@ -163,7 +163,7 @@ wire          [3:0] status;
 wire reg_dest_wr  = ((e_state==`E_EXEC) & (
                      (inst_type[`INST_TO] & inst_ad[`DIR] & ~inst_alu[`EXEC_NO_WR])  |
                      (inst_type[`INST_SO] & inst_as[`DIR] & ~(inst_so[`PUSH] | inst_so[`CALL] | inst_so[`RETI])) |
-                      inst_type[`INST_JMP])) | dbg_reg_wr;
+                      inst_type[`INST_JMP])) | dbg_reg_wr | sha512_reg_write;
 
 wire reg_sp_wr    = (((e_state==`E_IRQ_1) | (e_state==`E_IRQ_3)) & ~inst_irq_rst) |
                      ((e_state==`E_DST_RD) & ((inst_so[`PUSH] | inst_so[`CALL]) &  ~inst_as[`IDX] & ~((inst_as[`INDIR] | inst_as[`INDIR_I]) & inst_src[1]))) |
@@ -182,6 +182,9 @@ wire reg_incr     =  (exec_done          & inst_as[`INDIR_I]) |
                     ((e_state==`E_EXEC)   & inst_so[`RETI]);
 
 assign dbg_reg_din = reg_dest;
+
+wire [15:0] dest_reg     = sha512_reg_write ? 16'h8000        : inst_dest;
+wire [15:0] reg_dest_val = sha512_reg_write ? sha512_data_out : alu_out;
 
 //wires for spm
 wire [15:0] r12;
@@ -217,12 +220,12 @@ omsp_register_file register_file_0 (
     .alu_stat     (alu_stat),     // ALU Status {V,N,Z,C}
     .alu_stat_wr  (alu_stat_wr),  // ALU Status write {V,N,Z,C}
     .inst_bw      (inst_bw),      // Decoded Inst: byte width
-    .inst_dest    (inst_dest),    // Register destination selection
+    .inst_dest    (dest_reg),     // Register destination selection
     .inst_src     (inst_src),     // Register source selection
     .mclk         (mclk),         // Main system clock
     .pc           (pc),           // Program counter
     .puc_rst      (puc_rst),      // Main system reset
-    .reg_dest_val (alu_out),      // Selected register destination value
+    .reg_dest_val (reg_dest_val), // Selected register destination value
     .reg_dest_wr  (reg_dest_wr),  // Write selected register destination
     .reg_pc_call  (reg_pc_call),  // Trigger PC update for a CALL instruction
     .reg_sp_val   (alu_out_add),  // Stack Pointer next value
@@ -394,8 +397,7 @@ always @(posedge mclk_mdb_out_nxt or posedge puc_rst)
            (e_state==`E_IRQ_0) | (e_state==`E_IRQ_2)) mdb_out_nxt <= alu_out;
 `endif
 
-assign      mdb_out = sha512_mb_en ? sha512_mdb_out :
-                      inst_bw      ? {2{mdb_out_nxt[7:0]}} : mdb_out_nxt;
+assign      mdb_out = inst_bw      ? {2{mdb_out_nxt[7:0]}} : mdb_out_nxt;
 
 // Format memory data bus input depending on BW
 reg        mab_lsb;
@@ -442,7 +444,7 @@ assign mdb_in_val = mdb_in_buf_valid ? mdb_in_buf : mdb_in_bw;
 wire spm_violation;
 
 wire spm_select_valid;
-wire  [1:0] spm_request;
+wire  [2:0] spm_request;
 wire [15:0] spm_requested_data;
 
 omsp_spm_control spm_control_0(
@@ -466,9 +468,11 @@ omsp_spm_control spm_control_0(
 
 wire sha512_start = do_spm_inst && spm_select_valid && hash_spm;
 wire [15:0] sha512_mab;
-wire [15:0] sha512_mdb_out;
+wire [15:0] sha512_data_out;
 wire        sha512_mb_en;
 wire  [1:0] sha512_mb_wr;
+wire  [3:0] sha512_dest_reg;
+wire        sha512_reg_write;
 
 wire        hash_busy;
 
@@ -484,7 +488,8 @@ omsp_sha512_control sha512_control(
     .mab          (sha512_mab),
     .mb_en        (sha512_mb_en),
     .mb_wr        (sha512_mb_wr),
-    .mdb_out      (sha512_mdb_out),
+    .data_out     (sha512_data_out),
+    .reg_write    (sha512_reg_write),
     .busy         (hash_busy)
 );
 

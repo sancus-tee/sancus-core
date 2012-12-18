@@ -736,10 +736,11 @@
 `define DIVSx       2:1
 
 // SPM data requests
-`define SPM_REQ_PUBSTART 2'b00
-`define SPM_REQ_PUBEND   2'b01
-`define SPM_REQ_SECSTART 2'b10
-`define SPM_REQ_SECEND   2'b11
+`define SPM_REQ_PUBSTART 3'd0
+`define SPM_REQ_PUBEND   3'd1
+`define SPM_REQ_SECSTART 3'd2
+`define SPM_REQ_SECEND   3'd3
+`define SPM_REQ_ID       3'd4
 
 // MCLK Clock gate
 `ifdef CPUOFF_EN
