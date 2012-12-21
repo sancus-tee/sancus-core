@@ -158,12 +158,16 @@ end
 assign selected = enabled & (r14 == public_start);
 
 always @(*)
-  case (data_request)
-    `SPM_REQ_PUBSTART: requested_data = public_start;
-    `SPM_REQ_PUBEND:   requested_data = public_end;
-    `SPM_REQ_SECSTART: requested_data = secret_start;
-    `SPM_REQ_SECEND:   requested_data = secret_end;
-    `SPM_REQ_ID:       requested_data = id;
-  endcase
+  if (selected)
+    case (data_request)
+      `SPM_REQ_PUBSTART: requested_data = public_start;
+      `SPM_REQ_PUBEND:   requested_data = public_end;
+      `SPM_REQ_SECSTART: requested_data = secret_start;
+      `SPM_REQ_SECEND:   requested_data = secret_end;
+      `SPM_REQ_ID:       requested_data = id;
+      default:           requested_data = 16'bx;
+    endcase
+  else
+    requested_data = 16'bz;
 
 endmodule

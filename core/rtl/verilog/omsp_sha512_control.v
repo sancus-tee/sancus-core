@@ -1,3 +1,5 @@
+`include "openMSP430_defines.v"
+
 module omsp_sha512_control(
   input  wire        clk,
   input  wire        rst,
@@ -39,12 +41,20 @@ wire write_mem_done = mab - 1 == public_end;
 wire read_count_zero = read_wait_count == 5'h0;
 wire hash_words_equal = mem_data == {sha512_hash[7:0], sha512_hash[15:8]};
 
-assign busy = state != IDLE || start;
+reg start_mem;
+always @(posedge clk or posedge rst)
+  if (rst)
+    start_mem <= 1'b0;
+  else
+    start_mem <= start;
+
+wire do_start = (start || start_mem) && sha512_sync;
+assign busy = state != IDLE || do_start;
 
 reg [4:0] state, state_next, resume_state;
 always @(*)
   case (state)
-    IDLE:         state_next = start           ? READ_PS      : IDLE;
+    IDLE:         state_next = do_start        ? READ_PS      : IDLE;
     READ_PS:      state_next = READ_PE;
     READ_PE:      state_next = READ_SS;
     READ_SS:      state_next = READ_SE;
@@ -63,6 +73,7 @@ always @(*)
     CHECK_HASH:   state_next = read_count_zero ? DONE         :
                                check_fail      ? DONE         : CHECK_HASH;
     DONE:         state_next = IDLE;
+    default:      state_next = 5'bxxxxx;
   endcase
 
 always @(posedge clk or posedge rst)
@@ -144,6 +155,7 @@ always @(*)
     WRITE_PE:   sha512_data = public_end;
     WRITE_SS:   sha512_data = secret_start;
     WRITE_SE:   sha512_data = secret_end;
+    default:    sha512_data = 16'bx;
   endcase
 
 reg [4:0] read_wait_count;
@@ -167,7 +179,7 @@ always @(posedge clk or posedge rst)
 assign data_out  = check_fail ? 16'b0 : spm_data;
 assign reg_write = state == DONE;
 
-wire sha512_busy, sha512_ready;
+wire sha512_busy, sha512_ready, sha512_sync;
 wire [15:0] sha512_hash;
 omsp_sha512_frontend sha512_frontend(
   .clk             (clk),
@@ -178,7 +190,8 @@ omsp_sha512_frontend sha512_frontend(
 
   .hash            (sha512_hash),
   .busy            (sha512_busy),
-  .ready_for_data  (sha512_ready)
+  .ready_for_data  (sha512_ready),
+  .sync            (sha512_sync)
 );
 
 endmodule

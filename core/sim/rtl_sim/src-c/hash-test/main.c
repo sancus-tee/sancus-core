@@ -115,6 +115,7 @@ int __attribute__((section(".init9"), aligned(2))) main(void)
     puts("main() started");
     WDTCTL = WDTPW|WDTHOLD;
 
+    asm("nop");
     TEST_SPM(simple);
     TEST_SPM(full_block);
     TEST_SPM(wait_write_mem_last_word);
@@ -123,7 +124,7 @@ int __attribute__((section(".init9"), aligned(2))) main(void)
     TEST_SPM(wait_after_ps);
     TEST_SPM(wait_after_pe);
     TEST_SPM(wait_after_ss);
-//     TEST_SPM(big_one);
+    TEST_SPM(big_one);
 
     puts("main() done");
     P2OUT = 0x01;

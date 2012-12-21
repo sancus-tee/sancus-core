@@ -229,16 +229,17 @@ wire                hash_busy;
 // 2)  GLOBAL CLOCK & RESET MANAGEMENT
 //=============================================================================
 
-wire spm_violation;
-reg spm_violation_s;
+// wire spm_violation;
+// reg spm_violation_s;
+// 
+// always @(posedge mclk or posedge puc_rst)
+//     if (puc_rst)
+//         spm_violation_s <= 0;
+//     else
+//         spm_violation_s <= spm_violation;
 
-always @(posedge mclk or posedge puc_rst)
-    if (puc_rst)
-        spm_violation_s <= 0;
-    else
-        spm_violation_s <= spm_violation;
-
-wire low_reset = reset_n & !spm_violation_s;
+//wire low_reset = reset_n & !spm_violation_s;
+wire low_reset = reset_n;
 
 omsp_clock_module clock_module_0 (
 

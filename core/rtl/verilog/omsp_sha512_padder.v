@@ -57,7 +57,7 @@ always @(*)
                            pad_done    ? `IDLE : `PAD;
     `PAD:     state_next = chunk_done  ? `WAIT : `PAD;
 
-    default:  state_next = `IDLE;
+    default:  state_next = 2'bxx;
   endcase
 
 assign ready_for_data = state_next == `COPY;
@@ -89,13 +89,17 @@ always @(*)
         2'b00: sha512_data  = {data[31:24], 1'b1, 23'b0};
         2'b01: sha512_data  = {data[31:16], 1'b1, 15'b0};
         2'b10: sha512_data  = {data[31: 8], 1'b1,  7'b0};
+`ifdef __ICARUS__
         // FIXME: I only seem to get reliable simulation results when using
         // a nonblocking assignment here but, AFAICS, this shouldn't be
         // necessary...
         2'b11: sha512_data <=  data;
+`else
+        2'b11: sha512_data  =  data;
+`endif
       endcase
     `PAD:      sha512_data = pad_val;
-    default:   sha512_data = 32'b0;
+    default:   sha512_data = 32'bx;
   endcase
 
 reg [0:127] length;

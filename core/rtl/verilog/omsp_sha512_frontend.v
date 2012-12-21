@@ -7,20 +7,29 @@ module omsp_sha512_frontend(
 
   output wire [15:0] hash,
   output wire        busy,
-  output wire        ready_for_data
+  output wire        ready_for_data,
+  output wire        sync
 );
 
 wire read, write;
 assign read  = cmd_in[0];
 assign write = cmd_in[1];
 
-wire sha512_clk;
+wire sha512_clk_in;
 omsp_clock_div2 clock_div2(
   .clk      (clk),
   .rst      (rst),
-  .sync     (first_write),
-  .clk_div2 (sha512_clk)
+  .clk_div2 (sha512_clk_in)
 );
+
+assign sync = sha512_clk_in;
+
+`ifdef SYNTHESIS
+wire sha512_clk;
+BUFG sha512_clk_buf(.I(sha512_clk_in), .O(sha512_clk));
+`else
+wire sha512_clk = sha512_clk_in;
+`endif
 
 reg data_shift_enable;
 always @(posedge clk or posedge rst)
@@ -32,7 +41,10 @@ always @(posedge clk or posedge rst)
 // the write signal is always 1 cycle behind, write_cycle is a synced version
 reg write_cycle;
 always @(posedge clk or posedge rst)
-  write_cycle <= write;
+  if (rst)
+    write_cycle <= 1'b0;
+  else
+    write_cycle <= write;
 
 reg [15:0] sha512_data_in;
 always @(*)
@@ -50,16 +62,9 @@ omsp_shift_16to32 data_shift(
   .data_out (sha512_data)
 );
 
-reg hash_shift_enable;
-always @(posedge clk or posedge rst)
-  if (rst)
-    hash_shift_enable <= 1'b0;
-  else
-    hash_shift_enable <= read;
-
 wire [31:0] sha512_hash;
 omsp_shift_32to16 hash_shift(
-  .clk      (sha512_clk),
+  .select   (sync),
   .data_in  (sha512_hash),
   .data_out (hash)
 );

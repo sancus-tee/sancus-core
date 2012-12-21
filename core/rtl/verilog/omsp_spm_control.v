@@ -36,9 +36,9 @@ input [15:0] r14;
 input [15:0] r15;
 input  [2:0] data_request;
 
-output            violation;
-output            spm_select_valid;
-output reg [15:0] requested_data;
+output             violation;
+output             spm_select_valid;
+output wire [15:0] requested_data;
 
 // input to the SPM array. indicates which SPM(s) should be updated. when a new
 // SPM is being created, only one bit will be 1. if an SPM is being destroyed,
@@ -83,13 +83,6 @@ generate
         assign spms_first_disabled[i] = ~spms_enabled[i] & ~|spms_first_disabled[0:i-1];
 endgenerate
 
-generate
-    for (i = 0; i < `NB_SPMS; i = i + 1)
-        always @(*)
-            if (spms_selected[`NB_SPMS-i-1])
-                requested_data = spms_requested_data[(i+1)*16-1:i*16];
-endgenerate
-
 assign spm_select_valid = |spms_selected;
 
 always @(pc)
@@ -119,7 +112,7 @@ omsp_spm omsp_spms[0:`NB_SPMS-1](
     .enabled            (spms_enabled),
     .violation          (spms_violation),
     .selected           (spms_selected),
-    .requested_data     (spms_requested_data)
+    .requested_data     (requested_data)
 );
 
 endmodule
