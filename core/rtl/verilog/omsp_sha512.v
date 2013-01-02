@@ -213,7 +213,6 @@ module omsp_sha512 (clk_i, rst_i, text_i, text_o, cmd_i, cmd_w_i, cmd_o);
         wire [63:0] f1_EFG_64,f2_ABC_64,f3_A_64,f4_E_64,f5_W1_64,f6_W14_64,T1_64,T2_64;
         wire [63:0] W1_swap,W14_swap,Wt_64_swap;
         wire [63:0] next_Wt,next_E,next_A;
-        wire [383:0] SHA384_result;
         wire [511:0] SHA512_result;
         
         assign f1_EFG_64 = (E & F) ^ (~E & G);
@@ -241,7 +240,6 @@ module omsp_sha512 (clk_i, rst_i, text_i, text_o, cmd_i, cmd_w_i, cmd_o);
         assign next_A = T1_64 + T2_64;
         
         
-        assign SHA384_result = {A,B,C,D,E,F};
         assign SHA512_result = {A,B,C,D,E,F,G,H};
         
         assign round_plus_1 = round + 1;
@@ -304,70 +302,37 @@ module omsp_sha512 (clk_i, rst_i, text_i, text_o, cmd_i, cmd_w_i, cmd_o);
                                                 busy <= 'b1;
                                                 round <= round_plus_1;
                                                 
-                                                case (cmd[3:2])
-                                                        2'b00:  // sha-384 first message
-                                                                begin
-                                                                        A <= `SHA384_H0;
-                                                                        B <= `SHA384_H1;
-                                                                        C <= `SHA384_H2;
-                                                                        D <= `SHA384_H3;
-                                                                        E <= `SHA384_H4;
-                                                                        F <= `SHA384_H5;
-                                                                        G <= `SHA384_H6;
-                                                                        H <= `SHA384_H7;
+                                                if (~cmd[2])
+                                                begin // sha-512 first message
+                                                        A <= `SHA512_H0;
+                                                        B <= `SHA512_H1;
+                                                        C <= `SHA512_H2;
+                                                        D <= `SHA512_H3;
+                                                        E <= `SHA512_H4;
+                                                        F <= `SHA512_H5;
+                                                        G <= `SHA512_H6;
+                                                        H <= `SHA512_H7;
 
-                                                                        H0 <= `SHA384_H0;
-                                                                        H1 <= `SHA384_H1;
-                                                                        H2 <= `SHA384_H2;
-                                                                        H3 <= `SHA384_H3;
-                                                                        H4 <= `SHA384_H4;
-                                                                        H5 <= `SHA384_H5;
-                                                                        H6 <= `SHA384_H6;
-                                                                        H7 <= `SHA384_H7;
-                                                                end
-                                                        2'b01:  // sha-384 internal message
-                                                                begin
-                                                                        H0 <= A;
-                                                                        H1 <= B;
-                                                                        H2 <= C;
-                                                                        H3 <= D;
-                                                                        H4 <= E;
-                                                                        H5 <= F;
-                                                                        H6 <= G;
-                                                                        H7 <= H;
-                                                                end
-                                                        2'b10:  // sha-512 first message
-                                                                begin
-                                                                        A <= `SHA512_H0;
-                                                                        B <= `SHA512_H1;
-                                                                        C <= `SHA512_H2;
-                                                                        D <= `SHA512_H3;
-                                                                        E <= `SHA512_H4;
-                                                                        F <= `SHA512_H5;
-                                                                        G <= `SHA512_H6;
-                                                                        H <= `SHA512_H7;
-
-                                                                        H0 <= `SHA512_H0;
-                                                                        H1 <= `SHA512_H1;
-                                                                        H2 <= `SHA512_H2;
-                                                                        H3 <= `SHA512_H3;
-                                                                        H4 <= `SHA512_H4;
-                                                                        H5 <= `SHA512_H5;
-                                                                        H6 <= `SHA512_H6;
-                                                                        H7 <= `SHA512_H7;
-                                                                end
-                                                        2'b11:  // sha-512 internal message
-                                                                begin
-                                                                        H0 <= A;
-                                                                        H1 <= B;
-                                                                        H2 <= C;
-                                                                        H3 <= D;
-                                                                        H4 <= E;
-                                                                        H5 <= F;
-                                                                        H6 <= G;
-                                                                        H7 <= H;
-                                                                end
-                                                endcase
+                                                        H0 <= `SHA512_H0;
+                                                        H1 <= `SHA512_H1;
+                                                        H2 <= `SHA512_H2;
+                                                        H3 <= `SHA512_H3;
+                                                        H4 <= `SHA512_H4;
+                                                        H5 <= `SHA512_H5;
+                                                        H6 <= `SHA512_H6;
+                                                        H7 <= `SHA512_H7;
+                                                end
+                                                else
+                                                begin // sha-512 internal message
+                                                        H0 <= A;
+                                                        H1 <= B;
+                                                        H2 <= C;
+                                                        H3 <= D;
+                                                        H4 <= E;
+                                                        H5 <= F;
+                                                        H6 <= G;
+                                                        H7 <= H;
+                                                end
                                         end
                                         else
                                         begin   // IDLE
@@ -953,47 +918,24 @@ module omsp_sha512 (clk_i, rst_i, text_i, text_o, cmd_i, cmd_w_i, cmd_o);
                         begin
                         if (~busy)
                         begin
-                                case (cmd[3])
-                                        1'b0:
-                                                begin
-                                                        case (read_counter)
-                                                                'd11:   text_o <= SHA384_result[12*32-1:11*32];
-                                                                'd10:   text_o <= SHA384_result[11*32-1:10*32];
-                                                                'd09:   text_o <= SHA384_result[10*32-1:09*32];
-                                                                'd08:   text_o <= SHA384_result[09*32-1:08*32];
-                                                                'd07:   text_o <= SHA384_result[08*32-1:07*32];
-                                                                'd06:   text_o <= SHA384_result[07*32-1:06*32];
-                                                                'd05:   text_o <= SHA384_result[06*32-1:05*32];
-                                                                'd04:   text_o <= SHA384_result[05*32-1:04*32];
-                                                                'd03:   text_o <= SHA384_result[04*32-1:03*32];
-                                                                'd02:   text_o <= SHA384_result[03*32-1:02*32];
-                                                                'd01:   text_o <= SHA384_result[02*32-1:01*32];
-                                                                'd00:   text_o <= SHA384_result[01*32-1:00*32];
-                                                                default:text_o <= 'b0;
-                                                        endcase
-                                                end
-                                        1'b1:
-                                                begin
-                                                        case (read_counter)
-                                                                'd15:   text_o <= SHA512_result[16*32-1:15*32];
-                                                                'd14:   text_o <= SHA512_result[15*32-1:14*32];
-                                                                'd13:   text_o <= SHA512_result[14*32-1:13*32];
-                                                                'd12:   text_o <= SHA512_result[13*32-1:12*32];
-                                                                'd11:   text_o <= SHA512_result[12*32-1:11*32];
-                                                                'd10:   text_o <= SHA512_result[11*32-1:10*32];
-                                                                'd09:   text_o <= SHA512_result[10*32-1:09*32];
-                                                                'd08:   text_o <= SHA512_result[09*32-1:08*32];
-                                                                'd07:   text_o <= SHA512_result[08*32-1:07*32];
-                                                                'd06:   text_o <= SHA512_result[07*32-1:06*32];
-                                                                'd05:   text_o <= SHA512_result[06*32-1:05*32];
-                                                                'd04:   text_o <= SHA512_result[05*32-1:04*32];
-                                                                'd03:   text_o <= SHA512_result[04*32-1:03*32];
-                                                                'd02:   text_o <= SHA512_result[03*32-1:02*32];
-                                                                'd01:   text_o <= SHA512_result[02*32-1:01*32];
-                                                                'd00:   text_o <= SHA512_result[01*32-1:00*32];
-                                                                default:text_o <= 'b0;
-                                                        endcase
-                                                end
+                                case (read_counter)
+                                        'd15:   text_o <= SHA512_result[16*32-1:15*32];
+                                        'd14:   text_o <= SHA512_result[15*32-1:14*32];
+                                        'd13:   text_o <= SHA512_result[14*32-1:13*32];
+                                        'd12:   text_o <= SHA512_result[13*32-1:12*32];
+                                        'd11:   text_o <= SHA512_result[12*32-1:11*32];
+                                        'd10:   text_o <= SHA512_result[11*32-1:10*32];
+                                        'd09:   text_o <= SHA512_result[10*32-1:09*32];
+                                        'd08:   text_o <= SHA512_result[09*32-1:08*32];
+                                        'd07:   text_o <= SHA512_result[08*32-1:07*32];
+                                        'd06:   text_o <= SHA512_result[07*32-1:06*32];
+                                        'd05:   text_o <= SHA512_result[06*32-1:05*32];
+                                        'd04:   text_o <= SHA512_result[05*32-1:04*32];
+                                        'd03:   text_o <= SHA512_result[04*32-1:03*32];
+                                        'd02:   text_o <= SHA512_result[03*32-1:02*32];
+                                        'd01:   text_o <= SHA512_result[02*32-1:01*32];
+                                        'd00:   text_o <= SHA512_result[01*32-1:00*32];
+                                        default:text_o <= 'b0;
                                 endcase
                                 if (|read_counter)
                                         read_counter <= read_counter - 'd1;
