@@ -197,6 +197,7 @@ wire disable_spm = spm_command[`SPM_DISABLE];
 wire enable_spm  = spm_command[`SPM_ENABLE];
 wire verify_spm  = spm_command[`SPM_HMAC_VERIFY];
 wire cert_spm    = spm_command[`SPM_HMAC_WRITE];
+wire sign_spm    = spm_command[`SPM_HMAC_SIGN];
 wire update_spm  = do_spm_inst & (disable_spm | enable_spm);
 
 omsp_register_file register_file_0 (
@@ -473,10 +474,11 @@ omsp_spm_control spm_control_0(
     .key                (spm_key)
 );
 
-wire hmac_start = do_spm_inst & (verify_spm | cert_spm);
+wire hmac_start = do_spm_inst & (verify_spm | cert_spm | sign_spm);
 
 wire [1:0] hmac_mode = verify_spm ? `HMAC_CERT_VERIFY :
-                       cert_spm   ? `HMAC_CERT_WRITE  : 2'bxx;
+                       cert_spm   ? `HMAC_CERT_WRITE  :
+                       sign_spm   ? `HMAC_SIGN        : 2'bxx;
 
 wire [15:0] hmac_mab;
 wire [15:0] hmac_data_out;

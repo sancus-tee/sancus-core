@@ -75,7 +75,7 @@ always @(*)
     HMAC_MEM:       next_state =                  HMAC_MEM_WAIT;
     HMAC_MEM_WAIT:  next_state = hmac_busy      ? HMAC_MEM_WAIT :
                                  ~mem_done      ? HMAC_MEM      :
-                                 cert           ? HMAC_SPM      : WRITE;
+                                 cert           ? HMAC_SPM      : HMAC_DONE;
     HMAC_SPM:       next_state =                  HMAC_SPM_WAIT;
     HMAC_SPM_WAIT:  next_state = hmac_busy      ? HMAC_SPM_WAIT :
                                  hmac_spm_done  ? HMAC_DONE     : HMAC_SPM;

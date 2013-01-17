@@ -7,6 +7,9 @@ typedef unsigned spm_id;
 extern spm_id hmac_verify(const char* expected_hmac, const void* spm_entry);
 extern spm_id hmac_write(char* dst, const void* spm_entry);
 
+extern spm_id spm();
+extern char signature;
+
 typedef struct
 {
     char hash[64];
@@ -95,11 +98,37 @@ void test_write(Spm* spm, spm_id expected_id)
 
 void test_spm(Spm* spm)
 {
-    static spm_id next_id = 0;
+    static spm_id next_id = 1;
     next_id++;
     protect_spm(spm);
     test_verify(spm, next_id);
     test_write(spm, next_id);
+}
+
+void test_sign()
+{
+    puts("Protecting SPM...");
+
+    asm("mov #public_start, r12\n\t"
+        "mov #public_end-1, r13\n\t"
+        "mov #secret_start, r14\n\t"
+        "mov #secret_end-1, r15\n\t"
+        ".word 0x1381"
+        : : : "r12", "r13", "r14", "r15");
+
+    puts("* Signing secret section...");
+    spm_id id = spm();
+
+    if (id != 1)
+        printf(" - Failed: expected id 1, got %u\n", id);
+    else if (memcmp(&signature, "\x87\x18\x3f\x19\xa1\x58\x57\xbd\x72\x8c\x04\xb4\xa7\x31\xb6\x8c", 16) != 0)
+    {
+        printf(" - Failed: wrong HMAC: ");
+        print_mem(&signature, 16, 0);
+        printf("\n");
+    }
+    else
+        puts(" - Passed");
 }
 
 int __attribute__((section(".init9"), aligned(2))) main(void)
@@ -107,6 +136,7 @@ int __attribute__((section(".init9"), aligned(2))) main(void)
     puts("main() started");
     WDTCTL = WDTPW|WDTHOLD;
 
+    test_sign();
     TEST_SPM(simple);
 
     puts("main() done");
