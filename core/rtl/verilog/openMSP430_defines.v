@@ -688,7 +688,7 @@
 `define E_EXEC      4'hB
 `define E_JUMP      4'hC
 `define E_IDLE      4'hD
-`define E_HASH      4'hE
+`define E_SPM       4'hE
 
 // ALU control signals
 `define ALU_SRC_INV   0

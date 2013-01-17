@@ -61,7 +61,7 @@ module  omsp_execution_unit (
     scg0,                          // System clock generator 1. Turns off the DCO
     scg1,                          // System clock generator 1. Turns off the SMCLK
     spm_violation,
-    hash_busy,
+    spm_busy,
 
 // INPUTs
     dbg_halt_st,                   // Halt/Run status from CPU
@@ -107,7 +107,7 @@ output              pc_sw_wr;      // Program counter software write
 output              scg0;          // System clock generator 1. Turns off the DCO
 output              scg1;          // System clock generator 1. Turns off the SMCLK
 output              spm_violation;
-output              hash_busy;
+output              spm_busy;
 
 // INPUTs
 //=========
@@ -487,7 +487,7 @@ wire  [1:0] hmac_mb_wr;
 wire  [3:0] hmac_dest_reg;
 wire        hmac_reg_write;
 
-wire        hash_busy; // FIXME rename
+wire        spm_busy;
 
 wire [15:0] internal_hmac_out;
 wire        internal_hmac_busy;
@@ -511,7 +511,7 @@ omsp_hmac_control hmac_control(
   .pc                   (current_inst_pc),
   .hmac_busy            (internal_hmac_busy),
 
-  .busy                 (hash_busy),
+  .busy                 (spm_busy),
   .spm_request          (spm_request),
   .spm_select           (spm_select),
   .mb_en                (hmac_mb_en),

@@ -95,7 +95,7 @@ module  omsp_frontend (
     wdt_irq,                       // Watchdog-timer interrupt
     wdt_wkup,                      // Watchdog Wakeup
     wkup,                          // System Wake-up (asynchronous)
-    hash_busy
+    spm_busy
 );
 
 // OUTPUTs
@@ -148,7 +148,7 @@ input               scan_enable;   // Scan enable (active during scan shifting)
 input               wdt_irq;       // Watchdog-timer interrupt
 input               wdt_wkup;      // Watchdog Wakeup
 input               wkup;          // System Wake-up (asynchronous)
-input               hash_busy;
+input               spm_busy;
 
 
 //=============================================================================
@@ -207,7 +207,7 @@ parameter E_DST_WR    = `E_DST_WR;
 parameter E_EXEC      = `E_EXEC;
 parameter E_JUMP      = `E_JUMP;
 parameter E_IDLE      = `E_IDLE;
-parameter E_HASH      = `E_HASH;
+parameter E_SPM       = `E_SPM;
 
 
 //=============================================================================
@@ -538,7 +538,9 @@ always @(posedge mclk_decode or posedge puc_rst)
 // SPM command decoding
 // 8'b00000001: disable SPM
 // 8'b00000010: enable SPM
-// 8'b00000100: hash SPM
+// 8'b00000100: verify HMAC certificate
+// 8'b00001000: write HMAC certificate to memory
+// 8'b00010000: create HMAC signature for SPM output
 reg  [7:0] spm_command;
 wire [7:0] spm_command_nxt = one_hot8(ir[2:0]) & {8{inst_so_nxt[`SPM]}};
 
@@ -841,7 +843,8 @@ always @(posedge mclk or posedge puc_rst)
   else if (e_state==E_DST_RD) exec_dext_rdy <= 1'b0;
   else if (inst_dext_rdy)     exec_dext_rdy <= 1'b1;
 
-wire exec_hash = spm_command[`SPM_HMAC_VERIFY] |
+wire exec_spm  = spm_command[`SPM_ENABLE]      |
+                 spm_command[`SPM_HMAC_VERIFY] |
                  spm_command[`SPM_HMAC_WRITE]  |
                  spm_command[`SPM_HMAC_SIGN];
 
@@ -881,9 +884,9 @@ always @(*)
       E_EXEC   : e_state_nxt =  exec_dst_wr       ? E_DST_WR :
                                 exec_jmp          ? E_JUMP   :
                                 exec_src_wr       ? E_SRC_WR :
-                                exec_hash         ? E_HASH   : e_first_state;
+                                exec_spm          ? E_SPM    : e_first_state;
 
-      E_HASH   : e_state_nxt =  hash_busy         ? E_HASH   : e_first_state;
+      E_SPM    : e_state_nxt =  spm_busy          ? E_SPM    : e_first_state;
 
       E_JUMP   : e_state_nxt =  e_first_state;
       E_DST_WR : e_state_nxt =  exec_jmp          ? E_JUMP   : e_first_state;
@@ -905,7 +908,7 @@ always @(posedge mclk or posedge puc_rst)
 wire exec_done = exec_jmp        ? (e_state==E_JUMP)   :
                  exec_dst_wr     ? (e_state==E_DST_WR) :
                  exec_src_wr     ? (e_state==E_SRC_WR) :
-                 exec_hash       ? (e_state_nxt!=E_HASH)          : (e_state==E_EXEC);
+                 exec_spm        ? (e_state_nxt!=E_SPM)          : (e_state==E_EXEC);
 
 
 //=============================================================================

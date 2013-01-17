@@ -163,7 +163,7 @@ always @(e_state_bin)
       4'hB    : e_state =  "EXEC";
       4'hC    : e_state =  "JUMP";
       4'hD    : e_state =  "IDLE";
-      4'hE    : e_state =  "HASH";
+      4'hE    : e_state =  "SPM";
       default : e_state =  "xxxx";
     endcase
 

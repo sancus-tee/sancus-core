@@ -223,7 +223,7 @@ wire         [15:0] per_dout_clk;
 wire          [7:0] spm_command;
 wire         [15:0] current_inst_pc;
 
-wire                hash_busy;
+wire                spm_busy;
 
 //=============================================================================
 // 2)  GLOBAL CLOCK & RESET MANAGEMENT
@@ -339,7 +339,7 @@ omsp_frontend frontend_0 (
     .wdt_irq      (wdt_irq),       // Watchdog-timer interrupt
     .wdt_wkup     (wdt_wkup),      // Watchdog Wakeup
     .wkup         (wkup),          // System Wake-up (asynchronous)
-    .hash_busy    (hash_busy)
+    .spm_busy     (spm_busy)
 );
 
 
@@ -362,7 +362,7 @@ omsp_execution_unit execution_unit_0 (
     .scg0         (scg0),          // System clock generator 1. Turns off the DCO
     .scg1         (scg1),          // System clock generator 1. Turns off the SMCLK
     .spm_violation(spm_violation),
-    .hash_busy    (hash_busy),
+    .spm_busy     (spm_busy),
 
 // INPUTs
     .dbg_halt_st  (dbg_halt_st),   // Halt/Run status from CPU
