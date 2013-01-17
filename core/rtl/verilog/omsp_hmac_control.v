@@ -85,9 +85,11 @@ always @(*)
     VERIFY_WAIT:    next_state = hmac_busy      ? VERIFY_WAIT   : VERIFY;
     WRITE:          next_state =                  FAIL; // TODO
     WRITE_WAIT:     next_state =                  FAIL; // TODO
-    FAIL:           next_state =             FINISH;
-    SUCCESS:        next_state =             FINISH;
-    FINISH:         next_state =             IDLE;
+    FAIL:           next_state =                  FINISH;
+    SUCCESS:        next_state =                  FINISH;
+    FINISH:         next_state =                  IDLE;
+
+    default:        next_state =                  {STATE_SIZE{1'bx}};
   endcase
 
 always @(posedge clk or posedge reset)

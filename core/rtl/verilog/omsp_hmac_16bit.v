@@ -48,6 +48,8 @@ always @(*)
     OUT1:       next_state =                    WAIT_OUT2;
     WAIT_OUT2:  next_state = hmac_busy        ? WAIT_OUT2   : OUT2;
     OUT2:       next_state =                    IDLE;
+
+    default:    next_state =                    {STATE_SIZE{1'bx}};
   endcase
 
 always @(posedge clk)
