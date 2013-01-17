@@ -1,6 +1,6 @@
-TARGET = hash-test.elf
+TARGET = hmac-test.elf
 
-$(TARGET): main.c hash.s
+$(TARGET): main.c hmac.s
 	msp430-gcc -mmcu=msp430f1121 -T msp430.x $^ -o $@
 
 clean:

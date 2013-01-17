@@ -4,7 +4,7 @@
 
 typedef unsigned spm_id;
 
-extern spm_id hash_spm(const char* expected_hash, const void* spm_entry);
+extern spm_id hmac_verify(const char* expected_hash, const void* spm_entry);
 
 typedef struct
 {
@@ -67,12 +67,11 @@ void test_spm(Spm* spm)
     static spm_id next_id = 0;
     spm_id id;
     protect_spm(spm);
-    puts("Hashing SPM...");
-    id = hash_spm(spm->expected_hash, spm->public);
+    puts("Verifying HMAC...");
+    id = hmac_verify(spm->expected_hash, spm->public);
 
     if (id != ++next_id)
-        puts(" - Failed");
-        //printf(" - Failed: expected id %u, got %u\n", next_id, id);
+        printf(" - Failed: expected id %u, got %u\n", next_id, id);
     else
         puts(" - Passed");
 }
