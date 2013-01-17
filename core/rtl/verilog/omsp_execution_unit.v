@@ -196,6 +196,7 @@ wire do_spm_inst = (e_state == `E_EXEC) & inst_so[`SPM];
 wire disable_spm = spm_command[`SPM_DISABLE];
 wire enable_spm  = spm_command[`SPM_ENABLE];
 wire verify_spm  = spm_command[`SPM_HMAC_VERIFY];
+wire cert_spm    = spm_command[`SPM_HMAC_WRITE];
 wire update_spm  = do_spm_inst & (disable_spm | enable_spm);
 
 omsp_register_file register_file_0 (
@@ -397,7 +398,8 @@ always @(posedge mclk_mdb_out_nxt or posedge puc_rst)
            (e_state==`E_IRQ_0) | (e_state==`E_IRQ_2)) mdb_out_nxt <= alu_out;
 `endif
 
-assign      mdb_out = inst_bw      ? {2{mdb_out_nxt[7:0]}} : mdb_out_nxt;
+assign mdb_out = hmac_mb_en ? hmac_data_out         :
+                 inst_bw    ? {2{mdb_out_nxt[7:0]}} : mdb_out_nxt;
 
 // Format memory data bus input depending on BW
 reg        mab_lsb;
@@ -471,7 +473,11 @@ omsp_spm_control spm_control_0(
     .key                (spm_key)
 );
 
-wire hmac_start = do_spm_inst & verify_spm;
+wire hmac_start = do_spm_inst & (verify_spm | cert_spm);
+
+wire [1:0] hmac_mode = verify_spm ? `HMAC_CERT_VERIFY :
+                       cert_spm   ? `HMAC_CERT_WRITE  : 2'bxx;
+
 wire [15:0] hmac_mab;
 wire [15:0] hmac_data_out;
 wire        hmac_mb_en;
@@ -492,7 +498,7 @@ omsp_hmac_control hmac_control(
   .clk                  (mclk),
   .reset                (puc_rst),
   .start                (hmac_start),
-  .mode                 (`HMAC_CERT_VERIFY),
+  .mode                 (hmac_mode),
   .spm_select_valid     (spm_select_valid),
   .spm_data             (spm_requested_data),
   .mem_in               (mdb_in),

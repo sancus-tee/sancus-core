@@ -622,6 +622,7 @@
 `define SPM_DISABLE     0
 `define SPM_ENABLE      1
 `define SPM_HMAC_VERIFY 2
+`define SPM_HMAC_WRITE  3
 
 // HMAC modes
 `define HMAC_CERT_VERIFY 2'b00

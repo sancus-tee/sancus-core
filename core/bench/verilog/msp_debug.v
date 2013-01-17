@@ -436,7 +436,9 @@ always @(inst_type or inst_name or inst_bw or inst_as or inst_ad)
      if (opcode==16'h1381)
        inst_full = "PROT";
      if (opcode==16'h1382)
-       inst_full = "HASH";
+       inst_full = "HMAC_VERIFY";
+     if (opcode==16'h1383)
+       inst_full = "HMAC_WRITE";
   end
    
 

@@ -841,7 +841,7 @@ always @(posedge mclk or posedge puc_rst)
   else if (e_state==E_DST_RD) exec_dext_rdy <= 1'b0;
   else if (inst_dext_rdy)     exec_dext_rdy <= 1'b1;
 
-wire exec_hash = spm_command[`SPM_HMAC_VERIFY];
+wire exec_hash = spm_command[`SPM_HMAC_VERIFY] | spm_command[`SPM_HMAC_WRITE];
 
 // Execution first state
 wire [3:0] e_first_state = ~dbg_halt_st  & inst_so_nxt[`IRQ] ? E_IRQ_0  :

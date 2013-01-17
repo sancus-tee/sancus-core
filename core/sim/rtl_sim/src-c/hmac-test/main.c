@@ -4,12 +4,13 @@
 
 typedef unsigned spm_id;
 
-extern spm_id hmac_verify(const char* expected_hash, const void* spm_entry);
+extern spm_id hmac_verify(const char* expected_hmac, const void* spm_entry);
+extern spm_id hmac_write(char* dst, const void* spm_entry);
 
 typedef struct
 {
     char hash[64];
-    const char* expected_hash;
+    const char* expected_hmac;
     long secret;
     const char* public;
     size_t size;
@@ -62,18 +63,43 @@ void protect_spm(Spm* spm)
         : "r12", "r13", "r14", "r15");
 }
 
+void test_verify(Spm* spm, spm_id expected_id)
+{
+    puts("* Verifying HMAC...");
+    spm_id id = hmac_verify(spm->expected_hmac, spm->public);
+
+    if (id != expected_id)
+        printf(" - Failed: expected id %u, got %u\n", expected_id, id);
+    else
+        puts(" - Passed");
+}
+
+void test_write(Spm* spm, spm_id expected_id)
+{
+    char hmac[16];
+
+    puts("* Writing HMAC...");
+    spm_id id = hmac_write(hmac, spm->public);
+
+    if (id != expected_id)
+        printf(" - Failed: expected id %u, got %u\n", expected_id, id);
+    else if (memcmp(hmac, spm->expected_hmac, sizeof(hmac)) != 0)
+    {
+        printf(" - Failed: wrong HMAC: ");
+        print_mem(hmac, sizeof(hmac), 0);
+        printf("\n");
+    }
+    else
+        puts(" - Passed");
+}
+
 void test_spm(Spm* spm)
 {
     static spm_id next_id = 0;
-    spm_id id;
+    next_id++;
     protect_spm(spm);
-    puts("Verifying HMAC...");
-    id = hmac_verify(spm->expected_hash, spm->public);
-
-    if (id != ++next_id)
-        printf(" - Failed: expected id %u, got %u\n", next_id, id);
-    else
-        puts(" - Passed");
+    test_verify(spm, next_id);
+    test_write(spm, next_id);
 }
 
 int __attribute__((section(".init9"), aligned(2))) main(void)

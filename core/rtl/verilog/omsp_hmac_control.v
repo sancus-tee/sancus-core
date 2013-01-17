@@ -55,11 +55,12 @@ localparam [STATE_SIZE-1:0] IDLE          = 0,
                             PRE_OUTPUT    = 10,
                             VERIFY        = 11,
                             VERIFY_WAIT   = 12,
-                            WRITE         = 13,
-                            WRITE_WAIT    = 14,
-                            FAIL          = 15,
-                            SUCCESS       = 16,
-                            FINISH        = 17;
+                            WRITE_DELAY   = 13,
+                            WRITE         = 14,
+                            WRITE_WAIT    = 15,
+                            FAIL          = 16,
+                            SUCCESS       = 17,
+                            FINISH        = 18;
 
 reg [STATE_SIZE-1:0] state, next_state;
 
@@ -79,12 +80,13 @@ always @(*)
     HMAC_SPM_WAIT:  next_state = hmac_busy      ? HMAC_SPM_WAIT :
                                  hmac_spm_done  ? HMAC_DONE     : HMAC_SPM;
     HMAC_DONE:      next_state = hmac_busy      ? HMAC_DONE     : PRE_OUTPUT;
-    PRE_OUTPUT:     next_state = verify         ? VERIFY_WAIT   : WRITE;
+    PRE_OUTPUT:     next_state = verify         ? VERIFY_WAIT   : WRITE_WAIT;
     VERIFY:         next_state = ~verify_ok     ? FAIL          :
                                  mem_done       ? SUCCESS       : VERIFY_WAIT;
     VERIFY_WAIT:    next_state = hmac_busy      ? VERIFY_WAIT   : VERIFY;
-    WRITE:          next_state =                  FAIL; // TODO
-    WRITE_WAIT:     next_state =                  FAIL; // TODO
+    WRITE_DELAY:    next_state =                  WRITE;
+    WRITE:          next_state = mem_done       ? SUCCESS       : WRITE_WAIT;
+    WRITE_WAIT:     next_state = hmac_busy      ? WRITE_WAIT    : WRITE_DELAY;
     FAIL:           next_state =                  FINISH;
     SUCCESS:        next_state =                  FINISH;
     FINISH:         next_state =                  IDLE;
@@ -279,8 +281,18 @@ begin
     begin
     end
 
+    WRITE_DELAY:
+    begin
+      update_data_out = 1;
+      data_out_val = {hmac_in[7:0], hmac_in[15:8]};
+    end
+
     WRITE:
     begin
+      mab_inc = 1;
+      mb_en = 1;
+      mb_wr = 2'b11;
+      set_start_continue = 1;
     end
 
     WRITE_WAIT:
