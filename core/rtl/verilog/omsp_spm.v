@@ -20,11 +20,13 @@ module omsp_spm(
     r14,
     r15,
     data_request,
+    spm_select,
 
     enabled,
     violation,
     selected,
-    requested_data
+    requested_data,
+    key
 );
 
 input        mclk;
@@ -43,11 +45,14 @@ input [15:0] r13;
 input [15:0] r14;
 input [15:0] r15;
 input  [2:0] data_request;
+input [15:0] spm_select;
 
 output            enabled;
 output            violation;
 output            selected;
 output reg [15:0] requested_data;
+
+output wire [0:127] key;
 
 reg [15:0] id;
 reg [15:0] public_start;
@@ -155,7 +160,9 @@ begin
     end
 end
 
-assign selected = enabled & (r14 == public_start);
+assign selected = enabled & exec_spm(spm_select);
+
+assign key = selected ? 128'hdeadbeefcafebabedeadbeefcafebabe : 128'bz;
 
 always @(*)
   if (selected)

@@ -24,6 +24,18 @@ verilog work ../../../rtl/verilog/omsp_and_gate.v
 verilog work ../../../rtl/verilog/omsp_wakeup_cell.v
 verilog work ../../../rtl/verilog/omsp_clock_gate.v
 verilog work ../../../rtl/verilog/omsp_clock_mux.v
+verilog work ../../../rtl/verilog/omsp_spm_control.v
+verilog work ../../../rtl/verilog/omsp_spm.v
+verilog work ../../../rtl/verilog/omsp_hmac.v
+verilog work ../../../rtl/verilog/omsp_hmac_16bit.v
+verilog work ../../../rtl/verilog/omsp_hmac_control.v
+
+verilog work ../../../rtl/verilog/spongent/spongent.v
+verilog work ../../../rtl/verilog/spongent/sbox.v
+verilog work ../../../rtl/verilog/spongent/player.v
+verilog work ../../../rtl/verilog/spongent/lfsr.v
+verilog work ../../../rtl/verilog/spongent/fsm.v
+verilog work ../../../rtl/verilog/spongent/datapath.v
 
 verilog work ../../../rtl/verilog/periph/omsp_gpio.v
 verilog work ../../../rtl/verilog/periph/omsp_timerA.v

@@ -163,7 +163,7 @@ wire          [3:0] status;
 wire reg_dest_wr  = ((e_state==`E_EXEC) & (
                      (inst_type[`INST_TO] & inst_ad[`DIR] & ~inst_alu[`EXEC_NO_WR])  |
                      (inst_type[`INST_SO] & inst_as[`DIR] & ~(inst_so[`PUSH] | inst_so[`CALL] | inst_so[`RETI])) |
-                      inst_type[`INST_JMP])) | dbg_reg_wr | sha512_reg_write;
+                      inst_type[`INST_JMP])) | dbg_reg_wr | hmac_reg_write;
 
 wire reg_sp_wr    = (((e_state==`E_IRQ_1) | (e_state==`E_IRQ_3)) & ~inst_irq_rst) |
                      ((e_state==`E_DST_RD) & ((inst_so[`PUSH] | inst_so[`CALL]) &  ~inst_as[`IDX] & ~((inst_as[`INDIR] | inst_as[`INDIR_I]) & inst_src[1]))) |
@@ -183,8 +183,8 @@ wire reg_incr     =  (exec_done          & inst_as[`INDIR_I]) |
 
 assign dbg_reg_din = reg_dest;
 
-wire [15:0] dest_reg     = sha512_reg_write ? 16'h8000        : inst_dest;
-wire [15:0] reg_dest_val = sha512_reg_write ? sha512_data_out : alu_out;
+wire [15:0] dest_reg     = hmac_reg_write ? 16'h8000      : inst_dest;
+wire [15:0] reg_dest_val = hmac_reg_write ? hmac_data_out : alu_out;
 
 //wires for spm
 wire [15:0] r12;
@@ -195,7 +195,7 @@ wire [15:0] r15;
 wire do_spm_inst = (e_state == `E_EXEC) & inst_so[`SPM];
 wire disable_spm = spm_command[`SPM_DISABLE];
 wire enable_spm  = spm_command[`SPM_ENABLE];
-wire hash_spm    = spm_command[`SPM_HASH];
+wire verify_spm  = spm_command[`SPM_HMAC_VERIFY];
 wire update_spm  = do_spm_inst & (disable_spm | enable_spm);
 
 omsp_register_file register_file_0 (
@@ -358,7 +358,7 @@ assign      mb_en     = ((e_state==`E_IRQ_1)  & ~inst_irq_rst)        |
                         ((e_state==`E_DST_RD) & ~inst_type[`INST_SO]
                                               & ~inst_mov)            |
                          (e_state==`E_DST_WR)                         |
-                          sha512_mb_en;
+                          hmac_mb_en;
 
 wire  [1:0] mb_wr_msk =  inst_alu[`EXEC_NO_WR]  ? 2'b00 :
                         ~inst_bw                ? 2'b11 :
@@ -368,10 +368,10 @@ wire  [1:0] eu_mb_wr  = ({2{(e_state==`E_IRQ_1)}}  |
                          {2{(e_state==`E_DST_WR)}} |
                          {2{(e_state==`E_SRC_WR)}}) & mb_wr_msk;
 
-assign      mb_wr     = sha512_mb_en ? sha512_mb_wr : eu_mb_wr;
+assign      mb_wr     = hmac_mb_en ? hmac_mb_wr : eu_mb_wr;
 
 // Memory address bus
-assign      mab       = sha512_mb_en ? sha512_mab : alu_out_add[15:0];
+assign      mab       = hmac_mb_en ? hmac_mab : alu_out_add[15:0];
 
 // Memory data bus output
 reg  [15:0] mdb_out_nxt;
@@ -446,6 +446,9 @@ wire spm_violation;
 wire spm_select_valid;
 wire  [2:0] spm_request;
 wire [15:0] spm_requested_data;
+wire [15:0] spm_select;
+
+wire [0:127] spm_key;
 
 omsp_spm_control spm_control_0(
     .mclk               (mclk),
@@ -461,36 +464,69 @@ omsp_spm_control spm_control_0(
     .r14                (r14),
     .r15                (r15),
     .data_request       (spm_request),
+    .spm_select         (spm_select),
     .violation          (spm_violation),
     .spm_select_valid   (spm_select_valid),
-    .requested_data     (spm_requested_data)
+    .requested_data     (spm_requested_data),
+    .key                (spm_key)
 );
 
-wire sha512_start = do_spm_inst && spm_select_valid && hash_spm;
-wire [15:0] sha512_mab;
-wire [15:0] sha512_data_out;
-wire        sha512_mb_en;
-wire  [1:0] sha512_mb_wr;
-wire  [3:0] sha512_dest_reg;
-wire        sha512_reg_write;
+wire hmac_start = do_spm_inst & verify_spm;
+wire [15:0] hmac_mab;
+wire [15:0] hmac_data_out;
+wire        hmac_mb_en;
+wire  [1:0] hmac_mb_wr;
+wire  [3:0] hmac_dest_reg;
+wire        hmac_reg_write;
 
-wire        hash_busy;
+wire        hash_busy; // FIXME rename
 
-omsp_sha512_control sha512_control(
-    .clk          (mclk),
-    .rst          (puc_rst),
-    .start        (sha512_start),
-    .hash_address (r15),
-    .spm_data     (spm_requested_data),
-    .mem_data     (mdb_in),
+wire [15:0] internal_hmac_out;
+wire        internal_hmac_busy;
+wire        internal_hmac_reset;
+wire        internal_hmac_start_continue;
+wire        internal_hmac_data_available;
+wire        internal_hmac_data_is_long;
 
-    .spm_request  (spm_request),
-    .mab          (sha512_mab),
-    .mb_en        (sha512_mb_en),
-    .mb_wr        (sha512_mb_wr),
-    .data_out     (sha512_data_out),
-    .reg_write    (sha512_reg_write),
-    .busy         (hash_busy)
+omsp_hmac_control hmac_control(
+  .clk                  (mclk),
+  .reset                (puc_rst),
+  .start                (hmac_start),
+  .mode                 (`HMAC_CERT_VERIFY),
+  .spm_select_valid     (spm_select_valid),
+  .spm_data             (spm_requested_data),
+  .mem_in               (mdb_in),
+  .hmac_in              (internal_hmac_out),
+  .r13                  (r13),
+  .r14                  (r14),
+  .r15                  (r15),
+  .pc                   (current_inst_pc),
+  .hmac_busy            (internal_hmac_busy),
+
+  .busy                 (hash_busy),
+  .spm_request          (spm_request),
+  .spm_select           (spm_select),
+  .mb_en                (hmac_mb_en),
+  .mb_wr                (hmac_mb_wr),
+  .mab                  (hmac_mab),
+  .reg_wr               (hmac_reg_write),
+  .data_out             (hmac_data_out),
+  .hmac_reset           (internal_hmac_reset),
+  .hmac_start_continue  (internal_hmac_start_continue),
+  .hmac_data_available  (internal_hmac_data_available),
+  .hmac_data_is_long    (internal_hmac_data_is_long)
+);
+
+omsp_hmac_16bit hmac(
+  .clk            (mclk),
+  .reset          (internal_hmac_reset | puc_rst),
+  .start_continue (internal_hmac_start_continue),
+  .data_available (internal_hmac_data_available),
+  .data_is_long   (internal_hmac_data_is_long),
+  .key            (spm_key),
+  .data_in        (hmac_data_out),
+  .data_out       (internal_hmac_out),
+  .busy           (internal_hmac_busy)
 );
 
 endmodule // omsp_execution_unit

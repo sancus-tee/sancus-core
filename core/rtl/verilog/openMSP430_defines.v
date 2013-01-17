@@ -619,9 +619,14 @@
 `define IRQ    8
 
 // SPM commands
-`define SPM_DISABLE 0
-`define SPM_ENABLE  1
-`define SPM_HASH    2
+`define SPM_DISABLE     0
+`define SPM_ENABLE      1
+`define SPM_HMAC_VERIFY 2
+
+// HMAC modes
+`define HMAC_CERT_VERIFY 2'b00
+`define HMAC_CERT_WRITE  2'b01
+`define HMAC_SIGN        2'b10
 
 // Conditional jump
 `define JNE    0

@@ -17,9 +17,11 @@ module omsp_spm_control(
     r14,
     r15,
     data_request,
+    spm_select,
     violation,
     spm_select_valid,
-    requested_data
+    requested_data,
+    key
 );
 
 input        mclk;
@@ -34,11 +36,14 @@ input [15:0] r12;
 input [15:0] r13;
 input [15:0] r14;
 input [15:0] r15;
+input [15:0] spm_select;
 input  [2:0] data_request;
 
 output             violation;
 output             spm_select_valid;
 output wire [15:0] requested_data;
+
+output wire [0:127] key;
 
 // input to the SPM array. indicates which SPM(s) should be updated. when a new
 // SPM is being created, only one bit will be 1. if an SPM is being destroyed,
@@ -108,11 +113,13 @@ omsp_spm omsp_spms[0:`NB_SPMS-1](
     .r14                (r14),
     .r15                (r15),
     .data_request       (data_request),
+    .spm_select         (spm_select),
 
     .enabled            (spms_enabled),
     .violation          (spms_violation),
     .selected           (spms_selected),
-    .requested_data     (requested_data)
+    .requested_data     (requested_data),
+    .key                (key)
 );
 
 endmodule
