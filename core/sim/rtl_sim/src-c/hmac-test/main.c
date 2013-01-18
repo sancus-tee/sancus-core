@@ -28,7 +28,7 @@ typedef struct
 
 INIT_SPM(simple,
          "\xde\xad\xbe\xef",
-         "\xbc\x1e\x61\xb2\xe6\xbd\x67\xa5\x14\x44\x6f\xb8\x0f\x80\xb2\xf1");
+         "\x8f\x7a\x4a\xe3\x0b\x9a\xaf\x3c\xe1\xe2\xcd\x79\x66\xeb\xef\x8a");
 
 void print_nibble(unsigned char n)
 {
@@ -121,7 +121,7 @@ void test_sign()
 
     if (id != 1)
         printf(" - Failed: expected id 1, got %u\n", id);
-    else if (memcmp(&signature, "\x87\x18\x3f\x19\xa1\x58\x57\xbd\x72\x8c\x04\xb4\xa7\x31\xb6\x8c", 16) != 0)
+    else if (memcmp(&signature, "\x6a\xb4\x04\xcd\x8e\x59\xd4\x35\xdd\xcc\xe1\x09\x63\x39\xcb\x7f", 16) != 0)
     {
         printf(" - Failed: wrong HMAC: ");
         print_mem(&signature, 16, 0);

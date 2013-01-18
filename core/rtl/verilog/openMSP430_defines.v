@@ -629,6 +629,7 @@
 `define HMAC_CERT_VERIFY 2'b00
 `define HMAC_CERT_WRITE  2'b01
 `define HMAC_SIGN        2'b10
+`define HMAC_HKDF        2'b11
 
 // Conditional jump
 `define JNE    0

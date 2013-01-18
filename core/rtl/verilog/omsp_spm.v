@@ -21,12 +21,14 @@ module omsp_spm(
     r15,
     data_request,
     spm_select,
+    write_key,
+    key_in,
 
     enabled,
     violation,
     selected,
     requested_data,
-    key
+    key_out
 );
 
 input        mclk;
@@ -46,13 +48,15 @@ input [15:0] r14;
 input [15:0] r15;
 input  [2:0] data_request;
 input [15:0] spm_select;
+input        write_key;
+input [15:0] key_in;
 
 output            enabled;
 output            violation;
 output            selected;
 output reg [15:0] requested_data;
 
-output wire [0:127] key;
+output wire [0:127] key_out;
 
 reg [15:0] id;
 reg [15:0] public_start;
@@ -60,6 +64,9 @@ reg [15:0] public_end;
 reg [15:0] secret_start;
 reg [15:0] secret_end;
 reg        enabled;
+
+reg   [3:0] key_idx;
+reg [0:127] key;
 
 function exec_spm;
     input [15:0] current_pc;
@@ -99,6 +106,7 @@ begin
         secret_start <= 0;
         secret_end <= 0;
         enabled <= 0;
+        key_idx <= 0;
     end
     else if (update_spm)
     begin
@@ -112,6 +120,7 @@ begin
                 secret_start <= r14;
                 secret_end <= r15;
                 enabled <= 1;
+                key_idx <= 0;
                 $display("New SPM config: %h %h %h %h", r12, r13, r14, r15);
             end
             else
@@ -129,6 +138,11 @@ begin
             enabled <= 0;
             $display("SPM disabled");
         end
+    end
+    else if (selected & write_key)
+    begin
+        key[16*key_idx+:16] <= key_in;
+        key_idx <= key_idx + 1;
     end
 end
 
@@ -160,9 +174,11 @@ begin
     end
 end
 
-assign selected = enabled & exec_spm(spm_select);
+// FIXME: WTF? This somehow doesn't work when executing HKDF
+// assign selected = enabled & exec_spm(spm_select);
+assign selected = enabled & (spm_select >= public_start) & (spm_select <= public_end);
 
-assign key = selected ? 128'hdeadbeefcafebabedeadbeefcafebabe : 128'bz;
+assign key_out = selected ? key : 128'bz;
 
 always @(*)
   if (selected)

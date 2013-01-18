@@ -446,39 +446,20 @@ assign mdb_in_val = mdb_in_buf_valid ? mdb_in_buf : mdb_in_bw;
 //SPM
 wire spm_violation;
 
-wire spm_select_valid;
+wire        spm_select_valid;
+wire        spm_write_key;
 wire  [2:0] spm_request;
 wire [15:0] spm_requested_data;
 wire [15:0] spm_select;
 
 wire [0:127] spm_key;
 
-omsp_spm_control spm_control_0(
-    .mclk               (mclk),
-    .puc_rst            (puc_rst),
-    .pc                 (current_inst_pc),
-    .eu_mab             (mab),
-    .eu_mb_en           (mb_en),
-    .eu_mb_wr           (mb_wr),
-    .update_spm         (update_spm),
-    .enable_spm         (enable_spm),
-    .r12                (r12),
-    .r13                (r13),
-    .r14                (r14),
-    .r15                (r15),
-    .data_request       (spm_request),
-    .spm_select         (spm_select),
-    .violation          (spm_violation),
-    .spm_select_valid   (spm_select_valid),
-    .requested_data     (spm_requested_data),
-    .key                (spm_key)
-);
-
-wire hmac_start = do_spm_inst & (verify_spm | cert_spm | sign_spm);
+wire hmac_start = do_spm_inst & (verify_spm | cert_spm | sign_spm | enable_spm);
 
 wire [1:0] hmac_mode = verify_spm ? `HMAC_CERT_VERIFY :
                        cert_spm   ? `HMAC_CERT_WRITE  :
-                       sign_spm   ? `HMAC_SIGN        : 2'bxx;
+                       sign_spm   ? `HMAC_SIGN        :
+                       enable_spm ? `HMAC_HKDF        : 2'bxx;
 
 wire [15:0] hmac_mab;
 wire [15:0] hmac_data_out;
@@ -496,6 +477,32 @@ wire        internal_hmac_start_continue;
 wire        internal_hmac_data_available;
 wire        internal_hmac_data_is_long;
 
+wire [0:127] master_key = 128'hdeadbeefcafebabedeadbeefcafebabe;
+wire [0:127] key = hmac_mode == `HMAC_HKDF ? master_key : spm_key;
+
+omsp_spm_control spm_control_0(
+    .mclk               (mclk),
+    .puc_rst            (puc_rst),
+    .pc                 (current_inst_pc),
+    .eu_mab             (mab),
+    .eu_mb_en           (mb_en),
+    .eu_mb_wr           (mb_wr),
+    .update_spm         (update_spm),
+    .enable_spm         (enable_spm),
+    .r12                (r12),
+    .r13                (r13),
+    .r14                (r14),
+    .r15                (r15),
+    .data_request       (spm_request),
+    .spm_select         (spm_select),
+    .write_key          (spm_write_key),
+    .key_in             (hmac_data_out),
+    .violation          (spm_violation),
+    .spm_select_valid   (spm_select_valid),
+    .requested_data     (spm_requested_data),
+    .key_out            (spm_key)
+);
+
 omsp_hmac_control hmac_control(
   .clk                  (mclk),
   .reset                (puc_rst),
@@ -505,6 +512,7 @@ omsp_hmac_control hmac_control(
   .spm_data             (spm_requested_data),
   .mem_in               (mdb_in),
   .hmac_in              (internal_hmac_out),
+  .r12                  (r12),
   .r13                  (r13),
   .r14                  (r14),
   .r15                  (r15),
@@ -518,6 +526,7 @@ omsp_hmac_control hmac_control(
   .mb_wr                (hmac_mb_wr),
   .mab                  (hmac_mab),
   .reg_wr               (hmac_reg_write),
+  .write_key            (spm_write_key),
   .data_out             (hmac_data_out),
   .hmac_reset           (internal_hmac_reset),
   .hmac_start_continue  (internal_hmac_start_continue),
@@ -531,7 +540,7 @@ omsp_hmac_16bit hmac(
   .start_continue (internal_hmac_start_continue),
   .data_available (internal_hmac_data_available),
   .data_is_long   (internal_hmac_data_is_long),
-  .key            (spm_key),
+  .key            (key),
   .data_in        (hmac_data_out),
   .data_out       (internal_hmac_out),
   .busy           (internal_hmac_busy)
