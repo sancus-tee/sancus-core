@@ -72,7 +72,7 @@ function exec_spm;
     input [15:0] current_pc;
 
     begin
-        exec_spm = current_pc >= public_start & current_pc <= public_end;
+        exec_spm = current_pc >= public_start & current_pc < public_end;
     end
 endfunction
 
@@ -83,7 +83,7 @@ function do_overlap;
     input [15:0] end_b;
 
     begin
-        do_overlap = (start_a <= end_b) & (end_a >= start_b);
+        do_overlap = (start_a < end_b) & (end_a > start_b);
     end
 endfunction
 
@@ -147,7 +147,7 @@ begin
 end
 
 wire exec_public = exec_spm(pc);
-wire access_secret = eu_mb_en & (eu_mab >= secret_start) & (eu_mab <= secret_end);
+wire access_secret = eu_mb_en & (eu_mab >= secret_start) & (eu_mab < secret_end);
 wire mem_violation = access_secret & ~exec_public;
 wire exec_violation = exec_public & ~exec_spm(prev_pc) & (pc != public_start);
 wire create_violation = check_new_spm &
@@ -176,7 +176,7 @@ end
 
 // FIXME: WTF? This somehow doesn't work when executing HKDF
 // assign selected = enabled & exec_spm(spm_select);
-assign selected = enabled & (spm_select >= public_start) & (spm_select <= public_end);
+assign selected = enabled & (spm_select >= public_start) & (spm_select < public_end);
 
 assign key_out = selected ? key : 128'bz;
 

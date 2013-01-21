@@ -26,9 +26,10 @@ typedef struct
 
 #define TEST_SPM(x) do {puts("Testing SPM " #x); test_spm(&x);} while (0)
 
+// key: b8aaa250d73c6b384c721f3f0aff1668
 INIT_SPM(simple,
          "\xde\xad\xbe\xef",
-         "\x8f\x7a\x4a\xe3\x0b\x9a\xaf\x3c\xe1\xe2\xcd\x79\x66\xeb\xef\x8a");
+         "\xd7\xcc\xa5\xc9\x39\x72\xe6\xd1\xeb\x7c\xe3\x3f\x75\xcf\x92\xa8");
 
 void print_nibble(unsigned char n)
 {
@@ -61,8 +62,8 @@ void protect_spm(Spm* spm)
         "mov %3, r15\n\t"
         ".word 0x1381"
         :
-        : "m"(spm->public), "r"(spm->public + spm->size - 1),
-          "r"(&spm->secret), "r"((char*)&spm->secret + sizeof(spm->secret) - 1)
+        : "m"(spm->public), "r"(spm->public + spm->size),
+          "r"(&spm->secret), "r"((char*)&spm->secret + sizeof(spm->secret))
         : "r12", "r13", "r14", "r15");
 }
 
@@ -107,12 +108,13 @@ void test_spm(Spm* spm)
 
 void test_sign()
 {
+    // SPM key: 6fa6cd81f2b0cab1730b1458aff5e521
     puts("Protecting SPM...");
 
     asm("mov #public_start, r12\n\t"
-        "mov #public_end-1, r13\n\t"
+        "mov #public_end, r13\n\t"
         "mov #secret_start, r14\n\t"
-        "mov #secret_end-1, r15\n\t"
+        "mov #secret_end, r15\n\t"
         ".word 0x1381"
         : : : "r12", "r13", "r14", "r15");
 
@@ -121,7 +123,7 @@ void test_sign()
 
     if (id != 1)
         printf(" - Failed: expected id 1, got %u\n", id);
-    else if (memcmp(&signature, "\x6a\xb4\x04\xcd\x8e\x59\xd4\x35\xdd\xcc\xe1\x09\x63\x39\xcb\x7f", 16) != 0)
+    else if (memcmp(&signature, "\xe2\x11\x11\x45\xb3\x70\x33\xc6\x57\x75\x91\xfc\x6e\x50\xbf\xbf", 16) != 0)
     {
         printf(" - Failed: wrong HMAC: ");
         print_mem(&signature, 16, 0);

@@ -16,7 +16,7 @@ signature:
 spm:
 public_start:
     mov #secret_start, r13
-    mov #secret_end-1, r14
+    mov #secret_end, r14
     mov #signature, r15
     .word 0x1384
     ret

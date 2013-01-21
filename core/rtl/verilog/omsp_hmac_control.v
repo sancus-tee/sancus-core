@@ -172,9 +172,9 @@ reg        mab_limit_init;
 
 always @(posedge clk)
   if (mab_limit_init)
-    mab_limit_reg <= mab_limit + 1;
+    mab_limit_reg <= mab_limit;
 
-wire mem_done = mab == mab_limit_reg;
+wire mem_done = mab >= mab_limit_reg;
 
 // HMAC control signals
 reg set_start_continue;
@@ -350,7 +350,7 @@ begin
       mab_init = 1;
       mab_base = r15;
       mab_limit_init = 1;
-      mab_limit = r15 + 15;
+      mab_limit = r15 + 16;
     end
 
     VERIFY:
@@ -389,7 +389,7 @@ begin
       mab_init = 1;
       mab_base = 0;
       mab_limit_init = 1;
-      mab_limit = 15;
+      mab_limit = 16;
     end
 
     KEY_OUT_DELAY:
