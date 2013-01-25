@@ -4,7 +4,7 @@
 
 void unprotected0()
 {
-    puts("unprotected0");
+    printf("unprotected0\n");
 }
 
 struct Foo unprotected1(struct Foo g)
