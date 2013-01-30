@@ -1,12 +1,11 @@
 #ifndef SPM_H
 #define SPM_H
 
-struct Foo
-{
-    int a, b, c, d, e, f, g, h;
-};
+#include <spm-support.h>
 
-void spm0();
-int spm1(struct Foo f);
+SPM_ENTRY("foo") int spm_foo0();
+SPM_ENTRY("bar") int spm_bar0();
+SPM_ENTRY("foo") int spm_foo1();
+SPM_ENTRY("bar") int spm_bar1();
 
 #endif

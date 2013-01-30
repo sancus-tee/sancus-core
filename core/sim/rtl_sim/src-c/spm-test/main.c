@@ -7,9 +7,8 @@
 
 #define get_reg(x) asm("mov r4, %0" : "=m"(x));
 
-extern int secret;
-
 DECLARE_SPM(foo);
+DECLARE_SPM(bar);
 
 void init_io()
 {
@@ -20,22 +19,15 @@ void init_io()
 
 int __attribute__((section(".init9"), aligned(2))) main(void)
 {
-    int i = 0;
-    void* reg;
-//     struct Foo foo = {1, 2, 3, 4, 5, 6, 7, 8};
     puts("main() started");
     init_io();
 
     protect_spm(&foo);
-    //protect_spm();
+    protect_spm(&bar);
 
-    puts("calling spm");
-    spm0();
-//     i = spm1(foo);
-//     printf("spm1=%d\n", i);
-
-    puts("writing secret");
-    secret = 0xdead;
+    puts("calling spm_foo0");
+    int ret = spm_foo0();
+    printf("Got %x back\n", ret);
 
     puts("main() done");
     return 0;
