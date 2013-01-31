@@ -7,7 +7,7 @@ module omsp_hmac_control(
   input  wire         clk,
   input  wire         reset,
   input  wire         start,
-  input  wire   [1:0] mode,
+  input  wire   [2:0] mode,
   input  wire         spm_data_select_valid,
   input  wire         spm_key_select_valid,
   input  wire  [15:0] spm_data,
@@ -37,7 +37,7 @@ module omsp_hmac_control(
 );
 
 // helper wires
-reg sign, cert, verify, write, hkdf;
+reg sign, cert, verify, write, hkdf, id;
 
 always @(*)
 begin
@@ -46,6 +46,7 @@ begin
   verify = 0;
   write = 0;
   hkdf = 0;
+  id = 0;
 
   case (mode)
     `HMAC_CERT_VERIFY:
@@ -71,6 +72,10 @@ begin
       hkdf = 1;
     end
 
+    `HMAC_ID:
+    begin
+      id = 1;
+    end
   endcase
 end
 
@@ -114,7 +119,8 @@ always @(*)
     HKDF_DELAY:     next_state =                  CHECK_SPM;
     CHECK_SPM:      next_state = ~spm_ok        ? FAIL          :
                                  sign           ? START_SIGN    :
-                                 hkdf           ? HMAC_MEM_WAIT : START_VERIFY1;
+                                 hkdf           ? HMAC_MEM_WAIT :
+                                 id             ? SUCCESS       : START_VERIFY1;
     START_SIGN:     next_state =                  HMAC_MEM_WAIT;
     START_VERIFY1:  next_state =                  START_VERIFY2;
     START_VERIFY2:  next_state =                  HMAC_MEM_WAIT;
@@ -156,8 +162,10 @@ always @(posedge clk or posedge reset)
 
 // SPM selection
 assign spm_data_select = hkdf ? r12 :
-                         sign ? pc  : r14;
-assign spm_key_select  = hkdf ? r12 : pc;
+                         sign ? pc  :
+                         id   ? r15 : r14;
+assign spm_key_select  = hkdf ? r12 :
+                         id   ? r15 : pc;
 
 // memory address calculation
 reg        mab_init;

@@ -624,12 +624,14 @@
 `define SPM_HMAC_VERIFY 2
 `define SPM_HMAC_WRITE  3
 `define SPM_HMAC_SIGN   4
+`define SPM_ID          5
 
 // HMAC modes
-`define HMAC_CERT_VERIFY 2'b00
-`define HMAC_CERT_WRITE  2'b01
-`define HMAC_SIGN        2'b10
-`define HMAC_HKDF        2'b11
+`define HMAC_CERT_VERIFY 3'b000
+`define HMAC_CERT_WRITE  3'b001
+`define HMAC_SIGN        3'b010
+`define HMAC_HKDF        3'b011
+`define HMAC_ID          3'b111
 
 // Conditional jump
 `define JNE    0
@@ -870,4 +872,4 @@ CONFIGURATION ERROR: THE OSCOFF LOW POWER MODE CAN ONLY BE ENABLED IF THE LFXT_D
 `endif
 
 // SPM defines
-`define NB_SPMS 8
+`define NB_SPMS 4
