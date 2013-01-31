@@ -446,11 +446,13 @@ assign mdb_in_val = mdb_in_buf_valid ? mdb_in_buf : mdb_in_bw;
 //SPM
 wire spm_violation;
 
-wire        spm_select_valid;
+wire        spm_data_select_valid;
+wire        spm_key_select_valid;
 wire        spm_write_key;
 wire  [2:0] spm_request;
 wire [15:0] spm_requested_data;
-wire [15:0] spm_select;
+wire [15:0] spm_data_select;
+wire [15:0] spm_key_select;
 
 wire [0:127] spm_key;
 
@@ -481,26 +483,28 @@ wire [0:127] master_key = 128'hdeadbeefcafebabedeadbeefcafebabe;
 wire [0:127] key = hmac_mode == `HMAC_HKDF ? master_key : spm_key;
 
 omsp_spm_control spm_control_0(
-    .mclk               (mclk),
-    .puc_rst            (puc_rst),
-    .pc                 (current_inst_pc),
-    .eu_mab             (mab),
-    .eu_mb_en           (mb_en),
-    .eu_mb_wr           (mb_wr),
-    .update_spm         (update_spm),
-    .enable_spm         (enable_spm),
-    .r12                (r12),
-    .r13                (r13),
-    .r14                (r14),
-    .r15                (r15),
-    .data_request       (spm_request),
-    .spm_select         (spm_select),
-    .write_key          (spm_write_key),
-    .key_in             (hmac_data_out),
-    .violation          (spm_violation),
-    .spm_select_valid   (spm_select_valid),
-    .requested_data     (spm_requested_data),
-    .key_out            (spm_key)
+  .mclk                   (mclk),
+  .puc_rst                (puc_rst),
+  .pc                     (current_inst_pc),
+  .eu_mab                 (mab),
+  .eu_mb_en               (mb_en),
+  .eu_mb_wr               (mb_wr),
+  .update_spm             (update_spm),
+  .enable_spm             (enable_spm),
+  .r12                    (r12),
+  .r13                    (r13),
+  .r14                    (r14),
+  .r15                    (r15),
+  .data_request           (spm_request),
+  .spm_data_select        (spm_data_select),
+  .spm_key_select         (spm_key_select),
+  .write_key              (spm_write_key),
+  .key_in                 (hmac_data_out),
+  .violation              (spm_violation),
+  .spm_data_select_valid  (spm_data_select_valid),
+  .spm_key_select_valid   (spm_key_select_valid),
+  .requested_data         (spm_requested_data),
+  .key_out                (spm_key)
 );
 
 omsp_hmac_control hmac_control(
@@ -508,7 +512,8 @@ omsp_hmac_control hmac_control(
   .reset                (puc_rst),
   .start                (hmac_start),
   .mode                 (hmac_mode),
-  .spm_select_valid     (spm_select_valid),
+  .spm_data_select_valid(spm_data_select_valid),
+  .spm_key_select_valid (spm_key_select_valid),
   .spm_data             (spm_requested_data),
   .mem_in               (mdb_in),
   .hmac_in              (internal_hmac_out),
@@ -521,7 +526,8 @@ omsp_hmac_control hmac_control(
 
   .busy                 (spm_busy),
   .spm_request          (spm_request),
-  .spm_select           (spm_select),
+  .spm_data_select      (spm_data_select),
+  .spm_key_select       (spm_key_select),
   .mb_en                (hmac_mb_en),
   .mb_wr                (hmac_mb_wr),
   .mab                  (hmac_mab),

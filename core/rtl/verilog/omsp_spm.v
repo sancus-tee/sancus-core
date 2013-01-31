@@ -20,12 +20,14 @@ module omsp_spm(
   input  wire  [15:0] r14,
   input  wire  [15:0] r15,
   input  wire   [2:0] data_request,
-  input  wire  [15:0] spm_select,
+  input  wire  [15:0] spm_data_select,
+  input  wire  [15:0] spm_key_select,
   input  wire         write_key,
   input  wire  [15:0] key_in,
   output reg          enabled,
   output wire         violation,
-  output wire         selected,
+  output wire         data_selected,
+  output wire         key_selected,
   output reg   [15:0] requested_data,
   output wire [0:127] key_out
 );
@@ -110,7 +112,7 @@ begin
       $display("SPM disabled");
     end
   end
-  else if (selected & write_key)
+  else if (key_selected & write_key)
   begin
     key[16*key_idx+:16] <= key_in;
     key_idx <= key_idx + 1;
@@ -147,12 +149,11 @@ end
 
 // FIXME: WTF? This somehow doesn't work when executing HKDF
 // assign selected = enabled & exec_spm(spm_select);
-assign selected = enabled & (spm_select >= public_start) & (spm_select < public_end);
-
-assign key_out = selected ? key : 128'bz;
+assign data_selected = enabled & (spm_data_select >= public_start) &
+                                 (spm_data_select < public_end);
 
 always @(*)
-  if (selected)
+  if (data_selected)
   case (data_request)
     `SPM_REQ_PUBSTART: requested_data = public_start;
     `SPM_REQ_PUBEND:   requested_data = public_end;
@@ -163,5 +164,9 @@ always @(*)
   endcase
   else
   requested_data = 16'bz;
+
+assign key_selected = enabled & (spm_key_select >= public_start) &
+                                (spm_key_select < public_end);
+assign key_out = key_selected ? key : 128'bz;
 
 endmodule

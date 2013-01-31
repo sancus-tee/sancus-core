@@ -8,7 +8,8 @@ module omsp_hmac_control(
   input  wire         reset,
   input  wire         start,
   input  wire   [1:0] mode,
-  input  wire         spm_select_valid,
+  input  wire         spm_data_select_valid,
+  input  wire         spm_key_select_valid,
   input  wire  [15:0] spm_data,
   input  wire  [15:0] mem_in,
   input wire   [15:0] hmac_in,
@@ -21,7 +22,8 @@ module omsp_hmac_control(
 
   output reg          busy,
   output reg    [2:0] spm_request,
-  output wire  [15:0] spm_select,
+  output wire  [15:0] spm_data_select,
+  output wire  [15:0] spm_key_select,
   output reg          mb_en,
   output reg    [1:0] mb_wr,
   output reg   [15:0] mab,
@@ -72,7 +74,7 @@ begin
   endcase
 end
 
-wire spm_ok = spm_select_valid;
+wire spm_ok = spm_data_select_valid & spm_key_select_valid;
 
 // FSM
 localparam integer STATE_SIZE = 5;
@@ -153,8 +155,9 @@ always @(posedge clk or posedge reset)
     state <= next_state;
 
 // SPM selection
-assign spm_select = hkdf ? r12 :
-                    sign ? pc  : r14;
+assign spm_data_select = hkdf ? r12 :
+                         sign ? pc  : r14;
+assign spm_key_select  = hkdf ? r12 : pc;
 
 // memory address calculation
 reg        mab_init;

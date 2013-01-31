@@ -16,12 +16,14 @@ module omsp_spm_control(
   input  wire  [15:0] r13,
   input  wire  [15:0] r14,
   input  wire  [15:0] r15,
-  input  wire  [15:0] spm_select,
+  input  wire  [15:0] spm_data_select,
+  input  wire  [15:0] spm_key_select,
   input  wire   [2:0] data_request,
   input  wire         write_key,
   input  wire  [15:0] key_in,
   output wire         violation,
-  output wire         spm_select_valid,
+  output wire         spm_data_select_valid,
+  output wire         spm_key_select_valid,
   output wire  [15:0] requested_data,
   output wire [0:127] key_out
 );
@@ -39,7 +41,8 @@ wire [0:`NB_SPMS-1] spms_enabled;
 // output of the SPM array. violations detected by the SPMs
 wire [0:`NB_SPMS-1] spms_violation;
 
-wire [0:`NB_SPMS-1] spms_selected;
+wire [0:`NB_SPMS-1] spms_data_selected;
+wire [0:`NB_SPMS-1] spms_key_selected;
 
 reg [15:0] current_pc, prev_pc;
 reg [15:0] next_id;
@@ -66,7 +69,8 @@ generate
     assign spms_first_disabled[i] = ~spms_enabled[i] & ~|spms_first_disabled[0:i-1];
 endgenerate
 
-assign spm_select_valid = |spms_selected;
+assign spm_data_select_valid = |spms_data_selected;
+assign spm_key_select_valid  = |spms_key_selected;
 
 always @(pc)
 begin
@@ -91,12 +95,14 @@ omsp_spm omsp_spms[0:`NB_SPMS-1](
   .r14            (r14),
   .r15            (r15),
   .data_request   (data_request),
-  .spm_select     (spm_select),
+  .spm_data_select(spm_data_select),
+  .spm_key_select (spm_key_select),
   .write_key      (write_key),
   .key_in         (key_in),
   .enabled        (spms_enabled),
   .violation      (spms_violation),
-  .selected       (spms_selected),
+  .data_selected  (spms_data_selected),
+  .key_selected   (spms_key_selected),
   .requested_data (requested_data),
   .key_out        (key_out)
 );
