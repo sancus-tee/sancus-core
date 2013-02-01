@@ -63,8 +63,8 @@
 ../../../rtl/verilog/omsp_hmac_16bit.v
 ../../../rtl/verilog/omsp_hmac_control.v
 ../../../rtl/verilog/spongent/spongent.v
-../../../rtl/verilog/spongent/datapath.v
-../../../rtl/verilog/spongent/fsm.v
+../../../rtl/verilog/spongent/spongent_datapath.v
+../../../rtl/verilog/spongent/spongent_fsm.v
 ../../../rtl/verilog/spongent/lfsr.v
-../../../rtl/verilog/spongent/player.v
-../../../rtl/verilog/spongent/sbox.v
+../../../rtl/verilog/spongent/spongent_player.v
+../../../rtl/verilog/spongent/spongent_sbox.v

@@ -128,7 +128,7 @@ always @(*)
     DATA_HASH: spongent_data_in = hash_data;
     DATA_PAD:  spongent_data_in = {1'b1, {RATE-1{1'b0}}};
 
-    default:   spongent_data_in = {DATA_SELECT_SIZE{1'bx}};
+    default:   spongent_data_in = {RATE{1'bx}};
   endcase
 
 // control signals
@@ -275,7 +275,7 @@ reg spongent_data_available;
 reg spongent_start_continue;
 reg spongent_reset;
 
-spongent_parallel spongent(
+spongent spongent(
   .clk                (clk),
   .reset              (spongent_reset | reset),
   .start_continue     (spongent_start_continue),

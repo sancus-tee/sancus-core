@@ -37,7 +37,7 @@
  *  Revision 0.01 - File Created
  *
  */
-module spongent_parallel (
+module spongent (
     clk,
     reset,
     start_continue,
