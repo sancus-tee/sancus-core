@@ -2,34 +2,15 @@
 #include <stdio.h>
 #include <string.h>
 
-typedef unsigned spm_id;
+#include <spm-support.h>
 
-extern spm_id hmac_verify(const char* expected_hmac, const void* spm_entry);
-extern spm_id hmac_write(char* dst, const void* spm_entry);
+SPM_ENTRY("foo") spm_id spm_foo();
+SPM_ENTRY("bar") void spm_bar();
 
-extern spm_id spm();
-extern char signature;
+char signature[16] = "AAAAAAAAAAAAAAAA";
 
-typedef struct
-{
-    char hash[64];
-    const char* expected_hmac;
-    long secret;
-    const char* public;
-    size_t size;
-} Spm __attribute__((aligned(2)));
-
-#define INIT_SPM(x, p, h) \
-    static const char x##_public[sizeof(p) - 1] __attribute__((aligned(2), section(".data"))) = p; \
-    static const char x##_hash[64] __attribute__((aligned(2))) = h; \
-    Spm x = {{0}, x##_hash, 0, x##_public, sizeof(x##_public)}
-
-#define TEST_SPM(x) do {puts("Testing SPM " #x); test_spm(&x);} while (0)
-
-// key: b8aaa250d73c6b384c721f3f0aff1668
-INIT_SPM(simple,
-         "\xde\xad\xbe\xef",
-         "\xd7\xcc\xa5\xc9\x39\x72\xe6\xd1\xeb\x7c\xe3\x3f\x75\xcf\x92\xa8");
+DECLARE_SPM(foo, 0xcafe);
+DECLARE_SPM(bar, 0xcafe);
 
 void print_nibble(unsigned char n)
 {
@@ -41,7 +22,7 @@ void print_nibble(unsigned char n)
         putchar(n - 0xa + 'a');
 }
 
-void print_mem(const unsigned char* start, size_t size, int swap)
+void print_mem(const char* start, size_t size, int swap)
 {
     size_t i;
     for (i = 0; i < size; i++)
@@ -52,85 +33,33 @@ void print_mem(const unsigned char* start, size_t size, int swap)
     }
 }
 
-void protect_spm(Spm* spm)
-{
-    puts("Protecting SPM...");
+extern char __spm_foo_hmac_bar;
 
-    asm("mov %0, r12\n\t"
-        "mov %1, r13\n\t"
-        "mov %2, r14\n\t"
-        "mov %3, r15\n\t"
-        ".word 0x1381"
-        :
-        : "m"(spm->public), "r"(spm->public + spm->size),
-          "r"(&spm->secret), "r"((char*)&spm->secret + sizeof(spm->secret))
-        : "r12", "r13", "r14", "r15");
+spm_id spm_foo()
+{
+    puts("foo");
+    puts("Verifying bar");
+    hmac_write(signature, &bar);
+    print_mem(signature, sizeof(signature), 0);
+    putchar('\n');
+    print_mem(&__spm_foo_hmac_bar, sizeof(signature), 0);
+    putchar('\n');
+
+    spm_id id;
+    asm("mov %1, r15\n\t"
+        ".word 0x1385\n\t"
+        "mov r15, %0" : "=m"(id) : "r"(bar.public_start) : "r15");
+
+    puts("Calling bar");
+    spm_bar();
+    puts("Calling bar 2");
+    spm_bar();
+    return id;
 }
 
-void test_verify(Spm* spm, spm_id expected_id)
+void spm_bar()
 {
-    puts("* Verifying HMAC...");
-    spm_id id = hmac_verify(spm->expected_hmac, spm->public);
-
-    if (id != expected_id)
-        printf(" - Failed: expected id %u, got %u\n", expected_id, id);
-    else
-        puts(" - Passed");
-}
-
-void test_write(Spm* spm, spm_id expected_id)
-{
-    char hmac[16];
-
-    puts("* Writing HMAC...");
-    spm_id id = hmac_write(hmac, spm->public);
-
-    if (id != expected_id)
-        printf(" - Failed: expected id %u, got %u\n", expected_id, id);
-    else if (memcmp(hmac, spm->expected_hmac, sizeof(hmac)) != 0)
-    {
-        printf(" - Failed: wrong HMAC: ");
-        print_mem(hmac, sizeof(hmac), 0);
-        printf("\n");
-    }
-    else
-        puts(" - Passed");
-}
-
-void test_spm(Spm* spm)
-{
-    static spm_id next_id = 1;
-    next_id++;
-    protect_spm(spm);
-    test_verify(spm, next_id);
-    test_write(spm, next_id);
-}
-
-void test_sign()
-{
-    // SPM key: 6fa6cd81f2b0cab1730b1458aff5e521
-    puts("Protecting SPM...");
-
-    asm("mov #public_start, r12\n\t"
-        "mov #public_end, r13\n\t"
-        "mov #secret_start, r14\n\t"
-        "mov #secret_end, r15\n\t"
-        ".word 0x1381"
-        : : : "r12", "r13", "r14", "r15");
-
-    puts("* Signing secret section...");
-    spm_id id = spm();
-
-    if (id != 1)
-        printf(" - Failed: expected id 1, got %u\n", id);
-    else if (memcmp(&signature, "\xe2\x11\x11\x45\xb3\x70\x33\xc6\x57\x75\x91\xfc\x6e\x50\xbf\xbf", 16) != 0)
-    {
-        printf(" - Failed: wrong HMAC: ");
-        print_mem(&signature, 16, 0);
-        printf("\n");
-    }
-    else
-        puts(" - Passed");
+    puts("bar");
 }
 
 int __attribute__((section(".init9"), aligned(2))) main(void)
@@ -138,8 +67,10 @@ int __attribute__((section(".init9"), aligned(2))) main(void)
     puts("main() started");
     WDTCTL = WDTPW|WDTHOLD;
 
-    test_sign();
-    TEST_SPM(simple);
+    protect_spm(&foo);
+    protect_spm(&bar);
+    spm_id id = spm_foo();
+    printf("ID of bar: %u\n", id);
 
     puts("main() done");
     P2OUT = 0x01;
