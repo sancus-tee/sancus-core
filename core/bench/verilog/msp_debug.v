@@ -441,6 +441,8 @@ always @(inst_type or inst_name or inst_bw or inst_as or inst_ad)
        inst_full = "HMAC_WRITE";
      if (opcode==16'h1384)
        inst_full = "HMAC_SIGN";
+     if (opcode==16'h1385)
+       inst_full = "HMAC_ID";
   end
    
 
