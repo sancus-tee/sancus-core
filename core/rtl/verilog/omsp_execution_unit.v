@@ -187,6 +187,7 @@ wire [15:0] dest_reg     = hmac_reg_write ? 16'h8000      : inst_dest;
 wire [15:0] reg_dest_val = hmac_reg_write ? hmac_data_out : alu_out;
 
 //wires for spm
+wire [15:0] r11;
 wire [15:0] r12;
 wire [15:0] r13;
 wire [15:0] r14;
@@ -214,6 +215,7 @@ omsp_register_file register_file_0 (
     .scg0               (scg0),         // System clock generator 1. Turns off the DCO
     .scg1               (scg1),         // System clock generator 1. Turns off the SMCLK
     .status             (status),       // R2 Status {V,N,Z,C}
+    .r11                (r11),
     .r12                (r12),
     .r13                (r13),
     .r14                (r14),
@@ -483,7 +485,28 @@ wire        internal_hmac_data_available;
 wire        internal_hmac_data_is_long;
 
 wire [0:127] master_key = 128'hdeadbeefcafebabedeadbeefcafebabe;
-wire [0:127] key = hmac_mode == `HMAC_HKDF ? master_key : spm_key;
+reg  [0:127] key;
+wire   [1:0] key_select;
+
+always @(*)
+  case (key_select)
+    `KEY_SEL_MASTER: key = master_key;
+    `KEY_SEL_VENDOR: key = vendor_key;
+    `KEY_SEL_SPM:    key = spm_key;
+    default:         key = 128'bx;
+  endcase
+
+reg   [3:0] vendor_key_idx;
+reg [0:127] vendor_key;
+
+always @(posedge mclk or posedge puc_rst)
+  if (puc_rst | ~spm_busy)
+    vendor_key_idx <= 4'b0;
+  else if (vendor_write_key)
+  begin
+    vendor_key[16*vendor_key_idx+:16] <= hmac_data_out;
+    vendor_key_idx <= vendor_key_idx + 1;
+  end
 
 omsp_spm_control spm_control_0(
   .mclk                   (mclk),
@@ -520,6 +543,7 @@ omsp_hmac_control hmac_control(
   .spm_data             (spm_requested_data),
   .mem_in               (mdb_in),
   .hmac_in              (internal_hmac_out),
+  .r11                  (r11),
   .r12                  (r12),
   .r13                  (r13),
   .r14                  (r14),
@@ -531,11 +555,13 @@ omsp_hmac_control hmac_control(
   .spm_request          (spm_request),
   .spm_data_select      (spm_data_select),
   .spm_key_select       (spm_key_select),
+  .key_select           (key_select),
   .mb_en                (hmac_mb_en),
   .mb_wr                (hmac_mb_wr),
   .mab                  (hmac_mab),
   .reg_wr               (hmac_reg_write),
-  .write_key            (spm_write_key),
+  .spm_write_key        (spm_write_key),
+  .vendor_write_key     (vendor_write_key),
   .data_out             (hmac_data_out),
   .hmac_reset           (internal_hmac_reset),
   .hmac_start_continue  (internal_hmac_start_continue),

@@ -12,7 +12,8 @@ module omsp_hmac_control(
   input  wire         spm_key_select_valid,
   input  wire  [15:0] spm_data,
   input  wire  [15:0] mem_in,
-  input wire   [15:0] hmac_in,
+  input  wire  [15:0] hmac_in,
+  input  wire  [15:0] r11,
   input  wire  [15:0] r12,
   input  wire  [15:0] r13,
   input  wire  [15:0] r14,
@@ -24,11 +25,13 @@ module omsp_hmac_control(
   output reg    [2:0] spm_request,
   output wire  [15:0] spm_data_select,
   output wire  [15:0] spm_key_select,
+  output wire   [1:0] key_select,
   output reg          mb_en,
   output reg    [1:0] mb_wr,
   output reg   [15:0] mab,
   output reg          reg_wr,
-  output reg          write_key,
+  output reg          spm_write_key,
+  output reg          vendor_write_key,
   output reg   [15:0] data_out,
   output reg          hmac_reset,
   output reg          hmac_start_continue,
@@ -86,29 +89,32 @@ localparam integer STATE_SIZE = 5;
 localparam [STATE_SIZE-1:0] IDLE          = 0,
                             HKDF_DELAY    = 1,
                             CHECK_SPM     = 2,
-                            START_SIGN    = 3,
-                            START_VERIFY1 = 4,
-                            START_VERIFY2 = 5,
-                            HMAC_MEM      = 6,
-                            HMAC_MEM_WAIT = 7,
-                            HMAC_SPM      = 8,
-                            HMAC_SPM_WAIT = 9,
-                            HKDF_PAD      = 10,
-                            HKDF_PAD_WAIT = 11,
-                            HMAC_DONE     = 12,
-                            PRE_OUTPUT    = 13,
-                            VERIFY        = 14,
-                            VERIFY_WAIT   = 15,
-                            WRITE_DELAY   = 16,
-                            WRITE         = 17,
-                            WRITE_WAIT    = 18,
-                            PRE_KEY_OUT   = 19,
-                            KEY_OUT_DELAY = 20,
-                            KEY_OUT       = 21,
-                            KEY_OUT_WAIT  = 22,
-                            FAIL          = 23,
-                            SUCCESS       = 24,
-                            FINISH        = 25;
+                            HMAC_VID      = 3,
+                            HMAC_VID_WAIT = 4,
+                            START_SIGN    = 5,
+                            START_VERIFY1 = 6,
+                            START_VERIFY2 = 7,
+                            HMAC_MEM      = 8,
+                            HMAC_MEM_WAIT = 9,
+                            HMAC_SPM      = 10,
+                            HMAC_SPM_WAIT = 11,
+                            HKDF_PAD      = 12,
+                            HKDF_PAD_WAIT = 13,
+                            HMAC_DONE     = 14,
+                            PRE_OUTPUT    = 15,
+                            VERIFY        = 16,
+                            VERIFY_WAIT   = 17,
+                            WRITE_DELAY   = 18,
+                            WRITE         = 19,
+                            WRITE_WAIT    = 20,
+                            PRE_KEY_OUT   = 21,
+                            KEY_OUT_DELAY = 22,
+                            KEY_OUT       = 23,
+                            KEY_OUT_WAIT  = 24,
+                            HKDF_2ND_RUN  = 25,
+                            FAIL          = 26,
+                            SUCCESS       = 27,
+                            FINISH        = 28;
 
 reg [STATE_SIZE-1:0] state, next_state;
 
@@ -119,8 +125,10 @@ always @(*)
     HKDF_DELAY:     next_state =                  CHECK_SPM;
     CHECK_SPM:      next_state = ~spm_ok        ? FAIL          :
                                  sign           ? START_SIGN    :
-                                 hkdf           ? HMAC_MEM_WAIT :
+                                 hkdf           ? HMAC_VID      :
                                  id             ? SUCCESS       : START_VERIFY1;
+    HMAC_VID:       next_state =                  HMAC_VID_WAIT;
+    HMAC_VID_WAIT:  next_state = hmac_busy      ? HMAC_VID_WAIT : HKDF_PAD;
     START_SIGN:     next_state =                  HMAC_MEM_WAIT;
     START_VERIFY1:  next_state =                  START_VERIFY2;
     START_VERIFY2:  next_state =                  HMAC_MEM_WAIT;
@@ -145,8 +153,10 @@ always @(*)
     WRITE_WAIT:     next_state = hmac_busy      ? WRITE_WAIT    : WRITE_DELAY;
     PRE_KEY_OUT:    next_state =                  KEY_OUT_DELAY;
     KEY_OUT_DELAY:  next_state =                  KEY_OUT;
-    KEY_OUT:        next_state = mem_done       ? SUCCESS       : KEY_OUT_WAIT;
+    KEY_OUT:        next_state = ~mem_done      ? KEY_OUT_WAIT  :
+                                 hkdf_2nd_run   ? SUCCESS       : HKDF_2ND_RUN;
     KEY_OUT_WAIT:   next_state = hmac_busy      ? KEY_OUT_WAIT  : KEY_OUT_DELAY;
+    HKDF_2ND_RUN:   next_state =                  HMAC_MEM_WAIT;
     FAIL:           next_state =                  FINISH;
     SUCCESS:        next_state =                  FINISH;
     FINISH:         next_state =                  IDLE;
@@ -244,6 +254,21 @@ always @(posedge clk)
   if (update_data_out)
     data_out <= data_out_val;
 
+// HKDF second run signal. Stays low until the vendor key has been generated
+reg hkdf_2nd_run;
+reg set_hkdf_2nd_run;
+reg unset_hkdf_2nd_run;
+
+always @(posedge clk)
+  if (set_hkdf_2nd_run)
+    hkdf_2nd_run <= 1;
+  else if (unset_hkdf_2nd_run)
+    hkdf_2nd_run <= 0;
+
+// HMAC input key selection
+assign key_select = ~hkdf        ? `KEY_SEL_SPM    :
+                    hkdf_2nd_run ? `KEY_SEL_VENDOR : `KEY_SEL_MASTER;
+
 // control signals
 always @(*)
 begin
@@ -265,7 +290,10 @@ begin
   set_hmac_data_is_long = 1;
   spm_request_idx_clear = 0;
   spm_request_idx_inc = 0;
-  write_key = 0;
+  spm_write_key = 0;
+  vendor_write_key = 0;
+  set_hkdf_2nd_run = 0;
+  unset_hkdf_2nd_run = 0;
 
   case (next_state)
     IDLE:
@@ -273,17 +301,26 @@ begin
       hmac_reset = 1;
       spm_request_idx_clear = 1;
       busy = 0;
+      unset_hkdf_2nd_run = 1;
     end
 
     HKDF_DELAY:
     begin
-      mab_init = 1;
-      mab_base = r12;
-      mab_limit_init = 1;
-      mab_limit = r13;
     end
 
     CHECK_SPM:
+    begin
+    end
+
+    HMAC_VID:
+    begin
+      update_data_out = 1;
+      data_out_val = r11;
+      set_start_continue = 1;
+      set_data_available = 1;
+    end
+
+    HMAC_VID_WAIT:
     begin
     end
 
@@ -412,12 +449,23 @@ begin
     KEY_OUT:
     begin
       set_start_continue = 1;
-      write_key = 1;
+      spm_write_key = hkdf_2nd_run;
+      vendor_write_key = ~hkdf_2nd_run;
       mab_inc = 1;
     end
 
     KEY_OUT_WAIT:
     begin
+    end
+
+    HKDF_2ND_RUN:
+    begin
+      set_hkdf_2nd_run = 1;
+      hmac_reset = 1;
+      mab_init = 1;
+      mab_base = r12;
+      mab_limit_init = 1;
+      mab_limit = r13;
     end
 
     FAIL:

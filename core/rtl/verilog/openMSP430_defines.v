@@ -65,11 +65,11 @@
 //`define PMEM_SIZE_55_KB
 //`define PMEM_SIZE_54_KB
 //`define PMEM_SIZE_51_KB
-//`define PMEM_SIZE_48_KB
+`define PMEM_SIZE_48_KB
 //`define PMEM_SIZE_41_KB
 //`define PMEM_SIZE_32_KB
 //`define PMEM_SIZE_24_KB
-`define PMEM_SIZE_16_KB
+//`define PMEM_SIZE_16_KB
 //`define PMEM_SIZE_12_KB
 //`define PMEM_SIZE_8_KB
 //`define PMEM_SIZE_4_KB
@@ -83,8 +83,8 @@
 //`define DMEM_SIZE_CUSTOM
 //`define DMEM_SIZE_32_KB
 //`define DMEM_SIZE_24_KB
-`define DMEM_SIZE_16_KB
-//`define DMEM_SIZE_10_KB
+//`define DMEM_SIZE_16_KB
+`define DMEM_SIZE_10_KB
 //`define DMEM_SIZE_8_KB
 //`define DMEM_SIZE_5_KB
 //`define DMEM_SIZE_4_KB
@@ -632,6 +632,11 @@
 `define HMAC_SIGN        3'b010
 `define HMAC_HKDF        3'b011
 `define HMAC_ID          3'b111
+
+// HMAC key select
+`define KEY_SEL_MASTER 2'b00
+`define KEY_SEL_VENDOR 2'b01
+`define KEY_SEL_SPM    2'b10
 
 // Conditional jump
 `define JNE    0
