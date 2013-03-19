@@ -124,10 +124,10 @@ wire access_secret = eu_mb_en & (eu_mab >= secret_start) & (eu_mab < secret_end)
 wire mem_violation = access_secret & ~exec_public;
 wire exec_violation = exec_public & ~exec_spm(prev_pc) & (pc != public_start);
 wire create_violation = check_new_spm &
-                        (do_overlap(r12, r13, public_start, public_end) |
-                         do_overlap(r12, r13, secret_start, secret_end) |
-                         do_overlap(r14, r15, public_start, public_end) |
-                         do_overlap(r14, r15, secret_start, secret_end));
+                        (do_overlap(r12, r13, public_start, public_end));// |
+                         //do_overlap(r12, r13, secret_start, secret_end) |
+                         //do_overlap(r14, r15, public_start, public_end) |
+                         //do_overlap(r14, r15, secret_start, secret_end));
 assign violation = enabled & (mem_violation | exec_violation | create_violation);
 
 always @(posedge mclk)
