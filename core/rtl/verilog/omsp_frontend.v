@@ -95,7 +95,8 @@ module  omsp_frontend (
     wdt_irq,                       // Watchdog-timer interrupt
     wdt_wkup,                      // Watchdog Wakeup
     wkup,                          // System Wake-up (asynchronous)
-    spm_busy
+    spm_busy,
+    pmem_writing
 );
 
 // OUTPUTs
@@ -149,6 +150,7 @@ input               wdt_irq;       // Watchdog-timer interrupt
 input               wdt_wkup;      // Watchdog Wakeup
 input               wkup;          // System Wake-up (asynchronous)
 input               spm_busy;
+input               pmem_writing;
 
 
 //=============================================================================
@@ -208,6 +210,7 @@ parameter E_EXEC      = `E_EXEC;
 parameter E_JUMP      = `E_JUMP;
 parameter E_IDLE      = `E_IDLE;
 parameter E_SPM       = `E_SPM;
+parameter E_DST_WR2   = `E_DST_WR2;
 
 
 //=============================================================================
@@ -886,7 +889,9 @@ always @(*)
       E_SPM    : e_state_nxt =  spm_busy          ? E_SPM    : e_first_state;
 
       E_JUMP   : e_state_nxt =  e_first_state;
-      E_DST_WR : e_state_nxt =  exec_jmp          ? E_JUMP   : e_first_state;
+      E_DST_WR : e_state_nxt =  exec_jmp          ? E_JUMP   :
+                                pmem_writing      ? E_DST_WR2: e_first_state;
+      E_DST_WR2: e_state_nxt =  e_first_state;
       E_SRC_WR : e_state_nxt =  e_first_state;
     // pragma coverage off
       default  : e_state_nxt =  E_IRQ_0;

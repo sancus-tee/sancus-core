@@ -64,6 +64,7 @@ module  omsp_mem_backbone (
     pmem_cen,                       // Program Memory chip enable (low active)
     pmem_din,                       // Program Memory data input (optional)
     pmem_wen,                       // Program Memory write enable (low active) (optional)
+    pmem_writing,                   // Currently writing to program memory
 
 // INPUTs
     dbg_halt_st,                    // Halt/Run status from CPU
@@ -103,6 +104,7 @@ output [`PMEM_MSB:0] pmem_addr;     // Program Memory address
 output               pmem_cen;      // Program Memory chip enable (low active)
 output        [15:0] pmem_din;      // Program Memory data input (optional)
 output         [1:0] pmem_wen;      // Program Memory write enable (low active) (optional)
+output               pmem_writing;
 
 // INPUTs
 //=========
@@ -154,8 +156,8 @@ wire        [15:0] dmem_din      = ~dbg_dmem_cen ? dbg_mem_dout : eu_mdb_out;
 //------------------
 parameter          PMEM_OFFSET   = (16'hFFFF-`PMEM_SIZE+1);
 
-// Execution unit access (only read access are accepted)
-wire               eu_pmem_cen   = ~(eu_mb_en & ~|eu_mb_wr & (eu_mab>=(PMEM_OFFSET>>1)));
+// Execution unit access
+wire               eu_pmem_cen   = ~(eu_mb_en & (eu_mab>=(PMEM_OFFSET>>1)));
 wire        [15:0] eu_pmem_addr  = eu_mab-(PMEM_OFFSET>>1);
 
 // Front-end access
@@ -171,11 +173,11 @@ wire        [15:0] dbg_pmem_addr = {1'b0, dbg_mem_addr[15:1]}-(PMEM_OFFSET>>1);
 wire [`PMEM_MSB:0] pmem_addr     = ~dbg_pmem_cen ? dbg_pmem_addr[`PMEM_MSB:0] :
                                    ~eu_pmem_cen  ? eu_pmem_addr[`PMEM_MSB:0]  : fe_pmem_addr[`PMEM_MSB:0];
 wire               pmem_cen      =  fe_pmem_cen & eu_pmem_cen & dbg_pmem_cen;
-wire         [1:0] pmem_wen      = ~dbg_mem_wr;
-wire        [15:0] pmem_din      =  dbg_mem_dout;
+wire         [1:0] pmem_wen      = ~(dbg_mem_wr | (~eu_pmem_cen ? eu_mb_wr : 2'b00));
+wire        [15:0] pmem_din      =  ~dbg_pmem_cen ? dbg_mem_dout : eu_mdb_out;
 
 wire               fe_pmem_wait  = (~fe_pmem_cen & ~eu_pmem_cen);
-
+wire               pmem_writing  = ~eu_pmem_cen & |eu_mb_wr;
 
 // Peripherals
 //--------------------

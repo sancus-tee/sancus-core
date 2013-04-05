@@ -224,6 +224,7 @@ wire          [7:0] spm_command;
 wire         [15:0] current_inst_pc;
 
 wire                spm_busy;
+wire                pmem_writing;
 
 //=============================================================================
 // 2)  GLOBAL CLOCK & RESET MANAGEMENT
@@ -339,7 +340,8 @@ omsp_frontend frontend_0 (
     .wdt_irq      (wdt_irq),       // Watchdog-timer interrupt
     .wdt_wkup     (wdt_wkup),      // Watchdog Wakeup
     .wkup         (wkup),          // System Wake-up (asynchronous)
-    .spm_busy     (spm_busy)
+    .spm_busy     (spm_busy),
+    .pmem_writing (pmem_writing)
 );
 
 
@@ -418,6 +420,7 @@ omsp_mem_backbone mem_backbone_0 (
     .pmem_cen     (pmem_cen),      // Program Memory chip enable (low active)
     .pmem_din     (pmem_din),      // Program Memory data input (optional)
     .pmem_wen     (pmem_wen),      // Program Memory write enable (low active) (optional)
+    .pmem_writing (pmem_writing),
 			     
 // INPUTs
     .dbg_halt_st  (dbg_halt_st),   // Halt/Run status from CPU
