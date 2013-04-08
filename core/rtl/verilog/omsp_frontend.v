@@ -907,10 +907,11 @@ always @(posedge mclk or posedge puc_rst)
 // Frontend State machine control signals
 //----------------------------------------
 
-wire exec_done = exec_jmp        ? (e_state==E_JUMP)   :
-                 exec_dst_wr     ? (e_state==E_DST_WR) :
-                 exec_src_wr     ? (e_state==E_SRC_WR) :
-                 exec_spm        ? (e_state_nxt!=E_SPM)          : (e_state==E_EXEC);
+wire exec_done = exec_jmp        ? (e_state==E_JUMP)                   :
+                 exec_dst_wr     ? (e_state==E_DST_WR & ~pmem_writing) :
+                 exec_src_wr     ? (e_state==E_SRC_WR)                 :
+                 exec_spm        ? (e_state_nxt!=E_SPM)                :
+                                   (e_state==E_EXEC | e_state==E_DST_WR2);
 
 
 //=============================================================================
