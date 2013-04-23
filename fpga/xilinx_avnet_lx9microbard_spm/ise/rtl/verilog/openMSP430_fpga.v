@@ -59,7 +59,11 @@ module openMSP430_fpga (
 	UART_TXD,
     EXT_UART_RXD,
 	EXT_UART_TXD,
-    EXT_UART_TXD2
+    EXT_UART_TXD2,
+    
+    // PS/2
+    PS2_CLK,
+    PS2_DATA
 );
 
 // Clock Sources
@@ -93,6 +97,9 @@ input     EXT_UART_RXD;
 output    EXT_UART_TXD;
 output    EXT_UART_TXD2;
 
+// PS/2
+inout     PS2_CLK;
+inout     PS2_DATA;
 
 //=============================================================================
 // 1)  INTERNAL WIRES/REGISTERS/PARAMETERS DECLARATION
@@ -143,6 +150,10 @@ wire               hw_uart_txd;
 wire               hw_uart_rxd;
 wire               hw_uart_txd2;
 wire        [15:0] per_dout_uart2;
+
+// PS/2
+wire        [15:0] per_dout_ps2;
+wire               irq_rx_ps2;
 
 // Others
 wire               reset_pin;
@@ -384,6 +395,22 @@ omsp_uart #(.BASE_ADDR(15'h0088)) hw_uart2 (
     .uart_rxd     (1'b0)               // UART Data Receive (RXD)
 );
 
+// PS/2
+
+omsp_ps2 ps2(
+    .per_dout (per_dout_ps2),
+    .irq_rx   (irq_rx_ps2),
+    .ps2_clk  (PS2_CLK),
+    .ps2_data (PS2_DATA),
+    .mclk     (mclk),
+    .per_addr (per_addr),
+    .per_din  (per_din),
+    .per_en   (per_en),
+    .per_we   (per_we),
+    .puc_rst  (puc_rst)
+);
+
+
 //
 // Combine peripheral data buses
 //-------------------------------
@@ -391,7 +418,8 @@ omsp_uart #(.BASE_ADDR(15'h0088)) hw_uart2 (
 assign per_dout = per_dout_dio    |
                   per_dout_tA     |
                   per_dout_uart   |
-                  per_dout_uart2;
+                  per_dout_uart2  |
+                  per_dout_ps2;
 //
 // Assign interrupts
 //-------------------------------
@@ -405,7 +433,7 @@ assign irq_bus    = {1'b0,         // Vector 13  (0xFFFA)
                      irq_ta1,      // Vector  8  (0xFFF0)
                      irq_uart_rx,  // Vector  7  (0xFFEE)
                      irq_uart_tx,  // Vector  6  (0xFFEC)
-                     1'b0,         // Vector  5  (0xFFEA)
+                     irq_rx_ps2,   // Vector  5  (0xFFEA)
                      1'b0,         // Vector  4  (0xFFE8)
                      irq_port2,    // Vector  3  (0xFFE6)
                      irq_port1,    // Vector  2  (0xFFE4)
@@ -628,6 +656,7 @@ IBUF  EXT_UART_RXD_PIN   (.O(hw_uart_rxd),             .I(EXT_UART_RXD));
 OBUF  EXT_UART_TXD_PIN   (.I(hw_uart_txd),             .O(EXT_UART_TXD));
 
 OBUF  EXT_UART_TXD2_PIN  (.I(hw_uart2_txd),            .O(EXT_UART_TXD2));
+
 //
 ////DEBUG
 ////wire        [64:0] chipscope_debug;
