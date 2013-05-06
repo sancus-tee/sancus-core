@@ -17,4 +17,4 @@ export OMSP_SIMULATOR
 
 rm -rf cov_work
 
-../bin/msp430sim sing-op_reti
+../bin/msp430sim $1
