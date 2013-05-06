@@ -87,5 +87,11 @@ always @(posedge ram_clk)
 
 assign ram_dout = mem[ram_addr_reg];
 
+integer i;
+initial
+begin
+    for (i = 0; i < MEM_SIZE/2-1; i = i + 1)
+        mem[i] = 16'h0;
+end
 
 endmodule // ram
