@@ -580,7 +580,7 @@ ram_8x5k ram_lo (
 
 
 // Program Memory
-rom_8x24k_init_hi rom_hi (
+rom_8x24k rom_hi (
     .addra         (pmem_addr),
     .clka          (clk_sys),
     .dina          (pmem_din[15:8]),
@@ -589,7 +589,7 @@ rom_8x24k_init_hi rom_hi (
     .wea           (pmem_wen_n[1])
 );
 
-rom_8x24k_init_lo rom_lo (
+rom_8x24k rom_lo (
     .addra         (pmem_addr),
     .clka          (clk_sys),
     .dina          (pmem_din[7:0]),
