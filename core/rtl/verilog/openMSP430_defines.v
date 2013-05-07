@@ -56,6 +56,7 @@
 //      exceed 64 kB
 //
 
+`ifndef MEM_DEFINED
 // Program Memory Size:
 //                     Uncomment the required memory size
 //-------------------------------------------------------
@@ -94,6 +95,7 @@
 //`define DMEM_SIZE_512_B
 //`define DMEM_SIZE_256_B
 //`define DMEM_SIZE_128_B
+`endif // MEM_DEFINED
 
 
 // Include/Exclude Hardware Multiplier
@@ -248,6 +250,7 @@
 //               (i.e. the *_SIZE divided by 2)
 //-------------------------------------------------------
 
+`ifndef MEM_DEFINED
 // Custom Program memory (enabled with PMEM_SIZE_CUSTOM)
 `define PMEM_CUSTOM_AWIDTH      10
 `define PMEM_CUSTOM_SIZE      2028
@@ -255,11 +258,11 @@
 // Custom Data memory    (enabled with DMEM_SIZE_CUSTOM)
 `define DMEM_CUSTOM_AWIDTH       6
 `define DMEM_CUSTOM_SIZE       128
+`endif // MEM_DEFINED
 
 // Custom Peripheral memory  (enabled with PER_SIZE_CUSTOM)
 `define PER_CUSTOM_AWIDTH        8
 `define PER_CUSTOM_SIZE        512
-
 
 //-------------------------------------------------------
 // ASIC version

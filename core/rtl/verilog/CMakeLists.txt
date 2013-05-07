@@ -1,0 +1,43 @@
+set(SRC
+    omsp_alu.v
+    omsp_and_gate.v
+    omsp_clock_gate.v
+    omsp_clock_module.v
+    omsp_clock_mux.v
+    omsp_dbg_hwbrk.v
+    omsp_dbg_uart.v
+    omsp_dbg.v
+    omsp_execution_unit.v
+    omsp_frontend.v
+    omsp_hmac_16bit.v
+    omsp_hmac_control.v
+    omsp_hmac.v
+    omsp_mem_backbone.v
+    omsp_multiplier.v
+    omsp_register_file.v
+    omsp_scan_mux.v
+    omsp_sfr.v
+    omsp_spm_control.v
+    omsp_spm.v
+    omsp_sync_cell.v
+    omsp_sync_reset.v
+    omsp_wakeup_cell.v
+    omsp_watchdog.v
+    openMSP430_defines.v
+    openMSP430_undefines.v
+    openMSP430.v
+    spongent/spongent_datapath.v
+    spongent/spongent_fsm.v
+    spongent/spongent_player.v
+    spongent/spongent_sbox.v
+    spongent/spongent.v
+    spongent/lfsr.v
+    periph/omsp_gpio.v
+    periph/omsp_timerA_defines.v
+    periph/omsp_timerA_undefines.v
+    periph/omsp_timerA.v
+    periph/template_periph_16b.v
+    periph/template_periph_8b.v
+)
+
+install(FILES ${SRC} DESTINATION ${INSTALL_RTL_PATH})
