@@ -15,3 +15,17 @@ set(INSTALL_TOOLS_PATH "${INSTALL_DATA_PATH}/tools")
 set(FULL_INSTALL_TOOLS_PATH ${CMAKE_INSTALL_PREFIX}/${INSTALL_TOOLS_PATH})
 
 add_subdirectory(core)
+
+set(CPACK_GENERATOR "DEB")
+
+set(CPACK_PACKAGE_NAME "sancus-core")
+set(CPACK_PACKAGE_VERSION "1.0.0")
+set(CPACK_PACKAGE_CONTACT "Job Noorman <Job.Noorman@cs.kuleuven.be>")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Sancus core")
+
+set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "all")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "iverilog, python2.7")
+set(CPACK_DEBIAN_PACKAGE_HOMEPAGE
+    "http://people.cs.kuleuven.be/~job.noorman/sancus")
+
+include(CPack)
