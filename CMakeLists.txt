@@ -15,6 +15,7 @@ set(INSTALL_TOOLS_PATH "${INSTALL_DATA_PATH}/tools")
 set(FULL_INSTALL_TOOLS_PATH ${CMAKE_INSTALL_PREFIX}/${INSTALL_TOOLS_PATH})
 
 add_subdirectory(core)
+add_subdirectory(tools)
 
 set(CPACK_GENERATOR "DEB")
 

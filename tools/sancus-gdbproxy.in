@@ -1,0 +1,3 @@
+#!/bin/bash
+
+${FULL_INSTALL_TOOLS_PATH}/bin/openmsp430-gdbproxy.tcl $@
