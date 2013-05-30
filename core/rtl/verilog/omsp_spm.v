@@ -94,11 +94,11 @@ begin
         secret_end <= r15;
         enabled <= 1;
         key_idx <= 0;
-        $display("New SPM config: %h %h %h %h", r12, r13, r14, r15);
+        $display("New SM config: %h %h %h %h", r12, r13, r14, r15);
       end
       else
       begin
-        $display("Invalid SPM config: %h %h %h %h", r12, r13, r14, r15);
+        $display("Invalid SM config: %h %h %h %h", r12, r13, r14, r15);
       end
     end
     else if (pc >= public_start && pc < public_end)
@@ -109,7 +109,7 @@ begin
       secret_start <= 0;
       secret_end <= 0;
       enabled <= 0;
-      $display("SPM disabled");
+      $display("SM disabled");
     end
   end
   else if (key_selected & write_key)
