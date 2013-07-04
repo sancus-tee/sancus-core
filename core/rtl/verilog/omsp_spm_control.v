@@ -24,8 +24,8 @@ module omsp_spm_control(
   output wire         violation,
   output wire         spm_data_select_valid,
   output wire         spm_key_select_valid,
-  output wire  [15:0] requested_data,
-  output wire [0:127] key_out
+  output reg   [15:0] requested_data,
+  output reg  [0:127] key_out
 );
 
 // input to the SPM array. indicates which SPM(s) should be updated. when a new
@@ -78,6 +78,28 @@ begin
   current_pc <= pc;
 end
 
+wire [0:`NB_SPMS*128-1] spms_key;
+
+integer spm_i;
+always @(*)
+begin
+  key_out = 128'hx;
+  for (spm_i = 0; spm_i < `NB_SPMS; spm_i = spm_i + 1)
+    if (spms_key_selected[spm_i])
+      key_out = spms_key[spm_i*128+:128];
+end
+
+wire [0:`NB_SPMS*16-1] spms_requested_data;
+
+integer spm_j;
+always @(*)
+begin
+  requested_data = 16'hx;
+  for (spm_j = 0; spm_j < `NB_SPMS; spm_j = spm_j + 1)
+    if (spms_data_selected[spm_j])
+      requested_data = spms_requested_data[spm_j*16+:16];
+end
+
 omsp_spm omsp_spms[0:`NB_SPMS-1](
   .mclk           (mclk),
   .puc_rst        (puc_rst),
@@ -103,8 +125,8 @@ omsp_spm omsp_spms[0:`NB_SPMS-1](
   .violation      (spms_violation),
   .data_selected  (spms_data_selected),
   .key_selected   (spms_key_selected),
-  .requested_data (requested_data),
-  .key_out        (key_out)
+  .requested_data (spms_requested_data),
+  .key            (spms_key)
 );
 
 endmodule

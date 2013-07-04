@@ -29,7 +29,7 @@ module omsp_spm(
   output wire         data_selected,
   output wire         key_selected,
   output reg   [15:0] requested_data,
-  output wire [0:127] key_out
+  output reg  [0:127] key
 );
 
 reg [15:0] id;
@@ -38,8 +38,7 @@ reg [15:0] public_end;
 reg [15:0] secret_start;
 reg [15:0] secret_end;
 
-reg   [3:0] key_idx;
-reg [0:127] key;
+reg  [3:0] key_idx;
 
 function exec_spm;
   input [15:0] current_pc;
@@ -153,7 +152,6 @@ assign data_selected = enabled & (spm_data_select >= public_start) &
                                  (spm_data_select < public_end);
 
 always @(*)
-  if (data_selected)
   case (data_request)
     `SPM_REQ_PUBSTART: requested_data = public_start;
     `SPM_REQ_PUBEND:   requested_data = public_end;
@@ -162,11 +160,8 @@ always @(*)
     `SPM_REQ_ID:       requested_data = id;
     default:           requested_data = 16'bx;
   endcase
-  else
-  requested_data = 16'bz;
 
 assign key_selected = enabled & (spm_key_select >= public_start) &
                                 (spm_key_select < public_end);
-assign key_out = key_selected ? key : 128'bz;
 
 endmodule
