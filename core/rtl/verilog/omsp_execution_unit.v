@@ -193,14 +193,16 @@ wire [15:0] r13;
 wire [15:0] r14;
 wire [15:0] r15;
 
-wire do_spm_inst = (e_state == `E_EXEC) & inst_so[`SPM];
-wire disable_spm = spm_command[`SPM_DISABLE];
-wire enable_spm  = spm_command[`SPM_ENABLE];
-wire verify_spm  = spm_command[`SPM_HMAC_VERIFY];
-wire cert_spm    = spm_command[`SPM_HMAC_WRITE];
-wire sign_spm    = spm_command[`SPM_HMAC_SIGN];
-wire id_spm      = spm_command[`SPM_ID];
-wire update_spm  = do_spm_inst & (disable_spm | enable_spm);
+wire do_spm_inst     = (e_state == `E_EXEC) & inst_so[`SPM];
+wire disable_spm     = spm_command[`SPM_DISABLE];
+wire enable_spm      = spm_command[`SPM_ENABLE];
+wire verify_spm_addr = spm_command[`SPM_HMAC_VERIFY_ADDR];
+wire verify_spm_prev = spm_command[`SPM_HMAC_VERIFY_PREV];
+wire cert_spm_addr   = spm_command[`SPM_HMAC_WRITE_ADDR];
+wire cert_spm_prev   = spm_command[`SPM_HMAC_WRITE_PREV];
+wire sign_spm        = spm_command[`SPM_HMAC_SIGN];
+wire id_spm          = spm_command[`SPM_ID];
+wire update_spm      = do_spm_inst & (disable_spm | enable_spm);
 
 omsp_register_file register_file_0 (
 
@@ -456,18 +458,24 @@ wire        spm_write_key;
 wire  [2:0] spm_request;
 wire [15:0] spm_requested_data;
 wire [15:0] spm_data_select;
+wire        spm_data_select_type;
 wire [15:0] spm_key_select;
+wire [15:0] spm_current_id;
+wire [15:0] spm_prev_id;
 
 wire [0:127] spm_key;
 
-wire hmac_start = do_spm_inst & (verify_spm | cert_spm | sign_spm |
-                                 enable_spm | id_spm);
+wire hmac_start = do_spm_inst & (verify_spm_prev | verify_spm_addr |
+                                 cert_spm_addr | cert_spm_prev |
+                                 sign_spm | enable_spm | id_spm);
 
-wire [2:0] hmac_mode = verify_spm ? `HMAC_CERT_VERIFY :
-                       cert_spm   ? `HMAC_CERT_WRITE  :
-                       sign_spm   ? `HMAC_SIGN        :
-                       enable_spm ? `HMAC_HKDF        :
-                       id_spm     ? `HMAC_ID          : 3'bxxx;
+wire [2:0] hmac_mode = verify_spm_addr ? `HMAC_CERT_VERIFY_ADDR :
+                       verify_spm_prev ? `HMAC_CERT_VERIFY_PREV :
+                       cert_spm_addr   ? `HMAC_CERT_WRITE_ADDR  :
+                       cert_spm_prev   ? `HMAC_CERT_WRITE_PREV  :
+                       sign_spm        ? `HMAC_SIGN             :
+                       enable_spm      ? `HMAC_HKDF             :
+                       id_spm          ? `HMAC_ID               : 3'bxxx;
 
 wire [15:0] hmac_mab;
 wire [15:0] hmac_data_out;
@@ -524,12 +532,15 @@ omsp_spm_control spm_control_0(
   .r15                    (r15),
   .data_request           (spm_request),
   .spm_data_select        (spm_data_select),
+  .spm_data_select_type   (spm_data_select_type),
   .spm_key_select         (spm_key_select),
   .write_key              (spm_write_key),
   .key_in                 (hmac_data_out),
   .violation              (spm_violation),
   .spm_data_select_valid  (spm_data_select_valid),
   .spm_key_select_valid   (spm_key_select_valid),
+  .spm_current_id         (spm_current_id),
+  .spm_prev_id            (spm_prev_id),
   .requested_data         (spm_requested_data),
   .key_out                (spm_key)
 );
@@ -550,11 +561,14 @@ omsp_hmac_control hmac_control(
   .r14                  (r14),
   .r15                  (r15),
   .pc                   (current_inst_pc),
+  .spm_current_id       (spm_current_id),
+  .spm_prev_id          (spm_prev_id),
   .hmac_busy            (internal_hmac_busy),
 
   .busy                 (spm_busy),
   .spm_request          (spm_request),
   .spm_data_select      (spm_data_select),
+  .spm_data_select_type (spm_data_select_type),
   .spm_key_select       (spm_key_select),
   .key_select           (key_select),
   .mb_en                (hmac_mb_en),

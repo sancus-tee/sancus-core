@@ -622,24 +622,32 @@
 `define IRQ    8
 
 // SPM commands
-`define SPM_DISABLE     0
-`define SPM_ENABLE      1
-`define SPM_HMAC_VERIFY 2
-`define SPM_HMAC_WRITE  3
-`define SPM_HMAC_SIGN   4
-`define SPM_ID          5
+`define SPM_DISABLE          0
+`define SPM_ENABLE           1
+`define SPM_HMAC_VERIFY_ADDR 2
+`define SPM_HMAC_WRITE_ADDR  3
+`define SPM_HMAC_SIGN        4
+`define SPM_ID               5
+`define SPM_HMAC_VERIFY_PREV 6
+`define SPM_HMAC_WRITE_PREV  7
 
 // HMAC modes
-`define HMAC_CERT_VERIFY 3'b000
-`define HMAC_CERT_WRITE  3'b001
-`define HMAC_SIGN        3'b010
-`define HMAC_HKDF        3'b011
-`define HMAC_ID          3'b111
+`define HMAC_CERT_VERIFY_ADDR 3'b000
+`define HMAC_CERT_WRITE_ADDR  3'b001
+`define HMAC_SIGN             3'b010
+`define HMAC_HKDF             3'b011
+`define HMAC_CERT_VERIFY_PREV 3'b100
+`define HMAC_CERT_WRITE_PREV  3'b101
+`define HMAC_ID               3'b111
 
 // HMAC key select
 `define KEY_SEL_MASTER 2'b00
 `define KEY_SEL_VENDOR 2'b01
 `define KEY_SEL_SPM    2'b10
+
+// SPM data select types
+`define SPM_SELECT_BY_ADDR 1'b0
+`define SPM_SELECT_BY_ID   1'b1
 
 // Conditional jump
 `define JNE    0

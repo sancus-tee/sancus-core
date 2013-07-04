@@ -19,11 +19,14 @@ module omsp_hmac_control(
   input  wire  [15:0] r14,
   input  wire  [15:0] r15,
   input  wire  [15:0] pc,
+  input  wire  [15:0] spm_current_id,
+  input  wire  [15:0] spm_prev_id,
   input  wire         hmac_busy,
 
   output reg          busy,
   output reg    [2:0] spm_request,
   output wire  [15:0] spm_data_select,
+  output wire         spm_data_select_type,
   output wire  [15:0] spm_key_select,
   output wire   [1:0] key_select,
   output reg          mb_en,
@@ -40,27 +43,41 @@ module omsp_hmac_control(
 );
 
 // helper wires
-reg sign, cert, verify, write, hkdf, id;
+reg sign, cert_addr, cert_prev, verify, write, hkdf, id;
+wire cert = cert_addr | cert_prev;
 
 always @(*)
 begin
   sign = 0;
-  cert = 0;
+  cert_addr = 0;
+  cert_prev = 0;
   verify = 0;
   write = 0;
   hkdf = 0;
   id = 0;
 
   case (mode)
-    `HMAC_CERT_VERIFY:
+    `HMAC_CERT_VERIFY_ADDR:
     begin
-      cert = 1;
+      cert_addr = 1;
       verify = 1;
     end
 
-    `HMAC_CERT_WRITE:
+    `HMAC_CERT_VERIFY_PREV:
     begin
-      cert = 1;
+      cert_prev = 1;
+      verify = 1;
+    end
+
+    `HMAC_CERT_WRITE_ADDR:
+    begin
+      cert_addr = 1;
+      write = 1;
+    end
+
+    `HMAC_CERT_WRITE_PREV:
+    begin
+      cert_prev = 1;
       write = 1;
     end
 
@@ -171,11 +188,15 @@ always @(posedge clk or posedge reset)
     state <= next_state;
 
 // SPM selection
-assign spm_data_select = hkdf ? r12 :
-                         sign ? pc  :
-                         id   ? r15 : r14;
-assign spm_key_select  = hkdf ? r12 :
-                         id   ? r15 : pc;
+assign spm_data_select_type = cert_prev ? `SPM_SELECT_BY_ID :
+                                          `SPM_SELECT_BY_ADDR;
+
+assign spm_data_select = hkdf      ? r12 :
+                         sign      ? pc  :
+                         id        ? r15 :
+                         cert_addr ? r14 : spm_prev_id;
+assign spm_key_select  = hkdf      ? r12 :
+                         id        ? r15 : pc;
 
 // memory address calculation
 reg        mab_init;

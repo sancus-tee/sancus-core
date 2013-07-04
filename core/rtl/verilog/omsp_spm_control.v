@@ -17,6 +17,7 @@ module omsp_spm_control(
   input  wire  [15:0] r14,
   input  wire  [15:0] r15,
   input  wire  [15:0] spm_data_select,
+  input  wire         spm_data_select_type,
   input  wire  [15:0] spm_key_select,
   input  wire   [2:0] data_request,
   input  wire         write_key,
@@ -24,6 +25,8 @@ module omsp_spm_control(
   output wire         violation,
   output wire         spm_data_select_valid,
   output wire         spm_key_select_valid,
+  output reg   [15:0] spm_current_id,
+  output reg   [15:0] spm_prev_id,
   output reg   [15:0] requested_data,
   output reg  [0:127] key_out
 );
@@ -100,33 +103,62 @@ begin
       requested_data = spms_requested_data[spm_j*16+:16];
 end
 
+// keep track of the currently and previously executing SM
+wire [0:`NB_SPMS-1] spms_executing;
+wire [0:`NB_SPMS*16-1] spms_id;
+
+integer spm_k;
+always @(*)
+begin
+  spm_current_id = 16'h0;
+  for (spm_k = 0; spm_k < `NB_SPMS; spm_k = spm_k + 1)
+    if (spms_executing[spm_k])
+      spm_current_id = spms_id[spm_k*16+:16];
+end
+
+reg [15:0] prev_cycle_spm_id;
+always @(posedge mclk or posedge puc_rst)
+  if (puc_rst)
+    prev_cycle_spm_id <= 16'h0;
+  else
+    prev_cycle_spm_id <= spm_current_id;
+
+always @(posedge mclk or posedge puc_rst)
+  if (puc_rst)
+    spm_prev_id <= 16'h0;
+  else if (prev_cycle_spm_id != spm_current_id)
+    spm_prev_id <= prev_cycle_spm_id;
+
 omsp_spm omsp_spms[0:`NB_SPMS-1](
-  .mclk           (mclk),
-  .puc_rst        (puc_rst),
-  .pc             (pc),
-  .prev_pc        (prev_pc),
-  .eu_mab         (eu_mab),
-  .eu_mb_en       (eu_mb_en),
-  .eu_mb_wr       (eu_mb_wr),
-  .update_spm     (spms_update),
-  .enable_spm     (enable_spm),
-  .check_new_spm  (spms_check),
-  .next_id        (next_id),
-  .r12            (r12),
-  .r13            (r13),
-  .r14            (r14),
-  .r15            (r15),
-  .data_request   (data_request),
-  .spm_data_select(spm_data_select),
-  .spm_key_select (spm_key_select),
-  .write_key      (write_key),
-  .key_in         (key_in),
-  .enabled        (spms_enabled),
-  .violation      (spms_violation),
-  .data_selected  (spms_data_selected),
-  .key_selected   (spms_key_selected),
-  .requested_data (spms_requested_data),
-  .key            (spms_key)
+  .mclk                 (mclk),
+  .puc_rst              (puc_rst),
+  .pc                   (pc),
+  .prev_pc              (prev_pc),
+  .eu_mab               (eu_mab),
+  .eu_mb_en             (eu_mb_en),
+  .eu_mb_wr             (eu_mb_wr),
+  .update_spm           (spms_update),
+  .enable_spm           (enable_spm),
+  .check_new_spm        (spms_check),
+  .next_id              (next_id),
+  .r12                  (r12),
+  .r13                  (r13),
+  .r14                  (r14),
+  .r15                  (r15),
+  .data_request         (data_request),
+  .spm_data_select      (spm_data_select),
+  .spm_data_select_type (spm_data_select_type),
+  .spm_key_select       (spm_key_select),
+  .write_key            (write_key),
+  .key_in               (key_in),
+  .enabled              (spms_enabled),
+  .executing            (spms_executing),
+  .violation            (spms_violation),
+  .data_selected        (spms_data_selected),
+  .key_selected         (spms_key_selected),
+  .requested_data       (spms_requested_data),
+  .key                  (spms_key),
+  .id                   (spms_id)
 );
 
 endmodule

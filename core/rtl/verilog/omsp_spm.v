@@ -21,18 +21,20 @@ module omsp_spm(
   input  wire  [15:0] r15,
   input  wire   [2:0] data_request,
   input  wire  [15:0] spm_data_select,
+  input  wire         spm_data_select_type,
   input  wire  [15:0] spm_key_select,
   input  wire         write_key,
   input  wire  [15:0] key_in,
   output reg          enabled,
+  output wire         executing,
   output wire         violation,
   output wire         data_selected,
   output wire         key_selected,
   output reg   [15:0] requested_data,
-  output reg  [0:127] key
+  output reg  [0:127] key,
+  output reg   [15:0] id
 );
 
-reg [15:0] id;
 reg [15:0] public_start;
 reg [15:0] public_end;
 reg [15:0] secret_start;
@@ -128,6 +130,7 @@ wire create_violation = check_new_spm &
                          //do_overlap(r14, r15, public_start, public_end) |
                          //do_overlap(r14, r15, secret_start, secret_end));
 assign violation = enabled & (mem_violation | exec_violation | create_violation);
+assign executing = enabled & exec_public;
 
 always @(posedge mclk)
 begin
@@ -146,10 +149,12 @@ begin
   end
 end
 
-// FIXME: WTF? This somehow doesn't work when executing HKDF
-// assign selected = enabled & exec_spm(spm_select);
-assign data_selected = enabled & (spm_data_select >= public_start) &
-                                 (spm_data_select < public_end);
+// FIXME: WTF? exec_spm() somehow doesn't work when executing HKDF
+wire   ps_selected   = (spm_data_select >= public_start) &
+                       (spm_data_select < public_end);
+wire   id_selected   = spm_data_select == id;
+wire   select_id     = spm_data_select_type == `SPM_SELECT_BY_ID;
+assign data_selected = enabled & (select_id ? id_selected : ps_selected);
 
 always @(*)
   case (data_request)
