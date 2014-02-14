@@ -4,31 +4,31 @@
 `endif
 
 module omsp_spm_control(
-  input  wire         mclk,
-  input  wire         puc_rst,
-  input  wire  [15:0] pc,
-  input  wire  [15:0] eu_mab,
-  input  wire         eu_mb_en,
-  input  wire   [1:0] eu_mb_wr,
-  input  wire         update_spm,
-  input  wire         enable_spm,
-  input  wire  [15:0] r12,
-  input  wire  [15:0] r13,
-  input  wire  [15:0] r14,
-  input  wire  [15:0] r15,
-  input  wire  [15:0] spm_data_select,
-  input  wire         spm_data_select_type,
-  input  wire  [15:0] spm_key_select,
-  input  wire   [2:0] data_request,
-  input  wire         write_key,
-  input  wire  [15:0] key_in,
-  output wire         violation,
-  output wire         spm_data_select_valid,
-  output wire         spm_key_select_valid,
-  output reg   [15:0] spm_current_id,
-  output reg   [15:0] spm_prev_id,
-  output reg   [15:0] requested_data,
-  output reg  [0:127] key_out
+  input  wire                 mclk,
+  input  wire                 puc_rst,
+  input  wire          [15:0] pc,
+  input  wire          [15:0] eu_mab,
+  input  wire                 eu_mb_en,
+  input  wire           [1:0] eu_mb_wr,
+  input  wire                 update_spm,
+  input  wire                 enable_spm,
+  input  wire          [15:0] r12,
+  input  wire          [15:0] r13,
+  input  wire          [15:0] r14,
+  input  wire          [15:0] r15,
+  input  wire          [15:0] spm_data_select,
+  input  wire                 spm_data_select_type,
+  input  wire          [15:0] spm_key_select,
+  input  wire           [2:0] data_request,
+  input  wire                 write_key,
+  input  wire          [15:0] key_in,
+  output wire                 violation,
+  output wire                 spm_data_select_valid,
+  output wire                 spm_key_select_valid,
+  output reg           [15:0] spm_current_id,
+  output reg           [15:0] spm_prev_id,
+  output reg           [15:0] requested_data,
+  output reg  [0:`SECURITY-1] key_out
 );
 
 // input to the SPM array. indicates which SPM(s) should be updated. when a new
@@ -81,15 +81,15 @@ begin
   current_pc <= pc;
 end
 
-wire [0:`NB_SPMS*128-1] spms_key;
+wire [0:`NB_SPMS*`SECURITY-1] spms_key;
 
 integer spm_i;
 always @(*)
 begin
-  key_out = 128'hx;
+  key_out = `SECURITY'hx;
   for (spm_i = 0; spm_i < `NB_SPMS; spm_i = spm_i + 1)
     if (spms_key_selected[spm_i])
-      key_out = spms_key[spm_i*128+:128];
+      key_out = spms_key[spm_i*`SECURITY+:`SECURITY];
 end
 
 wire [0:`NB_SPMS*16-1] spms_requested_data;

@@ -58,6 +58,7 @@ module  omsp_register_file (
     scg0,                         // System clock generator 1. Turns off the DCO
     scg1,                         // System clock generator 1. Turns off the SMCLK
     status,                       // R2 Status {V,N,Z,C}
+    r10,
     r11,
     r12,
     r13,
@@ -96,6 +97,7 @@ output       [15:0] reg_src;      // Selected register source content
 output              scg0;         // System clock generator 1. Turns off the DCO
 output              scg1;         // System clock generator 1. Turns off the SMCLK
 output        [3:0] status;       // R2 Status {V,N,Z,C}
+output       [15:0] r10;
 output       [15:0] r11;
 output       [15:0] r12;
 output       [15:0] r13;

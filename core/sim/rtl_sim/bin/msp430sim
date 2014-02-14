@@ -126,6 +126,7 @@ fi
 # and prepare it for MSPGCC preprocessing
 cp  $incfile  ./pmem.h
 sed -i 's/`ifdef/#ifdef/g'   ./pmem.h 
+sed -i 's/`ifndef/#ifndef/g' ./pmem.h 
 sed -i 's/`else/#else/g'     ./pmem.h 
 sed -i 's/`endif/#endif/g'   ./pmem.h 
 sed -i 's/`define/#define/g' ./pmem.h 

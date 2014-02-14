@@ -4,35 +4,35 @@
 `endif
 
 module omsp_spm(
-  input  wire         mclk,
-  input  wire         puc_rst,
-  input  wire  [15:0] pc,
-  input  wire  [15:0] prev_pc,
-  input  wire  [15:0] eu_mab,
-  input  wire         eu_mb_en,
-  input  wire   [1:0] eu_mb_wr,
-  input  wire         update_spm,
-  input  wire         enable_spm,
-  input  wire         check_new_spm,
-  input  wire  [15:0] next_id,
-  input  wire  [15:0] r12,
-  input  wire  [15:0] r13,
-  input  wire  [15:0] r14,
-  input  wire  [15:0] r15,
-  input  wire   [2:0] data_request,
-  input  wire  [15:0] spm_data_select,
-  input  wire         spm_data_select_type,
-  input  wire  [15:0] spm_key_select,
-  input  wire         write_key,
-  input  wire  [15:0] key_in,
-  output reg          enabled,
-  output wire         executing,
-  output wire         violation,
-  output wire         data_selected,
-  output wire         key_selected,
-  output reg   [15:0] requested_data,
-  output reg  [0:127] key,
-  output reg   [15:0] id
+  input  wire                 mclk,
+  input  wire                 puc_rst,
+  input  wire          [15:0] pc,
+  input  wire          [15:0] prev_pc,
+  input  wire          [15:0] eu_mab,
+  input  wire                 eu_mb_en,
+  input  wire           [1:0] eu_mb_wr,
+  input  wire                 update_spm,
+  input  wire                 enable_spm,
+  input  wire                 check_new_spm,
+  input  wire          [15:0] next_id,
+  input  wire          [15:0] r12,
+  input  wire          [15:0] r13,
+  input  wire          [15:0] r14,
+  input  wire          [15:0] r15,
+  input  wire           [2:0] data_request,
+  input  wire          [15:0] spm_data_select,
+  input  wire                 spm_data_select_type,
+  input  wire          [15:0] spm_key_select,
+  input  wire                 write_key,
+  input  wire          [15:0] key_in,
+  output reg                  enabled,
+  output wire                 executing,
+  output wire                 violation,
+  output wire                 data_selected,
+  output wire                 key_selected,
+  output reg           [15:0] requested_data,
+  output reg  [0:`SECURITY-1] key,
+  output reg           [15:0] id
 );
 
 reg [15:0] public_start;
@@ -153,17 +153,17 @@ end
 wire   ps_selected   = (spm_data_select >= public_start) &
                        (spm_data_select < public_end);
 wire   id_selected   = spm_data_select == id;
-wire   select_id     = spm_data_select_type == `SPM_SELECT_BY_ID;
+wire   select_id     = spm_data_select_type == `SM_SELECT_BY_ID;
 assign data_selected = enabled & (select_id ? id_selected : ps_selected);
 
 always @(*)
   case (data_request)
-    `SPM_REQ_PUBSTART: requested_data = public_start;
-    `SPM_REQ_PUBEND:   requested_data = public_end;
-    `SPM_REQ_SECSTART: requested_data = secret_start;
-    `SPM_REQ_SECEND:   requested_data = secret_end;
-    `SPM_REQ_ID:       requested_data = id;
-    default:           requested_data = 16'bx;
+    `SM_REQ_PUBSTART: requested_data = public_start;
+    `SM_REQ_PUBEND:   requested_data = public_end;
+    `SM_REQ_SECSTART: requested_data = secret_start;
+    `SM_REQ_SECEND:   requested_data = secret_end;
+    `SM_REQ_ID:       requested_data = id;
+    default:          requested_data = 16'bx;
   endcase
 
 assign key_selected = enabled & (spm_key_select >= public_start) &

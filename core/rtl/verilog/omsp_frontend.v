@@ -545,7 +545,7 @@ always @(posedge mclk_decode or posedge puc_rst)
 // 8'b00001000: write HMAC certificate to memory
 // 8'b00010000: create HMAC signature for SPM output
 reg  [7:0] spm_command;
-wire [7:0] spm_command_nxt = one_hot8(ir[2:0]) & {8{inst_so_nxt[`SPM]}};
+wire [7:0] spm_command_nxt = one_hot8(ir[2:0]) & {8{inst_so_nxt[`SANCUS]}};
 
 always @(posedge mclk_decode or posedge puc_rst)
   if (puc_rst)     spm_command <= 8'h00;

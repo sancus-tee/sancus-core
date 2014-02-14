@@ -1,3 +1,5 @@
+`include "openMSP430_defines.v"
+
 /*
  * Company: KU Leuven
  * Engineer: Anthony Van Herrewege
@@ -60,8 +62,11 @@ module spongent (
   */
 
   // Define parameters
-  parameter integer STATE_SIZE          = 136;          // State size
-  parameter integer RATE                = 8;            // Input block width
+  parameter integer MIN_CAPACITY = 128;
+  parameter integer RATE = 8;            // Input block width
+
+  localparam MIN_WIDTH       = RATE + MIN_CAPACITY;
+  localparam STATE_SIZE      = MIN_WIDTH <= 64 ? 64 : `ALIGN_UP(MIN_WIDTH, 8);
   parameter LFSR_POLY                   = 8'b11000001;  // LFSR polynomial
 
   //localparam integer LFSR_SIZE          = clog2(LFSR_POLY + 1) - 1;  // Size of LFSR
@@ -114,5 +119,14 @@ module spongent (
       .lfsr_all_1     (lfsr_all_1),
       .select_message (select_message)
     );
+
+// debug output ****************************************************************
+initial
+begin
+    $display("=== Spongent parameters ===");
+    $display("Rate:       %3d", RATE);
+    $display("State size: %3d", STATE_SIZE);
+    $display("===========================");
+end
 
 endmodule

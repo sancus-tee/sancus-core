@@ -9,9 +9,6 @@ set(SRC
     omsp_dbg.v
     omsp_execution_unit.v
     omsp_frontend.v
-    omsp_hmac_16bit.v
-    omsp_hmac_control.v
-    omsp_hmac.v
     omsp_mem_backbone.v
     omsp_multiplier.v
     omsp_register_file.v
@@ -26,12 +23,14 @@ set(SRC
     openMSP430_defines.v
     openMSP430_undefines.v
     openMSP430.v
-    spongent/spongent_datapath.v
-    spongent/spongent_fsm.v
-    spongent/spongent_player.v
-    spongent/spongent_sbox.v
-    spongent/spongent.v
-    spongent/lfsr.v
+    crypto/crypto_control.v
+    crypto/sponge_wrap.v
+    crypto/spongent_datapath.v
+    crypto/spongent_fsm.v
+    crypto/spongent_player.v
+    crypto/spongent_sbox.v
+    crypto/spongent.v
+    crypto/lfsr.v
     periph/omsp_gpio.v
     periph/omsp_timerA_defines.v
     periph/omsp_timerA_undefines.v

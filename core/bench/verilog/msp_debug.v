@@ -432,17 +432,19 @@ always @(inst_type or inst_name or inst_bw or inst_as or inst_ad)
      if (opcode==`DBG_SWBRK_OP)
        inst_full = "SBREAK";
      if (opcode==16'h1380)
-       inst_full = "UNPROT";
+       inst_full = "SM_DISABLE";
      if (opcode==16'h1381)
-       inst_full = "PROT";
+       inst_full = "SM_ENABLE";
      if (opcode==16'h1382)
-       inst_full = "HMAC_VERIFY";
+       inst_full = "SM_VERIFY_ADDR";
      if (opcode==16'h1383)
-       inst_full = "HMAC_WRITE";
+       inst_full = "SM_VERIFY_PREV";
      if (opcode==16'h1384)
-       inst_full = "HMAC_SIGN";
+       inst_full = "SM_AE_WRAP";
      if (opcode==16'h1385)
-       inst_full = "HMAC_ID";
+       inst_full = "SM_AE_UNWRAP";
+     if (opcode==16'h1386)
+       inst_full = "SM_ID";
   end
    
 

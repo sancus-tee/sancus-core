@@ -364,7 +364,7 @@ omsp_execution_unit execution_unit_0 (
     .scg0         (scg0),          // System clock generator 1. Turns off the DCO
     .scg1         (scg1),          // System clock generator 1. Turns off the SMCLK
     .spm_violation(spm_violation),
-    .spm_busy     (spm_busy),
+    .sm_busy      (spm_busy),
 
 // INPUTs
     .dbg_halt_st  (dbg_halt_st),   // Halt/Run status from CPU
@@ -392,7 +392,7 @@ omsp_execution_unit execution_unit_0 (
     .pc_nxt       (pc_nxt),        // Next PC value (for CALL & IRQ)
     .puc_rst      (puc_rst),       // Main system reset
     .scan_enable  (scan_enable),   // Scan enable (active during scan shifting)
-    .spm_command  (spm_command),
+    .sm_command   (spm_command),
     .current_inst_pc (current_inst_pc)
 );
 

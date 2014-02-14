@@ -61,7 +61,7 @@ module  omsp_execution_unit (
     scg0,                          // System clock generator 1. Turns off the DCO
     scg1,                          // System clock generator 1. Turns off the SMCLK
     spm_violation,
-    spm_busy,
+    sm_busy,
 
 // INPUTs
     dbg_halt_st,                   // Halt/Run status from CPU
@@ -88,7 +88,7 @@ module  omsp_execution_unit (
     pc_nxt,                        // Next PC value (for CALL & IRQ)
     puc_rst,                       // Main system reset
     scan_enable,                   // Scan enable (active during scan shifting)
-    spm_command,
+    sm_command,
     current_inst_pc
 );
 
@@ -107,7 +107,7 @@ output              pc_sw_wr;      // Program counter software write
 output              scg0;          // System clock generator 1. Turns off the DCO
 output              scg1;          // System clock generator 1. Turns off the SMCLK
 output              spm_violation;
-output              spm_busy;
+output              sm_busy;
 
 // INPUTs
 //=========
@@ -135,7 +135,7 @@ input        [15:0] pc;            // Program counter
 input        [15:0] pc_nxt;        // Next PC value (for CALL & IRQ)
 input               puc_rst;       // Main system reset
 input               scan_enable;   // Scan enable (active during scan shifting)
-input         [7:0] spm_command;
+input         [7:0] sm_command;
 input        [15:0] current_inst_pc;
 
 
@@ -163,7 +163,7 @@ wire          [3:0] status;
 wire reg_dest_wr  = ((e_state==`E_EXEC) & (
                      (inst_type[`INST_TO] & inst_ad[`DIR] & ~inst_alu[`EXEC_NO_WR])  |
                      (inst_type[`INST_SO] & inst_as[`DIR] & ~(inst_so[`PUSH] | inst_so[`CALL] | inst_so[`RETI])) |
-                      inst_type[`INST_JMP])) | dbg_reg_wr | hmac_reg_write;
+                      inst_type[`INST_JMP])) | dbg_reg_wr | crypto_reg_write;
 
 wire reg_sp_wr    = (((e_state==`E_IRQ_1) | (e_state==`E_IRQ_3)) & ~inst_irq_rst) |
                      ((e_state==`E_DST_RD) & ((inst_so[`PUSH] | inst_so[`CALL]) &  ~inst_as[`IDX] & ~((inst_as[`INDIR] | inst_as[`INDIR_I]) & inst_src[1]))) |
@@ -183,26 +183,26 @@ wire reg_incr     =  (exec_done          & inst_as[`INDIR_I]) |
 
 assign dbg_reg_din = reg_dest;
 
-wire [15:0] dest_reg     = hmac_reg_write ? 16'h8000      : inst_dest;
-wire [15:0] reg_dest_val = hmac_reg_write ? hmac_data_out : alu_out;
+wire [15:0] dest_reg     = crypto_reg_write ? 16'h8000        : inst_dest;
+wire [15:0] reg_dest_val = crypto_reg_write ? crypto_data_out : alu_out;
 
-//wires for spm
+//wires for sm instructions
+wire [15:0] r10;
 wire [15:0] r11;
 wire [15:0] r12;
 wire [15:0] r13;
 wire [15:0] r14;
 wire [15:0] r15;
 
-wire do_spm_inst     = (e_state == `E_EXEC) & inst_so[`SPM];
-wire disable_spm     = spm_command[`SPM_DISABLE];
-wire enable_spm      = spm_command[`SPM_ENABLE];
-wire verify_spm_addr = spm_command[`SPM_HMAC_VERIFY_ADDR];
-wire verify_spm_prev = spm_command[`SPM_HMAC_VERIFY_PREV];
-wire cert_spm_addr   = spm_command[`SPM_HMAC_WRITE_ADDR];
-wire cert_spm_prev   = spm_command[`SPM_HMAC_WRITE_PREV];
-wire sign_spm        = spm_command[`SPM_HMAC_SIGN];
-wire id_spm          = spm_command[`SPM_ID];
-wire update_spm      = do_spm_inst & (disable_spm | enable_spm);
+wire do_sm_inst     = (e_state == `E_EXEC) & inst_so[`SANCUS];
+wire sm_disable     = sm_command[`SM_DISABLE];
+wire sm_enable      = sm_command[`SM_ENABLE];
+wire sm_verify_addr = sm_command[`SM_VERIFY_ADDR];
+wire sm_verify_prev = sm_command[`SM_VERIFY_PREV];
+wire sm_ae_wrap     = sm_command[`SM_AE_WRAP];
+wire sm_ae_unwrap   = sm_command[`SM_AE_UNWRAP];
+wire sm_id          = sm_command[`SM_ID];
+wire sm_update      = do_sm_inst & (sm_disable | sm_enable);
 
 omsp_register_file register_file_0 (
 
@@ -217,6 +217,7 @@ omsp_register_file register_file_0 (
     .scg0               (scg0),         // System clock generator 1. Turns off the DCO
     .scg1               (scg1),         // System clock generator 1. Turns off the SMCLK
     .status             (status),       // R2 Status {V,N,Z,C}
+    .r10                (r10),
     .r11                (r11),
     .r12                (r12),
     .r13                (r13),
@@ -365,7 +366,7 @@ assign      mb_en     = ((e_state==`E_IRQ_1)  & ~inst_irq_rst)        |
                         ((e_state==`E_DST_RD) & ~inst_type[`INST_SO]
                                               & ~inst_mov)            |
                          (e_state==`E_DST_WR)                         |
-                          hmac_mb_en;
+                          crypto_mb_en;
 
 wire  [1:0] mb_wr_msk =  inst_alu[`EXEC_NO_WR]  ? 2'b00 :
                          inst_so[`RETI]         ? 2'b00 :
@@ -376,10 +377,10 @@ wire  [1:0] eu_mb_wr  = ({2{(e_state==`E_IRQ_1)}}  |
                          {2{(e_state==`E_DST_WR)}} |
                          {2{(e_state==`E_SRC_WR)}}) & mb_wr_msk;
 
-assign      mb_wr     = hmac_mb_en ? hmac_mb_wr : eu_mb_wr;
+assign      mb_wr     = crypto_mb_en ? crypto_mb_wr : eu_mb_wr;
 
 // Memory address bus
-assign      mab       = hmac_mb_en ? hmac_mab : alu_out_add[15:0];
+assign      mab       = crypto_mb_en ? crypto_mab : alu_out_add[15:0];
 
 // Memory data bus output
 reg  [15:0] mdb_out_nxt;
@@ -405,8 +406,8 @@ always @(posedge mclk_mdb_out_nxt or posedge puc_rst)
            (e_state==`E_IRQ_0) | (e_state==`E_IRQ_2)) mdb_out_nxt <= alu_out;
 `endif
 
-assign mdb_out = hmac_mb_en ? hmac_data_out         :
-                 inst_bw    ? {2{mdb_out_nxt[7:0]}} : mdb_out_nxt;
+assign mdb_out = crypto_mb_en ? crypto_data_out       :
+                 inst_bw      ? {2{mdb_out_nxt[7:0]}} : mdb_out_nxt;
 
 // Format memory data bus input depending on BW
 reg        mab_lsb;
@@ -450,72 +451,34 @@ always @(posedge mclk_mdb_in_buf or posedge puc_rst)
 assign mdb_in_val = mdb_in_buf_valid ? mdb_in_buf : mdb_in_bw;
 
 //SPM
-wire spm_violation;
+wire sm_busy = crypto_busy;
 
-wire        spm_data_select_valid;
-wire        spm_key_select_valid;
-wire        spm_write_key;
-wire  [2:0] spm_request;
-wire [15:0] spm_requested_data;
-wire [15:0] spm_data_select;
-wire        spm_data_select_type;
-wire [15:0] spm_key_select;
-wire [15:0] spm_current_id;
-wire [15:0] spm_prev_id;
+wire        sm_data_select_valid;
+wire        sm_key_select_valid;
+wire        sm_write_key;
+wire  [2:0] sm_request;
+wire [15:0] sm_requested_data;
+wire [15:0] sm_data_select;
+wire        sm_data_select_type;
+wire [15:0] sm_key_select;
+wire [15:0] sm_current_id;
+wire [15:0] sm_prev_id;
+wire        sm_violation;
 
-wire [0:127] spm_key;
+wire [0:`SECURITY-1] sm_key;
 
-wire hmac_start = do_spm_inst & (verify_spm_prev | verify_spm_addr |
-                                 cert_spm_addr | cert_spm_prev |
-                                 sign_spm | enable_spm | id_spm);
+// crypto unit wires
+wire [15:0] crypto_mab;
+wire        crypto_mb_en;
+wire  [1:0] crypto_mb_wr;
+wire [15:0] crypto_data_out;
+wire        crypto_busy;
+wire        crypto_reg_write;
 
-wire [2:0] hmac_mode = verify_spm_addr ? `HMAC_CERT_VERIFY_ADDR :
-                       verify_spm_prev ? `HMAC_CERT_VERIFY_PREV :
-                       cert_spm_addr   ? `HMAC_CERT_WRITE_ADDR  :
-                       cert_spm_prev   ? `HMAC_CERT_WRITE_PREV  :
-                       sign_spm        ? `HMAC_SIGN             :
-                       enable_spm      ? `HMAC_HKDF             :
-                       id_spm          ? `HMAC_ID               : 3'bxxx;
-
-wire [15:0] hmac_mab;
-wire [15:0] hmac_data_out;
-wire        hmac_mb_en;
-wire  [1:0] hmac_mb_wr;
-wire  [3:0] hmac_dest_reg;
-wire        hmac_reg_write;
-
-wire        spm_busy;
-
-wire [15:0] internal_hmac_out;
-wire        internal_hmac_busy;
-wire        internal_hmac_reset;
-wire        internal_hmac_start_continue;
-wire        internal_hmac_data_available;
-wire        internal_hmac_data_is_long;
-
-wire [0:127] master_key = 128'hdeadbeefcafebabedeadbeefcafebabe;
-reg  [0:127] key;
-wire   [1:0] key_select;
-
-always @(*)
-  case (key_select)
-    `KEY_SEL_MASTER: key = master_key;
-    `KEY_SEL_VENDOR: key = vendor_key;
-    `KEY_SEL_SPM:    key = spm_key;
-    default:         key = 128'bx;
-  endcase
-
-reg   [3:0] vendor_key_idx;
-reg [0:127] vendor_key;
-
-always @(posedge mclk or posedge puc_rst)
-  if (puc_rst | ~spm_busy)
-    vendor_key_idx <= 4'b0;
-  else if (vendor_write_key)
-  begin
-    vendor_key[16*vendor_key_idx+:16] <= hmac_data_out;
-    vendor_key_idx <= vendor_key_idx + 1;
-  end
+wire crypto_start = do_sm_inst & (sm_disable     | sm_enable      |
+                                  sm_verify_addr | sm_verify_prev |
+                                  sm_ae_wrap     | sm_ae_unwrap   |
+                                  sm_id);
 
 omsp_spm_control spm_control_0(
   .mclk                   (mclk),
@@ -524,77 +487,67 @@ omsp_spm_control spm_control_0(
   .eu_mab                 (mab),
   .eu_mb_en               (mb_en),
   .eu_mb_wr               (mb_wr),
-  .update_spm             (update_spm),
-  .enable_spm             (enable_spm),
+  .update_spm             (sm_update),
+  .enable_spm             (sm_enable),
   .r12                    (r12),
   .r13                    (r13),
   .r14                    (r14),
   .r15                    (r15),
-  .data_request           (spm_request),
-  .spm_data_select        (spm_data_select),
-  .spm_data_select_type   (spm_data_select_type),
-  .spm_key_select         (spm_key_select),
-  .write_key              (spm_write_key),
-  .key_in                 (hmac_data_out),
-  .violation              (spm_violation),
-  .spm_data_select_valid  (spm_data_select_valid),
-  .spm_key_select_valid   (spm_key_select_valid),
-  .spm_current_id         (spm_current_id),
-  .spm_prev_id            (spm_prev_id),
-  .requested_data         (spm_requested_data),
-  .key_out                (spm_key)
+  .data_request           (sm_request),
+  .spm_data_select        (sm_data_select),
+  .spm_data_select_type   (sm_data_select_type),
+  .spm_key_select         (sm_key_select),
+  .write_key              (sm_write_key),
+  .key_in                 (crypto_data_out),
+  .violation              (sm_violation),
+  .spm_data_select_valid  (sm_data_select_valid),
+  .spm_key_select_valid   (sm_key_select_valid),
+  .spm_current_id         (sm_current_id),
+  .spm_prev_id            (sm_prev_id),
+  .requested_data         (sm_requested_data),
+  .key_out                (sm_key)
 );
 
-omsp_hmac_control hmac_control(
-  .clk                  (mclk),
-  .reset                (puc_rst),
-  .start                (hmac_start),
-  .mode                 (hmac_mode),
-  .spm_data_select_valid(spm_data_select_valid),
-  .spm_key_select_valid (spm_key_select_valid),
-  .spm_data             (spm_requested_data),
-  .mem_in               (mdb_in),
-  .hmac_in              (internal_hmac_out),
-  .r11                  (r11),
-  .r12                  (r12),
-  .r13                  (r13),
-  .r14                  (r14),
-  .r15                  (r15),
-  .pc                   (current_inst_pc),
-  .spm_current_id       (spm_current_id),
-  .spm_prev_id          (spm_prev_id),
-  .hmac_busy            (internal_hmac_busy),
-
-  .busy                 (spm_busy),
-  .spm_request          (spm_request),
-  .spm_data_select      (spm_data_select),
-  .spm_data_select_type (spm_data_select_type),
-  .spm_key_select       (spm_key_select),
-  .key_select           (key_select),
-  .mb_en                (hmac_mb_en),
-  .mb_wr                (hmac_mb_wr),
-  .mab                  (hmac_mab),
-  .reg_wr               (hmac_reg_write),
-  .spm_write_key        (spm_write_key),
-  .vendor_write_key     (vendor_write_key),
-  .data_out             (hmac_data_out),
-  .hmac_reset           (internal_hmac_reset),
-  .hmac_start_continue  (internal_hmac_start_continue),
-  .hmac_data_available  (internal_hmac_data_available),
-  .hmac_data_is_long    (internal_hmac_data_is_long)
+crypto_control crypto(
+  // inputs
+  .clk                    (mclk),
+  .reset                  (puc_rst),
+  .start                  (crypto_start),
+  .cmd_key                (sm_enable),
+  .cmd_wrap               (sm_ae_wrap),
+  .cmd_unwrap             (sm_ae_unwrap),
+  .cmd_verify_addr        (sm_verify_addr),
+  .cmd_verify_prev        (sm_verify_prev),
+  .cmd_id                 (sm_id),
+  .mem_in                 (mdb_in),
+  .pc                     (current_inst_pc),
+  .r10                    (r10),
+  .r11                    (r11),
+  .r12                    (r12),
+  .r13                    (r13),
+  .r14                    (r14),
+  .r15                    (r15),
+  .sm_data                (sm_requested_data),
+  .sm_key                 (sm_key),
+  .sm_prev_id             (sm_prev_id),
+  .sm_data_select_valid   (sm_data_select_valid),
+  .sm_key_select_valid    (sm_key_select_valid),
+  // outputs
+  .busy                   (crypto_busy),
+  .sm_request             (sm_request),
+  .sm_data_select         (sm_data_select),
+  .sm_data_select_type    (sm_data_select_type),
+  .sm_key_select          (sm_key_select),
+  .mb_en                  (crypto_mb_en),
+  .mb_wr                  (crypto_mb_wr),
+  .mab                    (crypto_mab),
+  .reg_write              (crypto_reg_write),
+  .sm_key_write           (sm_write_key),
+  .data_out               (crypto_data_out)
 );
 
-omsp_hmac_16bit hmac(
-  .clk            (mclk),
-  .reset          (internal_hmac_reset | puc_rst),
-  .start_continue (internal_hmac_start_continue),
-  .data_available (internal_hmac_data_available),
-  .data_is_long   (internal_hmac_data_is_long),
-  .key            (key),
-  .data_in        (hmac_data_out),
-  .data_out       (internal_hmac_out),
-  .busy           (internal_hmac_busy)
-);
+// TODO this should be renamed
+assign spm_violation = sm_violation;
 
 endmodule // omsp_execution_unit
 
