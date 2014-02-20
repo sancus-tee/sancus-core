@@ -118,6 +118,8 @@ begin
     key[16*key_idx+:16] <= key_in;
     key_idx <= key_idx + 1;
   end
+  else if (key_idx * 16 == `SECURITY)
+    key_idx <= 0;
 end
 
 wire exec_public = exec_spm(pc);

@@ -40,8 +40,7 @@ module crypto_control(
 // key selection constants
 localparam [1:0] KEY_SEL_NONE   = 0,
                  KEY_SEL_MASTER = 1,
-                 KEY_SEL_VENDOR = 2,
-                 KEY_SEL_SM     = 3;
+                 KEY_SEL_SM     = 2;
 
 function [15:0] swap_bytes;
     input [15:0] word;
@@ -189,8 +188,6 @@ begin
     mb_wr = 0;
     reg_write = 0;
     data_out = 0;
-    write_vkey = 0;
-    reset_vkey = 0;
     key_ctr_reset = 0;
     key_ctr_inc = 0;
     update_key_select = 0;
@@ -314,14 +311,16 @@ begin
 
         WRITE_VKEY_INIT:
         begin
-            reset_vkey = 1;
+            update_key_select = 1;
+            key_select_val = KEY_SEL_SM;
             key_ctr_reset = 1;
             set_wrap_start_continue = 1;
         end
 
         WRITE_VKEY:
         begin
-            write_vkey = 1;
+            sm_key_write = 1;
+            data_out = wrap_key_out;
             key_ctr_inc = 1;
             set_wrap_start_continue = 1;
         end
@@ -336,7 +335,7 @@ begin
         begin
             wrap_reset = 1;
             update_key_select = 1;
-            key_select_val = KEY_SEL_VENDOR;
+            key_select_val = KEY_SEL_SM;
             sm_request = `SM_REQ_PUBSTART;
             mab_ctr_init = 1;
             mab_ctr_base = sm_data;
@@ -532,17 +531,6 @@ always @(posedge clk)
 // signal to indicate if the tag matches with the memory contents
 wire tag_ok = wrap_data_out_ready ? (wrap_data_out == mem_in) : 1;
 
-// vendor key storage/logic
-reg [0:`SECURITY-1] vendor_key;
-reg                 write_vkey;
-reg                 reset_vkey;
-
-always @(posedge clk)
-    if (reset | reset_vkey)
-        vendor_key <= 0;
-    else if (write_vkey)
-        vendor_key[key_ctr*16+:16] <= wrap_key_out;
-
 // use parameter instead of localparam to work around a bug in XST
 parameter KEY_CTR_SIZE = $clog2(`SECURITY / 16 + 1);
 reg [KEY_CTR_SIZE-1:0] key_ctr;
@@ -569,7 +557,6 @@ reg                 update_key_select;
 always @(*)
     case (key_select)
         KEY_SEL_MASTER: key = master_key;
-        KEY_SEL_VENDOR: key = vendor_key;
         KEY_SEL_SM:     key = sm_key;
         default:        key = `SECURITY'hx;
     endcase
