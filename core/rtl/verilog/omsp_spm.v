@@ -4,43 +4,44 @@
 `endif
 
 module omsp_spm(
-  input  wire                 mclk,
-  input  wire                 puc_rst,
-  input  wire          [15:0] pc,
-  input  wire          [15:0] prev_pc,
-  input  wire          [15:0] eu_mab,
-  input  wire                 eu_mb_en,
-  input  wire           [1:0] eu_mb_wr,
-  input  wire                 update_spm,
-  input  wire                 enable_spm,
-  input  wire                 check_new_spm,
-  input  wire          [15:0] next_id,
-  input  wire          [15:0] r12,
-  input  wire          [15:0] r13,
-  input  wire          [15:0] r14,
-  input  wire          [15:0] r15,
-  input  wire           [2:0] data_request,
-  input  wire          [15:0] spm_data_select,
-  input  wire                 spm_data_select_type,
-  input  wire          [15:0] spm_key_select,
-  input  wire                 write_key,
-  input  wire          [15:0] key_in,
-  output reg                  enabled,
-  output wire                 executing,
-  output wire                 violation,
-  output wire                 data_selected,
-  output wire                 key_selected,
-  output reg           [15:0] requested_data,
-  output reg  [0:`SECURITY-1] key,
-  output reg           [15:0] id
+  input  wire                    mclk,
+  input  wire                    puc_rst,
+  input  wire             [15:0] pc,
+  input  wire             [15:0] prev_pc,
+  input  wire             [15:0] eu_mab,
+  input  wire                    eu_mb_en,
+  input  wire              [1:0] eu_mb_wr,
+  input  wire                    update_spm,
+  input  wire                    enable_spm,
+  input  wire                    check_new_spm,
+  input  wire             [15:0] next_id,
+  input  wire             [15:0] r12,
+  input  wire             [15:0] r13,
+  input  wire             [15:0] r14,
+  input  wire             [15:0] r15,
+  input  wire              [2:0] data_request,
+  input  wire             [15:0] spm_data_select,
+  input  wire                    spm_data_select_type,
+  input  wire             [15:0] spm_key_select,
+  input  wire                    write_key,
+  input  wire             [15:0] key_in,
+  input  wire [KEY_IDX_SIZE-1:0] key_idx,
+  output reg                     enabled,
+  output wire                    executing,
+  output wire                    violation,
+  output wire                    data_selected,
+  output wire                    key_selected,
+  output reg              [15:0] requested_data,
+  output reg     [0:`SECURITY-1] key,
+  output reg              [15:0] id
 );
+
+parameter KEY_IDX_SIZE = -1;
 
 reg [15:0] public_start;
 reg [15:0] public_end;
 reg [15:0] secret_start;
 reg [15:0] secret_end;
-
-reg  [3:0] key_idx;
 
 function exec_spm;
   input [15:0] current_pc;
@@ -80,7 +81,6 @@ begin
     secret_start <= 0;
     secret_end <= 0;
     enabled <= 0;
-    key_idx <= 0;
   end
   else if (update_spm)
   begin
@@ -94,7 +94,6 @@ begin
         secret_start <= r14;
         secret_end <= r15;
         enabled <= 1;
-        key_idx <= 0;
         $display("New SM config: %h %h %h %h", r12, r13, r14, r15);
       end
       else
@@ -114,12 +113,7 @@ begin
     end
   end
   else if (key_selected & write_key)
-  begin
     key[16*key_idx+:16] <= key_in;
-    key_idx <= key_idx + 1;
-  end
-  else if (key_idx * 16 == `SECURITY)
-    key_idx <= 0;
 end
 
 wire exec_public = exec_spm(pc);

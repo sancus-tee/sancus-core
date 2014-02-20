@@ -1,41 +1,44 @@
 `include "openMSP430_defines.v"
 
 module crypto_control(
-    input  wire                 clk,
-    input  wire                 reset,
-    input  wire                 start,
-    input  wire                 cmd_key,
-    input  wire                 cmd_wrap,
-    input  wire                 cmd_unwrap,
-    input  wire                 cmd_verify_addr,
-    input  wire                 cmd_verify_prev,
-    input  wire                 cmd_id,
-    input  wire          [15:0] mem_in,
-    input  wire          [15:0] pc,
-    input  wire          [15:0] r10,
-    input  wire          [15:0] r11,
-    input  wire          [15:0] r12,
-    input  wire          [15:0] r13,
-    input  wire          [15:0] r14,
-    input  wire          [15:0] r15,
-    input  wire          [15:0] sm_data,
-    input  wire [0:`SECURITY-1] sm_key,
-    input  wire          [15:0] sm_prev_id,
-    input  wire                 sm_data_select_valid,
-    input  wire                 sm_key_select_valid,
+    input  wire                    clk,
+    input  wire                    reset,
+    input  wire                    start,
+    input  wire                    cmd_key,
+    input  wire                    cmd_wrap,
+    input  wire                    cmd_unwrap,
+    input  wire                    cmd_verify_addr,
+    input  wire                    cmd_verify_prev,
+    input  wire                    cmd_id,
+    input  wire             [15:0] mem_in,
+    input  wire             [15:0] pc,
+    input  wire             [15:0] r10,
+    input  wire             [15:0] r11,
+    input  wire             [15:0] r12,
+    input  wire             [15:0] r13,
+    input  wire             [15:0] r14,
+    input  wire             [15:0] r15,
+    input  wire             [15:0] sm_data,
+    input  wire    [0:`SECURITY-1] sm_key,
+    input  wire             [15:0] sm_prev_id,
+    input  wire                    sm_data_select_valid,
+    input  wire                    sm_key_select_valid,
 
-    output reg                  busy,
-    output reg            [2:0] sm_request,
-    output wire          [15:0] sm_data_select,
-    output wire                 sm_data_select_type,
-    output wire          [15:0] sm_key_select,
-    output reg                  mb_en,
-    output reg            [1:0] mb_wr,
-    output wire          [15:0] mab,
-    output reg                  reg_write,
-    output reg                  sm_key_write,
-    output reg           [15:0] data_out
+    output reg                     busy,
+    output reg               [2:0] sm_request,
+    output wire             [15:0] sm_data_select,
+    output wire                    sm_data_select_type,
+    output wire             [15:0] sm_key_select,
+    output reg                     mb_en,
+    output reg               [1:0] mb_wr,
+    output wire             [15:0] mab,
+    output reg                     reg_write,
+    output reg                     sm_key_write,
+    output wire [KEY_IDX_SIZE-1:0] sm_key_idx,
+    output reg              [15:0] data_out
 );
+
+parameter KEY_IDX_SIZE = -1;
 
 // key selection constants
 localparam [1:0] KEY_SEL_NONE   = 0,
@@ -531,9 +534,7 @@ always @(posedge clk)
 // signal to indicate if the tag matches with the memory contents
 wire tag_ok = wrap_data_out_ready ? (wrap_data_out == mem_in) : 1;
 
-// use parameter instead of localparam to work around a bug in XST
-parameter KEY_CTR_SIZE = $clog2(`SECURITY / 16 + 1);
-reg [KEY_CTR_SIZE-1:0] key_ctr;
+reg [KEY_IDX_SIZE-1:0] key_ctr;
 reg                    key_ctr_reset;
 reg                    key_ctr_inc;
 
@@ -544,6 +545,8 @@ always @(posedge clk)
         key_ctr <= key_ctr + 1;
 
 wire key_done = key_ctr == `SECURITY / 16;
+
+assign sm_key_idx = key_ctr;
 
 // master key
 wire [0:`SECURITY-1] master_key = `MASTER_KEY;

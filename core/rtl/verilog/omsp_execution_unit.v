@@ -480,7 +480,13 @@ wire crypto_start = do_sm_inst & (sm_disable     | sm_enable      |
                                   sm_ae_wrap     | sm_ae_unwrap   |
                                   sm_id);
 
-omsp_spm_control spm_control_0(
+// use parameter instead of localparam to work around a bug in XST
+parameter KEY_IDX_SIZE = $clog2(`SECURITY / 16 + 1);
+wire [KEY_IDX_SIZE-1:0] sm_key_idx;
+
+omsp_spm_control #(
+  .KEY_IDX_SIZE           (KEY_IDX_SIZE)
+) spm_control_0(
   .mclk                   (mclk),
   .puc_rst                (puc_rst),
   .pc                     (current_inst_pc),
@@ -499,6 +505,7 @@ omsp_spm_control spm_control_0(
   .spm_key_select         (sm_key_select),
   .write_key              (sm_write_key),
   .key_in                 (crypto_data_out),
+  .key_idx                (sm_key_idx),
   .violation              (sm_violation),
   .spm_data_select_valid  (sm_data_select_valid),
   .spm_key_select_valid   (sm_key_select_valid),
@@ -508,7 +515,9 @@ omsp_spm_control spm_control_0(
   .key_out                (sm_key)
 );
 
-crypto_control crypto(
+crypto_control #(
+  .KEY_IDX_SIZE           (KEY_IDX_SIZE)
+) crypto(
   // inputs
   .clk                    (mclk),
   .reset                  (puc_rst),
@@ -543,6 +552,7 @@ crypto_control crypto(
   .mab                    (crypto_mab),
   .reg_write              (crypto_reg_write),
   .sm_key_write           (sm_write_key),
+  .sm_key_idx             (sm_key_idx),
   .data_out               (crypto_data_out)
 );
 

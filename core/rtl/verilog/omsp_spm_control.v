@@ -4,32 +4,35 @@
 `endif
 
 module omsp_spm_control(
-  input  wire                 mclk,
-  input  wire                 puc_rst,
-  input  wire          [15:0] pc,
-  input  wire          [15:0] eu_mab,
-  input  wire                 eu_mb_en,
-  input  wire           [1:0] eu_mb_wr,
-  input  wire                 update_spm,
-  input  wire                 enable_spm,
-  input  wire          [15:0] r12,
-  input  wire          [15:0] r13,
-  input  wire          [15:0] r14,
-  input  wire          [15:0] r15,
-  input  wire          [15:0] spm_data_select,
-  input  wire                 spm_data_select_type,
-  input  wire          [15:0] spm_key_select,
-  input  wire           [2:0] data_request,
-  input  wire                 write_key,
-  input  wire          [15:0] key_in,
-  output wire                 violation,
-  output wire                 spm_data_select_valid,
-  output wire                 spm_key_select_valid,
-  output reg           [15:0] spm_current_id,
-  output reg           [15:0] spm_prev_id,
-  output reg           [15:0] requested_data,
-  output reg  [0:`SECURITY-1] key_out
+  input  wire                    mclk,
+  input  wire                    puc_rst,
+  input  wire             [15:0] pc,
+  input  wire             [15:0] eu_mab,
+  input  wire                    eu_mb_en,
+  input  wire              [1:0] eu_mb_wr,
+  input  wire                    update_spm,
+  input  wire                    enable_spm,
+  input  wire             [15:0] r12,
+  input  wire             [15:0] r13,
+  input  wire             [15:0] r14,
+  input  wire             [15:0] r15,
+  input  wire             [15:0] spm_data_select,
+  input  wire                    spm_data_select_type,
+  input  wire             [15:0] spm_key_select,
+  input  wire              [2:0] data_request,
+  input  wire                    write_key,
+  input  wire             [15:0] key_in,
+  input  wire [KEY_IDX_SIZE-1:0] key_idx,
+  output wire                    violation,
+  output wire                    spm_data_select_valid,
+  output wire                    spm_key_select_valid,
+  output reg              [15:0] spm_current_id,
+  output reg              [15:0] spm_prev_id,
+  output reg              [15:0] requested_data,
+  output reg     [0:`SECURITY-1] key_out
 );
+
+parameter KEY_IDX_SIZE = -1;
 
 // input to the SPM array. indicates which SPM(s) should be updated. when a new
 // SPM is being created, only one bit will be 1. if an SPM is being destroyed,
@@ -129,7 +132,9 @@ always @(posedge mclk or posedge puc_rst)
   else if (prev_cycle_spm_id != spm_current_id)
     spm_prev_id <= prev_cycle_spm_id;
 
-omsp_spm omsp_spms[0:`NB_SPMS-1](
+omsp_spm #(
+  .KEY_IDX_SIZE         (KEY_IDX_SIZE)
+) omsp_spms[0:`NB_SPMS-1](
   .mclk                 (mclk),
   .puc_rst              (puc_rst),
   .pc                   (pc),
@@ -151,6 +156,7 @@ omsp_spm omsp_spms[0:`NB_SPMS-1](
   .spm_key_select       (spm_key_select),
   .write_key            (write_key),
   .key_in               (key_in),
+  .key_idx              (key_idx),
   .enabled              (spms_enabled),
   .executing            (spms_executing),
   .violation            (spms_violation),
