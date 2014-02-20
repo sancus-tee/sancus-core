@@ -49,30 +49,42 @@ module spongent (
     data_out
   );
 
-  /*
-  // Constant functions
-  function integer clog2;
-    input integer value;
-    begin
-      value = value-1;
-      for (clog2=0; value>0; clog2=clog2+1)
-        value = value>>1;
-    end
-  endfunction
-  */
-
   // Define parameters
   parameter integer MIN_CAPACITY = 128;
   parameter integer RATE = 8;            // Input block width
 
-  localparam MIN_WIDTH       = RATE + MIN_CAPACITY;
-  localparam STATE_SIZE      = MIN_WIDTH <= 64 ? 64 : `ALIGN_UP(MIN_WIDTH, 8);
-  parameter LFSR_POLY                   = 8'b11000001;  // LFSR polynomial
+  localparam MIN_WIDTH = RATE + MIN_CAPACITY;
 
-  //localparam integer LFSR_SIZE          = clog2(LFSR_POLY + 1) - 1;  // Size of LFSR
-  parameter integer LFSR_SIZE          = $clog2(LFSR_POLY + 1) - 1;  // Size of LFSR
+  localparam STATE_SIZE = MIN_WIDTH <=  88 ?  88 :
+                          MIN_WIDTH <= 136 ? 136 :
+                          MIN_WIDTH <= 176 ? 176 :
+                          MIN_WIDTH <= 240 ? 240 :
+                          MIN_WIDTH <= 264 ? 264 :
+                          MIN_WIDTH <= 272 ? 272 :
+                          MIN_WIDTH <= 336 ? 336 :
+                          MIN_WIDTH <= 384 ? 384 :
+                          MIN_WIDTH <= 480 ? 480 :
+                          MIN_WIDTH <= 672 ? 672 :
+                          MIN_WIDTH <= 768 ? 768 : 'hx;
 
-  parameter [LFSR_SIZE - 1:0] LFSR_INIT = 7'b1111010;   // LFSR initial value
+  localparam LFSR_SIZE = STATE_SIZE <=  88 ? 6 :
+                         STATE_SIZE <= 240 ? 7 :
+                         STATE_SIZE <= 480 ? 8 : 9;
+
+  localparam LFSR_POLY = LFSR_SIZE == 6 ? 7'b1100001   :
+                         LFSR_SIZE == 7 ? 8'b11000001  :
+                         LFSR_SIZE == 8 ? 9'b100011101 : 10'b1000010001;
+
+  localparam LFSR_INIT = STATE_SIZE ==  88 ? 6'h05  :
+                         STATE_SIZE == 136 ? 7'h7a  :
+                         STATE_SIZE == 176 ? 7'h45  :
+                         STATE_SIZE == 240 ? 7'h01  :
+                         STATE_SIZE == 264 ? 8'hd2  :
+                         STATE_SIZE == 272 ? 8'h9e  :
+                         STATE_SIZE == 336 ? 8'h52  :
+                         STATE_SIZE == 384 ? 8'hfb  :
+                         STATE_SIZE == 480 ? 8'ha7  :
+                         STATE_SIZE == 672 ? 9'h105 : 9'h015;
 
   // Define ports
   input clk, reset;

@@ -14,6 +14,18 @@ set(FULL_INSTALL_SIM_PATH ${CMAKE_INSTALL_PREFIX}/${INSTALL_SIM_PATH})
 set(INSTALL_TOOLS_PATH "${INSTALL_DATA_PATH}/tools")
 set(FULL_INSTALL_TOOLS_PATH ${CMAKE_INSTALL_PREFIX}/${INSTALL_TOOLS_PATH})
 
+if (NOT NB_MODULES)
+    set(NB_MODULES 4)
+endif ()
+
+if (NOT SECURITY)
+    set(SECURITY 64)
+endif ()
+
+if (NOT MASTER_KEY)
+    set(MASTER_KEY deadbeefcafebabe)
+endif ()
+
 add_subdirectory(core)
 add_subdirectory(tools)
 

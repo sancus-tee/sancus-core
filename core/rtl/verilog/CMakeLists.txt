@@ -1,4 +1,7 @@
+configure_file(config.v.in ${CMAKE_CURRENT_SOURCE_DIR}/config.v)
+
 set(SRC
+    config.v
     omsp_alu.v
     omsp_and_gate.v
     omsp_clock_gate.v

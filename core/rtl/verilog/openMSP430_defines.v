@@ -46,6 +46,8 @@
 // `include "openMSP430_undefines.v"
 // `endif
 
+`include "config.v"
+
 //============================================================================
 //============================================================================
 // BASIC SYSTEM CONFIGURATION
@@ -872,11 +874,3 @@ CONFIGURATION ERROR: THE WATCHDOG_NOMUX_ACLK CAN ONLY BE ENABLED IF THE LFXT_DOM
 CONFIGURATION ERROR: THE OSCOFF LOW POWER MODE CAN ONLY BE ENABLED IF THE LFXT_DOMAIN IS ENABLED AS WELL
  `endif   
 `endif
-
-// helper macros
-`define ALIGN_UP(value, alignment) (((value) + (alignment) - 1) & -(alignment))
-
-// SPM defines
-`define NB_SPMS 4
-`define SECURITY 64
-`define MASTER_KEY 64'hdeadbeefcafebabe
