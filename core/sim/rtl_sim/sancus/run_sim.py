@@ -29,7 +29,7 @@ def _run(prog, *args):
     try:
         subprocess.check_call(cmd)
     except:
-        print 'Command failed'
+        print 'Command failed: "{}"'.format(' '.join(cmd))
         exit(1)
 
 parser = argparse.ArgumentParser(description='Sancus simulator')
