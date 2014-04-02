@@ -151,6 +151,9 @@ assign hw_uart_rxd = chan_io[30];
 alias alias1(ps2_clk, chan_io[0]);
 alias alias2(ps2_data, chan_io[1]);
 
+// 8 general purpose output pins
+assign chan_io[29:22] = p3_dout;
+
 //=============================================================================
 // 2)  CLOCK GENERATION
 //=============================================================================
