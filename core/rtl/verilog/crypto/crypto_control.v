@@ -593,7 +593,7 @@ wire sm_valid = (!sm_data_needed | sm_data_select_valid) &
                 (!sm_key_needed  | sm_key_select_valid);
 
 // return value selection
-wire return_id = do_verify | cmd_id;
+wire return_id = do_verify | cmd_id | cmd_key;
 
 // module instantiations *******************************************************
 wire        wrap_busy;
