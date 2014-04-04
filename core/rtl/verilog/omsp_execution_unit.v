@@ -202,6 +202,7 @@ wire sm_verify_prev = sm_command[`SM_VERIFY_PREV];
 wire sm_ae_wrap     = sm_command[`SM_AE_WRAP];
 wire sm_ae_unwrap   = sm_command[`SM_AE_UNWRAP];
 wire sm_id          = sm_command[`SM_ID];
+wire sm_id_prev     = sm_command[`SM_PREV_ID];
 wire sm_update      = do_sm_inst & (sm_disable | sm_enable);
 
 omsp_register_file register_file_0 (
@@ -478,7 +479,7 @@ wire        crypto_reg_write;
 wire crypto_start = do_sm_inst & (sm_disable     | sm_enable      |
                                   sm_verify_addr | sm_verify_prev |
                                   sm_ae_wrap     | sm_ae_unwrap   |
-                                  sm_id);
+                                  sm_id          | sm_id_prev);
 
 // use parameter instead of localparam to work around a bug in XST
 parameter KEY_IDX_SIZE = $clog2(`SECURITY / 16 + 1);
@@ -528,6 +529,7 @@ crypto_control #(
   .cmd_verify_addr        (sm_verify_addr),
   .cmd_verify_prev        (sm_verify_prev),
   .cmd_id                 (sm_id),
+  .cmd_id_prev            (sm_id_prev),
   .mem_in                 (mdb_in),
   .pc                     (current_inst_pc),
   .r10                    (r10),

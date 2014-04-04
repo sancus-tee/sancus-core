@@ -10,6 +10,7 @@ module crypto_control(
     input  wire                    cmd_verify_addr,
     input  wire                    cmd_verify_prev,
     input  wire                    cmd_id,
+    input  wire                    cmd_id_prev,
     input  wire             [15:0] mem_in,
     input  wire             [15:0] pc,
     input  wire             [15:0] r10,
@@ -103,7 +104,8 @@ always @(*)
                                        do_wrap   ? WRAP_AD_INIT     :
                                        cmd_key   ? GEN_VKEY_INIT    :
                                        do_verify ? VERIFY_INIT      :
-                                       cmd_id    ? SUCCESS          : INTERNAL_ERROR;
+                                       cmd_id    ? SUCCESS          :
+                                       cmd_id_prev ? SUCCESS          : INTERNAL_ERROR;
         WRAP_AD_INIT:     next_state =             WRAP_AD_WAIT;
         WRAP_AD:          next_state =             WRAP_AD_WAIT;
         WRAP_AD_WAIT:     next_state = wrap_busy ? WRAP_AD_WAIT     :
@@ -471,7 +473,8 @@ begin
         begin
             reg_write = 1;
             sm_request = `SM_REQ_ID;
-            data_out = return_id ? sm_data : 16'h1;
+            data_out = return_id   ? sm_data    :
+                       cmd_id_prev ? sm_prev_id : 16'h1;
         end
     endcase
 end
