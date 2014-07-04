@@ -99,61 +99,61 @@ reg [STATE_SIZE-1:0] state, next_state;
 
 always @(*)
     case (state)
-        IDLE:             next_state = start     ? CHECK_SM         : IDLE;
-        CHECK_SM:         next_state = ~sm_valid ? FAIL             :
-                                       do_wrap   ? WRAP_AD_INIT     :
-                                       cmd_key   ? GEN_VKEY_INIT    :
-                                       do_verify ? VERIFY_INIT      :
-                                       cmd_id    ? SUCCESS          :
+        IDLE:             next_state = start       ? CHECK_SM         : IDLE;
+        CHECK_SM:         next_state = ~sm_valid   ? FAIL             :
+                                       do_wrap     ? WRAP_AD_INIT     :
+                                       cmd_key     ? GEN_VKEY_INIT    :
+                                       do_verify   ? VERIFY_INIT      :
+                                       cmd_id      ? SUCCESS          :
                                        cmd_id_prev ? SUCCESS          : INTERNAL_ERROR;
-        WRAP_AD_INIT:     next_state =             WRAP_AD_WAIT;
-        WRAP_AD:          next_state =             WRAP_AD_WAIT;
-        WRAP_AD_WAIT:     next_state = wrap_busy ? WRAP_AD_WAIT     :
-                                       mem_done  ? WRAP_BODY_INIT   : WRAP_AD;
-        WRAP_BODY_INIT:   next_state =             WRAP_BODY_WAIT;
-        WRAP_BODY:        next_state =             WRAP_BODY_WAIT;
-        WRAP_BODY_WAIT:   next_state = wrap_busy ? WRAP_BODY_WAIT   :
-                                       mem_done  ? TAG_INIT         : WRAP_BODY;
-        TAG_INIT:         next_state = cmd_wrap  ? WRITE_TAG_WAIT   : VERIFY_TAG_WAIT;
-        WRITE_TAG:        next_state =             WRITE_TAG_WAIT;
-        WRITE_TAG_WAIT:   next_state = wrap_busy ? WRITE_TAG_WAIT   :
-                                       mem_done  ? SUCCESS          : WRITE_TAG;
-        VERIFY_TAG:       next_state = tag_ok    ? VERIFY_TAG_WAIT  : FAIL;
-        VERIFY_TAG_WAIT:  next_state = mem_done  ? SUCCESS          :
-                                       wrap_busy ? VERIFY_TAG_WAIT  : VERIFY_TAG;
-        GEN_VKEY_INIT:    next_state =             WRAP_VID;
-        WRAP_VID:         next_state =             WRAP_VID_WAIT;
-        WRAP_VID_WAIT:    next_state = wrap_busy ? WRAP_VID_WAIT    : WRITE_VKEY_INIT;
-        WRITE_VKEY_INIT:  next_state =             WRITE_VKEY_WAIT;
-        WRITE_VKEY:       next_state =             WRITE_VKEY_WAIT;
-        WRITE_VKEY_WAIT:  next_state = key_done  ? GEN_SMKEY_INIT   :
-                                       wrap_busy ? WRITE_VKEY_WAIT  : WRITE_VKEY;
-        GEN_SMKEY_INIT:   next_state =             GEN_SMKEY_INIT2;
-        GEN_SMKEY_INIT2:  next_state =             WRAP_TEXT_WAIT;
-        WRAP_TEXT:        next_state =             WRAP_TEXT_WAIT;
-        WRAP_TEXT_WAIT:   next_state = wrap_busy ? WRAP_TEXT_WAIT   :
-                                       mem_done  ? WRAP_PS          : WRAP_TEXT;
-        WRAP_PS:          next_state =             WRAP_PS_WAIT;
-        WRAP_PS_WAIT:     next_state = wrap_busy ? WRAP_PS_WAIT     : WRAP_PE;
-        WRAP_PE:          next_state =             WRAP_PE_WAIT;
-        WRAP_PE_WAIT:     next_state = wrap_busy ? WRAP_PE_WAIT     : WRAP_SS;
-        WRAP_SS:          next_state =             WRAP_SS_WAIT;
-        WRAP_SS_WAIT:     next_state = wrap_busy ? WRAP_SS_WAIT     : WRAP_SE;
-        WRAP_SE:          next_state =             WRAP_SE_WAIT;
-        WRAP_SE_WAIT:     next_state = wrap_busy ? WRAP_SE_WAIT     :
-                                       do_verify ? MAC_INIT         : WRITE_SMKEY_INIT;
-        WRITE_SMKEY_INIT: next_state =             WRITE_SMKEY_WAIT;
-        WRITE_SMKEY:      next_state =             WRITE_SMKEY_WAIT;
-        WRITE_SMKEY_WAIT: next_state = key_done  ? SUCCESS          :
-                                       wrap_busy ? WRITE_SMKEY_WAIT : WRITE_SMKEY;
-        VERIFY_INIT:      next_state =             VERIFY_INIT2;
-        VERIFY_INIT2:     next_state =             WRAP_TEXT_WAIT;
-        MAC_INIT:         next_state =             MAC_INIT_WAIT;
-        MAC_INIT_WAIT:    next_state = wrap_busy ? MAC_INIT_WAIT    : TAG_INIT;
-        FAIL:             next_state =             IDLE;
-        SUCCESS:          next_state =             IDLE;
+        WRAP_AD_INIT:     next_state =               WRAP_AD_WAIT;
+        WRAP_AD:          next_state =               WRAP_AD_WAIT;
+        WRAP_AD_WAIT:     next_state = wrap_busy   ? WRAP_AD_WAIT     :
+                                       mem_done    ? WRAP_BODY_INIT   : WRAP_AD;
+        WRAP_BODY_INIT:   next_state =               WRAP_BODY_WAIT;
+        WRAP_BODY:        next_state =               WRAP_BODY_WAIT;
+        WRAP_BODY_WAIT:   next_state = wrap_busy   ? WRAP_BODY_WAIT   :
+                                       mem_done    ? TAG_INIT         : WRAP_BODY;
+        TAG_INIT:         next_state = cmd_wrap    ? WRITE_TAG_WAIT   : VERIFY_TAG_WAIT;
+        WRITE_TAG:        next_state =               WRITE_TAG_WAIT;
+        WRITE_TAG_WAIT:   next_state = wrap_busy   ? WRITE_TAG_WAIT   :
+                                       mem_done    ? SUCCESS          : WRITE_TAG;
+        VERIFY_TAG:       next_state = tag_ok      ? VERIFY_TAG_WAIT  : FAIL;
+        VERIFY_TAG_WAIT:  next_state = mem_done    ? SUCCESS          :
+                                       wrap_busy   ? VERIFY_TAG_WAIT  : VERIFY_TAG;
+        GEN_VKEY_INIT:    next_state =               WRAP_VID;
+        WRAP_VID:         next_state =               WRAP_VID_WAIT;
+        WRAP_VID_WAIT:    next_state = wrap_busy   ? WRAP_VID_WAIT    : WRITE_VKEY_INIT;
+        WRITE_VKEY_INIT:  next_state =               WRITE_VKEY_WAIT;
+        WRITE_VKEY:       next_state =               WRITE_VKEY_WAIT;
+        WRITE_VKEY_WAIT:  next_state = key_done    ? GEN_SMKEY_INIT   :
+                                       wrap_busy   ? WRITE_VKEY_WAIT  : WRITE_VKEY;
+        GEN_SMKEY_INIT:   next_state =               GEN_SMKEY_INIT2;
+        GEN_SMKEY_INIT2:  next_state =               WRAP_TEXT_WAIT;
+        WRAP_TEXT:        next_state =               WRAP_TEXT_WAIT;
+        WRAP_TEXT_WAIT:   next_state = wrap_busy   ? WRAP_TEXT_WAIT   :
+                                       mem_done    ? WRAP_PS          : WRAP_TEXT;
+        WRAP_PS:          next_state =               WRAP_PS_WAIT;
+        WRAP_PS_WAIT:     next_state = wrap_busy   ? WRAP_PS_WAIT     : WRAP_PE;
+        WRAP_PE:          next_state =               WRAP_PE_WAIT;
+        WRAP_PE_WAIT:     next_state = wrap_busy   ? WRAP_PE_WAIT     : WRAP_SS;
+        WRAP_SS:          next_state =               WRAP_SS_WAIT;
+        WRAP_SS_WAIT:     next_state = wrap_busy   ? WRAP_SS_WAIT     : WRAP_SE;
+        WRAP_SE:          next_state =               WRAP_SE_WAIT;
+        WRAP_SE_WAIT:     next_state = wrap_busy   ? WRAP_SE_WAIT     :
+                                       do_verify   ? MAC_INIT         : WRITE_SMKEY_INIT;
+        WRITE_SMKEY_INIT: next_state =               WRITE_SMKEY_WAIT;
+        WRITE_SMKEY:      next_state =               WRITE_SMKEY_WAIT;
+        WRITE_SMKEY_WAIT: next_state = key_done    ? SUCCESS          :
+                                       wrap_busy   ? WRITE_SMKEY_WAIT : WRITE_SMKEY;
+        VERIFY_INIT:      next_state =               VERIFY_INIT2;
+        VERIFY_INIT2:     next_state =               WRAP_TEXT_WAIT;
+        MAC_INIT:         next_state =               MAC_INIT_WAIT;
+        MAC_INIT_WAIT:    next_state = wrap_busy   ? MAC_INIT_WAIT    : TAG_INIT;
+        FAIL:             next_state =               IDLE;
+        SUCCESS:          next_state =               IDLE;
 
-        default:          next_state =             INTERNAL_ERROR;
+        default:          next_state =               INTERNAL_ERROR;
     endcase
 
 always @(posedge clk)
