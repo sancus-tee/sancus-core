@@ -109,7 +109,8 @@ always @(*)
         WRAP_AD_INIT:     next_state =               WRAP_AD_WAIT;
         WRAP_AD:          next_state =               WRAP_AD_WAIT;
         WRAP_AD_WAIT:     next_state = wrap_busy   ? WRAP_AD_WAIT     :
-                                       mem_done    ? WRAP_BODY_INIT   : WRAP_AD;
+                                       ~mem_done   ? WRAP_AD          :
+                                       only_tag    ? MAC_INIT         : WRAP_BODY_INIT;
         WRAP_BODY_INIT:   next_state =               WRAP_BODY_WAIT;
         WRAP_BODY:        next_state =               WRAP_BODY_WAIT;
         WRAP_BODY_WAIT:   next_state = wrap_busy   ? WRAP_BODY_WAIT   :
@@ -482,6 +483,7 @@ end
 // other logic *****************************************************************
 wire do_wrap   = cmd_wrap | cmd_unwrap;
 wire do_verify = cmd_verify_addr | cmd_verify_prev;
+wire only_tag  = cmd_wrap & (r12 == r13);
 
 // memory address counter used when looping over a range of addresses
 reg [15:0] mab_ctr;
