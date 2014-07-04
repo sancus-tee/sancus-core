@@ -600,6 +600,10 @@ wire sm_valid = (!sm_data_needed | sm_data_select_valid) &
 // return value selection
 wire return_id = do_verify | cmd_id | cmd_key;
 
+always @(posedge clk)
+    if (state == SUCCESS & cmd_key)
+        $display("Key: %h", key);
+
 // module instantiations *******************************************************
 wire        wrap_busy;
 wire [15:0] wrap_data_out;
