@@ -41,6 +41,10 @@ parser.add_argument('--rom-size',
                     default='48K')
 parser.add_argument('--verbose',
                     action='store_true')
+parser.add_argument('--fileio-in',
+                    default='sim-input.bin')
+parser.add_argument('--fileio-out',
+                    default='sim-output.bin')
 parser.add_argument('in_file',
                     help='ELF file to run',
                     nargs=1)
@@ -49,6 +53,8 @@ cli_args = parser.parse_args()
 ram_size = cli_args.ram_size
 rom_size = cli_args.rom_size
 in_file = cli_args.in_file[0]
+fileio_in = cli_args.fileio_in
+fileio_out = cli_args.fileio_out
 
 ihex_file = tempfile.mkstemp('.ihex')[1]
 _run('msp430-objcopy', '-O', 'ihex', in_file, ihex_file)
@@ -65,6 +71,8 @@ _run('iverilog', '-DMEM_DEFINED', '-DPMEM_SIZE_CUSTOM', '-DDMEM_SIZE_CUSTOM',
                  '-DDMEM_CUSTOM_SIZE={}'.format(ram_size),
                  '-DDMEM_CUSTOM_AWIDTH={}'.format(_get_awidth(ram_size)),
                  '-DPMEM_FILE="{}"'.format(mem_file),
+                 '-DFILEIO_IN="{}"'.format(fileio_in),
+                 '-DFILEIO_OUT="{}"'.format(fileio_out),
                  '-f', COMMANDS, '-o', sim_file)
 
 print 'Starting Verilog simulation. Press <Ctrl-C> to get to the Icarus ' + \

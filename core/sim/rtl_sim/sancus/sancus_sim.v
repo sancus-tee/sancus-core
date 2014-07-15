@@ -130,6 +130,9 @@ wire               ta_out1_en;
 wire               ta_out2;
 wire               ta_out2_en;
 
+// File IO
+wire        [15:0] per_dout_file_io;
+
 // Clock / Reset & Interrupts
 reg                dco_clk;
 wire               dco_enable;
@@ -524,6 +527,19 @@ template_periph_16b #(.BASE_ADDR((15'd`PER_SIZE-15'h0070) & 15'h7ff8)) template_
     .puc_rst      (puc_rst)            // Main system reset
 );
 
+//
+// File IO peripheral
+//----------------------------------------
+file_io file_io_0 (
+    .per_dout (per_dout_file_io),
+    .mclk     (mclk),
+    .per_addr (per_addr),
+    .per_din  (per_din),
+    .per_en   (per_en),
+    .per_we   (per_we),
+    .puc_rst  (puc_rst)
+);
+
 
 //
 // Combine peripheral data bus
@@ -533,7 +549,8 @@ assign per_dout = per_dout_dio       |
                   per_dout_timerA    |
                   per_dout_uart      |
                   per_dout_temp_8b   |
-                  per_dout_temp_16b;
+                  per_dout_temp_16b  |
+                  per_dout_file_io;
 
 
 //
@@ -589,7 +606,6 @@ msp_debug msp_debug_0 (
     .mclk         (mclk),              // Main system clock
     .puc_rst      (puc_rst)            // Main system reset
 );
-
 
 //
 // Generate Waveform

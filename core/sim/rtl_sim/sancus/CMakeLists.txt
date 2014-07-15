@@ -9,6 +9,7 @@ set(SRC
     ram.v
     registers.v
     sancus_sim.v
+    file_io.v
 )
 
 install(FILES ${SRC} DESTINATION ${INSTALL_SIM_PATH})
