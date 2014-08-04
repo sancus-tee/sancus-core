@@ -78,11 +78,17 @@ endgenerate
 assign spm_data_select_valid = |spms_data_selected;
 assign spm_key_select_valid  = |spms_key_selected;
 
-always @(pc)
-begin
-  prev_pc <= current_pc;
-  current_pc <= pc;
-end
+always @(posedge mclk or posedge puc_rst)
+    if (puc_rst)
+    begin
+        prev_pc <= 0;
+        current_pc <= 0;
+    end
+    else if (pc != current_pc)
+    begin
+        prev_pc <= current_pc;
+        current_pc <= pc;
+    end
 
 wire [0:`NB_SPMS*`SECURITY-1] spms_key;
 
