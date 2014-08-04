@@ -7,6 +7,7 @@ module omsp_spm_control(
   input  wire                    mclk,
   input  wire                    puc_rst,
   input  wire             [15:0] pc,
+  input  wire             [15:0] prev_pc,
   input  wire             [15:0] eu_mab,
   input  wire                    eu_mb_en,
   input  wire              [1:0] eu_mb_wr,
@@ -50,7 +51,6 @@ wire [0:`NB_SPMS-1] spms_violation;
 wire [0:`NB_SPMS-1] spms_data_selected;
 wire [0:`NB_SPMS-1] spms_key_selected;
 
-reg [15:0] current_pc, prev_pc;
 reg [15:0] next_id;
 
 assign spms_update = (spms_first_disabled |       // update first disabled SPM
@@ -77,18 +77,6 @@ endgenerate
 
 assign spm_data_select_valid = |spms_data_selected;
 assign spm_key_select_valid  = |spms_key_selected;
-
-always @(posedge mclk or posedge puc_rst)
-    if (puc_rst)
-    begin
-        prev_pc <= 0;
-        current_pc <= 0;
-    end
-    else if (pc != current_pc)
-    begin
-        prev_pc <= current_pc;
-        current_pc <= pc;
-    end
 
 wire [0:`NB_SPMS*`SECURITY-1] spms_key;
 

@@ -222,6 +222,7 @@ wire         [15:0] per_dout_clk;
 
 wire          [7:0] spm_command;
 wire         [15:0] current_inst_pc;
+wire         [15:0] prev_inst_pc;
 
 wire                spm_busy;
 wire                spm_violation;
@@ -309,6 +310,7 @@ omsp_frontend frontend_0 (
     .pc_nxt       (pc_nxt),        // Next PC value (for CALL & IRQ)
     .spm_command  (spm_command),
     .current_inst_pc (current_inst_pc),
+    .prev_inst_pc (prev_inst_pc),
 			     
 // INPUTs
     .cpu_en_s     (cpu_en_s),      // Enable CPU code execution (synchronous)
@@ -383,7 +385,8 @@ omsp_execution_unit execution_unit_0 (
     .puc_rst      (puc_rst),       // Main system reset
     .scan_enable  (scan_enable),   // Scan enable (active during scan shifting)
     .sm_command   (spm_command),
-    .current_inst_pc (current_inst_pc)
+    .current_inst_pc (current_inst_pc),
+    .prev_inst_pc (prev_inst_pc)
 );
 
 

@@ -75,6 +75,7 @@ module  omsp_frontend (
     pc_nxt,                        // Next PC value (for CALL & IRQ)
     spm_command,
     current_inst_pc,
+    prev_inst_pc,
 
 // INPUTs
     cpu_en_s,                      // Enable CPU code execution (synchronous)
@@ -129,6 +130,7 @@ output       [15:0] pc;            // Program counter
 output       [15:0] pc_nxt;        // Next PC value (for CALL & IRQ)
 output        [7:0] spm_command;
 output       [15:0] current_inst_pc;
+output       [15:0] prev_inst_pc;
 
 // INPUTs
 //=========
@@ -272,10 +274,21 @@ always @(posedge mclk or posedge puc_rst)
   if (puc_rst)  dbg_halt_st <= 1'b0;
   else          dbg_halt_st <= cpu_halt_cmd & (i_state_nxt==I_IDLE);
 
+// keep track of the PC of the current andd previous instructions for the SM
+// logic.
 reg [15:0] current_inst_pc;
+reg [15:0] prev_inst_pc;
 always @(posedge mclk or posedge puc_rst)
-  if (puc_rst)      current_inst_pc <= 0;
-  else if (decode)  current_inst_pc <= pc;
+  if (puc_rst)
+  begin
+    current_inst_pc <= 0;
+    prev_inst_pc <= 0;
+  end
+  else if (decode)
+  begin
+    current_inst_pc <= pc;
+    prev_inst_pc <= current_inst_pc;
+  end
 
 
 //=============================================================================
