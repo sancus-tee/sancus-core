@@ -86,7 +86,7 @@ begin
   begin
     if (enable_spm)
     begin
-      if ((r12 < r13) & (r14 < r15))
+      if ((r12 < r13) & (r14 <= r15))
       begin
         id <= next_id;
         public_start <= r12;
