@@ -8,6 +8,7 @@ module omsp_spm_control(
   input  wire                    puc_rst,
   input  wire             [15:0] pc,
   input  wire             [15:0] prev_pc,
+  input  wire                    handling_irq,
   input  wire             [15:0] eu_mab,
   input  wire                    eu_mb_en,
   input  wire              [1:0] eu_mb_wr,
@@ -66,7 +67,7 @@ always @(posedge mclk or posedge puc_rst)
   else if (update_spm && enable_spm)
     next_id <= next_id + 16'h1;
 
-assign violation = |spms_violation || (next_id == 16'h0);
+assign violation = |spms_violation || (next_id == 16'hffff);
 
 generate
   genvar i;
@@ -108,9 +109,12 @@ integer spm_k;
 always @(*)
 begin
   spm_current_id = 16'h0;
-  for (spm_k = 0; spm_k < `NB_SPMS; spm_k = spm_k + 1)
-    if (spms_executing[spm_k])
-      spm_current_id = spms_id[spm_k*16+:16];
+  if (handling_irq)
+    spm_current_id = 16'hffff;
+  else
+    for (spm_k = 0; spm_k < `NB_SPMS; spm_k = spm_k + 1)
+      if (spms_executing[spm_k])
+        spm_current_id = spms_id[spm_k*16+:16];
 end
 
 reg [15:0] prev_cycle_spm_id;

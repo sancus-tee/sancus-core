@@ -76,6 +76,7 @@ module  omsp_frontend (
     spm_command,
     current_inst_pc,
     prev_inst_pc,
+    handling_irq,
 
 // INPUTs
     cpu_en_s,                      // Enable CPU code execution (synchronous)
@@ -131,6 +132,7 @@ output       [15:0] pc_nxt;        // Next PC value (for CALL & IRQ)
 output        [7:0] spm_command;
 output       [15:0] current_inst_pc;
 output       [15:0] prev_inst_pc;
+output              handling_irq;
 
 // INPUTs
 //=========
@@ -346,6 +348,15 @@ wire [15:0] irq_addr    = {11'h7ff, irq_num, 1'b0};
 wire [15:0] irq_acc_all = one_hot16(irq_num) & {16{(i_state==I_IRQ_FETCH)}};
 wire [13:0] irq_acc     = irq_acc_all[13:0];
 wire        nmi_acc     = irq_acc_all[14];
+
+// keep track of if we are currently handling an IRQ (with handling we mean the
+// handling by hardware, *not* running the software ISR)
+reg handling_irq;
+always @(posedge mclk or posedge puc_rst)
+  if (puc_rst)
+    handling_irq <= 1'b1;
+  else if (decode)
+    handling_irq <= irq_detect;
 
 //
 // 4.2) SYSTEM WAKEUP

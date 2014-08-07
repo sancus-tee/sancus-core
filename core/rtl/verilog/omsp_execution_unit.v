@@ -90,7 +90,8 @@ module  omsp_execution_unit (
     scan_enable,                   // Scan enable (active during scan shifting)
     sm_command,
     current_inst_pc,
-    prev_inst_pc
+    prev_inst_pc,
+    handling_irq
 );
 
 // OUTPUTs
@@ -139,6 +140,7 @@ input               scan_enable;   // Scan enable (active during scan shifting)
 input         [7:0] sm_command;
 input        [15:0] current_inst_pc;
 input        [15:0] prev_inst_pc;
+input               handling_irq;
 
 
 //=============================================================================
@@ -494,6 +496,7 @@ omsp_spm_control #(
   .puc_rst                (puc_rst),
   .pc                     (current_inst_pc),
   .prev_pc                (prev_inst_pc),
+  .handling_irq           (handling_irq),
   .eu_mab                 (mab),
   .eu_mb_en               (mb_en),
   .eu_mb_wr               (mb_wr),
