@@ -224,6 +224,7 @@ wire          [7:0] spm_command;
 wire         [15:0] current_inst_pc;
 wire         [15:0] prev_inst_pc;
 wire                handling_irq;
+wire          [3:0] irq_num;
 
 wire                spm_busy;
 wire                spm_violation;
@@ -313,6 +314,7 @@ omsp_frontend frontend_0 (
     .current_inst_pc (current_inst_pc),
     .prev_inst_pc (prev_inst_pc),
     .handling_irq (handling_irq),
+    .irq_num      (irq_num),
 			     
 // INPUTs
     .cpu_en_s     (cpu_en_s),      // Enable CPU code execution (synchronous)
@@ -389,7 +391,8 @@ omsp_execution_unit execution_unit_0 (
     .sm_command   (spm_command),
     .current_inst_pc (current_inst_pc),
     .prev_inst_pc (prev_inst_pc),
-    .handling_irq (handling_irq)
+    .handling_irq (handling_irq),
+    .irq_num      (irq_num)
 );
 
 

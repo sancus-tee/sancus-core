@@ -91,7 +91,8 @@ module  omsp_execution_unit (
     sm_command,
     current_inst_pc,
     prev_inst_pc,
-    handling_irq
+    handling_irq,
+    irq_num
 );
 
 // OUTPUTs
@@ -141,6 +142,7 @@ input         [7:0] sm_command;
 input        [15:0] current_inst_pc;
 input        [15:0] prev_inst_pc;
 input               handling_irq;
+input         [3:0] irq_num;
 
 
 //=============================================================================
@@ -497,6 +499,7 @@ omsp_spm_control #(
   .pc                     (current_inst_pc),
   .prev_pc                (prev_inst_pc),
   .handling_irq           (handling_irq),
+  .irq_num                (irq_num),
   .eu_mab                 (mab),
   .eu_mb_en               (mb_en),
   .eu_mb_wr               (mb_wr),
