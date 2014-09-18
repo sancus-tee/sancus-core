@@ -45,6 +45,8 @@ parser.add_argument('--fileio-in',
                     default='sim-input.bin')
 parser.add_argument('--fileio-out',
                     default='sim-output.bin')
+parser.add_argument('--dumpfile',
+                    default='sancus_sim.fst')
 parser.add_argument('in_file',
                     help='ELF file to run',
                     nargs=1)
@@ -55,6 +57,13 @@ rom_size = cli_args.rom_size
 in_file = cli_args.in_file[0]
 fileio_in = cli_args.fileio_in
 fileio_out = cli_args.fileio_out
+dumpfile = cli_args.dumpfile
+
+ext = os.path.splitext(dumpfile)[1]
+if len(ext) < 2:
+    dumper = 'vcd'
+else:
+    dumper = ext[1:]
 
 ihex_file = tempfile.mkstemp('.ihex')[1]
 _run('msp430-objcopy', '-O', 'ihex', in_file, ihex_file)
@@ -73,8 +82,12 @@ _run('iverilog', '-DMEM_DEFINED', '-DPMEM_SIZE_CUSTOM', '-DDMEM_SIZE_CUSTOM',
                  '-DPMEM_FILE="{}"'.format(mem_file),
                  '-DFILEIO_IN="{}"'.format(fileio_in),
                  '-DFILEIO_OUT="{}"'.format(fileio_out),
+                 '-DDUMPFILE="{}"'.format(dumpfile),
                  '-f', COMMANDS, '-o', sim_file)
 
 print 'Starting Verilog simulation. Press <Ctrl-C> to get to the Icarus ' + \
       'Verilog CLI, then "finish" to exit.'
-os.execl(sim_file, sim_file)
+
+env = os.environ.copy()
+env['IVERILOG_DUMPER'] = dumper
+os.execle(sim_file, sim_file, env)

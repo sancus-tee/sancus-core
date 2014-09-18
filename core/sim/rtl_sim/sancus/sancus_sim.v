@@ -612,7 +612,7 @@ msp_debug msp_debug_0 (
 //----------------------------------------
 initial
 begin
-    $dumpfile("sancus_sim.vcd");
+    $dumpfile(`DUMPFILE);
     $dumpvars(0, sancus_sim);
 end
 
