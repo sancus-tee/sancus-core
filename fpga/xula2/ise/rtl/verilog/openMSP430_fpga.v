@@ -147,6 +147,9 @@ assign dbg_uart_rxd = chan_io[15];
 assign chan_io[31] = hw_uart_txd;
 assign hw_uart_rxd = chan_io[30];
 
+// LCD UART
+assign chan_io[14] = lcd_uart_txd;
+
 // PS2
 alias alias1(ps2_clk, chan_io[0]);
 alias alias2(ps2_data, chan_io[1]);
@@ -390,6 +393,26 @@ omsp_uart #(.BASE_ADDR(15'h0088)) hw_uart2 (
     .uart_rxd     (1'b0)               // UART Data Receive (RXD)
 );
 
+// UART used for the PmodCLS LCD module
+
+omsp_uart #(.BASE_ADDR(15'h0090)) lcd_uart (
+// OUTPUTs
+    .irq_uart_rx  (),                  // UART receive interrupt
+    .irq_uart_tx  (),                  // UART transmit interrupt
+    .per_dout     (per_dout_lcd_uart), // Peripheral data output
+    .uart_txd     (lcd_uart_txd),      // UART Data Transmit (TXD)
+
+// INPUTs
+    .mclk         (mclk),              // Main system clock
+    .per_addr     (per_addr),          // Peripheral address
+    .per_din      (per_din),           // Peripheral data input
+    .per_en       (per_en),            // Peripheral enable (high active)
+    .per_we       (per_we),            // Peripheral write enable (high active)
+    .puc_rst      (puc_rst),           // Main system reset
+    .smclk_en     (smclk_en),          // SMCLK enable (from CPU)
+    .uart_rxd     (1'b0)               // UART Data Receive (RXD)
+);
+
 // PS/2
 
 omsp_ps2 ps2(
@@ -410,10 +433,11 @@ omsp_ps2 ps2(
 // Combine peripheral data buses
 //-------------------------------
 
-assign per_dout = per_dout_dio    |
-                  per_dout_tA     |
-                  per_dout_uart   |
-                  per_dout_uart2  |
+assign per_dout = per_dout_dio      |
+                  per_dout_tA       |
+                  per_dout_uart     |
+                  per_dout_uart2    |
+                  per_dout_lcd_uart |
                   per_dout_ps2;
 //
 // Assign interrupts
