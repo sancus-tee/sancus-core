@@ -149,7 +149,7 @@ wire        [15:0] dbg_dmem_addr = {1'b0, dbg_mem_addr[15:1]}-(`DMEM_BASE>>1);
    
 // RAM Interface
 wire [`DMEM_MSB:0] dmem_addr     = ~dbg_dmem_cen ? dbg_dmem_addr[`DMEM_MSB:0] : eu_dmem_addr[`DMEM_MSB:0];
-wire               dmem_cen      =  dbg_dmem_cen & eu_dmem_cen;
+wire               dmem_cen      =  (dbg_dmem_cen & eu_dmem_cen) | sm_violation;
 wire         [1:0] dmem_wen      = ~(dbg_mem_wr | eu_mb_wr);
 wire        [15:0] dmem_din      = ~dbg_dmem_cen ? dbg_mem_dout : eu_mdb_out;
 
@@ -174,7 +174,7 @@ wire        [15:0] dbg_pmem_addr = {1'b0, dbg_mem_addr[15:1]}-(PMEM_OFFSET>>1);
 // ROM Interface (Execution unit has priority)
 wire [`PMEM_MSB:0] pmem_addr     = ~dbg_pmem_cen ? dbg_pmem_addr[`PMEM_MSB:0] :
                                    ~eu_pmem_cen  ? eu_pmem_addr[`PMEM_MSB:0]  : fe_pmem_addr[`PMEM_MSB:0];
-wire               pmem_cen      =  fe_pmem_cen & eu_pmem_cen & dbg_pmem_cen;
+wire               pmem_cen      =  (fe_pmem_cen & eu_pmem_cen & dbg_pmem_cen) | sm_violation;
 wire         [1:0] pmem_wen      = ~(dbg_mem_wr | (~eu_pmem_cen ? eu_mb_wr : 2'b00));
 wire        [15:0] pmem_din      =  ~dbg_pmem_cen ? dbg_mem_dout : eu_mdb_out;
 
