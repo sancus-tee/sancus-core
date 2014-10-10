@@ -83,7 +83,8 @@ module  omsp_mem_backbone (
     per_dout,                       // Peripheral data output
     pmem_dout,                      // Program Memory data output
     puc_rst,                        // Main system reset
-    scan_enable                     // Scan enable (active during scan shifting)
+    scan_enable,                    // Scan enable (active during scan shifting)
+    sm_violation
 );
 
 // OUTPUTs
@@ -125,6 +126,7 @@ input         [15:0] per_dout;      // Peripheral data output
 input         [15:0] pmem_dout;     // Program Memory data output
 input                puc_rst;       // Main system reset
 input                scan_enable;   // Scan enable (active during scan shifting)
+input                sm_violation;
 
 
 //=============================================================================
@@ -247,8 +249,19 @@ always @(posedge mclk or posedge puc_rst)
   else          eu_mdb_in_sel <= {~eu_pmem_cen, per_en};
 
 // Mux
-assign      eu_mdb_in      = eu_mdb_in_sel[1] ? pmem_dout    :
-                             eu_mdb_in_sel[0] ? per_dout_val : dmem_dout;
+wire [15:0]     raw_eu_mdb_in = eu_mdb_in_sel[1] ? pmem_dout    :
+                                eu_mdb_in_sel[0] ? per_dout_val : dmem_dout;
+
+// Mask for eu_mdb_in when an SM violation has occurred
+reg do_mask_eu;
+always @(posedge mclk or posedge puc_rst)
+  if (puc_rst)           do_mask_eu <= 0;
+  else if (sm_violation) do_mask_eu <= 1;
+  else if (!eu_dmem_cen) do_mask_eu <= 0;
+
+wire [15:0] eu_mask = do_mask_eu ? 16'h0000 : 16'hffff;
+
+assign eu_mdb_in = raw_eu_mdb_in & eu_mask;
 
 // Debug interface  data Mux
 //---------------------------------

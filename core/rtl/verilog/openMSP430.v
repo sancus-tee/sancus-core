@@ -438,7 +438,8 @@ omsp_mem_backbone mem_backbone_0 (
     .per_dout     (per_dout_or),   // Peripheral data output
     .pmem_dout    (pmem_dout),     // Program Memory data output
     .puc_rst      (puc_rst),       // Main system reset
-    .scan_enable  (scan_enable)    // Scan enable (active during scan shifting)
+    .scan_enable  (scan_enable),   // Scan enable (active during scan shifting)
+    .sm_violation (spm_violation)
 );
 
 //=============================================================================
