@@ -129,10 +129,10 @@ wire               hw_uart_txd2;
 wire        [15:0] per_dout_uart2;
 
 // PS/2
-wire        [15:0] per_dout_ps2;
-wire               irq_rx_ps2;
-wire               ps2_clk;
-wire               ps2_data;
+//wire        [15:0] per_dout_ps2;
+//wire               irq_rx_ps2;
+//wire               ps2_clk;
+//wire               ps2_data;
 
 // Others
 wire               reset_pin;
@@ -140,22 +140,22 @@ wire               reset_pin;
 wire               dbg_sw = 1'b1;
 
 // Debug UART
-assign chan_io[16] = dbg_uart_txd & hw_uart2_txd;
-assign dbg_uart_rxd = chan_io[15];
+assign chan_io[25] = dbg_uart_txd & hw_uart2_txd;
+assign dbg_uart_rxd = chan_io[26];
 
 // Hardware UART
-assign chan_io[31] = hw_uart_txd;
-assign hw_uart_rxd = chan_io[30];
+assign chan_io[4] = hw_uart_txd;
+assign hw_uart_rxd = chan_io[21];
 
 // LCD UART
-assign chan_io[14] = lcd_uart_txd;
+//assign chan_io[14] = lcd_uart_txd;
 
 // PS2
-alias alias1(ps2_clk, chan_io[0]);
-alias alias2(ps2_data, chan_io[1]);
+//alias alias1(ps2_clk, chan_io[0]);
+//alias alias2(ps2_data, chan_io[1]);
 
 // 8 general purpose output pins
-assign chan_io[29:22] = p3_dout;
+//assign chan_io[29:22] = p3_dout;
 
 //=============================================================================
 // 2)  CLOCK GENERATION
@@ -395,38 +395,38 @@ omsp_uart #(.BASE_ADDR(15'h0088)) hw_uart2 (
 
 // UART used for the PmodCLS LCD module
 
-omsp_uart #(.BASE_ADDR(15'h0090)) lcd_uart (
-// OUTPUTs
-    .irq_uart_rx  (),                  // UART receive interrupt
-    .irq_uart_tx  (),                  // UART transmit interrupt
-    .per_dout     (per_dout_lcd_uart), // Peripheral data output
-    .uart_txd     (lcd_uart_txd),      // UART Data Transmit (TXD)
-
-// INPUTs
-    .mclk         (mclk),              // Main system clock
-    .per_addr     (per_addr),          // Peripheral address
-    .per_din      (per_din),           // Peripheral data input
-    .per_en       (per_en),            // Peripheral enable (high active)
-    .per_we       (per_we),            // Peripheral write enable (high active)
-    .puc_rst      (puc_rst),           // Main system reset
-    .smclk_en     (smclk_en),          // SMCLK enable (from CPU)
-    .uart_rxd     (1'b0)               // UART Data Receive (RXD)
-);
+//omsp_uart #(.BASE_ADDR(15'h0090)) lcd_uart (
+//// OUTPUTs
+//    .irq_uart_rx  (),                  // UART receive interrupt
+//    .irq_uart_tx  (),                  // UART transmit interrupt
+//    .per_dout     (per_dout_lcd_uart), // Peripheral data output
+//    .uart_txd     (lcd_uart_txd),      // UART Data Transmit (TXD)
+//
+//// INPUTs
+//    .mclk         (mclk),              // Main system clock
+//    .per_addr     (per_addr),          // Peripheral address
+//    .per_din      (per_din),           // Peripheral data input
+//    .per_en       (per_en),            // Peripheral enable (high active)
+//    .per_we       (per_we),            // Peripheral write enable (high active)
+//    .puc_rst      (puc_rst),           // Main system reset
+//    .smclk_en     (smclk_en),          // SMCLK enable (from CPU)
+//    .uart_rxd     (1'b0)               // UART Data Receive (RXD)
+//);
 
 // PS/2
 
-omsp_ps2 ps2(
-    .per_dout (per_dout_ps2),
-    .irq_rx   (irq_rx_ps2),
-    .ps2_clk  (ps2_clk),
-    .ps2_data (ps2_data),
-    .mclk     (mclk),
-    .per_addr (per_addr),
-    .per_din  (per_din),
-    .per_en   (per_en),
-    .per_we   (per_we),
-    .puc_rst  (puc_rst)
-);
+//omsp_ps2 ps2(
+//    .per_dout (per_dout_ps2),
+//    .irq_rx   (irq_rx_ps2),
+//    .ps2_clk  (ps2_clk),
+//    .ps2_data (ps2_data),
+//    .mclk     (mclk),
+//    .per_addr (per_addr),
+//    .per_din  (per_din),
+//    .per_en   (per_en),
+//    .per_we   (per_we),
+//    .puc_rst  (puc_rst)
+//);
 
 
 //
@@ -436,9 +436,9 @@ omsp_ps2 ps2(
 assign per_dout = per_dout_dio      |
                   per_dout_tA       |
                   per_dout_uart     |
-                  per_dout_uart2    |
-                  per_dout_lcd_uart |
-                  per_dout_ps2;
+                  per_dout_uart2;//    |
+                  //per_dout_lcd_uart |
+                  //per_dout_ps2;
 //
 // Assign interrupts
 //-------------------------------
@@ -452,7 +452,7 @@ assign irq_bus    = {1'b0,         // Vector 13  (0xFFFA)
                      irq_ta1,      // Vector  8  (0xFFF0)
                      irq_uart_rx,  // Vector  7  (0xFFEE)
                      irq_uart_tx,  // Vector  6  (0xFFEC)
-                     irq_rx_ps2,   // Vector  5  (0xFFEA)
+                     1'b0,//irq_rx_ps2,   // Vector  5  (0xFFEA)
                      1'b0,         // Vector  4  (0xFFE8)
                      irq_port2,    // Vector  3  (0xFFE6)
                      irq_port1,    // Vector  2  (0xFFE4)
@@ -580,7 +580,7 @@ assign pmem_wen_n = ~ pmem_wen;
 
 
 // Data Memory
-ram_8x8k ram_hi (
+ram_8x5k ram_hi (
     .addra         (dmem_addr),
     .clka          (clk_sys),
     .dina          (dmem_din[15:8]),
@@ -588,7 +588,7 @@ ram_8x8k ram_hi (
     .ena           (dmem_cen_n),
     .wea           (dmem_wen_n[1])
 );
-ram_8x8k ram_lo (
+ram_8x5k ram_lo (
     .addra         (dmem_addr),
     .clka          (clk_sys),
     .dina          (dmem_din[7:0]),
@@ -599,7 +599,7 @@ ram_8x8k ram_lo (
 
 
 // Program Memory
-rom_8x16k rom_hi (
+rom_8x24k rom_hi (
     .addra         (pmem_addr),
     .clka          (clk_sys),
     .dina          (pmem_din[15:8]),
@@ -608,7 +608,7 @@ rom_8x16k rom_hi (
     .wea           (pmem_wen_n[1])
 );
 
-rom_8x16k rom_lo (
+rom_8x24k rom_lo (
     .addra         (pmem_addr),
     .clka          (clk_sys),
     .dina          (pmem_din[7:0]),
