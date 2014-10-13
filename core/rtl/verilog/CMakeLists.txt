@@ -40,6 +40,7 @@ set(SRC
     periph/omsp_timerA.v
     periph/template_periph_16b.v
     periph/template_periph_8b.v
+    periph/omsp_tsc.v
 )
 
 install(FILES ${SRC} DESTINATION ${INSTALL_RTL_PATH})

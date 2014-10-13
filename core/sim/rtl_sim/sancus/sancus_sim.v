@@ -100,10 +100,6 @@ reg          [7:0] p4_din;
 reg          [7:0] p5_din;
 reg          [7:0] p6_din;
 
-// Peripheral templates
-wire        [15:0] per_dout_temp_8b;
-wire        [15:0] per_dout_temp_16b;
-
 // Simple full duplex UART
 wire        [15:0] per_dout_uart;
 wire               irq_uart_rx;
@@ -129,6 +125,9 @@ wire               ta_out1;
 wire               ta_out1_en;
 wire               ta_out2;
 wire               ta_out2_en;
+
+// Time Stamp Counter
+wire        [15:0] per_dout_tsc;
 
 // File IO
 wire        [15:0] per_dout_file_io;
@@ -493,38 +492,16 @@ omsp_uart #(.BASE_ADDR(15'h0080)) uart_0 (
 `endif
 
 //
-// Peripheral templates
+// Time Stamp Counter
 //----------------------------------
-
-template_periph_8b template_periph_8b_0 (
-
-// OUTPUTs
-    .per_dout     (per_dout_temp_8b),  // Peripheral data output
-
-// INPUTs
-    .mclk         (mclk),              // Main system clock
-    .per_addr     (per_addr),          // Peripheral address
-    .per_din      (per_din),           // Peripheral data input
-    .per_en       (per_en),            // Peripheral enable (high active)
-    .per_we       (per_we),            // Peripheral write enable (high active)
-    .puc_rst      (puc_rst)            // Main system reset
-);
-
-`ifdef CVER
-template_periph_16b #(15'h0190)             template_periph_16b_0 (
-`else
-template_periph_16b #(.BASE_ADDR((15'd`PER_SIZE-15'h0070) & 15'h7ff8)) template_periph_16b_0 (
-`endif
-// OUTPUTs
-    .per_dout     (per_dout_temp_16b), // Peripheral data output
-
-// INPUTs
-    .mclk         (mclk),              // Main system clock
-    .per_addr     (per_addr),          // Peripheral address
-    .per_din      (per_din),           // Peripheral data input
-    .per_en       (per_en),            // Peripheral enable (high active)
-    .per_we       (per_we),            // Peripheral write enable (high active)
-    .puc_rst      (puc_rst)            // Main system reset
+omsp_tsc tsc(
+    .per_dout (per_dout_tsc),
+    .mclk     (mclk),
+    .per_addr (per_addr),
+    .per_din  (per_din),
+    .per_en   (per_en),
+    .per_we   (per_we),
+    .puc_rst  (puc_rst)
 );
 
 //
@@ -548,8 +525,7 @@ file_io file_io_0 (
 assign per_dout = per_dout_dio       |
                   per_dout_timerA    |
                   per_dout_uart      |
-                  per_dout_temp_8b   |
-                  per_dout_temp_16b  |
+                  per_dout_tsc       |
                   per_dout_file_io;
 
 

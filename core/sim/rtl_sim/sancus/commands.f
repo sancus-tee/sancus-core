@@ -39,8 +39,7 @@
 #omsp_timerA_defines.v
 #omsp_timerA_undefines.v
 #omsp_timerA.v
-#template_periph_16b.v
-#template_periph_8b.v
+#omsp_tsc.v
 #msp_debug.v
 #ram.v
 #registers.v
