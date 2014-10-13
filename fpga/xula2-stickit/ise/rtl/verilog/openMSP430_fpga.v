@@ -154,9 +154,6 @@ assign hw_uart_rxd = chan_io[21];
 //alias alias1(ps2_clk, chan_io[0]);
 //alias alias2(ps2_data, chan_io[1]);
 
-// 8 general purpose output pins
-//assign chan_io[29:22] = p3_dout;
-
 //=============================================================================
 // 2)  CLOCK GENERATION
 //=============================================================================
@@ -568,6 +565,25 @@ io_mux #8 io_mux_p2 (
 		     .sel        (p2_sel)
 );
 
+// 8 general purpose I/O pins
+// Connected to WING1 and PM2
+assign p1_io_din[0] = chan_io[15];
+assign p1_io_din[1] = chanClk_io;
+assign p1_io_din[2] = chan_io[16];
+assign p1_io_din[3] = chan_io[0];
+assign p1_io_din[4] = chan_io[17];
+assign p1_io_din[5] = chan_io[1];
+assign p1_io_din[6] = chan_io[18];
+assign p1_io_din[7] = chan_io[3];
+
+assign chan_io[15] = p1_io_dout_en[0] ? p1_io_dout[0] : 1'bz;
+assign chanClk_io  = p1_io_dout_en[1] ? p1_io_dout[1] : 1'bz;
+assign chan_io[16] = p1_io_dout_en[2] ? p1_io_dout[2] : 1'bz;
+assign chan_io[0]  = p1_io_dout_en[3] ? p1_io_dout[3] : 1'bz;
+assign chan_io[17] = p1_io_dout_en[4] ? p1_io_dout[4] : 1'bz;
+assign chan_io[1]  = p1_io_dout_en[5] ? p1_io_dout[5] : 1'bz;
+assign chan_io[18] = p1_io_dout_en[6] ? p1_io_dout[6] : 1'bz;
+assign chan_io[3]  = p1_io_dout_en[7] ? p1_io_dout[7] : 1'bz;
 
 //=============================================================================
 // 6)  PROGRAM AND DATA MEMORIES
@@ -657,7 +673,6 @@ rom_8x24k rom_lo (
 // RS-232 Port
 //----------------------
 // P1.1 (TX) and P2.2 (RX)
-assign p1_io_din      = 8'h00;
 assign p2_io_din[1:0] = 2'h00;
 assign p2_io_din[7:3] = 5'h00;
 
