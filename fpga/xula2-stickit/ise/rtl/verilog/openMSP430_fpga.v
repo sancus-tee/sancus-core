@@ -134,6 +134,8 @@ wire        [15:0] per_dout_uart2;
 //wire               ps2_clk;
 //wire               ps2_data;
 
+wire        [15:0] per_dout_tsc;
+
 // Others
 wire               reset_pin;
 
@@ -425,6 +427,16 @@ omsp_uart #(.BASE_ADDR(15'h0088)) hw_uart2 (
 //    .puc_rst  (puc_rst)
 //);
 
+// TSC
+omsp_tsc tsc(
+    .per_dout (per_dout_tsc),
+    .mclk     (mclk),
+    .per_addr (per_addr),
+    .per_din  (per_din),
+    .per_en   (per_en),
+    .per_we   (per_we),
+    .puc_rst  (puc_rst)
+);
 
 //
 // Combine peripheral data buses
@@ -433,9 +445,8 @@ omsp_uart #(.BASE_ADDR(15'h0088)) hw_uart2 (
 assign per_dout = per_dout_dio      |
                   per_dout_tA       |
                   per_dout_uart     |
-                  per_dout_uart2;//    |
-                  //per_dout_lcd_uart |
-                  //per_dout_ps2;
+                  per_dout_uart2    |
+                  per_dout_tsc;
 //
 // Assign interrupts
 //-------------------------------
