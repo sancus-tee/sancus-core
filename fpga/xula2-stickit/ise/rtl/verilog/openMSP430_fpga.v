@@ -129,12 +129,20 @@ wire               hw_uart_txd2;
 wire        [15:0] per_dout_uart2;
 
 // PS/2
-//wire        [15:0] per_dout_ps2;
-//wire               irq_rx_ps2;
-//wire               ps2_clk;
-//wire               ps2_data;
+wire        [15:0] per_dout_ps2;
+wire               irq_rx_ps2;
+wire               ps2_clk;
+wire               ps2_data;
 
+// TSC
 wire        [15:0] per_dout_tsc;
+
+// SPI master
+wire        [15:0] per_dout_spi;
+wire               spi_mosi;
+wire               spi_miso;
+wire               spi_sck;
+wire               spi_ss;
 
 // Others
 wire               reset_pin;
@@ -153,8 +161,14 @@ assign hw_uart_rxd = chan_io[21];
 //assign chan_io[14] = lcd_uart_txd;
 
 // PS2
-//alias alias1(ps2_clk, chan_io[0]);
-//alias alias2(ps2_data, chan_io[1]);
+alias alias1(ps2_clk, chanClk_io);
+alias alias2(ps2_data, chan_io[15]);
+
+// SPI master
+assign chan_io[3]  = spi_sck;
+assign spi_miso    = chan_io[18];
+assign chan_io[1]  = spi_mosi;
+assign chan_io[17] = spi_ss;
 
 //=============================================================================
 // 2)  CLOCK GENERATION
@@ -414,18 +428,18 @@ omsp_uart #(.BASE_ADDR(15'h0088)) hw_uart2 (
 
 // PS/2
 
-//omsp_ps2 ps2(
-//    .per_dout (per_dout_ps2),
-//    .irq_rx   (irq_rx_ps2),
-//    .ps2_clk  (ps2_clk),
-//    .ps2_data (ps2_data),
-//    .mclk     (mclk),
-//    .per_addr (per_addr),
-//    .per_din  (per_din),
-//    .per_en   (per_en),
-//    .per_we   (per_we),
-//    .puc_rst  (puc_rst)
-//);
+omsp_ps2 ps2(
+    .per_dout (per_dout_ps2),
+    .irq_rx   (irq_rx_ps2),
+    .ps2_clk  (ps2_clk),
+    .ps2_data (ps2_data),
+    .mclk     (mclk),
+    .per_addr (per_addr),
+    .per_din  (per_din),
+    .per_en   (per_en),
+    .per_we   (per_we),
+    .puc_rst  (puc_rst)
+);
 
 // TSC
 omsp_tsc tsc(
@@ -438,6 +452,22 @@ omsp_tsc tsc(
     .puc_rst  (puc_rst)
 );
 
+// SPI master
+omsp_spi_master spi_master(
+    .per_dout   (per_dout_spi),
+    .sck        (spi_sck),
+    .ss         (spi_ss),
+    .mosi       (spi_mosi),
+
+    .mclk       (mclk),
+    .miso       (spi_miso),
+    .per_addr   (per_addr),
+    .per_din    (per_din),
+    .per_en     (per_en),
+    .per_we     (per_we),
+    .puc_rst    (puc_rst)
+);
+
 //
 // Combine peripheral data buses
 //-------------------------------
@@ -446,7 +476,9 @@ assign per_dout = per_dout_dio      |
                   per_dout_tA       |
                   per_dout_uart     |
                   per_dout_uart2    |
-                  per_dout_tsc;
+                  per_dout_ps2      |
+                  per_dout_tsc      |
+                  per_dout_spi;
 //
 // Assign interrupts
 //-------------------------------
@@ -460,7 +492,7 @@ assign irq_bus    = {1'b0,         // Vector 13  (0xFFFA)
                      irq_ta1,      // Vector  8  (0xFFF0)
                      irq_uart_rx,  // Vector  7  (0xFFEE)
                      irq_uart_tx,  // Vector  6  (0xFFEC)
-                     1'b0,//irq_rx_ps2,   // Vector  5  (0xFFEA)
+                     irq_rx_ps2,   // Vector  5  (0xFFEA)
                      1'b0,         // Vector  4  (0xFFE8)
                      irq_port2,    // Vector  3  (0xFFE6)
                      irq_port1,    // Vector  2  (0xFFE4)
@@ -578,23 +610,23 @@ io_mux #8 io_mux_p2 (
 
 // 8 general purpose I/O pins
 // Connected to WING1 and PM2
-assign p1_io_din[0] = chan_io[15];
-assign p1_io_din[1] = chanClk_io;
-assign p1_io_din[2] = chan_io[16];
-assign p1_io_din[3] = chan_io[0];
-assign p1_io_din[4] = chan_io[17];
-assign p1_io_din[5] = chan_io[1];
-assign p1_io_din[6] = chan_io[18];
-assign p1_io_din[7] = chan_io[3];
+assign p1_io_din[0] = chan_io[23]; // WING2/A7
+assign p1_io_din[1] = chan_io[7];  // WING2/A8
+assign p1_io_din[2] = chan_io[8];  // WING3/A1
+assign p1_io_din[3] = chan_io[10]; // WING3/A4
+assign p1_io_din[4] = chan_io[11]; // WING3/A5
+assign p1_io_din[5] = chan_io[28]; // WING3/A6
+assign p1_io_din[6] = chan_io[13]; // WING3/A7
+assign p1_io_din[7] = chan_io[14]; // WING3/A8
 
-assign chan_io[15] = p1_io_dout_en[0] ? p1_io_dout[0] : 1'bz;
-assign chanClk_io  = p1_io_dout_en[1] ? p1_io_dout[1] : 1'bz;
-assign chan_io[16] = p1_io_dout_en[2] ? p1_io_dout[2] : 1'bz;
-assign chan_io[0]  = p1_io_dout_en[3] ? p1_io_dout[3] : 1'bz;
-assign chan_io[17] = p1_io_dout_en[4] ? p1_io_dout[4] : 1'bz;
-assign chan_io[1]  = p1_io_dout_en[5] ? p1_io_dout[5] : 1'bz;
-assign chan_io[18] = p1_io_dout_en[6] ? p1_io_dout[6] : 1'bz;
-assign chan_io[3]  = p1_io_dout_en[7] ? p1_io_dout[7] : 1'bz;
+assign chan_io[23] = p1_io_dout_en[0] ? p1_io_dout[0] : 1'bz;
+assign chan_io[7]  = p1_io_dout_en[1] ? p1_io_dout[1] : 1'bz;
+assign chan_io[8]  = p1_io_dout_en[2] ? p1_io_dout[2] : 1'bz;
+assign chan_io[10] = p1_io_dout_en[3] ? p1_io_dout[3] : 1'bz;
+assign chan_io[11] = p1_io_dout_en[4] ? p1_io_dout[4] : 1'bz;
+assign chan_io[28] = p1_io_dout_en[5] ? p1_io_dout[5] : 1'bz;
+assign chan_io[13] = p1_io_dout_en[6] ? p1_io_dout[6] : 1'bz;
+assign chan_io[14] = p1_io_dout_en[7] ? p1_io_dout[7] : 1'bz;
 
 //=============================================================================
 // 6)  PROGRAM AND DATA MEMORIES
@@ -607,7 +639,7 @@ assign pmem_wen_n = ~ pmem_wen;
 
 
 // Data Memory
-ram_8x5k ram_hi (
+ram_8x12k ram_hi (
     .addra         (dmem_addr),
     .clka          (clk_sys),
     .dina          (dmem_din[15:8]),
@@ -615,7 +647,7 @@ ram_8x5k ram_hi (
     .ena           (dmem_cen_n),
     .wea           (dmem_wen_n[1])
 );
-ram_8x5k ram_lo (
+ram_8x12k ram_lo (
     .addra         (dmem_addr),
     .clka          (clk_sys),
     .dina          (dmem_din[7:0]),
@@ -626,7 +658,7 @@ ram_8x5k ram_lo (
 
 
 // Program Memory
-rom_8x24k rom_hi (
+rom_8x16k rom_hi (
     .addra         (pmem_addr),
     .clka          (clk_sys),
     .dina          (pmem_din[15:8]),
@@ -635,7 +667,7 @@ rom_8x24k rom_hi (
     .wea           (pmem_wen_n[1])
 );
 
-rom_8x24k rom_lo (
+rom_8x16k rom_lo (
     .addra         (pmem_addr),
     .clka          (clk_sys),
     .dina          (pmem_din[7:0]),
