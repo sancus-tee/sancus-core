@@ -41,6 +41,8 @@ set(SRC
     periph/template_periph_16b.v
     periph/template_periph_8b.v
     periph/omsp_tsc.v
+    periph/omsp_spi_master.v
+    periph/spi_master.v
 )
 
 install(FILES ${SRC} DESTINATION ${INSTALL_RTL_PATH})
