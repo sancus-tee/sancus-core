@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import argparse
 import re
@@ -25,11 +25,11 @@ def _parse_size(val):
 def _run(prog, *args):
     cmd = [prog] + list(args)
     if cli_args.verbose:
-        print ' '.join(cmd)
+        print(' '.join(cmd))
     try:
         subprocess.check_call(cmd)
     except:
-        print 'Command failed: "{}"'.format(' '.join(cmd))
+        print('Command failed: "{}"'.format(' '.join(cmd)))
         exit(1)
 
 parser = argparse.ArgumentParser(description='Sancus simulator')
@@ -85,8 +85,8 @@ _run('iverilog', '-DMEM_DEFINED', '-DPMEM_SIZE_CUSTOM', '-DDMEM_SIZE_CUSTOM',
                  '-DDUMPFILE="{}"'.format(dumpfile),
                  '-f', COMMANDS, '-o', sim_file)
 
-print 'Starting Verilog simulation. Press <Ctrl-C> to get to the Icarus ' + \
-      'Verilog CLI, then "finish" to exit.'
+print('Starting Verilog simulation. Press <Ctrl-C> to get to the Icarus '
+      'Verilog CLI, then "finish" to exit.')
 
 env = os.environ.copy()
 env['IVERILOG_DUMPER'] = dumper
