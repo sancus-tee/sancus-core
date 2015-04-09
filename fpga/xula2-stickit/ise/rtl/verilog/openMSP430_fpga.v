@@ -639,7 +639,7 @@ assign pmem_wen_n = ~ pmem_wen;
 
 
 // Data Memory
-ram_8x12k ram_hi (
+ram_8x8k ram_hi (
     .addra         (dmem_addr),
     .clka          (clk_sys),
     .dina          (dmem_din[15:8]),
@@ -647,7 +647,7 @@ ram_8x12k ram_hi (
     .ena           (dmem_cen_n),
     .wea           (dmem_wen_n[1])
 );
-ram_8x12k ram_lo (
+ram_8x8k ram_lo (
     .addra         (dmem_addr),
     .clka          (clk_sys),
     .dina          (dmem_din[7:0]),
@@ -658,7 +658,7 @@ ram_8x12k ram_lo (
 
 
 // Program Memory
-rom_8x16k rom_hi (
+rom_8x20_5k rom_hi (
     .addra         (pmem_addr),
     .clka          (clk_sys),
     .dina          (pmem_din[15:8]),
@@ -667,7 +667,7 @@ rom_8x16k rom_hi (
     .wea           (pmem_wen_n[1])
 );
 
-rom_8x16k rom_lo (
+rom_8x20_5k rom_lo (
     .addra         (pmem_addr),
     .clka          (clk_sys),
     .dina          (pmem_din[7:0]),
