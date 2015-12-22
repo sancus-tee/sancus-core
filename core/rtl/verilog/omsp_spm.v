@@ -14,7 +14,9 @@ module omsp_spm(
   input  wire                    update_spm,
   input  wire                    enable_spm,
   input  wire                    check_new_spm,
+  input  wire                    verify_spm,
   input  wire             [15:0] next_id,
+  input  wire             [15:0] r10,
   input  wire             [15:0] r12,
   input  wire             [15:0] r13,
   input  wire             [15:0] r14,
@@ -94,11 +96,11 @@ begin
         secret_start <= r14;
         secret_end <= r15;
         enabled <= 1;
-        $display("New SM config: %h %h %h %h", r12, r13, r14, r15);
+        $display("New SM config: %h %h %h %h, %b", r12, r13, r14, r15, |r10);
       end
       else
       begin
-        $display("Invalid SM config: %h %h %h %h", r12, r13, r14, r15);
+        $display("Invalid SM config: %h %h %h %h, %b", r12, r13, r14, r15, |r10);
       end
     end
     else if (pc >= public_start && pc < public_end)
@@ -117,8 +119,10 @@ begin
 end
 
 wire exec_public = exec_spm(pc);
+wire access_public = eu_mb_en & (eu_mab >= public_start) & (eu_mab < public_end);
 wire access_secret = eu_mb_en & (eu_mab >= secret_start) & (eu_mab < secret_end);
-wire mem_violation = access_secret & ~exec_public;
+wire mem_violation = (access_public & ~(enable_spm | verify_spm | executing)) |
+                     (access_secret & ~exec_public);
 wire exec_violation = exec_public & ~exec_spm(prev_pc) & (pc != public_start);
 wire create_violation = check_new_spm &
                         (do_overlap(r12, r13, public_start, public_end));// |
