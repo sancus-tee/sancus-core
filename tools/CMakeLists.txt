@@ -16,9 +16,14 @@ set(GDB_FILES
     openmsp430-gdbproxy/server.tcl
 )
 
+set(XML_FILES
+    omsp_alias.xml
+)
+
 install(PROGRAMS ${BIN_FILES} DESTINATION ${INSTALL_TOOLS_PATH}/bin)
 install(FILES    ${LIB_FILES} DESTINATION ${INSTALL_TOOLS_PATH}/lib/tcl-lib)
 install(FILES    ${GDB_FILES} DESTINATION ${INSTALL_TOOLS_PATH}/openmsp430-gdbproxy)
+install(FILES    ${XML_FILES} DESTINATION ${INSTALL_TOOLS_PATH})
 
 configure_file(sancus-gdbproxy.in sancus-gdbproxy)
 configure_file(sancus-loader.in sancus-loader)

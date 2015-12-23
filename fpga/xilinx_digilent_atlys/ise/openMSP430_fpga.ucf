@@ -1,0 +1,102 @@
+#=============================================================================
+# Copyright (C) 2001 Authors
+#
+# This source file may be used and distributed without restriction provided
+# that this copyright statement is not removed from the file and that any
+# derivative work contains the original copyright notice and the associated
+# disclaimer.
+#
+# This source file is free software; you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published
+# by the Free Software Foundation; either version 2.1 of the License, or
+# (at your option) any later version.
+#
+# This source is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+# License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this source; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+#
+#-----------------------------------------------------------------------------
+# 
+# File Name: openMSP430_fpga.ucf
+# 
+# Author(s):
+#             - Olivier Girard,    olgirard@gmail.com
+#
+#-----------------------------------------------------------------------------
+# $Rev: 153 $
+# $LastChangedBy: olivier.girard $
+# $LastChangedDate: 2012-08-22 00:27:18 +0200 (Wed, 22 Aug 2012) $
+#=============================================================================
+
+#-----------------------------------------------------------------------------#
+# Clock configuration & ROM Block Assignments                                 #
+#-----------------------------------------------------------------------------#
+
+# CLOCKS Definition
+NET "CLK_100MHz" PERIOD = 10  nS LOW 5.0  nS;
+NET "dcm_clk"    PERIOD = 100 nS LOW 50.0 nS;
+NET "clk_sys"    PERIOD = 100 nS LOW 50.0 nS;
+
+
+# DCM Configuration
+INST dcm_adv_clk_main CLK_FEEDBACK          = 1X;
+INST dcm_adv_clk_main CLKDV_DIVIDE          = 2.5;
+INST dcm_adv_clk_main CLKFX_DIVIDE          = 10;
+INST dcm_adv_clk_main CLKFX_MULTIPLY        = 2;
+INST dcm_adv_clk_main CLKIN_DIVIDE_BY_2     = FALSE;
+INST dcm_adv_clk_main CLKIN_PERIOD          = 100.000;
+INST dcm_adv_clk_main CLKOUT_PHASE_SHIFT    = NONE;
+INST dcm_adv_clk_main DESKEW_ADJUST         = SYSTEM_SYNCHRONOUS;
+INST dcm_adv_clk_main DFS_FREQUENCY_MODE    = LOW;
+INST dcm_adv_clk_main DLL_FREQUENCY_MODE    = LOW;
+INST dcm_adv_clk_main DUTY_CYCLE_CORRECTION = TRUE;
+INST dcm_adv_clk_main FACTORY_JF            = 8080;
+INST dcm_adv_clk_main PHASE_SHIFT           = 0;
+INST dcm_adv_clk_main STARTUP_WAIT          = FALSE;
+
+
+#-----------------------------------------------------------------------------#
+# Clock Sources                                                               #
+#-----------------------------------------------------------------------------#
+
+#NET "CLK_50MHz"   LOC = "L15"   |     IOSTANDARD = LVCMOS33 ;   // Input
+NET "CLK_100MHz"   LOC = "L15"   |     IOSTANDARD = LVCMOS33 ;   // Input
+#NET "CLK_SOCKET"  LOC = "D9"    |     IOSTANDARD = LVCMOS33 ;   // Input
+
+
+#-----------------------------------------------------------------------------#
+# Switches and LEDs                                                           #
+#-----------------------------------------------------------------------------#
+
+# Slide Switches
+NET "SW7"         LOC = "E4"     |     IOSTANDARD = LVCMOS33 ;   // Input
+NET "SW6"         LOC = "T5"     |     IOSTANDARD = LVCMOS33 ;   // Input
+NET "SW5"         LOC = "R5"     |     IOSTANDARD = LVCMOS33 ;   // Input
+NET "SW4"         LOC = "P12"    |     IOSTANDARD = LVCMOS33 ;   // Input
+NET "SW3"         LOC = "P15"    |     IOSTANDARD = LVCMOS33 ;   // Input
+NET "SW2"         LOC = "C14"    |     IOSTANDARD = LVCMOS33 ;   // Input
+NET "SW1"         LOC = "D14"    |     IOSTANDARD = LVCMOS33 ;   // Input
+NET "SW0"         LOC = "A10"    |     IOSTANDARD = LVCMOS33 ;   // Input
+
+# LEDs
+NET "LED7"        LOC = "N12"    |     IOSTANDARD = LVCMOS33 ;   // Output
+NET "LED6"        LOC = "P16"    |     IOSTANDARD = LVCMOS33 ;   // Output
+NET "LED5"        LOC = "D4"     |     IOSTANDARD = LVCMOS33 ;   // Output
+NET "LED4"        LOC = "M13"    |     IOSTANDARD = LVCMOS33 ;   // Output
+NET "LED3"        LOC = "L14"    |     IOSTANDARD = LVCMOS33 ;   // Output
+NET "LED2"        LOC = "N14"    |     IOSTANDARD = LVCMOS33 ;   // Output
+NET "LED1"        LOC = "M14"    |     IOSTANDARD = LVCMOS33 ;   // Output
+NET "LED0"        LOC = "U18"    |     IOSTANDARD = LVCMOS33 ;   // Output
+
+
+#-----------------------------------------------------------------------------#
+# RS-232 Port                                                                 #
+#-----------------------------------------------------------------------------#
+
+NET "UART_RXD"    LOC = "A16"    |     IOSTANDARD = LVCMOS33 ;   // Input
+NET "UART_TXD"    LOC = "B16"    |     IOSTANDARD = LVCMOS33 ;   // Output

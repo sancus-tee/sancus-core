@@ -1,1 +1,0 @@
-msp430-objdump -d pmem.elf
