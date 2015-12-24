@@ -696,7 +696,7 @@ assign sm_data_select = cmd_key         ? r12        :
 
 // valid SM selected
 wire sm_data_needed = cmd_key | do_verify | cmd_id;
-wire sm_key_needed  = !(cmd_id | cmd_id_prev);
+wire sm_key_needed  = !(cmd_id | cmd_id_prev | do_verify);
 wire sm_valid = (!sm_data_needed | sm_data_select_valid) &
                 (!sm_key_needed  | sm_key_select_valid);
 
