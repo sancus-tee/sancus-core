@@ -193,6 +193,7 @@ wire [15:0] dest_reg     = crypto_reg_write ? 16'h8000        : inst_dest;
 wire [15:0] reg_dest_val = crypto_reg_write ? crypto_data_out : alu_out;
 
 //wires for sm instructions
+wire [15:0] r9;
 wire [15:0] r10;
 wire [15:0] r11;
 wire [15:0] r12;
@@ -224,6 +225,7 @@ omsp_register_file register_file_0 (
     .scg0               (scg0),         // System clock generator 1. Turns off the DCO
     .scg1               (scg1),         // System clock generator 1. Turns off the SMCLK
     .status             (status),       // R2 Status {V,N,Z,C}
+    .r9                 (r9),
     .r10                (r10),
     .r11                (r11),
     .r12                (r12),
@@ -541,6 +543,7 @@ crypto_control #(
   .cmd_id_prev            (sm_id_prev),
   .mem_in                 (mdb_in),
   .pc                     (current_inst_pc),
+  .r9                     (r9),
   .r10                    (r10),
   .r11                    (r11),
   .r12                    (r12),
