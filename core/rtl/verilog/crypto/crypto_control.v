@@ -44,10 +44,11 @@ module crypto_control(
 parameter KEY_IDX_SIZE = -1;
 
 // key selection constants
-localparam [1:0] KEY_SEL_NONE   = 0,
+localparam [2:0] KEY_SEL_NONE   = 0,
                  KEY_SEL_MASTER = 1,
                  KEY_SEL_SM     = 2,
-                 KEY_SEL_ZERO   = 3;
+                 KEY_SEL_ZERO   = 3,
+                 KEY_SEL_MEM    = 4;
 
 function [15:0] swap_bytes;
     input [15:0] word;
@@ -58,6 +59,9 @@ endfunction
 localparam STATE_SIZE = 6;
 localparam [STATE_SIZE-1:0] IDLE              =  0,
                             CHECK_SM          =  1,
+                            LOAD_KEY_INIT     = 51,
+                            LOAD_KEY          = 52,
+                            LOAD_KEY_NEXT     = 53,
                             WRAP_AD_INIT      =  2,
                             WRAP_AD           =  3,
                             WRAP_AD_WAIT      =  4,
@@ -113,13 +117,17 @@ reg [STATE_SIZE-1:0] state, next_state;
 
 always @(*)
     case (state)
-        IDLE:              next_state = start       ? CHECK_SM          : IDLE;
+        IDLE:              next_state = ~start      ? IDLE              :
+                                        load_key    ? LOAD_KEY_INIT     : CHECK_SM;
         CHECK_SM:          next_state = ~sm_valid   ? FAIL              :
                                         do_wrap     ? WRAP_AD_INIT      :
                                         cmd_key     ? GEN_VKEY_INIT     :
                                         do_verify   ? VERIFY_INIT_PS    :
                                         cmd_id      ? SUCCESS           :
                                         cmd_id_prev ? SUCCESS           : INTERNAL_ERROR;
+        LOAD_KEY_INIT:     next_state =               LOAD_KEY_NEXT;
+        LOAD_KEY:          next_state = mem_done    ? WRAP_AD_INIT      : LOAD_KEY_NEXT;
+        LOAD_KEY_NEXT:     next_state =               LOAD_KEY;
         WRAP_AD_INIT:      next_state =               WRAP_AD_WAIT;
         WRAP_AD:           next_state =               WRAP_AD_WAIT;
         WRAP_AD_WAIT:      next_state = wrap_busy   ? WRAP_AD_WAIT      :
@@ -227,6 +235,7 @@ begin
     key_select_val = KEY_SEL_NONE;
     sm_key_write = 0;
     sm_request = 0;
+    load_key_block = 0;
 
     case (next_state)
         IDLE:
@@ -239,10 +248,29 @@ begin
         begin
         end
 
+        LOAD_KEY_INIT:
+        begin
+            mab_ctr_init = 1;
+            mab_ctr_base = r9;
+            mab_ctr_limit_init = 1;
+            mab_ctr_limit = r9 + `SECURITY / 8;
+        end
+
+        LOAD_KEY:
+        begin
+            load_key_block = 1;
+        end
+
+        LOAD_KEY_NEXT:
+        begin
+            mb_en = 1;
+            mab_ctr_inc = 1;
+        end
+
         WRAP_AD_INIT:
         begin
             update_key_select = 1;
-            key_select_val = KEY_SEL_SM;
+            key_select_val = use_mem_key ? KEY_SEL_MEM : KEY_SEL_SM;
             mab_ctr_init = 1;
             mab_ctr_base = r10;
             mab_ctr_limit_init = 1;
@@ -581,11 +609,13 @@ begin
 end
 
 // other logic *****************************************************************
-wire do_wrap    = cmd_wrap | cmd_unwrap;
-wire do_verify  = cmd_verify_addr | cmd_verify_prev;
-wire only_tag   = cmd_wrap & (r12 == r13);
-wire do_decrypt = |r10;
-wire unwrap     = cmd_unwrap | do_decrypt;
+wire do_wrap     = cmd_wrap | cmd_unwrap;
+wire use_mem_key = r9 != 0;
+wire load_key    = do_wrap & use_mem_key;
+wire do_verify   = cmd_verify_addr | cmd_verify_prev;
+wire only_tag    = cmd_wrap & (r12 == r13);
+wire do_decrypt  = cmd_key & |r10;
+wire unwrap      = cmd_unwrap | do_decrypt;
 
 // memory address counter used when looping over a range of addresses
 reg [15:0] mab_ctr;
@@ -658,10 +688,23 @@ assign sm_key_idx = key_ctr;
 // master key
 wire [0:`SECURITY-1] master_key = `MASTER_KEY;
 
+// key loaded from memory
+// FIXME It should not be necessary to store this key in a register because the
+// key is loaded serially into the sponge. Therefore, the wrap's state machine
+// should be fixed to not rely on a parallel key input.
+reg [0:`SECURITY-1] loaded_key;
+reg                 load_key_block;
+
+always @(posedge clk)
+    if (reset)
+        loaded_key <= `SECURITY'hx;
+    else if (load_key_block)
+        loaded_key <= {loaded_key[16:`SECURITY-1], swap_bytes(mem_in)};
+
 // key selection
 reg [0:`SECURITY-1] key;
-reg           [1:0] key_select;
-reg           [1:0] key_select_val;
+reg           [2:0] key_select;
+reg           [2:0] key_select_val;
 reg                 update_key_select;
 
 always @(*)
@@ -669,6 +712,7 @@ always @(*)
         KEY_SEL_MASTER: key = master_key;
         KEY_SEL_SM:     key = sm_key;
         KEY_SEL_ZERO:   key = `SECURITY'h0;
+        KEY_SEL_MEM:    key = loaded_key;
         default:        key = `SECURITY'hx;
     endcase
 
