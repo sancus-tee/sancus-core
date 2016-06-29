@@ -337,7 +337,7 @@ omsp_frontend frontend_0 (
     .wkup         (wkup),          // System Wake-up (asynchronous)
     .spm_busy     (spm_busy),
     .pmem_writing (pmem_writing),
-    .sm_irq       (spm_violation)
+    .sm_violation (spm_violation)
 );
 
 
