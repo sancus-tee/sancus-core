@@ -189,8 +189,8 @@ wire reg_incr     =  (exec_done          & inst_as[`INDIR_I]) |
 
 assign dbg_reg_din = reg_dest;
 
-wire [15:0] dest_reg     = crypto_reg_write ? 16'h8000        : inst_dest;
-wire [15:0] reg_dest_val = crypto_reg_write ? crypto_data_out : alu_out;
+wire [15:0] dest_reg     = crypto_reg_write ? 16'h8000            : inst_dest;
+wire [15:0] reg_dest_val = crypto_reg_write ? crypto_reg_data_out : alu_out;
 
 //wires for sm instructions
 wire [15:0] r9;
@@ -484,6 +484,7 @@ wire  [1:0] crypto_mb_wr;
 wire [15:0] crypto_data_out;
 wire        crypto_busy;
 wire        crypto_reg_write;
+wire [15:0] crypto_reg_data_out;
 
 wire crypto_start = do_sm_inst & (sm_disable     | sm_enable      |
                                   sm_verify_addr | sm_verify_prev |
@@ -568,6 +569,7 @@ crypto_control #(
   .mb_wr                  (crypto_mb_wr),
   .mab                    (crypto_mab),
   .reg_write              (crypto_reg_write),
+  .reg_data_out           (crypto_reg_data_out),
   .sm_key_write           (sm_write_key),
   .sm_key_idx             (sm_key_idx),
   .data_out               (crypto_data_out)

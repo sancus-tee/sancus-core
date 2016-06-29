@@ -36,6 +36,7 @@ module crypto_control(
     output reg               [1:0] mb_wr,
     output wire             [15:0] mab,
     output reg                     reg_write,
+    output reg              [15:0] reg_data_out,
     output reg                     sm_key_write,
     output wire [KEY_IDX_SIZE-1:0] sm_key_idx,
     output reg              [15:0] data_out
@@ -227,7 +228,8 @@ begin
     mab_select_cipher = 0;
     mb_en = 0;
     mb_wr = 0;
-    reg_write = 0;
+    set_reg_write = 0;
+    reg_data = 0;
     data_out = 0;
     key_ctr_reset = 0;
     key_ctr_inc = 0;
@@ -594,15 +596,15 @@ begin
 
         FAIL:
         begin
-            reg_write = 1;
-            data_out = 16'h0;
+            set_reg_write = 1;
+            reg_data = 16'h0;
         end
 
         SUCCESS:
         begin
-            reg_write = 1;
+            set_reg_write = 1;
             sm_request = `SM_REQ_ID;
-            data_out = return_id   ? sm_data    :
+            reg_data = return_id   ? sm_data    :
                        cmd_id_prev ? sm_prev_id : 16'h1;
         end
     endcase
@@ -746,6 +748,23 @@ wire sm_valid = (!sm_data_needed | sm_data_select_valid) &
 
 // return value selection
 wire return_id = do_verify | cmd_id | cmd_key;
+
+// register output
+reg set_reg_write;
+reg [15:0] reg_data;
+
+always @(posedge clk)
+    if (reset | ~set_reg_write)
+    begin
+        reg_write    <= 1'b0;
+        reg_data_out <= 16'h0;
+    end
+    else
+    begin
+        reg_write    <= 1'b1;
+        reg_data_out <= reg_data;
+    end
+
 
 always @(posedge clk)
     if (state == SUCCESS & cmd_key)
