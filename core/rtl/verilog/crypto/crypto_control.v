@@ -59,6 +59,7 @@ endfunction
 // state machine ***************************************************************
 localparam STATE_SIZE = 6;
 localparam [STATE_SIZE-1:0] IDLE              =  0,
+                            ENABLE_SM         = 54,
                             CHECK_SM          =  1,
                             LOAD_KEY_INIT     = 51,
                             LOAD_KEY          = 52,
@@ -119,7 +120,9 @@ reg [STATE_SIZE-1:0] state, next_state;
 always @(*)
     case (state)
         IDLE:              next_state = ~start      ? IDLE              :
+                                        cmd_key     ? ENABLE_SM         :
                                         load_key    ? LOAD_KEY_INIT     : CHECK_SM;
+        ENABLE_SM:         next_state =               CHECK_SM;
         CHECK_SM:          next_state = ~sm_valid   ? FAIL              :
                                         do_wrap     ? WRAP_AD_INIT      :
                                         cmd_key     ? GEN_VKEY_INIT     :
@@ -743,8 +746,14 @@ assign sm_data_select = cmd_key         ? r12        :
 // valid SM selected
 wire sm_data_needed = cmd_key | do_verify | cmd_id;
 wire sm_key_needed  = !(cmd_id | cmd_id_prev | do_verify);
-wire sm_valid = (!sm_data_needed | sm_data_select_valid) &
-                (!sm_key_needed  | sm_key_select_valid);
+
+reg sm_valid;
+always @(posedge clk)
+    if (reset)
+        sm_valid <= 1'b0;
+    else
+        sm_valid <= (!sm_data_needed | sm_data_select_valid) &
+                    (!sm_key_needed  | sm_key_select_valid);
 
 // return value selection
 wire return_id = do_verify | cmd_id | cmd_key;
