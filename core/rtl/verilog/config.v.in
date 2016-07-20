@@ -1,3 +1,5 @@
 `define NB_SPMS    ${NB_MODULES}
 `define SECURITY   ${SECURITY}
 `define MASTER_KEY `SECURITY'h${MASTER_KEY}
+
+${RESET_CONFIG}

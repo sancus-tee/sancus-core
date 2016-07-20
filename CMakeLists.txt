@@ -26,6 +26,8 @@ if (NOT MASTER_KEY)
     set(MASTER_KEY deadbeefcafebabe)
 endif ()
 
+option(RESET_ON_VIOLATION "Enable CPU reset on violation" ON)
+
 add_subdirectory(core)
 add_subdirectory(tools)
 
