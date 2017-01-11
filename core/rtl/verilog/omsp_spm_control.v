@@ -3,7 +3,9 @@
 `include "openMSP430_defines.v"
 `endif
 
-module omsp_spm_control(
+module omsp_spm_control #(
+  parameter KEY_IDX_SIZE = -1
+) (
   input  wire                    mclk,
   input  wire                    puc_rst,
   input  wire             [15:0] pc,
@@ -36,8 +38,6 @@ module omsp_spm_control(
   output reg              [15:0] requested_data,
   output reg     [0:`SECURITY-1] key_out
 );
-
-parameter KEY_IDX_SIZE = -1;
 
 // input to the SPM array. indicates which SPM(s) should be updated. when a new
 // SPM is being created, only one bit will be 1. if an SPM is being destroyed,
@@ -75,8 +75,9 @@ assign violation = |spms_violation || (next_id == 16'hfff0);
 generate
   genvar i;
   assign spms_first_disabled[0] = ~spms_enabled[0];
-  for (i = 1; i < `NB_SPMS; i = i + 1)
+  for (i = 1; i < `NB_SPMS; i = i + 1) begin : genblk1
     assign spms_first_disabled[i] = ~spms_enabled[i] & ~|spms_first_disabled[0:i-1];
+  end
 endgenerate
 
 assign spm_data_select_valid = |spms_data_selected;
@@ -133,9 +134,7 @@ always @(posedge mclk or posedge puc_rst)
   else if (prev_cycle_spm_id != spm_current_id)
     spm_prev_id <= prev_cycle_spm_id;
 
-omsp_spm #(
-  .KEY_IDX_SIZE         (KEY_IDX_SIZE)
-) omsp_spms[0:`NB_SPMS-1](
+omsp_spm omsp_spms[0:`NB_SPMS-1](
   .mclk                 (mclk),
   .puc_rst              (puc_rst),
   .pc                   (pc),

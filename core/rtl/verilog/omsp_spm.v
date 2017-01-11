@@ -3,7 +3,9 @@
 `include "openMSP430_defines.v"
 `endif
 
-module omsp_spm(
+module omsp_spm #(
+  parameter KEY_IDX_SIZE = -1
+) (
   input  wire                    mclk,
   input  wire                    puc_rst,
   input  wire             [15:0] pc,
@@ -38,8 +40,6 @@ module omsp_spm(
   output reg              [15:0] id
 );
 
-parameter KEY_IDX_SIZE = -1;
-
 reg [15:0] public_start;
 reg [15:0] public_end;
 reg [15:0] secret_start;
@@ -64,14 +64,16 @@ function do_overlap;
   end
 endfunction
 
-initial
-begin
-  public_start = 0;
-  public_end = 0;
-  secret_start = 0;
-  secret_end = 0;
-  enabled = 0;
-end
+`ifndef ASIC
+  initial
+  begin
+    public_start = 0;
+    public_end = 0;
+    secret_start = 0;
+    secret_end = 0;
+   enabled = 0;
+  end
+`endif
 
 always @(posedge mclk or posedge puc_rst)
 begin

@@ -39,7 +39,10 @@
  *  Revision 0.01 - File Created
  *
  */
-module spongent (
+module spongent #(
+    parameter integer MIN_CAPACITY = 128,
+    parameter integer RATE         = 8    // Input block width
+) (
     clk,
     reset,
     start_continue,
@@ -50,9 +53,6 @@ module spongent (
   );
 
   // Define parameters
-  parameter integer MIN_CAPACITY = 128;
-  parameter integer RATE = 8;            // Input block width
-
   localparam MIN_WIDTH = RATE + MIN_CAPACITY;
 
   localparam STATE_SIZE = MIN_WIDTH <=  88 ?  88 :
@@ -133,12 +133,14 @@ module spongent (
     );
 
 // debug output ****************************************************************
-initial
-begin
-    $display("=== Spongent parameters ===");
-    $display("Rate:       %3d", RATE);
-    $display("State size: %3d", STATE_SIZE);
-    $display("===========================");
-end
+`ifndef ASIC
+    initial
+    begin
+        $display("=== Spongent parameters ===");
+        $display("Rate:       %3d", RATE);
+        $display("State size: %3d", STATE_SIZE);
+        $display("===========================");
+    end
+`endif
 
 endmodule

@@ -1,6 +1,8 @@
 `include "openMSP430_defines.v"
 
-module crypto_control(
+module crypto_control #(
+    parameter KEY_IDX_SIZE = -1
+) (
     input  wire                    clk,
     input  wire                    reset,
     input  wire                    start,
@@ -41,8 +43,6 @@ module crypto_control(
     output reg              [15:0] data_out
 );
 
-parameter KEY_IDX_SIZE = -1;
-
 // key selection constants
 localparam [1:0] KEY_SEL_NONE   = 0,
                  KEY_SEL_MASTER = 1,
@@ -53,6 +53,43 @@ function [15:0] swap_bytes;
     input [15:0] word;
     swap_bytes = {word[7:0], word[15:8]};
 endfunction
+
+// signal declarations *********************************************************
+wire        sm_valid;
+wire        do_wrap;
+wire        do_verify;
+wire        wrap_busy;
+wire        mem_done;
+wire        only_tag;
+wire        tag_ok;
+wire        key_done;
+wire        do_decrypt;
+
+reg  [15:0] mab_ctr_base;
+reg         mab_ctr_init;
+reg         mab_ctr_inc;
+
+reg  [15:0] mab_cipher_base;
+reg         mab_cipher_init;
+reg         mab_cipher_inc;
+
+reg  [15:0] mab_ctr_limit;
+reg         mab_ctr_limit_init;
+
+reg         mab_select_cipher;
+
+reg         key_ctr_reset;
+reg         key_ctr_inc;
+
+reg   [1:0] key_select_val;
+reg         update_key_select;
+
+wire [15:0] wrap_data_out;
+wire        wrap_data_out_ready;
+
+wire [15:0] wrap_key_out;
+
+wire        return_id;
 
 // state machine ***************************************************************
 localparam STATE_SIZE = 6;
@@ -109,7 +146,7 @@ localparam [STATE_SIZE-1:0] IDLE              =  0,
                             SUCCESS           = 50,
                             INTERNAL_ERROR    = {STATE_SIZE{1'bx}};
 
-reg [STATE_SIZE-1:0] state, next_state;
+reg  [STATE_SIZE-1:0] state, next_state;
 
 always @(*)
     case (state)
@@ -581,17 +618,14 @@ begin
 end
 
 // other logic *****************************************************************
-wire do_wrap    = cmd_wrap | cmd_unwrap;
-wire do_verify  = cmd_verify_addr | cmd_verify_prev;
-wire only_tag   = cmd_wrap & (r12 == r13);
-wire do_decrypt = |r10;
-wire unwrap     = cmd_unwrap | do_decrypt;
+assign do_wrap    = cmd_wrap | cmd_unwrap;
+assign do_verify  = cmd_verify_addr | cmd_verify_prev;
+assign only_tag   = cmd_wrap & (r12 == r13);
+assign do_decrypt = |r10;
+wire   unwrap     = cmd_unwrap | do_decrypt;
 
 // memory address counter used when looping over a range of addresses
 reg [15:0] mab_ctr;
-reg [15:0] mab_ctr_base;
-reg        mab_ctr_init;
-reg        mab_ctr_inc;
 
 always @(posedge clk)
     if (mab_ctr_init)
@@ -599,29 +633,22 @@ always @(posedge clk)
     else if (mab_ctr_inc)
         mab_ctr <= mab_ctr + 2;
 
-reg [15:0] mab_ctr_limit, mab_ctr_limit_reg;
-reg        mab_ctr_limit_init;
+reg [15:0] mab_ctr_limit_reg;
 
 always @(posedge clk)
     if (mab_ctr_limit_init)
         mab_ctr_limit_reg <= mab_ctr_limit;
 
-wire mem_done = mab_ctr >= mab_ctr_limit_reg;
+assign mem_done = mab_ctr >= mab_ctr_limit_reg;
 
 // secondary memory address used for cipher output
 reg [15:0] mab_cipher;
-reg [15:0] mab_cipher_base;
-reg        mab_cipher_init;
-reg        mab_cipher_inc;
 
 always @(posedge clk)
     if (mab_cipher_init)
         mab_cipher <= mab_cipher_base;
     else if (mab_cipher_inc)
         mab_cipher <= mab_cipher + 2;
-
-// mab selection
-reg mab_select_cipher;
 
 assign mab = mab_select_cipher ? mab_cipher : mab_ctr;
 
@@ -639,11 +666,9 @@ always @(posedge clk)
         wrap_start_continue <= 1;
 
 // signal to indicate if the tag matches with the memory contents
-wire tag_ok = wrap_data_out_ready ? (wrap_data_out == mem_in) : 1;
+assign tag_ok = wrap_data_out_ready ? (wrap_data_out == mem_in) : 1;
 
 reg [KEY_IDX_SIZE-1:0] key_ctr;
-reg                    key_ctr_reset;
-reg                    key_ctr_inc;
 
 always @(posedge clk)
     if (reset | key_ctr_reset)
@@ -651,7 +676,7 @@ always @(posedge clk)
     else if (key_ctr_inc)
         key_ctr <= key_ctr + 1;
 
-wire key_done = key_ctr == `SECURITY / 16;
+assign key_done = key_ctr == `SECURITY / 16;
 
 assign sm_key_idx = key_ctr;
 
@@ -661,8 +686,6 @@ wire [0:`SECURITY-1] master_key = `MASTER_KEY;
 // key selection
 reg [0:`SECURITY-1] key;
 reg           [1:0] key_select;
-reg           [1:0] key_select_val;
-reg                 update_key_select;
 
 always @(*)
     case (key_select)
@@ -680,7 +703,7 @@ always @(posedge clk)
 
 // since the output of the wrap module is LE and keys are stored BE, create a
 // swapped version to be used for keys
-wire [15:0] wrap_key_out = swap_bytes(wrap_data_out);
+assign wrap_key_out = swap_bytes(wrap_data_out);
 
 // SM key selection
 assign sm_key_select = cmd_key ? r12 : pc;
@@ -695,23 +718,19 @@ assign sm_data_select = cmd_key         ? r12        :
                         cmd_verify_prev ? sm_prev_id : 16'hx;
 
 // valid SM selected
-wire sm_data_needed = cmd_key | do_verify | cmd_id;
-wire sm_key_needed  = !(cmd_id | cmd_id_prev | do_verify);
-wire sm_valid = (!sm_data_needed | sm_data_select_valid) &
+wire   sm_data_needed = cmd_key | do_verify | cmd_id;
+wire   sm_key_needed  = !(cmd_id | cmd_id_prev | do_verify);
+assign sm_valid = (!sm_data_needed | sm_data_select_valid) &
                 (!sm_key_needed  | sm_key_select_valid);
 
 // return value selection
-wire return_id = do_verify | cmd_id | cmd_key;
+assign return_id = do_verify | cmd_id | cmd_key;
 
 always @(posedge clk)
     if (state == SUCCESS & cmd_key)
         $display("Key: %h", key);
 
 // module instantiations *******************************************************
-wire        wrap_busy;
-wire [15:0] wrap_data_out;
-wire        wrap_data_out_ready;
-
 sponge_wrap #(
     .RATE           (16),
     .SECURITY       (`SECURITY)

@@ -1,4 +1,13 @@
 #!/bin/bash
 
+CWD=$(pwd)
+cd ${FULL_INSTALL_SYN_PATH}
+
+if [ ! -d ./results ]; then
+    mkdir ./results
+fi
+
 rm -rf ./results/*
 dc_shell-t -f synthesis.tcl | tee ./results/synthesis.log
+
+cd $CWD

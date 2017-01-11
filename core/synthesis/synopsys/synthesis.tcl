@@ -7,7 +7,10 @@
 set WITH_DC_ULTRA 1
 
 # Enable/Disable DFT insertion
-set WITH_DFT      1
+set WITH_DFT      0
+
+# Select technology library
+set WITH_LIBRARY  "nangate_15nm"
 
 
 #=============================================================================#
@@ -38,8 +41,10 @@ set_operating_conditions -max $LIB_WC_OPCON -max_library $LIB_WC_NAME \
 
 # Set wire-load models
 set_wire_load_mode top
-set_wire_load_model -name $LIB_WIRE_LOAD -max -library $LIB_WC_NAME
-set_wire_load_model -name $LIB_WIRE_LOAD -min -library $LIB_BC_NAME
+if {$LIB_WIRE_LOAD != ""} {
+    set_wire_load_model -name $LIB_WIRE_LOAD -max -library $LIB_WC_NAME
+    set_wire_load_model -name $LIB_WIRE_LOAD -min -library $LIB_BC_NAME
+}
 
 
 #=============================================================================#

@@ -81,7 +81,9 @@ module spongent_fsm (
   // Busy signal
   assign busy = reg_busy;
 
-  initial reg_busy <= 0;
+  `ifndef ASIC
+    initial reg_busy <= 0;
+  `endif
   always @(posedge clk) begin
     if (unset_busy)     reg_busy <= 0;
     else if (set_busy)  reg_busy <= 1;

@@ -26,9 +26,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE
 //
 //----------------------------------------------------------------------------
-// 
+//
 // *File Name: openMSP430_defines.v
-// 
+//
 // *Module Description:
 //                      openMSP430 Configuration file
 //
@@ -276,7 +276,7 @@
 // WARNING: if you target an FPGA, leave this define
 //          commented.
 //-------------------------------------------------------
-//`define ASIC
+`define ASIC
 
 
 //============================================================================
@@ -852,7 +852,7 @@ CONFIGURATION ERROR: JTAG OR UART DEBUG INTERFACE SHOULD BE ENABLED
 // the 16x16 multiplier (1 cycle) instead of the
 // default 16x8 multplier (2 cycles)
 //`define MPY_16x16
-  
+
 //======================================
 // CONFIGURATION CHECKS
 //======================================
@@ -863,7 +863,7 @@ CONFIGURATION ERROR: THE MCLK_MUX CAN ONLY BE ENABLED IF THE LFXT_DOMAIN IS ENAB
  `endif
  `ifdef SMCLK_MUX
 CONFIGURATION ERROR: THE SMCLK_MUX CAN ONLY BE ENABLED IF THE LFXT_DOMAIN IS ENABLED AS WELL
- `endif   
+ `endif
  `ifdef WATCHDOG_MUX
 CONFIGURATION ERROR: THE WATCHDOG_MUX CAN ONLY BE ENABLED IF THE LFXT_DOMAIN IS ENABLED AS WELL
  `else
@@ -873,5 +873,5 @@ CONFIGURATION ERROR: THE WATCHDOG_NOMUX_ACLK CAN ONLY BE ENABLED IF THE LFXT_DOM
  `endif
  `ifdef OSCOFF_EN
 CONFIGURATION ERROR: THE OSCOFF LOW POWER MODE CAN ONLY BE ENABLED IF THE LFXT_DOMAIN IS ENABLED AS WELL
- `endif   
+ `endif
 `endif

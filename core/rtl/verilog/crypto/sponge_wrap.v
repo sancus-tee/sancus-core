@@ -21,8 +21,13 @@ localparam SPONGE_RATE      = RATE + 2;
 localparam SPONGE_CAPACITY  = SECURITY * 2;
 localparam KEY_SIZE         = SECURITY;
 localparam KEY_BLOCKS       = KEY_SIZE / RATE;
-// use parameter instead of localparam to work around a bug in XST
-parameter  KEY_COUNTER_SIZE = $clog2(KEY_BLOCKS + 1);
+
+`ifdef ASIC
+    localparam KEY_COUNTER_SIZE = $clog2(KEY_BLOCKS + 1);
+`else
+    // use parameter instead of localparam to work around a bug in XST
+    parameter KEY_COUNTER_SIZE = $clog2(KEY_BLOCKS + 1);
+`endif
 
 // control signal declarations *************************************************
 reg  duplex_key;
@@ -230,13 +235,15 @@ spongent #(
 );
 
 // debug output ****************************************************************
-initial
-begin
-    $display("=== SpongeWrap parameters ===");
-    $display("Rate:          %3d", RATE);
-    $display("Security:      %3d", SECURITY);
-    $display("Blocks in key: %3d", KEY_BLOCKS);
-    $display("=============================");
-end
+`ifndef ASIC
+    initial
+    begin
+        $display("=== SpongeWrap parameters ===");
+        $display("Rate:          %3d", RATE);
+        $display("Security:      %3d", SECURITY);
+        $display("Blocks in key: %3d", KEY_BLOCKS);
+        $display("=============================");
+    end
+`endif
 
 endmodule

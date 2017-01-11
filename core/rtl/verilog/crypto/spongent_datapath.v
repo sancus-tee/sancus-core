@@ -58,8 +58,12 @@ module spongent_datapath (
   parameter integer RATE                = 8;            // Input block width
   parameter LFSR_POLY                   = 8'b11000001;  // LFSR polynomial
 
-  //localparam integer LFSR_SIZE          = $clog2(LFSR_POLY + 1) - 1;  // Size of LFSR
-  parameter integer LFSR_SIZE          = $clog2(LFSR_POLY + 1) - 1;  // Size of LFSR
+  `ifdef ASIC
+    localparam integer LFSR_SIZE        = $clog2(LFSR_POLY + 1) - 1;  // Size of LFSR
+  `else
+    // use parameter instead of localparam to work around a bug in XST
+    parameter integer LFSR_SIZE         = $clog2(LFSR_POLY + 1) - 1;  // Size of LFSR
+  `endif
 
   parameter [(LFSR_SIZE - 1):0] LFSR_INIT = 7'b1111010;   // LFSR initial value
 

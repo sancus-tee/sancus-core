@@ -28,7 +28,7 @@
 //----------------------------------------------------------------------------
 //
 // *File Name: omsp_execution_unit.v
-// 
+//
 // *Module Description:
 //                       openMSP430 Execution unit
 //
@@ -161,6 +161,14 @@ wire         [15:0] mdb_in_bw;
 wire         [15:0] mdb_in_val;
 wire          [3:0] status;
 
+// crypto unit wires
+wire         [15:0] crypto_mab;
+wire                crypto_mb_en;
+wire          [1:0] crypto_mb_wr;
+wire         [15:0] crypto_data_out;
+wire                crypto_busy;
+wire                crypto_reg_write;
+
 
 //=============================================================================
 // 2)  REGISTER FILE
@@ -180,7 +188,7 @@ wire reg_sr_wr    =  (e_state==`E_DST_RD) & inst_so[`RETI];
 
 wire reg_sr_clr   =  (e_state==`E_IRQ_2);
 
-wire reg_pc_call  = ((e_state==`E_EXEC)   & inst_so[`CALL]) | 
+wire reg_pc_call  = ((e_state==`E_EXEC)   & inst_so[`CALL]) |
                     ((e_state==`E_DST_WR) & inst_so[`RETI]);
 
 wire reg_incr     =  (exec_done          & inst_as[`INDIR_I]) |
@@ -477,21 +485,17 @@ wire        sm_violation;
 
 wire [0:`SECURITY-1] sm_key;
 
-// crypto unit wires
-wire [15:0] crypto_mab;
-wire        crypto_mb_en;
-wire  [1:0] crypto_mb_wr;
-wire [15:0] crypto_data_out;
-wire        crypto_busy;
-wire        crypto_reg_write;
-
 wire crypto_start = do_sm_inst & (sm_disable     | sm_enable      |
                                   sm_verify_addr | sm_verify_prev |
                                   sm_ae_wrap     | sm_ae_unwrap   |
                                   sm_id          | sm_id_prev);
 
-// use parameter instead of localparam to work around a bug in XST
-parameter KEY_IDX_SIZE = $clog2(`SECURITY / 16 + 1);
+`ifdef ASIC
+  localparam KEY_IDX_SIZE = $clog2(`SECURITY / 16 + 1);
+`else
+  // use parameter instead of localparam to work around a bug in XST
+  parameter KEY_IDX_SIZE = $clog2(`SECURITY / 16 + 1);
+`endif
 wire [KEY_IDX_SIZE-1:0] sm_key_idx;
 
 omsp_spm_control #(
