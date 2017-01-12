@@ -10,7 +10,7 @@ set WITH_DC_ULTRA 1
 set WITH_DFT      0
 
 # Select technology library
-set WITH_LIBRARY  "nangate_15nm"
+set WITH_LIBRARY  "nangate_45nm"
 
 
 #=============================================================================#
