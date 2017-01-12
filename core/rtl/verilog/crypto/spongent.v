@@ -117,9 +117,9 @@ module spongent #(
   spongent_datapath #(
     .STATE_SIZE (STATE_SIZE),
     .RATE       (RATE),
+    .LFSR_SIZE  (LFSR_SIZE),
     .LFSR_POLY  (LFSR_POLY),
-    .LFSR_INIT  (LFSR_INIT),
-    .LFSR_SIZE  (LFSR_SIZE)
+    .LFSR_INIT  (LFSR_INIT)
     ) datapath_instance (
       .clk            (clk),
       .data_in        (data_in),
