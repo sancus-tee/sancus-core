@@ -100,7 +100,7 @@ module  omsp_frontend (
     wkup,                          // System Wake-up (asynchronous)
     spm_busy,
     pmem_writing,
-    sm_irq
+    sm_violation
 );
 
 // OUTPUTs
@@ -158,7 +158,7 @@ input               wdt_wkup;      // Watchdog Wakeup
 input               wkup;          // System Wake-up (asynchronous)
 input               spm_busy;
 input               pmem_writing;
-input               sm_irq;
+input               sm_violation;
 
 
 //=============================================================================
@@ -310,6 +310,11 @@ always @(posedge mclk or posedge puc_rst)
   else if (exec_done)           inst_irq_rst <= 1'b0;
 
 //  Detect other interrupts
+reg sm_irq;
+always @(posedge mclk or posedge puc_rst)
+  if (puc_rst) sm_irq <= 1'b0;
+  else         sm_irq <= sm_violation;
+
 assign  irq_detect = (sm_irq | nmi_pnd | ((|irq | wdt_irq) & gie)) & ~cpu_halt_cmd & ~dbg_halt_st & (exec_done | (i_state==I_IDLE));
 
 `ifdef CLOCK_GATING

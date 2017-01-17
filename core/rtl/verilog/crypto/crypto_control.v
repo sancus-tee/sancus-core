@@ -7,6 +7,7 @@ module crypto_control #(
     input  wire                    reset,
     input  wire                    start,
     input  wire                    cmd_key,
+    input  wire                    cmd_disable,
     input  wire                    cmd_wrap,
     input  wire                    cmd_unwrap,
     input  wire                    cmd_verify_addr,
@@ -38,16 +39,19 @@ module crypto_control #(
     output reg               [1:0] mb_wr,
     output wire             [15:0] mab,
     output reg                     reg_write,
+    output reg              [15:0] dest_reg,
+    output reg              [15:0] reg_data_out,
     output reg                     sm_key_write,
     output wire [KEY_IDX_SIZE-1:0] sm_key_idx,
     output reg              [15:0] data_out
 );
 
 // key selection constants
-localparam [1:0] KEY_SEL_NONE   = 0,
+localparam [2:0] KEY_SEL_NONE   = 0,
                  KEY_SEL_MASTER = 1,
                  KEY_SEL_SM     = 2,
-                 KEY_SEL_ZERO   = 3;
+                 KEY_SEL_ZERO   = 3,
+                 KEY_SEL_MEM    = 4;
 
 function [15:0] swap_bytes;
     input [15:0] word;
@@ -55,7 +59,7 @@ function [15:0] swap_bytes;
 endfunction
 
 // signal declarations *********************************************************
-wire        sm_valid;
+reg         sm_valid;
 wire        do_wrap;
 wire        do_verify;
 wire        wrap_busy;
@@ -64,6 +68,8 @@ wire        only_tag;
 wire        tag_ok;
 wire        key_done;
 wire        do_decrypt;
+wire        use_mem_key;
+wire        load_key;
 
 reg  [15:0] mab_ctr_base;
 reg         mab_ctr_init;
@@ -81,7 +87,7 @@ reg         mab_select_cipher;
 reg         key_ctr_reset;
 reg         key_ctr_inc;
 
-reg   [1:0] key_select_val;
+reg   [2:0] key_select_val;
 reg         update_key_select;
 
 wire [15:0] wrap_data_out;
@@ -94,7 +100,11 @@ wire        return_id;
 // state machine ***************************************************************
 localparam STATE_SIZE = 6;
 localparam [STATE_SIZE-1:0] IDLE              =  0,
+                            ENABLE_SM         = 54,
                             CHECK_SM          =  1,
+                            LOAD_KEY_INIT     = 51,
+                            LOAD_KEY          = 52,
+                            LOAD_KEY_NEXT     = 53,
                             WRAP_AD_INIT      =  2,
                             WRAP_AD           =  3,
                             WRAP_AD_WAIT      =  4,
@@ -142,6 +152,12 @@ localparam [STATE_SIZE-1:0] IDLE              =  0,
                             DEC_TAG_INIT      = 46,
                             DEC_TAG           = 47,
                             DEC_TAG_WAIT      = 48,
+                            CLEAR_CODE_INIT1  = 55,
+                            CLEAR_CODE_INIT2  = 56,
+                            CLEAR_CODE        = 57,
+                            CLEAR_DATA_INIT1  = 58,
+                            CLEAR_DATA_INIT2  = 59,
+                            CLEAR_DATA        = 60,
                             FAIL              = 49,
                             SUCCESS           = 50,
                             INTERNAL_ERROR    = {STATE_SIZE{1'bx}};
@@ -150,13 +166,20 @@ reg  [STATE_SIZE-1:0] state, next_state;
 
 always @(*)
     case (state)
-        IDLE:              next_state = start       ? CHECK_SM          : IDLE;
+        IDLE:              next_state = ~start      ? IDLE              :
+                                        cmd_key     ? ENABLE_SM         :
+                                        load_key    ? LOAD_KEY_INIT     : CHECK_SM;
+        ENABLE_SM:         next_state =               CHECK_SM;
         CHECK_SM:          next_state = ~sm_valid   ? FAIL              :
                                         do_wrap     ? WRAP_AD_INIT      :
                                         cmd_key     ? GEN_VKEY_INIT     :
                                         do_verify   ? VERIFY_INIT_PS    :
                                         cmd_id      ? SUCCESS           :
-                                        cmd_id_prev ? SUCCESS           : INTERNAL_ERROR;
+                                        cmd_id_prev ? SUCCESS           :
+                                        cmd_disable ? CLEAR_CODE_INIT1  : INTERNAL_ERROR;
+        LOAD_KEY_INIT:     next_state =               LOAD_KEY_NEXT;
+        LOAD_KEY:          next_state = mem_done    ? WRAP_AD_INIT      : LOAD_KEY_NEXT;
+        LOAD_KEY_NEXT:     next_state =               LOAD_KEY;
         WRAP_AD_INIT:      next_state =               WRAP_AD_WAIT;
         WRAP_AD:           next_state =               WRAP_AD_WAIT;
         WRAP_AD_WAIT:      next_state = wrap_busy   ? WRAP_AD_WAIT      :
@@ -215,6 +238,12 @@ always @(*)
         DEC_TAG:           next_state = tag_ok      ? DEC_TAG_WAIT      : FAIL;
         DEC_TAG_WAIT:      next_state = mem_done    ? GEN_SMKEY_INIT_PS :
                                         wrap_busy   ? DEC_TAG_WAIT      : DEC_TAG;
+        CLEAR_CODE_INIT1:  next_state =               CLEAR_CODE_INIT2;
+        CLEAR_CODE_INIT2:  next_state =               CLEAR_CODE;
+        CLEAR_CODE:        next_state = mem_done    ? CLEAR_DATA_INIT1  : CLEAR_CODE;
+        CLEAR_DATA_INIT1:  next_state =               CLEAR_DATA_INIT2;
+        CLEAR_DATA_INIT2:  next_state =               CLEAR_DATA;
+        CLEAR_DATA:        next_state = mem_done    ? SUCCESS           : CLEAR_DATA;
         FAIL:              next_state =               IDLE;
         SUCCESS:           next_state =               IDLE;
 
@@ -256,7 +285,9 @@ begin
     mab_select_cipher = 0;
     mb_en = 0;
     mb_wr = 0;
-    reg_write = 0;
+    set_reg_write = 0;
+    dest_reg_val = 0;
+    reg_data = 0;
     data_out = 0;
     key_ctr_reset = 0;
     key_ctr_inc = 0;
@@ -264,6 +295,7 @@ begin
     key_select_val = KEY_SEL_NONE;
     sm_key_write = 0;
     sm_request = 0;
+    load_key_block = 0;
 
     case (next_state)
         IDLE:
@@ -276,10 +308,29 @@ begin
         begin
         end
 
+        LOAD_KEY_INIT:
+        begin
+            mab_ctr_init = 1;
+            mab_ctr_base = r9;
+            mab_ctr_limit_init = 1;
+            mab_ctr_limit = r9 + `SECURITY / 8;
+        end
+
+        LOAD_KEY:
+        begin
+            load_key_block = 1;
+        end
+
+        LOAD_KEY_NEXT:
+        begin
+            mb_en = 1;
+            mab_ctr_inc = 1;
+        end
+
         WRAP_AD_INIT:
         begin
             update_key_select = 1;
-            key_select_val = KEY_SEL_SM;
+            key_select_val = use_mem_key ? KEY_SEL_MEM : KEY_SEL_SM;
             mab_ctr_init = 1;
             mab_ctr_base = r10;
             mab_ctr_limit_init = 1;
@@ -601,28 +652,77 @@ begin
             mab_ctr_inc = wrap_data_out_ready;
         end
 
+        CLEAR_CODE_INIT1:
+        begin
+            sm_request = `SM_REQ_PUBSTART;
+            mab_ctr_init = 1;
+            mab_ctr_base = sm_data;
+        end
+
+        CLEAR_CODE_INIT2:
+        begin
+            sm_request = `SM_REQ_PUBEND;
+            mab_ctr_limit_init = 1;
+            mab_ctr_limit = sm_data;
+        end
+
+        CLEAR_CODE:
+        begin
+            mb_en = 1;
+            mb_wr = 2'b11;
+            mab_ctr_inc = 1;
+            data_out = 16'h0000;
+        end
+
+        CLEAR_DATA_INIT1:
+        begin
+            sm_request = `SM_REQ_SECSTART;
+            mab_ctr_init = 1;
+            mab_ctr_base = sm_data;
+        end
+
+        CLEAR_DATA_INIT2:
+        begin
+            sm_request = `SM_REQ_SECEND;
+            mab_ctr_limit_init = 1;
+            mab_ctr_limit = sm_data;
+        end
+
+        CLEAR_DATA:
+        begin
+            mb_en = 1;
+            mb_wr = 2'b11;
+            mab_ctr_inc = 1;
+            data_out = 16'h0000;
+        end
+
         FAIL:
         begin
-            reg_write = 1;
-            data_out = 16'h0;
+            set_reg_write = 1;
+            dest_reg_val = 16'h8000;
+            reg_data = 16'h0;
         end
 
         SUCCESS:
         begin
-            reg_write = 1;
+            set_reg_write = 1;
+            dest_reg_val = cmd_disable ? 16'h0001 : 16'h8000;
             sm_request = `SM_REQ_ID;
-            data_out = return_id   ? sm_data    :
-                       cmd_id_prev ? sm_prev_id : 16'h1;
+            reg_data = return_id   ? sm_data    :
+                       cmd_id_prev ? sm_prev_id :
+                       cmd_disable ? r15        : 16'h1;
         end
     endcase
 end
 
 // other logic *****************************************************************
-assign do_wrap    = cmd_wrap | cmd_unwrap;
-assign do_verify  = cmd_verify_addr | cmd_verify_prev;
-assign only_tag   = cmd_wrap & (r12 == r13);
-assign do_decrypt = |r10;
-wire   unwrap     = cmd_unwrap | do_decrypt;
+assign do_wrap     = cmd_wrap | cmd_unwrap;
+assign do_verify   = cmd_verify_addr | cmd_verify_prev;
+assign only_tag    = cmd_wrap & (r12 == r13);
+assign do_decrypt  = cmd_key & |r10;
+assign use_mem_key = r9 != 0;
+assign load_key    = do_wrap & use_mem_key;
+wire   unwrap      = cmd_unwrap | do_decrypt;
 
 // memory address counter used when looping over a range of addresses
 reg [15:0] mab_ctr;
@@ -683,15 +783,29 @@ assign sm_key_idx = key_ctr;
 // master key
 wire [0:`SECURITY-1] master_key = `MASTER_KEY;
 
+// key loaded from memory
+// FIXME It should not be necessary to store this key in a register because the
+// key is loaded serially into the sponge. Therefore, the wrap's state machine
+// should be fixed to not rely on a parallel key input.
+reg [0:`SECURITY-1] loaded_key;
+reg                 load_key_block;
+
+always @(posedge clk)
+    if (reset)
+        loaded_key <= `SECURITY'hx;
+    else if (load_key_block)
+        loaded_key <= {loaded_key[16:`SECURITY-1], swap_bytes(mem_in)};
+
 // key selection
 reg [0:`SECURITY-1] key;
-reg           [1:0] key_select;
+reg           [2:0] key_select;
 
 always @(*)
     case (key_select)
         KEY_SEL_MASTER: key = master_key;
         KEY_SEL_SM:     key = sm_key;
         KEY_SEL_ZERO:   key = `SECURITY'h0;
+        KEY_SEL_MEM:    key = loaded_key;
         default:        key = `SECURITY'hx;
     endcase
 
@@ -715,16 +829,42 @@ assign sm_data_select_type =
 assign sm_data_select = cmd_key         ? r12        :
                         cmd_id          ? r15        :
                         cmd_verify_addr ? r14        :
-                        cmd_verify_prev ? sm_prev_id : 16'hx;
+                        cmd_verify_prev ? sm_prev_id :
+                        cmd_disable     ? pc         : 16'hx;
 
 // valid SM selected
 wire   sm_data_needed = cmd_key | do_verify | cmd_id;
 wire   sm_key_needed  = !(cmd_id | cmd_id_prev | do_verify);
-assign sm_valid = (!sm_data_needed | sm_data_select_valid) &
-                (!sm_key_needed  | sm_key_select_valid);
+
+always @(posedge clk)
+    if (reset)
+        sm_valid <= 1'b0;
+    else
+        sm_valid <= (!sm_data_needed | sm_data_select_valid) &
+                    (!sm_key_needed  | sm_key_select_valid);
 
 // return value selection
 assign return_id = do_verify | cmd_id | cmd_key;
+
+// register output
+reg set_reg_write;
+reg [15:0] dest_reg_val;
+reg [15:0] reg_data;
+
+always @(posedge clk)
+    if (reset | ~set_reg_write)
+    begin
+        reg_write    <= 1'b0;
+        dest_reg     <= 16'h0;
+        reg_data_out <= 16'h0;
+    end
+    else
+    begin
+        reg_write    <= 1'b1;
+        dest_reg     <= dest_reg_val;
+        reg_data_out <= reg_data;
+    end
+
 
 always @(posedge clk)
     if (state == SUCCESS & cmd_key)

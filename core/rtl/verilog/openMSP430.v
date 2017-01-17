@@ -230,6 +230,19 @@ wire                spm_busy;
 wire                spm_violation;
 wire                pmem_writing;
 
+`ifdef RESET_ON_VIOLATION
+reg spm_violation_s;
+always @(posedge mclk or posedge puc_rst)
+    if (puc_rst)
+        spm_violation_s <= 1'b0;
+    else
+        spm_violation_s <= spm_violation;
+
+wire do_reset_n = reset_n & ~spm_violation_s;
+`else
+wire do_reset_n = reset_n;
+`endif
+
 //=============================================================================
 // 2)  GLOBAL CLOCK & RESET MANAGEMENT
 //=============================================================================
@@ -269,7 +282,7 @@ omsp_clock_module clock_module_0 (
     .per_din      (per_din),       // Peripheral data input
     .per_en       (per_en),        // Peripheral enable (high active)
     .per_we       (per_we),        // Peripheral write enable (high active)
-    .reset_n      (reset_n),       // Reset Pin (low active, asynchronous)
+    .reset_n      (do_reset_n),    // Reset Pin (low active, asynchronous)
     .scan_enable  (scan_enable),   // Scan enable (active during scan shifting)
     .scan_mode    (scan_mode),     // Scan mode
     .scg0         (scg0),          // System clock generator 1. Turns off the DCO
@@ -337,7 +350,7 @@ omsp_frontend frontend_0 (
     .wkup         (wkup),          // System Wake-up (asynchronous)
     .spm_busy     (spm_busy),
     .pmem_writing (pmem_writing),
-    .sm_irq       (spm_violation)
+    .sm_violation (spm_violation)
 );
 
 

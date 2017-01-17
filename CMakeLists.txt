@@ -29,6 +29,8 @@ if (NOT MASTER_KEY)
     set(MASTER_KEY deadbeefcafebabe)
 endif ()
 
+option(RESET_ON_VIOLATION "Enable CPU reset on violation" ON)
+
 add_subdirectory(core)
 add_subdirectory(tools)
 
@@ -40,8 +42,8 @@ set(CPACK_PACKAGE_CONTACT "Job Noorman <Job.Noorman@cs.kuleuven.be>")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Sancus core")
 
 set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "all")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "iverilog, python2.7, tk")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "iverilog, python3, tk")
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE
-    "http://people.cs.kuleuven.be/~job.noorman/sancus")
+    "https://distrinet.cs.kuleuven.be/software/sancus/")
 
 include(CPack)

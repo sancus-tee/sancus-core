@@ -68,8 +68,8 @@
 //`define PMEM_SIZE_55_KB
 //`define PMEM_SIZE_54_KB
 //`define PMEM_SIZE_51_KB
- `define PMEM_SIZE_48_KB
-//`define PMEM_SIZE_41_KB
+//`define PMEM_SIZE_48_KB
+`define PMEM_SIZE_41_KB
 //`define PMEM_SIZE_32_KB
 //`define PMEM_SIZE_24_KB
 //`define PMEM_SIZE_16_KB
@@ -86,8 +86,8 @@
 //`define DMEM_SIZE_CUSTOM
 //`define DMEM_SIZE_32_KB
 //`define DMEM_SIZE_24_KB
-//`define DMEM_SIZE_16_KB
- `define DMEM_SIZE_10_KB
+`define DMEM_SIZE_16_KB
+//`define DMEM_SIZE_10_KB
 //`define DMEM_SIZE_8_KB
 //`define DMEM_SIZE_5_KB
 //`define DMEM_SIZE_4_KB

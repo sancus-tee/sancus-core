@@ -134,7 +134,9 @@ always @(posedge mclk or posedge puc_rst)
   else if (prev_cycle_spm_id != spm_current_id)
     spm_prev_id <= prev_cycle_spm_id;
 
-omsp_spm omsp_spms[0:`NB_SPMS-1](
+omsp_spm #(
+  .KEY_IDX_SIZE         (KEY_IDX_SIZE)
+) omsp_spms[0:`NB_SPMS-1](
   .mclk                 (mclk),
   .puc_rst              (puc_rst),
   .pc                   (pc),

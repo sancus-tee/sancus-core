@@ -1,3 +1,9 @@
+set(RESET_CONFIG "`define RESET_ON_VIOLATION")
+
+if (NOT RESET_ON_VIOLATION)
+    set(RESET_CONFIG "// ${RESET_CONFIG}")
+endif ()
+
 configure_file(config.v.in ${CMAKE_CURRENT_SOURCE_DIR}/config.v)
 
 set(SRC
