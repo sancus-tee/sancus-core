@@ -189,7 +189,7 @@ wire reg_incr     =  (exec_done          & inst_as[`INDIR_I]) |
 
 assign dbg_reg_din = reg_dest;
 
-wire [15:0] dest_reg     = crypto_reg_write ? 16'h8000            : inst_dest;
+wire [15:0] dest_reg     = crypto_reg_write ? crypto_dest_reg     : inst_dest;
 wire [15:0] reg_dest_val = crypto_reg_write ? crypto_reg_data_out : alu_out;
 
 //wires for sm instructions
@@ -210,7 +210,7 @@ wire sm_ae_wrap     = sm_command[`SM_AE_WRAP];
 wire sm_ae_unwrap   = sm_command[`SM_AE_UNWRAP];
 wire sm_id          = sm_command[`SM_ID];
 wire sm_id_prev     = sm_command[`SM_PREV_ID];
-wire sm_update      = do_sm_inst & (sm_disable | sm_enable);
+wire sm_update      = (do_sm_inst & sm_enable) | (sm_disable & ~sm_busy);
 wire sm_verify      = sm_verify_addr | sm_verify_prev;
 
 omsp_register_file register_file_0 (
@@ -484,6 +484,7 @@ wire  [1:0] crypto_mb_wr;
 wire [15:0] crypto_data_out;
 wire        crypto_busy;
 wire        crypto_reg_write;
+wire [15:0] crypto_dest_reg;
 wire [15:0] crypto_reg_data_out;
 
 wire crypto_start = do_sm_inst & (sm_disable     | sm_enable      |
@@ -539,6 +540,7 @@ crypto_control #(
   .reset                  (puc_rst),
   .start                  (crypto_start),
   .cmd_key                (sm_enable),
+  .cmd_disable            (sm_disable),
   .cmd_wrap               (sm_ae_wrap),
   .cmd_unwrap             (sm_ae_unwrap),
   .cmd_verify_addr        (sm_verify_addr),
@@ -569,6 +571,7 @@ crypto_control #(
   .mb_wr                  (crypto_mb_wr),
   .mab                    (crypto_mab),
   .reg_write              (crypto_reg_write),
+  .dest_reg               (crypto_dest_reg),
   .reg_data_out           (crypto_reg_data_out),
   .sm_key_write           (sm_write_key),
   .sm_key_idx             (sm_key_idx),
