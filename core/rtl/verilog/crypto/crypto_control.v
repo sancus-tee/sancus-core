@@ -97,6 +97,12 @@ wire [15:0] wrap_key_out;
 
 wire        return_id;
 
+reg         set_reg_write;
+reg  [15:0] dest_reg_val;
+reg  [15:0] reg_data;
+
+reg         load_key_block;
+
 // state machine ***************************************************************
 localparam STATE_SIZE = 6;
 localparam [STATE_SIZE-1:0] IDLE              =  0,
@@ -788,7 +794,6 @@ wire [0:`SECURITY-1] master_key = `MASTER_KEY;
 // key is loaded serially into the sponge. Therefore, the wrap's state machine
 // should be fixed to not rely on a parallel key input.
 reg [0:`SECURITY-1] loaded_key;
-reg                 load_key_block;
 
 always @(posedge clk)
     if (reset)
@@ -847,10 +852,6 @@ always @(posedge clk)
 assign return_id = do_verify | cmd_id | cmd_key;
 
 // register output
-reg set_reg_write;
-reg [15:0] dest_reg_val;
-reg [15:0] reg_data;
-
 always @(posedge clk)
     if (reset | ~set_reg_write)
     begin
