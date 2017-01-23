@@ -14,7 +14,6 @@ module crypto_control #(
     input  wire                    cmd_verify_prev,
     input  wire                    cmd_id,
     input  wire                    cmd_id_prev,
-    input  wire                    cmd_decrypt,
     input  wire             [15:0] mem_in,
     input  wire             [15:0] pc,
     input  wire             [15:0] r9,
