@@ -33,7 +33,6 @@ localparam KEY_BLOCKS       = KEY_SIZE / RATE;
 reg  duplex_key;
 reg  duplex_output;
 reg  duplex_blank;
-reg  sponge_start_continue;
 reg  xor_data_out;
 
 // other signal declarations ***************************************************
@@ -101,7 +100,6 @@ begin
     duplex_key = 0;
     duplex_output = 0;
     duplex_blank = 0;
-    sponge_start_continue = 0;
     data_out_ready = 0;
     xor_data_out = 0;
 
@@ -117,7 +115,6 @@ begin
         KEY:
         begin
             duplex_key = 1;
-            sponge_start_continue = 1;
         end
 
         KEY_WAIT:
@@ -130,7 +127,6 @@ begin
 
         AD:
         begin
-            sponge_start_continue = 1;
         end
 
         AD_WAIT:
@@ -143,7 +139,6 @@ begin
 
         BODY:
         begin
-            sponge_start_continue = 1;
             data_out_ready = 1;
             xor_data_out = 1;
             duplex_output = unwrap;
@@ -159,7 +154,6 @@ begin
 
         TAG:
         begin
-            sponge_start_continue = 1;
             duplex_blank = 1;
             data_out_ready = 1;
         end
@@ -192,15 +186,24 @@ always @(posedge clk)
 assign key_done = key_counter == KEY_BLOCKS;
 
 // frame bit generation
-reg frame_bit;
+wire key_next  = (state == IDLE | state == KEY_WAIT) & ~key_done;
+wire ad_next   = state == KEY_WAIT | state == AD_IDLE | state == AD_WAIT;
+wire body_next = state == BODY_IDLE | state == BODY_WAIT;
 
-always @(*)
-    case (next_state)
-        KEY:        frame_bit = key_counter != KEY_BLOCKS - 1;
-        AD:         frame_bit = last_block;
-        BODY:       frame_bit = ~last_block;
-        default:    frame_bit = 1'bx;
-    endcase
+wire frame_bit = key_next  ? key_counter != KEY_BLOCKS - 1 :
+                 ad_next   ? last_block                    :
+                 body_next ? ~last_block                   :
+                             1'b0;
+
+// sponge start_continue genereation
+wire idle_start = state == IDLE;
+wire ad_start   = state == AD_IDLE;
+wire body_start = state == BODY_IDLE;
+wire tag_start  = state == TAG_IDLE;
+wire all_start  = idle_start | ad_start | body_start | tag_start;
+
+wire sponge_start_continue = (all_start & start_continue) |
+                             (state == KEY_WAIT & ~sponge_busy);
 
 // sponge input generation
 wire [RATE-1:0] key_block = reverse_bytes(key[key_counter*RATE+:RATE]);

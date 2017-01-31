@@ -262,8 +262,6 @@ always @(posedge clk)
         state <= next_state;
 
 // control signals *************************************************************
-reg        wrap_reset;
-reg        wrap_start_continue;
 reg        wrap_last_block;
 reg        wrap_data_empty;
 reg [15:0] wrap_data_in_val;
@@ -273,7 +271,6 @@ reg        set_wrap_start_continue;
 always @(*)
 begin
     busy = 1;
-    wrap_reset = 0;
     wrap_last_block = 0;
     wrap_data_empty = 0;
     wrap_data_in_val = 0;
@@ -306,7 +303,6 @@ begin
         IDLE:
         begin
             busy = 0;
-            wrap_reset = 1;
         end
 
         CHECK_SM:
@@ -463,7 +459,6 @@ begin
 
         GEN_SMKEY_INIT_PS:
         begin
-            wrap_reset = 1;
             update_key_select = 1;
             key_select_val = KEY_SEL_SM;
             sm_request = `SM_REQ_PUBSTART;
@@ -589,7 +584,6 @@ begin
 
         DEC_INIT:
         begin
-            wrap_reset = 1;
         end
 
         DEC_NONCE:
@@ -733,7 +727,9 @@ wire   unwrap      = cmd_unwrap | do_decrypt;
 reg [15:0] mab_ctr;
 
 always @(posedge clk)
-    if (mab_ctr_init)
+    if (reset)
+        mab_ctr <= 0;
+    else if (mab_ctr_init)
         mab_ctr <= mab_ctr_base;
     else if (mab_ctr_inc)
         mab_ctr <= mab_ctr + 2;
@@ -741,7 +737,9 @@ always @(posedge clk)
 reg [15:0] mab_ctr_limit_reg;
 
 always @(posedge clk)
-    if (mab_ctr_limit_init)
+    if (reset)
+        mab_ctr_limit_reg <= 0;
+    else if (mab_ctr_limit_init)
         mab_ctr_limit_reg <= mab_ctr_limit;
 
 assign mem_done = mab_ctr >= mab_ctr_limit_reg;
@@ -750,7 +748,9 @@ assign mem_done = mab_ctr >= mab_ctr_limit_reg;
 reg [15:0] mab_cipher;
 
 always @(posedge clk)
-    if (mab_cipher_init)
+    if (reset)
+        mab_cipher <= 0;
+    else if (mab_cipher_init)
         mab_cipher <= mab_cipher_base;
     else if (mab_cipher_inc)
         mab_cipher <= mab_cipher + 2;
@@ -761,14 +761,21 @@ assign mab = mab_select_cipher ? mab_cipher : mab_ctr;
 reg [15:0] wrap_data_in;
 
 always @(posedge clk)
-    if (update_wrap_data_in)
+    if (reset)
+        wrap_data_in <= 0;
+    else if (update_wrap_data_in)
         wrap_data_in <= wrap_data_in_val;
+
+reg wrap_start_continue;
 
 always @(posedge clk)
     if (reset | !set_wrap_start_continue)
         wrap_start_continue <= 0;
     else
         wrap_start_continue <= 1;
+
+wire dec_tag_done = (state == DEC_TAG_WAIT) & mem_done;
+wire wrap_reset   = state == IDLE | state == WRITE_VKEY_DONE | dec_tag_done;
 
 // signal to indicate if the tag matches with the memory contents
 assign tag_ok = wrap_data_out_ready ? (wrap_data_out == mem_in) : 1;
@@ -810,7 +817,7 @@ always @(*)
         KEY_SEL_SM:     key = sm_key;
         KEY_SEL_ZERO:   key = `SECURITY'h0;
         KEY_SEL_MEM:    key = loaded_key;
-        default:        key = `SECURITY'hx;
+        default:        key = `SECURITY'h0;
     endcase
 
 always @(posedge clk)

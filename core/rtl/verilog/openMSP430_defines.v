@@ -294,7 +294,7 @@
 // When uncommented, this define will enable the fine
 // grained clock gating of all registers in the core.
 //-------------------------------------------------------
-`define CLOCK_GATING
+//`define CLOCK_GATING
 
 
 //===============================================================

@@ -45,12 +45,12 @@ switch $WITH_LIBRARY {
     }
     "umc_130nm" {
         # Define worst case library
-        set LIB_WC_FILE   "${TECHNOLOGY_LIBRARIES_DIR}/umc_130nm/fsa0l_a_sc_wc.db"
-        set LIB_WC_NAME   "$LIB_WC_FILE:fsa0l_a_sc_wc"
+        set LIB_WC_FILE   "${TECHNOLOGY_LIBRARIES_DIR}/umc_130nm/fsc0l_d_sc_tc.db"
+        set LIB_WC_NAME   "$LIB_WC_FILE:fsc0l_d_sc_tc"
 
         # Define best case library
-        set LIB_BC_FILE   "${TECHNOLOGY_LIBRARIES_DIR}/umc_130nm/fsa0l_a_sc_bc.db"
-        set LIB_BC_NAME   "$LIB_BC_FILE:fsa0l_a_sc_bc"
+        set LIB_BC_FILE   "${TECHNOLOGY_LIBRARIES_DIR}/umc_130nm/fsc0l_d_sc_bc.db"
+        set LIB_BC_NAME   "$LIB_BC_FILE:fsc0l_d_sc_bc"
 
         # Define operating conditions
         set LIB_WC_OPCON  "WCCOM"

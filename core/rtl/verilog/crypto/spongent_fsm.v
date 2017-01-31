@@ -91,7 +91,7 @@ module spongent_fsm (
   end
 
   // State machine
-  always @ (posedge clk or posedge reset) begin
+  always @ (posedge clk) begin
     if (reset)  state_current <= RESET;
     else        state_current <= state_next;
   end
