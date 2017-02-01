@@ -24,29 +24,10 @@ switch $WITH_LIBRARY {
         # Define nand2 gate name for aera size calculation
         set NAND2_NAME    "NAND2_X1"
     }
-    "nangate_45nm" {
-        # Define worst case library
-        set LIB_WC_FILE   "${TECHNOLOGY_LIBRARIES_DIR}/nangate_45nm/Front_End/Liberty/CCS/NangateOpenCellLibrary_slow_ccs.db"
-        set LIB_WC_NAME   "$LIB_WC_FILE:NangateOpenCellLibrary"
-
-        # Define best case library
-        set LIB_BC_FILE   "${TECHNOLOGY_LIBRARIES_DIR}/nangate_45nm/Front_End/Liberty/CCS/NangateOpenCellLibrary_fast_ccs.db"
-        set LIB_BC_NAME   "$LIB_BC_FILE:NangateOpenCellLibrary"
-
-        # Define operating conditions
-        set LIB_WC_OPCON  "slow"
-        set LIB_BC_OPCON  "fast"
-
-        # Define wire-load model
-        set LIB_WIRE_LOAD "5K_hvratio_1_1"
-
-        # Define nand2 gate name for aera size calculation
-        set NAND2_NAME    "NAND2_X1"
-    }
     "umc_130nm" {
         # Define worst case library
-        set LIB_WC_FILE   "${TECHNOLOGY_LIBRARIES_DIR}/umc_130nm/fsc0l_d_sc_tc.db"
-        set LIB_WC_NAME   "$LIB_WC_FILE:fsc0l_d_sc_tc"
+        set LIB_WC_FILE   "${TECHNOLOGY_LIBRARIES_DIR}/umc_130nm/fsc0l_d_sc_wc.db"
+        set LIB_WC_NAME   "$LIB_WC_FILE:fsc0l_d_sc_wc"
 
         # Define best case library
         set LIB_BC_FILE   "${TECHNOLOGY_LIBRARIES_DIR}/umc_130nm/fsc0l_d_sc_bc.db"
@@ -60,26 +41,7 @@ switch $WITH_LIBRARY {
         set LIB_WIRE_LOAD "G5K"
 
         # Define nand2 gate name for aera size calculation
-        set NAND2_NAME    "ND2"
-    }
-    "umc_180nm" {
-        # Define worst case library
-        set LIB_WC_FILE   "${TECHNOLOGY_LIBRARIES_DIR}/umc_180nm/fsa0l_a_sc_wc.db"
-        set LIB_WC_NAME   "$LIB_WC_FILE:fsa0l_a_sc_wc"
-
-        # Define best case library
-        set LIB_BC_FILE   "${TECHNOLOGY_LIBRARIES_DIR}/umc_180nm/fsa0l_a_sc_bc.db"
-        set LIB_BC_NAME   "$LIB_BC_FILE:fsa0l_a_sc_bc"
-
-        # Define operating conditions
-        set LIB_WC_OPCON  "WCCOM"
-        set LIB_BC_OPCON  "BCCOM"
-
-        # Define wire-load model
-        set LIB_WIRE_LOAD "G5K"
-
-        # Define nand2 gate name for aera size calculation
-        set NAND2_NAME    "ND2"
+        set NAND2_NAME    "ND2CLD"
     }
 }
 
