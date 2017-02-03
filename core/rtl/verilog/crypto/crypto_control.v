@@ -83,9 +83,6 @@ reg         mab_ctr_limit_init;
 
 reg         mab_select_cipher;
 
-reg         key_ctr_reset;
-reg         key_ctr_inc;
-
 reg   [2:0] key_select_val;
 reg         update_key_select;
 
@@ -206,8 +203,8 @@ always @(*)
         WRAP_VID_WAIT:     next_state = wrap_busy   ? WRAP_VID_WAIT     : WRITE_VKEY_INIT;
         WRITE_VKEY_INIT:   next_state =               WRITE_VKEY_WAIT;
         WRITE_VKEY:        next_state =               WRITE_VKEY_WAIT;
-        WRITE_VKEY_WAIT:   next_state = key_done    ? WRITE_VKEY_DONE   :
-                                        wrap_busy   ? WRITE_VKEY_WAIT   : WRITE_VKEY;
+        WRITE_VKEY_WAIT:   next_state = wrap_busy   ? WRITE_VKEY_WAIT   :
+                                        key_done    ? WRITE_VKEY_DONE   : WRITE_VKEY;
         WRITE_VKEY_DONE:   next_state = do_decrypt  ? DEC_INIT          : GEN_SMKEY_INIT_PS;
         GEN_SMKEY_INIT_PS: next_state =               GEN_SMKEY_INIT_PE;
         GEN_SMKEY_INIT_PE: next_state =               WRAP_TEXT_WAIT;
@@ -225,8 +222,8 @@ always @(*)
                                         do_verify   ? MAC_INIT          : WRITE_SMKEY_INIT;
         WRITE_SMKEY_INIT:  next_state =               WRITE_SMKEY_WAIT;
         WRITE_SMKEY:       next_state =               WRITE_SMKEY_WAIT;
-        WRITE_SMKEY_WAIT:  next_state = key_done    ? SUCCESS           :
-                                        wrap_busy   ? WRITE_SMKEY_WAIT  : WRITE_SMKEY;
+        WRITE_SMKEY_WAIT:  next_state = wrap_busy   ? WRITE_SMKEY_WAIT  :
+                                        key_done    ? SUCCESS           : WRITE_SMKEY;
         VERIFY_INIT_PS:    next_state =               VERIFY_INIT_PE;
         VERIFY_INIT_PE:    next_state =               WRAP_TEXT_WAIT;
         MAC_INIT:          next_state =               MAC_INIT_WAIT;
@@ -291,8 +288,6 @@ begin
     dest_reg_val = 0;
     reg_data = 0;
     data_out = 0;
-    key_ctr_reset = 0;
-    key_ctr_inc = 0;
     update_key_select = 0;
     key_select_val = KEY_SEL_NONE;
     sm_key_write = 0;
@@ -435,7 +430,6 @@ begin
         begin
             update_key_select = 1;
             key_select_val = KEY_SEL_SM;
-            key_ctr_reset = 1;
             set_wrap_start_continue = 1;
         end
 
@@ -443,7 +437,6 @@ begin
         begin
             sm_key_write = 1;
             data_out = wrap_key_out;
-            key_ctr_inc = 1;
             set_wrap_start_continue = 1;
         end
 
@@ -538,7 +531,6 @@ begin
         WRITE_SMKEY_INIT:
         begin
             set_wrap_start_continue = 1;
-            key_ctr_reset = 1;
         end
 
         WRITE_SMKEY:
@@ -546,7 +538,6 @@ begin
             set_wrap_start_continue = 1;
             sm_key_write = 1;
             data_out = wrap_key_out;
-            key_ctr_inc = 1;
         end
 
         WRITE_SMKEY_WAIT:
@@ -778,19 +769,30 @@ wire dec_tag_done = (state == DEC_TAG_WAIT) & mem_done;
 wire wrap_reset   = state == IDLE | state == WRITE_VKEY_DONE | dec_tag_done;
 
 // signal to indicate if the tag matches with the memory contents
-assign tag_ok = wrap_data_out_ready ? (wrap_data_out == mem_in) : 1;
+assign tag_ok = wrap_data_out_ready ? (wrap_data_out == mem_in) : 1'b1;
 
-reg [KEY_IDX_SIZE-1:0] key_ctr;
+wire [KEY_IDX_SIZE-1:0] key_ctr;
+reg  [KEY_IDX_SIZE-1:0] r_key_ctr;
+
+wire key_ctr_reset = (state == WRAP_VID_WAIT & ~wrap_busy) |
+                     (state == WRAP_SE_WAIT & ~wrap_busy & ~do_verify);
+
+wire inc_state   = state == WRITE_VKEY_WAIT | state == WRITE_SMKEY_WAIT;
+wire key_ctr_inc = inc_state & ~wrap_busy;
+
+assign key_ctr = key_ctr_reset ? {KEY_IDX_SIZE{1'b0}} :
+                 key_ctr_inc   ? r_key_ctr + 1        :
+                                 r_key_ctr;
 
 always @(posedge clk)
-    if (reset | key_ctr_reset)
-        key_ctr <= 0;
-    else if (key_ctr_inc)
-        key_ctr <= key_ctr + 1;
+    if (reset)
+        r_key_ctr <= 0;
+    else
+        r_key_ctr <= key_ctr;
 
-assign key_done = key_ctr == `SECURITY / 16;
+assign key_done = r_key_ctr == `SECURITY / 16;
 
-assign sm_key_idx = key_ctr;
+assign sm_key_idx = r_key_ctr;
 
 // master key
 wire [0:`SECURITY-1] master_key = `MASTER_KEY;

@@ -14,7 +14,7 @@ module sponge_wrap #(
     input  wire [0:SECURITY-1] key,
     output wire                busy,
     output wire     [RATE-1:0] data_out,
-    output reg                 data_out_ready
+    output wire                data_out_ready
 );
 
 localparam SPONGE_RATE      = RATE + 2;
@@ -30,10 +30,7 @@ localparam KEY_BLOCKS       = KEY_SIZE / RATE;
 `endif
 
 // control signal declarations *************************************************
-reg  duplex_key;
-reg  duplex_output;
-reg  duplex_blank;
-reg  xor_data_out;
+wire duplex_key;
 
 // other signal declarations ***************************************************
 wire key_done;
@@ -94,76 +91,6 @@ always @(posedge clk)
     else
         state <= next_state;
 
-// control signals *************************************************************
-always @(*)
-begin
-    duplex_key = 0;
-    duplex_output = 0;
-    duplex_blank = 0;
-    data_out_ready = 0;
-    xor_data_out = 0;
-
-    case (next_state)
-        RESET:
-        begin
-        end
-
-        IDLE:
-        begin
-        end
-
-        KEY:
-        begin
-            duplex_key = 1;
-        end
-
-        KEY_WAIT:
-        begin
-        end
-
-        AD_IDLE:
-        begin
-        end
-
-        AD:
-        begin
-        end
-
-        AD_WAIT:
-        begin
-        end
-
-        BODY_IDLE:
-        begin
-        end
-
-        BODY:
-        begin
-            data_out_ready = 1;
-            xor_data_out = 1;
-            duplex_output = unwrap;
-        end
-
-        BODY_WAIT:
-        begin
-        end
-
-        TAG_IDLE:
-        begin
-        end
-
-        TAG:
-        begin
-            duplex_blank = 1;
-            data_out_ready = 1;
-        end
-
-        TAG_WAIT:
-        begin
-        end
-    endcase
-end
-
 // internal logic **************************************************************
 
 wire idle = (state == RESET)     |
@@ -209,9 +136,14 @@ wire sponge_start_continue = (all_start & start_continue) |
 wire [RATE-1:0] key_block = reverse_bytes(key[key_counter*RATE+:RATE]);
 // wire [RATE-1:0] block = reverse_bytes(duplex_key    ? key_block :
 //                                       duplex_output ? data_out  : data_in);
-wire [RATE-1:0] block = duplex_key    ? key_block :
-                        duplex_output ? data_out  : data_in;
 
+assign          duplex_key    = (state == IDLE & start_continue) |
+                                (state == KEY_WAIT & ~sponge_busy & ~key_done);
+wire            duplex_output = (state == BODY_IDLE & start_continue) & unwrap;
+wire [RATE-1:0] block         = duplex_key    ? key_block :
+                                duplex_output ? data_out  : data_in;
+
+wire                   duplex_blank   = state == TAG_IDLE && start_continue;
 wire [SPONGE_RATE-1:0] sponge_data_in =
     duplex_blank ? 'b1                                      :
     data_empty   ? {{SPONGE_RATE-2{1'b0}}, 1'b1, frame_bit} :
@@ -220,8 +152,11 @@ wire [SPONGE_RATE-1:0] sponge_data_in =
 // output generation
 // assign data_out = reverse_bytes(sponge_data_out[RATE-1:0]) ^
 //                   (xor_data_out ? data_in : {RATE{1'b0}});
-assign data_out = sponge_data_out[RATE-1:0] ^
-                  (xor_data_out ? data_in : {RATE{1'b0}});
+assign data_out_ready = (state == BODY_IDLE & start_continue) |
+                        (state == TAG_IDLE & start_continue);
+wire   xor_data_out   = state == BODY_IDLE & start_continue;
+assign data_out       = sponge_data_out[RATE-1:0] ^
+                        (xor_data_out ? data_in : {RATE{1'b0}});
 
 // module instantiations *******************************************************
 spongent #(
