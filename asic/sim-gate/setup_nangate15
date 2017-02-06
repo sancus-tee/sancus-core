@@ -1,0 +1,5 @@
+#! /bin/bash
+
+vlib nangate_15nm_ocl
+vmap work nangate_15nm_ocl/
+vcom NanGate_15nm_OCL_Vcomponents.vhd NanGate_15nm_OCL_Vtables.vhd NanGate_15nm_OCL_VITAL.vhd

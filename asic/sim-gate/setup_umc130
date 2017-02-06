@@ -1,0 +1,5 @@
+#! /bin/bash
+
+vlib fsc0l_d_sc_wc
+vmap work fsc0l_d_sc_wc/
+vcom fsc0l_d_sc_wc_Vcomponents.vhd fsc0l_d_sc_wc_Vtables.vhd fsc0l_d_sc_wc_VITAL.vhd

@@ -1,0 +1,37 @@
+#! /bin/bash
+
+CLOCK_PERIOD=12.5
+
+function dc() {
+    if [ $3 -eq 80 ]; then
+        MASTER_KEY="deadbeefcafebabedead"
+    elif [ $3 -eq 96 ]; then
+        MASTER_KEY="deadbeefcafebabedeadbeef"
+    elif [ $3 -eq 128 ]; then
+        MASTER_KEY="deadbeefcafebabedeadbeefcafebabe"
+    fi
+
+    cmake -DCMAKE_INSTALL_PREFIX=/volume1/scratch/pmaene/Projects/SoteriaHW -DTECHNOLOGY_LIBRARIES_DIR=/volume1/scratch/pmaene/Libraries -DCLOCK_PERIOD=$1 -DNB_MODULES=$2 -DSECURITY=$3 -DMASTER_KEY=$MASTER_KEY ../ > /dev/null 2>&1
+    make install > /dev/null 2>&1
+    sancus-syn > /dev/null 2>&1
+
+    if grep -q -i violated /volume1/scratch/pmaene/Projects/SoteriaHW/share/sancus/rtl/synthesis/results/report.full_paths.max; then
+        if [ $(echo "$1 < 100.0" | bc) -eq 1 ]; then
+            dc $(echo "$1 + 0.1" | bc) $2 $3
+        fi
+    else
+        echo "$2 | $1"
+    fi
+}
+
+for SECURITY in 80 96 128
+do
+    echo "-- Security $SECURITY"
+
+    for NB_MODULES in 1 2 4 8 16 24
+    do
+        dc $CLOCK_PERIOD $NB_MODULES $SECURITY
+    done
+
+    echo ""
+done

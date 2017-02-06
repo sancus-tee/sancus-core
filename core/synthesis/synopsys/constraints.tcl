@@ -7,7 +7,7 @@
 #set CLOCK_PERIOD 100.0; #  10 MHz
 #set CLOCK_PERIOD 66.6; #  15 MHz
 #set CLOCK_PERIOD 50.0; #  20 MHz
-set CLOCK_PERIOD 40.0; #  25 MHz
+#set CLOCK_PERIOD 40.0; #  25 MHz
 #set CLOCK_PERIOD 33.3; #  30 MHz
 #set CLOCK_PERIOD 30.0; #  33 MHz
 #set CLOCK_PERIOD 25.0; #  40 MHz
@@ -22,6 +22,7 @@ set CLOCK_PERIOD 40.0; #  25 MHz
 #set CLOCK_PERIOD 10.0; # 100 MHz
 #set CLOCK_PERIOD  8.0; # 125 MHz
 
+set CLOCK_PERIOD ${CLOCK_PERIOD};
 
 create_clock -name     "dco_clk"                              \
              -period   "$CLOCK_PERIOD"                        \
@@ -40,7 +41,7 @@ create_clock -name     "lfxt_clk"                             \
 #                                                                            #
 ##############################################################################
 
-group_path -name REGOUT      -to   [all_outputs] 
+group_path -name REGOUT      -to   [all_outputs]
 group_path -name REGIN       -from [remove_from_collection [all_inputs] [get_ports dco_clk]]
 group_path -name FEEDTHROUGH -from [remove_from_collection [all_inputs] [get_ports dco_clk]] -to [all_outputs]
 

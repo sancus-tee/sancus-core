@@ -1,0 +1,1 @@
+../../core/rtl/synthesis/results/openMSP430.gate.v

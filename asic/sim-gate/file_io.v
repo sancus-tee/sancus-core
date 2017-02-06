@@ -1,0 +1,140 @@
+module file_io (
+    output wire [15:0] per_dout,
+    input  wire        mclk,
+    input  wire [13:0] per_addr,
+    input  wire [15:0] per_din,
+    input  wire        per_en,
+    input  wire  [1:0] per_we,
+    input  wire        puc_rst
+);
+
+//=============================================================================
+// 1)  PARAMETER DECLARATION
+//=============================================================================
+
+// Register base address (must be aligned to decoder bit width)
+parameter       [14:0] BASE_ADDR = 15'h00c0;
+
+// Decoder bit width (defines how many bits are considered for address decoding)
+parameter              DEC_WD    = 2;
+
+// Register addresses offset
+parameter [DEC_WD-1:0] STATUS    = 'h0,
+                       DATA      = 'h2;
+
+
+// Register one-hot decoder utilities
+parameter              DEC_SZ    = (1 << DEC_WD);
+parameter [DEC_SZ-1:0] BASE_REG  = {{DEC_SZ-1{1'b0}}, 1'b1};
+
+// Register one-hot decoder
+parameter [DEC_SZ-1:0] STATUS_D  = (BASE_REG << STATUS),
+                       DATA_D    = (BASE_REG << DATA);
+
+// File names
+parameter IN_FILE                = "ififo";
+parameter OUT_FILE               = "ofifo";
+
+//============================================================================
+// 2)  REGISTER DECODER
+//============================================================================
+
+// Local register selection
+wire              reg_sel      = per_en & (per_addr[13:DEC_WD-1]==BASE_ADDR[14:DEC_WD]);
+
+// Register local address
+wire [DEC_WD-1:0] reg_addr     = {1'b0, per_addr[DEC_WD-2:0]};
+
+// Register address decode
+wire [DEC_SZ-1:0] reg_dec      = (STATUS_D & {DEC_SZ{(reg_addr==(STATUS >> 1))}}) |
+                                 (DATA_D   & {DEC_SZ{(reg_addr==(DATA   >> 1))}});
+
+// Read/Write probes
+wire              reg_lo_write =  per_we[0] & reg_sel;
+wire              reg_hi_write =  per_we[1] & reg_sel;
+wire              reg_read     = ~|per_we   & reg_sel;
+
+// Read/Write vectors
+wire [DEC_SZ-1:0] reg_hi_wr    = reg_dec & {DEC_SZ{reg_hi_write}};
+wire [DEC_SZ-1:0] reg_lo_wr    = reg_dec & {DEC_SZ{reg_lo_write}};
+wire [DEC_SZ-1:0] reg_rd       = reg_dec & {DEC_SZ{reg_read}};
+
+//============================================================================
+// 3) REGISTERS
+//============================================================================
+
+// File handles
+integer in_file, out_file;
+
+initial
+begin
+    in_file = $fopen(`FILEIO_IN, "wb+");
+    if (in_file == 0)
+    begin
+        $display("Unable to open '%s' for reading", `FILEIO_IN);
+        $finish;
+    end
+
+    out_file = $fopen(`FILEIO_OUT, "wb+");
+    if (out_file == 0)
+    begin
+        $display("Unable to open '%s' for writing", `FILEIO_OUT);
+        $finish;
+    end
+
+    $display("=== File I/O ===");
+    $display("Input:  '%s'", `FILEIO_IN);
+    $display("Output: '%s'", `FILEIO_OUT);
+    $display("================");
+end
+
+// DATA Register
+//-----------------
+reg  [7:0] data;
+reg        data_ready;
+
+wire       data_wr  = DATA[0] ? reg_hi_wr[DATA] : reg_lo_wr[DATA];
+wire [7:0] data_nxt = DATA[0] ? per_din[15:8]   : per_din[7:0];
+
+// Writes to the DATA register
+always @ (posedge mclk or posedge puc_rst)
+    if (data_wr)
+        if ($fputc(data_nxt, out_file) != 0)
+            $display("File I/O: write error");
+        else
+            $fflush(out_file);
+
+// Reads from the DATA register
+integer in_char;
+
+always @(posedge mclk or posedge puc_rst)
+    if (puc_rst | reg_rd[DATA])
+    begin
+        data <= 8'hab;
+        data_ready <= 1'b0;
+    end
+    else if (!data_ready)
+    begin
+        in_char = $fgetc(in_file);
+        if (in_char != -1)
+        begin
+            data <= in_char;
+            data_ready <= 1'b1;
+        end
+    end
+
+// STATUS Register
+//-----------------
+wire [7:0] status = {7'b0, data_ready};
+
+//============================================================================
+// 4) DATA OUTPUT GENERATION
+//============================================================================
+
+// Data output mux
+wire [15:0] status_rd = {8'h00, (status & {8{reg_rd[STATUS]}})} << (8 & {4{STATUS[0]}});
+wire [15:0] data_rd   = {8'h00, (data   & {8{reg_rd[DATA]}})}   << (8 & {4{DATA[0]}});
+
+assign      per_dout  =  status_rd | data_rd;
+
+endmodule
