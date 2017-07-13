@@ -7,7 +7,6 @@ coregen.log
 *.ngc
 *.v
 *.veo
-*.xise
 ram_*/
 *.txt
 *.ncf
