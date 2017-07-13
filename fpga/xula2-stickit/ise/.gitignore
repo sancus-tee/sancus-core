@@ -49,3 +49,13 @@ webtalk.log
 webtalk_pn.xml
 xlnx_auto_0_xdb/
 xst/
+
+impact.xsl
+impact_impact.xwbt
+output.txt
+webtalk_impact.xml
+
+*.bit
+*.cfi
+*.mcs
+*.prm
