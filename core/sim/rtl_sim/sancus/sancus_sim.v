@@ -155,6 +155,7 @@ wire        [13:0] irq_in;
 reg                cpu_en;
 reg         [13:0] wkup;
 wire        [13:0] wkup_in;
+wire               sm_violation;
 
 // Scan (ASIC version only)
 reg                scan_enable;
@@ -348,6 +349,7 @@ openMSP430 dut (
     .puc_rst      (puc_rst),           // Main system reset
     .smclk        (smclk),             // ASIC ONLY: SMCLK
     .smclk_en     (smclk_en),          // FPGA ONLY: SMCLK enable
+    .spm_violation (sm_violation),
 
 // INPUTs
     .cpu_en       (cpu_en),            // Enable CPU code execution (asynchronous)
@@ -605,11 +607,22 @@ begin
     $display("* RAM: %5dB                *", `DMEM_SIZE);
     $display("******************************");
 
-    // finish on CPU halt
-    @(posedge r2[4]);
-    $display("******************************");
-    $display("* Sancus simulation finished *");
-    $display("******************************");
+    // finish on CPU halt or violation
+    @(posedge r2[4] | sm_violation);
+    error = sm_violation;
+    repeat(10) @(posedge mclk);
+
+    $display(" ===============================================");
+    if (error)
+      begin
+     $display("|               SIMULATION FAILED               |");
+     $display("|          (Sancus violation detected)          |");
+      end
+    else 
+      begin
+     $display("|               SIMULATION PASSED               |");
+      end
+    $display(" ===============================================");
     $finish;
 end
 
