@@ -227,18 +227,18 @@ wire                handling_irq;
 wire          [3:0] irq_num;
 
 wire                spm_busy;
-wire                spm_violation;
+wire                spm_violation_eu;
 wire                pmem_writing;
 
 `ifdef RESET_ON_VIOLATION
-reg spm_violation_s;
+reg spm_violation;
 always @(posedge mclk or posedge puc_rst)
     if (puc_rst)
-        spm_violation_s <= 1'b0;
+        spm_violation <= 1'b0;
     else
-        spm_violation_s <= spm_violation;
+        spm_violation <= spm_violation_eu;
 
-wire do_reset_n = reset_n & ~spm_violation_s;
+wire do_reset_n = reset_n & ~spm_violation;
 `else
 wire do_reset_n = reset_n;
 `endif
@@ -350,7 +350,7 @@ omsp_frontend frontend_0 (
     .wkup         (wkup),          // System Wake-up (asynchronous)
     .spm_busy     (spm_busy),
     .pmem_writing (pmem_writing),
-    .sm_violation (spm_violation)
+    .sm_violation (spm_violation_eu)
 );
 
 
@@ -372,7 +372,7 @@ omsp_execution_unit execution_unit_0 (
     .pc_sw_wr     (pc_sw_wr),      // Program counter software write
     .scg0         (scg0),          // System clock generator 1. Turns off the DCO
     .scg1         (scg1),          // System clock generator 1. Turns off the SMCLK
-    .spm_violation(spm_violation),
+    .spm_violation(spm_violation_eu),
     .sm_busy      (spm_busy),
 
 // INPUTs
@@ -452,7 +452,7 @@ omsp_mem_backbone mem_backbone_0 (
     .pmem_dout    (pmem_dout),     // Program Memory data output
     .puc_rst      (puc_rst),       // Main system reset
     .scan_enable  (scan_enable),   // Scan enable (active during scan shifting)
-    .sm_violation (spm_violation)
+    .sm_violation (spm_violation_eu)
 );
 
 //=============================================================================
