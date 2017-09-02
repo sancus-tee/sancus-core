@@ -510,6 +510,7 @@ omsp_spm_control #(
   .eu_mb_wr               (mb_wr),
   .update_spm             (sm_update),
   .enable_spm             (sm_enable),
+  .disable_spm            (sm_disable),
   .verify_spm             (sm_verify),
   .r10                    (r10),
   .r12                    (r12),
