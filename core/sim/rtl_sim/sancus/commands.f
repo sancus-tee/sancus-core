@@ -19,6 +19,7 @@
 #omsp_mem_backbone.v
 #omsp_multiplier.v
 #omsp_register_file.v
+#omsp_uart.v
 #omsp_scan_mux.v
 #omsp_sfr.v
 #omsp_spm_control.v

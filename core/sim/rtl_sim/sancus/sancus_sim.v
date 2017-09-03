@@ -467,7 +467,7 @@ omsp_timerA timerA_0 (
 //
 // Simple full duplex UART (8N1 protocol)
 //----------------------------------------
-`ifdef READY_FOR_PRIMETIME
+//`ifdef READY_FOR_PRIMETIME
 omsp_uart #(.BASE_ADDR(15'h0080)) uart_0 (
 
 // OUTPUTs
@@ -486,12 +486,12 @@ omsp_uart #(.BASE_ADDR(15'h0080)) uart_0 (
     .smclk_en     (smclk_en),      // SMCLK enable (from CPU)
     .uart_rxd     (uart_rxd)       // UART Data Receive (RXD)
 );
-`else
-    assign irq_uart_rx   =  1'b0;
-    assign irq_uart_tx   =  1'b0;
-    assign per_dout_uart = 16'h0000;
-    assign uart_txd      =  1'b0;
-`endif
+//`else
+//    assign irq_uart_rx   =  1'b0;
+//    assign irq_uart_tx   =  1'b0;
+//    assign per_dout_uart = 16'h0000;
+//    assign uart_txd      =  1'b0;
+//`endif
 
 //
 // Time Stamp Counter

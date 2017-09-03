@@ -27,6 +27,7 @@ set(SRC
     omsp_spm.v
     omsp_sync_cell.v
     omsp_sync_reset.v
+    omsp_uart.v
     omsp_wakeup_cell.v
     omsp_watchdog.v
     openMSP430_defines.v
