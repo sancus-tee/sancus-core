@@ -35,6 +35,7 @@
 #spongent_player.v
 #spongent_sbox.v
 #spongent.v
+#omsp_uart_print.v
 #omsp_gpio.v
 #omsp_timerA_defines.v
 #omsp_timerA_undefines.v

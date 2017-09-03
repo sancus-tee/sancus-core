@@ -467,31 +467,42 @@ omsp_timerA timerA_0 (
 //
 // Simple full duplex UART (8N1 protocol)
 //----------------------------------------
-`ifdef READY_FOR_PRIMETIME
-omsp_uart #(.BASE_ADDR(15'h0080)) uart_0 (
+//`ifdef READY_FOR_PRIMETIME
+//omsp_uart #(.BASE_ADDR(15'h0080)) uart_0 (
+//
+//// OUTPUTs
+//    .irq_uart_rx  (irq_uart_rx),   // UART receive interrupt
+//    .irq_uart_tx  (irq_uart_tx),   // UART transmit interrupt
+//    .per_dout     (per_dout_uart), // Peripheral data output
+//    .uart_txd     (uart_txd),      // UART Data Transmit (TXD)
+//
+//// INPUTs
+//    .mclk         (mclk),          // Main system clock
+//    .per_addr     (per_addr),      // Peripheral address
+//    .per_din      (per_din),       // Peripheral data input
+//    .per_en       (per_en),        // Peripheral enable (high active)
+//    .per_we       (per_we),        // Peripheral write enable (high active)
+//    .puc_rst      (puc_rst),       // Main system reset
+//    .smclk_en     (smclk_en),      // SMCLK enable (from CPU)
+//    .uart_rxd     (uart_rxd)       // UART Data Receive (RXD)
+//);
+//`else
+//    assign irq_uart_rx   =  1'b0;
+//    assign irq_uart_tx   =  1'b0;
+//    assign per_dout_uart = 16'h0000;
+//    assign uart_txd      =  1'b0;
+//`endif
 
-// OUTPUTs
-    .irq_uart_rx  (irq_uart_rx),   // UART receive interrupt
-    .irq_uart_tx  (irq_uart_tx),   // UART transmit interrupt
-    .per_dout     (per_dout_uart), // Peripheral data output
-    .uart_txd     (uart_txd),      // UART Data Transmit (TXD)
-
-// INPUTs
-    .mclk         (mclk),          // Main system clock
-    .per_addr     (per_addr),      // Peripheral address
-    .per_din      (per_din),       // Peripheral data input
-    .per_en       (per_en),        // Peripheral enable (high active)
-    .per_we       (per_we),        // Peripheral write enable (high active)
-    .puc_rst      (puc_rst),       // Main system reset
-    .smclk_en     (smclk_en),      // SMCLK enable (from CPU)
-    .uart_rxd     (uart_rxd)       // UART Data Receive (RXD)
+//TODO should this not be UART2 at 0x0088 ?
+omsp_uart_print #(.BASE_ADDR(15'h0080)) uart_0 (
+    .per_dout (per_dout_uart),
+    .mclk     (mclk),
+    .per_addr (per_addr),
+    .per_din  (per_din),
+    .per_en   (per_en),
+    .per_we   (per_we),
+    .puc_rst  (puc_rst)
 );
-`else
-    assign irq_uart_rx   =  1'b0;
-    assign irq_uart_tx   =  1'b0;
-    assign per_dout_uart = 16'h0000;
-    assign uart_txd      =  1'b0;
-`endif
 
 //
 // Time Stamp Counter
@@ -593,11 +604,6 @@ begin
     $dumpfile(`DUMPFILE);
     $dumpvars(0, sancus_sim);
 end
-
-// putchar output
-always @(posedge p1_dout[7])
-    $write("%c", p1_dout[6:0]);
-
 
 initial
 begin

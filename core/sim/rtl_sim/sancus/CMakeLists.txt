@@ -8,6 +8,7 @@ set(SRC
     msp_debug.v
     ram.v
     registers.v
+    omsp_uart_print.v
     sancus_sim.v
     file_io.v
 )
