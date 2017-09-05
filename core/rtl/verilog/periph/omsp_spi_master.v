@@ -20,7 +20,7 @@ module  omsp_spi_master (
 //=========
 output      [15:0] per_dout;        // Peripheral data output
 output             sck;
-output             ss;
+output       [2:0] ss;
 output             mosi;
 
 // INPUTs
@@ -121,8 +121,21 @@ always @ (posedge mclk or posedge puc_rst)
 
 wire       spi_cpol    =  cntrl[0];
 wire       spi_cpha    =  cntrl[1];
-assign     ss          = ~cntrl[2];
-wire [7:0] spi_clk_div =  {3'b0, cntrl[7:3]};
+wire [1:0] ss_num      = {cntrl[3], cntrl[2]};
+wire [7:0] spi_clk_div =  {4'b0, cntrl[7:4]};
+
+// Slave-select lines one-hot active-low encoding
+// 4 bits one-hot decoder
+function [3:0] one_hot4;
+   input  [1:0] binary;
+   begin
+      one_hot4         = 4'h0;
+      one_hot4[binary] = 1'b1;
+   end
+endfunction
+
+wire [3:0] ss_oh = ~one_hot4(ss_num);
+wire [2:0] ss = ss_oh[3:1];
 
 // STATUS Register
 //-----------------
@@ -155,7 +168,6 @@ spi_master spi (
 
     .sck        (sck),
     .mosi       (mosi),
-    //.ss         (ss),
     .busy       (spi_busy),
     .data_out   (spi_data_out)
 );

@@ -61,3 +61,5 @@
 //../../../rtl/verilog/periph/omsp_uart.v
 ../../../rtl/verilog/periph/template_periph_8b.v
 ../../../rtl/verilog/periph/template_periph_16b.v
+../../../rtl/verilog/periph/omsp_spi_master.v
+../../../rtl/verilog/periph/spi_master.v

@@ -4,3 +4,6 @@ stdout.txt
 stimulus.v
 tb_openMSP430.vcd
 signals.gtkw
+pmem_defs.asm
+
+log/*

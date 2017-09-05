@@ -129,10 +129,10 @@ wire               hw_uart_txd2;
 wire        [15:0] per_dout_uart2;
 
 // PS/2
-wire        [15:0] per_dout_ps2;
-wire               irq_rx_ps2;
-wire               ps2_clk;
-wire               ps2_data;
+//wire        [15:0] per_dout_ps2;
+//wire               irq_rx_ps2;
+//wire               ps2_clk;
+//wire               ps2_data;
 
 // TSC
 wire        [15:0] per_dout_tsc;
@@ -142,7 +142,7 @@ wire        [15:0] per_dout_spi;
 wire               spi_mosi;
 wire               spi_miso;
 wire               spi_sck;
-wire               spi_ss;
+wire        [2:0]  spi_ss;
 
 // Others
 wire               reset_pin;
@@ -161,14 +161,18 @@ assign hw_uart_rxd = chan_io[21];
 //assign chan_io[14] = lcd_uart_txd;
 
 // PS2
-alias alias1(ps2_clk, chanClk_io);
-alias alias2(ps2_data, chan_io[15]);
+//alias alias1(ps2_clk, chanClk_io);
+//alias alias2(ps2_data, chan_io[15]);
 
 // SPI master
 assign chan_io[3]  = spi_sck;
-assign spi_miso    = chan_io[18];
+assign spi_miso    = chan_io[18] | chan_io[16]; // shared MISO line
 assign chan_io[1]  = spi_mosi;
-assign chan_io[17] = spi_ss;
+assign chan_io[17] = spi_ss[0];
+
+assign chan_io[0]  = spi_sck;
+assign chanClk_io  = spi_mosi;
+assign chan_io[15] = spi_ss[1];
 
 //=============================================================================
 // 2)  CLOCK GENERATION
@@ -428,18 +432,18 @@ omsp_uart #(.BASE_ADDR(15'h0088)) hw_uart2 (
 
 // PS/2
 
-omsp_ps2 ps2(
-    .per_dout (per_dout_ps2),
-    .irq_rx   (irq_rx_ps2),
-    .ps2_clk  (ps2_clk),
-    .ps2_data (ps2_data),
-    .mclk     (mclk),
-    .per_addr (per_addr),
-    .per_din  (per_din),
-    .per_en   (per_en),
-    .per_we   (per_we),
-    .puc_rst  (puc_rst)
-);
+//omsp_ps2 ps2(
+//    .per_dout (per_dout_ps2),
+//    .irq_rx   (irq_rx_ps2),
+//    .ps2_clk  (ps2_clk),
+//    .ps2_data (ps2_data),
+//    .mclk     (mclk),
+//    .per_addr (per_addr),
+//    .per_din  (per_din),
+//    .per_en   (per_en),
+//    .per_we   (per_we),
+//    .puc_rst  (puc_rst)
+//);
 
 // TSC
 omsp_tsc tsc(
@@ -476,7 +480,7 @@ assign per_dout = per_dout_dio      |
                   per_dout_tA       |
                   per_dout_uart     |
                   per_dout_uart2    |
-                  per_dout_ps2      |
+                  //per_dout_ps2      |
                   per_dout_tsc      |
                   per_dout_spi;
 //
@@ -492,7 +496,7 @@ assign irq_bus    = {1'b0,         // Vector 13  (0xFFFA)
                      irq_ta1,      // Vector  8  (0xFFF0)
                      irq_uart_rx,  // Vector  7  (0xFFEE)
                      irq_uart_tx,  // Vector  6  (0xFFEC)
-                     irq_rx_ps2,   // Vector  5  (0xFFEA)
+                     1'b0, //irq_rx_ps2,   // Vector  5  (0xFFEA)
                      1'b0,         // Vector  4  (0xFFE8)
                      irq_port2,    // Vector  3  (0xFFE6)
                      irq_port1,    // Vector  2  (0xFFE4)

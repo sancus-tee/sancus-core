@@ -101,6 +101,13 @@ reg          [7:0] p6_din;
 wire        [15:0] per_dout_temp_8b;
 wire        [15:0] per_dout_temp_16b;
 
+// SPI master
+wire        [15:0] per_dout_spi;
+wire               spi_mosi;
+wire               spi_miso;
+wire               spi_sck;
+wire        [2:0]  spi_ss;
+
 // Simple full duplex UART
 wire        [15:0] per_dout_uart;
 wire               irq_uart_rx;
@@ -527,6 +534,21 @@ template_periph_16b #(.BASE_ADDR((15'd`PER_SIZE-15'h0070) & 15'h7ff8)) template_
     .puc_rst      (puc_rst)            // Main system reset
 );
 
+// SPI master
+omsp_spi_master spi_master(
+    .per_dout   (per_dout_spi),
+    .sck        (spi_sck),
+    .ss         (spi_ss),
+    .mosi       (spi_mosi),
+
+    .mclk       (mclk),
+    .miso       (spi_miso),
+    .per_addr   (per_addr),
+    .per_din    (per_din),
+    .per_en     (per_en),
+    .per_we     (per_we),
+    .puc_rst    (puc_rst)
+);
 
 //
 // Combine peripheral data bus
@@ -535,6 +557,7 @@ template_periph_16b #(.BASE_ADDR((15'd`PER_SIZE-15'h0070) & 15'h7ff8)) template_
 assign per_dout = per_dout_dio       |
                   per_dout_timerA    |
                   per_dout_uart      |
+                  per_dout_spi       |
                   per_dout_temp_8b   |
                   per_dout_temp_16b;
 
