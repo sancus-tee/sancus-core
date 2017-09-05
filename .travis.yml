@@ -1,0 +1,13 @@
+language: c
+sudo: enabled
+dist: trusty
+
+notifications:
+  email: false
+
+before_install:
+  - sudo apt-get install build-essential iverilog tk binutils-msp430 gcc-msp430 msp430-libc msp430mcu expect-dev -y
+
+script:
+  - cd core/sim/rtl_sim/run/
+  - ./run_all

@@ -19,6 +19,9 @@ rm -rf ./cov_work
 rm -rf ./log/*.log
 mkdir  ./log
 
+# Sancus-specific tests
+../bin/msp430sim spi.v                    | tee ./log/sancus-spi.log
+
 # Two-Operand Arithmetic test patterns
 ../bin/msp430sim two-op_mov               | tee ./log/two-op_mov.log
 ../bin/msp430sim two-op_mov-b             | tee ./log/two-op_mov-b.log
@@ -81,8 +84,9 @@ mkdir  ./log
 ../bin/msp430sim clock_module_asic_lfxt   | tee ./log/clock_module_asic_lfxt.log
 
 # Serial Debug Interface
-../bin/msp430sim dbg_uart                 | tee ./log/dbg_uart.log
-../bin/msp430sim dbg_uart_sync            | tee ./log/dbg_uart_sync.log
+#../bin/msp430sim dbg_uart                 | tee ./log/dbg_uart.log
+#../bin/msp430sim dbg_uart_sync            | tee ./log/dbg_uart_sync.log
+# ^^ tests takes looong time
 ../bin/msp430sim dbg_cpu                  | tee ./log/dbg_cpu.log
 ../bin/msp430sim dbg_mem                  | tee ./log/dbg_mem.log
 ../bin/msp430sim dbg_hwbrk0               | tee ./log/dbg_hwbrk0.log
