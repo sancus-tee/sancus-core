@@ -1,0 +1,8 @@
+INTSTYLE=impact
+INFILE=/media/DATA/Documents/sancus/openmsp430-spm-fork/fpga/xula2-stickit/ise/impact.xsl
+OUTFILE=/media/DATA/Documents/sancus/openmsp430-spm-fork/fpga/xula2-stickit/ise/impact.xsl
+FAMILY=Multiple
+PART=Multiple
+WORKINGDIR=/media/DATA/Documents/sancus/openmsp430-spm-fork/fpga/xula2-stickit/ise
+LICENSE=iMPACT
+USER_INFO=iMPACT

@@ -1,0 +1,8 @@
+Storage Target: SPI Flash Single FPGA
+Auto Select Storage Device
+FF
+sancus-core-multi-spi
+/media/DATA/Documents/sancus/openmsp430-spm-fork/fpga/xula2-stickit/ise
+
+MCS
+

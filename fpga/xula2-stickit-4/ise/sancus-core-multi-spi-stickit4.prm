@@ -1,0 +1,17 @@
+PROMGEN: Xilinx Prom Generator P.20131013
+Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
+
+promgen -w -p mcs -c FF -o /media/DATA/Documents/sancus/openmsp430-spm-fork/fpga/xula2-stickit-4/ise//sancus-core-multi-spi-stickit4 -s 8192 -u 0000 /media/DATA/Documents/sancus/openmsp430-spm-fork/fpga/xula2-stickit-4/ise/openMSP430_fpga_cclktemp.bit -spi 
+
+PROM /media/DATA/Documents/sancus/openmsp430-spm-fork/fpga/xula2-stickit-4/ise/sancus-core-multi-spi-stickit4.prm map: Fri Mar 17 18:47:43 2017
+
+Calculating PROM checksum with fill value ff
+
+Format        Mcs86 (32-bit)
+Size          8192K
+PROM start    0000:0000
+PROM end      007f:ffff
+PROM checksum 73ebcdcf
+
+        Addr1        Addr2                     Date File(s)
+    0000:0000    000c:3ab5     Mar 17 18:47:39 2017 /media/DATA/Documents/sancus/openmsp430-spm-fork/fpga/xula2-stickit-4/ise/openMSP430_fpga_cclktemp.bit

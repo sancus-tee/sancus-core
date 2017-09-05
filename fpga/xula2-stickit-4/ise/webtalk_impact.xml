@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<document>
+<!--The data in this file is primarily intended for consumption by Xilinx tools.
+The structure and the elements are likely to change over the next few releases.
+This means code written to parse this file will need to be revisited each subsequent release.-->
+<application name="impact" timeStamp="Wed Mar 15 18:11:06 2017">
+<section name="Project Information" visible="false">
+<property name="ProjectID" value="c994d6afc6a440d8b334afd623961f91"/>
+<property name="ProjectIteration" value="1"/>
+</section>
+<section name="iMPACT Project Info" visible="true">
+<property name="Use Project File" value="No"/>
+<property name="Project Entry" value="ise"/>
+<property name="OS Name" value="Ubuntu"/>
+<property name="OS Release" value="Ubuntu 16.04.2 LTS"/>
+<property name="User Lic. Info" value="211188008_0_0_274"/>
+</section>
+<section name="iMPACT SPI FLASH File Generation Mode" visible="true">
+<item name="FLASH File Summary">
+<property name="Number of FLASH" value="1"/>
+<property name="FLASH Data Width" value="8"/>
+<property name="FLASH" value="1"/>
+<property name="FLASH Size" value="8m Byte"/>
+</item>
+<item name="Revision_Data File Summary">
+<property name="Number of Revision" value="1"/>
+<property name="Number of Data File" value="0"/>
+</item>
+<item name="Revision 1">
+<property name="Number of device" value="1"/>
+<property name="Device1" value="spartan6"/>
+<property name="Part1" value="xc6slx25"/>
+</item>
+</section>
+</application>
+</document>
