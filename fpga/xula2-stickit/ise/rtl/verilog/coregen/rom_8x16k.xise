@@ -28,7 +28,6 @@
   <properties>
     <property xil_pn:name="Device" xil_pn:value="xa7a100t" xil_pn:valueState="default"/>
     <property xil_pn:name="Device Family" xil_pn:value="Automotive Artix7" xil_pn:valueState="default"/>
-    <property xil_pn:name="Implementation Stop View" xil_pn:value="AbstractSynthesis" xil_pn:valueState="default"/>
     <property xil_pn:name="Package" xil_pn:value="csg324" xil_pn:valueState="default"/>
     <property xil_pn:name="Preferred Language" xil_pn:value="Verilog" xil_pn:valueState="default"/>
     <property xil_pn:name="Property Specification in Project File" xil_pn:value="Store all values" xil_pn:valueState="default"/>
@@ -36,7 +35,7 @@
     <property xil_pn:name="Speed Grade" xil_pn:value="-2I" xil_pn:valueState="default"/>
     <property xil_pn:name="Synthesis Tool" xil_pn:value="XST (VHDL/Verilog)" xil_pn:valueState="default"/>
     <property xil_pn:name="Top-Level Source Type" xil_pn:value="HDL" xil_pn:valueState="default"/>
-    <property xil_pn:name="Working Directory" xil_pn:value="." xil_pn:valueState="default"/>
+    <property xil_pn:name="Working Directory" xil_pn:value="." xil_pn:valueState="non-default"/>
     <!--                                                                                  -->
     <!-- The following properties are for internal use only. These should not be modified.-->
     <!--                                                                                  -->

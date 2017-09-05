@@ -49,6 +49,7 @@ set(SRC
     periph/omsp_tsc.v
     periph/omsp_spi_master.v
     periph/spi_master.v
+    periph/omsp_led_digits.v
 )
 
 install(FILES ${SRC} DESTINATION ${INSTALL_RTL_PATH})

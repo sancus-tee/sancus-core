@@ -129,6 +129,10 @@ wire               ta_out2_en;
 // Time Stamp Counter
 wire        [15:0] per_dout_tsc;
 
+// LED digits
+wire        [15:0] per_dout_led;
+wire         [7:0] led_so;
+
 // File IO
 wire        [15:0] per_dout_file_io;
 
@@ -518,6 +522,20 @@ omsp_tsc tsc(
 );
 
 //
+// LED Digits
+//----------------------------------
+omsp_led_digits led_digits(
+    .per_dout (per_dout_led),
+    .so       (led_so),
+    .mclk     (mclk),
+    .per_addr (per_addr),
+    .per_din  (per_din),
+    .per_en   (per_en),
+    .per_we   (per_we),
+    .puc_rst  (puc_rst)
+);
+
+//
 // File IO peripheral
 //----------------------------------------
 file_io file_io_0 (
@@ -539,6 +557,7 @@ assign per_dout = per_dout_dio       |
                   per_dout_timerA    |
                   per_dout_uart      |
                   per_dout_tsc       |
+                  per_dout_led       |
                   per_dout_file_io;
 
 

@@ -34,6 +34,9 @@
 //----------------------------------------------------------------------------
 `include "openmsp430/openMSP430_defines.v"
 
+// include charlieplexer on PM3/HAT (and exclude P3)
+`define FPGA_CHARLIE
+
 module openMSP430_fpga (
     // 12MHz clock
 	input  wire        fpgaClk_i,
@@ -113,7 +116,7 @@ wire         [7:0] p2_dout_en;
 wire         [7:0] p2_sel;
 wire         [7:0] p3_dout;
 wire         [7:0] p3_dout_en;
-wire         [7:0] p4_din;
+wire         [7:0] p3_din;
 wire        [15:0] per_dout_dio;
 
 // Timer A
@@ -144,6 +147,10 @@ wire               spi_miso;
 wire               spi_sck;
 wire        [2:0]  spi_ss;
 
+// Led Digits
+wire        [15:0] per_dout_led;
+wire         [7:0] led_so;
+
 // Others
 wire               reset_pin;
 
@@ -168,6 +175,18 @@ assign spi_miso    = chan_io[4];
 assign chan_io[2]  = spi_mosi;
 assign chan_io[0]  = spi_ss[0];
 assign chanClk_io  = spi_ss[1];
+
+// LED digits charlieplexer on PM3
+`ifdef FPGA_CHARLIE
+    assign chan_io[29] = led_so[6];
+    assign chan_io[27] = led_so[4];
+    assign chan_io[25] = led_so[2];
+    assign chan_io[23] = led_so[0];
+    assign chan_io[30] = led_so[7];
+    assign chan_io[28] = led_so[5];
+    assign chan_io[26] = led_so[3];
+    assign chan_io[24] = led_so[1];
+`endif
 
 //=============================================================================
 // 2)  CLOCK GENERATION
@@ -309,8 +328,8 @@ omsp_gpio #(.P1_EN(1),
     .mclk         (mclk),          // Main system clock
     .p1_din       (p1_din),        // Port 1 data input
     .p2_din       (p2_din),        // Port 2 data input
-    .p3_din       (8'h00),         // Port 3 data input
-    .p4_din       (p4_din),        // Port 4 data input
+    .p3_din       (p3_din),        // Port 3 data input
+    .p4_din       (8'h00),         // Port 4 data input
     .p5_din       (8'h00),         // Port 5 data input
     .p6_din       (8'h00),         // Port 6 data input
     .per_addr     (per_addr),      // Peripheral address
@@ -467,6 +486,20 @@ omsp_spi_master spi_master(
     .puc_rst    (puc_rst)
 );
 
+// LED digits
+omsp_led_digits led_digits(
+    .per_dout   (per_dout_led),
+    .so         (led_so),
+
+    .mclk       (mclk),
+    .per_addr   (per_addr),
+    .per_din    (per_din),
+    .per_en     (per_en),
+    .per_we     (per_we),
+    .puc_rst    (puc_rst)
+);
+
+
 //
 // Combine peripheral data buses
 //-------------------------------
@@ -477,6 +510,7 @@ assign per_dout = per_dout_dio      |
                   per_dout_uart2    |
                   //per_dout_ps2      |
                   per_dout_tsc      |
+                  per_dout_led      |
                   per_dout_spi;
 //
 // Assign interrupts
@@ -607,8 +641,7 @@ io_mux #8 io_mux_p2 (
 		     .sel        (p2_sel)
 );
 
-// 8 general purpose I/O pins
-// Connected to WING
+// P1: 8 general purpose I/O pins on HAT connector
 assign p1_io_din[0] = chan_io[7];
 assign p1_io_din[1] = chan_io[8]; 
 assign p1_io_din[2] = chan_io[9];
@@ -618,7 +651,7 @@ assign p1_io_din[5] = chan_io[12];
 assign p1_io_din[6] = chan_io[13];
 assign p1_io_din[7] = chan_io[14];
 
-assign chan_io[7] = p1_io_dout_en[0] ? p1_io_dout[0] : 1'bz;
+assign chan_io[7]  = p1_io_dout_en[0] ? p1_io_dout[0] : 1'bz;
 assign chan_io[8]  = p1_io_dout_en[1] ? p1_io_dout[1] : 1'bz;
 assign chan_io[9]  = p1_io_dout_en[2] ? p1_io_dout[2] : 1'bz;
 assign chan_io[10] = p1_io_dout_en[3] ? p1_io_dout[3] : 1'bz;
@@ -626,6 +659,27 @@ assign chan_io[11] = p1_io_dout_en[4] ? p1_io_dout[4] : 1'bz;
 assign chan_io[12] = p1_io_dout_en[5] ? p1_io_dout[5] : 1'bz;
 assign chan_io[13] = p1_io_dout_en[6] ? p1_io_dout[6] : 1'bz;
 assign chan_io[14] = p1_io_dout_en[7] ? p1_io_dout[7] : 1'bz;
+
+// P3: 8 general purpose I/O pins on PM3/HAT connector
+`ifndef FPGA_CHARLIE
+    assign p3_din[0] = chan_io[29];
+    assign p3_din[1] = chan_io[27]; 
+    assign p3_din[2] = chan_io[25];
+    assign p3_din[3] = chan_io[23]; 
+    assign p3_din[4] = chan_io[30];
+    assign p3_din[5] = chan_io[28];
+    assign p3_din[6] = chan_io[26];
+    assign p3_din[7] = chan_io[24];
+
+    assign chan_io[29] = p3_dout_en[0] ? p3_dout[0] : 1'bz;
+    assign chan_io[27] = p3_dout_en[1] ? p3_dout[1] : 1'bz;
+    assign chan_io[25] = p3_dout_en[2] ? p3_dout[2] : 1'bz;
+    assign chan_io[23] = p3_dout_en[3] ? p3_dout[3] : 1'bz;
+    assign chan_io[30] = p3_dout_en[4] ? p3_dout[4] : 1'bz;
+    assign chan_io[28] = p3_dout_en[5] ? p3_dout[5] : 1'bz;
+    assign chan_io[26] = p3_dout_en[6] ? p3_dout[6] : 1'bz;
+    assign chan_io[24] = p3_dout_en[7] ? p3_dout[7] : 1'bz;
+`endif
 
 //=============================================================================
 // 6)  PROGRAM AND DATA MEMORIES
@@ -715,8 +769,8 @@ rom_8x20_5k rom_lo (
 // RS-232 Port
 //----------------------
 // P1.1 (TX) and P2.2 (RX)
-assign p2_io_din[1:0] = 2'h00;
-assign p2_io_din[7:3] = 5'h00;
+//assign p2_io_din[1:0] = 2'h00;
+//assign p2_io_din[7:3] = 5'h00;
 
 //assign DBG_OFF = 1'b0;
 //wire   uart_txd_out =  DBG_OFF ? p1_io_dout[1] : dbg_uart_txd;
