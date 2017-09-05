@@ -44,7 +44,6 @@ initial
 
       // Initialize memory
       //--------------------------------------------------------
-      @(mem200==16'h0000);
 
       @(mem200==16'h0001);
       if (mem200 !== 16'h0001) tb_error("====== Initialize memory error: @0x200 =====");
