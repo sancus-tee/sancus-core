@@ -131,4 +131,4 @@ mkdir  ./log
 
 # Report regression results
 ../bin/parse_results
-
+exit $?
