@@ -20,7 +20,7 @@ rm -rf ./log/*.log
 mkdir  ./log
 
 # Sancus-specific tests
-../bin/msp430sim spi.v                    | tee ./log/sancus-spi.log
+../bin/msp430sim spi                      | tee ./log/sancus-spi.log
 
 # Two-Operand Arithmetic test patterns
 ../bin/msp430sim two-op_mov               | tee ./log/two-op_mov.log
