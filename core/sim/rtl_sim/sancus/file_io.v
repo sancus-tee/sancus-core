@@ -68,7 +68,7 @@ integer in_file, out_file;
 
 initial
 begin
-    in_file = $fopen(`FILEIO_IN, "wb+");
+    in_file = $fopen(`FILEIO_IN, "rb+");
     if (in_file == 0)
     begin
         $display("Unable to open '%s' for reading", `FILEIO_IN);
