@@ -71,14 +71,14 @@ begin
     in_file = $fopen(`FILEIO_IN, "rb+");
     if (in_file == 0)
     begin
-        $display("Unable to open '%s' for reading", `FILEIO_IN);
+        $display("Fail: unable to open '%s' for reading", `FILEIO_IN);
         $finish;
     end
 
     out_file = $fopen(`FILEIO_OUT, "wb+");
     if (out_file == 0)
     begin
-        $display("Unable to open '%s' for writing", `FILEIO_OUT);
+        $display("Fail: unable to open '%s' for writing", `FILEIO_OUT);
         $finish;
     end
 

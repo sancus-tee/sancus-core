@@ -59,6 +59,9 @@ fileio_in = cli_args.fileio_in
 fileio_out = cli_args.fileio_out
 dumpfile = cli_args.dumpfile
 
+# Create empty in_file if it doesn't already exist
+open(fileio_in, 'a+').close()
+
 ext = os.path.splitext(dumpfile)[1]
 if len(ext) < 2:
     dumper = 'vcd'
