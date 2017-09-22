@@ -841,10 +841,14 @@ always @(posedge clk)
         reg_data_out <= reg_data;
     end
 
-
 always @(posedge clk)
-    if (state == SUCCESS & cmd_key)
-        $display("Key: %h", key);
+    if (state == WRITE_VKEY_DONE & cmd_key)
+        $display("Vendor key: %h", key);
+    else if (state == WRAP_TEXT_WAIT & next_state == WRAP_TEXT & cmd_key) begin
+        $write(".");
+        $fflush();
+    end else if (state == SUCCESS & cmd_key)
+        $display("\nSM key: %h", key);
 
 // module instantiations *******************************************************
 wire        wrap_busy;
