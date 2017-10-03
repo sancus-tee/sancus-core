@@ -491,10 +491,10 @@ omsp_timerA timerA_0 (
 //    .uart_rxd     (uart_rxd)       // UART Data Receive (RXD)
 //);
 //`else
-//    assign irq_uart_rx   =  1'b0;
-//    assign irq_uart_tx   =  1'b0;
-//    assign per_dout_uart = 16'h0000;
-//    assign uart_txd      =  1'b0;
+    assign irq_uart_rx   =  1'b0;
+    assign irq_uart_tx   =  1'b0;
+    assign per_dout_uart = 16'h0000;
+    assign uart_txd      =  1'b0;
 //`endif
 
 //TODO should this not be UART2 at 0x0088 ?
