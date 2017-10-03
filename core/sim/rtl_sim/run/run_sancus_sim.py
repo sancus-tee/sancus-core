@@ -78,7 +78,7 @@ _run(IHEX2MEM, '-ihex', ihex_file, '-out', mem_file,
 fd, sim_file = tempfile.mkstemp()
 os.close(fd)
 _run('iverilog', '-DMEM_DEFINED', '-DPMEM_SIZE_CUSTOM', '-DDMEM_SIZE_CUSTOM',
-                 '-DNO_TIMEOUT', '-DNO_STIMULUS',
+                 '-DNO_TIMEOUT', '-DINTERACTIVE',
                  '-DPMEM_CUSTOM_SIZE={}'.format(rom_size),
                  '-DPMEM_CUSTOM_AWIDTH={}'.format(_get_awidth(rom_size)),
                  '-DDMEM_CUSTOM_SIZE={}'.format(ram_size),
@@ -91,12 +91,6 @@ _run('iverilog', '-DMEM_DEFINED', '-DPMEM_SIZE_CUSTOM', '-DDMEM_SIZE_CUSTOM',
 
 print('Starting Verilog simulation. Press <Ctrl-C> to get to the Icarus '
       'Verilog CLI, then "finish" to exit.')
-
-print("******************************");
-print("* Sancus simulation started  *");
-print("* ROM: {}B                *".format(rom_size));
-print("* RAM: {}B                *".format(ram_size));
-print("******************************");
 
 env = os.environ.copy()
 env['IVERILOG_DUMPER'] = dumper

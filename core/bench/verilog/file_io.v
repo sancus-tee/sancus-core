@@ -68,23 +68,28 @@ integer in_file, out_file;
 
 initial
 begin
+    $display("=== File I/O ===");
+
+`ifdef FILEIO_IN
     in_file = $fopen(`FILEIO_IN, "rb+");
     if (in_file == 0)
     begin
         $display("Fail: unable to open '%s' for reading", `FILEIO_IN);
         $finish;
     end
+    $display("Input:  '%s'", `FILEIO_IN);
+`endif
 
+`ifdef FILEIO_OUT
     out_file = $fopen(`FILEIO_OUT, "wb+");
     if (out_file == 0)
     begin
         $display("Fail: unable to open '%s' for writing", `FILEIO_OUT);
         $finish;
     end
-
-    $display("=== File I/O ===");
-    $display("Input:  '%s'", `FILEIO_IN);
     $display("Output: '%s'", `FILEIO_OUT);
+`endif
+
     $display("================");
 end
 
@@ -97,14 +102,17 @@ wire       data_wr  = DATA[0] ? reg_hi_wr[DATA] : reg_lo_wr[DATA];
 wire [7:0] data_nxt = DATA[0] ? per_din[15:8]   : per_din[7:0];
 
 // Writes to the DATA register
+`ifdef FILEIO_OUT
 always @ (posedge mclk or posedge puc_rst)
     if (data_wr)
         if ($fputc(data_nxt, out_file) != 0)
             $display("File I/O: write error");
         else
             $fflush(out_file);
+`endif
 
 // Reads from the DATA register
+`ifdef FILEIO_IN
 integer in_char;
 
 always @(posedge mclk or posedge puc_rst)
@@ -122,6 +130,11 @@ always @(posedge mclk or posedge puc_rst)
             data_ready <= 1'b1;
         end
     end
+`else
+initial begin
+    data_ready <= 1'b0;
+end
+`endif
 
 // STATUS Register
 //-----------------

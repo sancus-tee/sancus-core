@@ -1,5 +1,5 @@
 //----------------------------------------------------------------------------
-// Copyright (C) 2001 Authors
+// Copyright (C) 2017 Authors
 //
 // This source file may be used and distributed without restriction provided
 // that this copyright statement is not removed from the file and that any
@@ -25,10 +25,12 @@
 // *File Name: tb_openMSP430.v
 // 
 // *Module Description:
-//                      openMSP430 testbench
+//                      openMSP430 testbench and Sancus simulator
 //
 // *Author(s):
 //              - Olivier Girard,    olgirard@gmail.com
+//              - Job Noorman,       job.noorman@cs.kuleuven.be
+//              - Jo Van Bulck,      jo.vanbulck@cs.kuleuven.be
 //
 //----------------------------------------------------------------------------
 // $Rev$
@@ -133,7 +135,17 @@ wire               ta_out1;
 wire               ta_out1_en;
 wire               ta_out2;
 wire               ta_out2_en;
-   
+
+// Time Stamp Counter
+wire        [15:0] per_dout_tsc;
+
+// LED digits
+wire        [15:0] per_dout_led;
+wire         [7:0] led_so;
+
+// File IO
+wire        [15:0] per_dout_file_io;
+
 // Clock / Reset & Interrupts
 reg                dco_clk;
 wire               dco_enable;
@@ -157,7 +169,8 @@ wire        [13:0] irq_in;
 reg                cpu_en;
 reg         [13:0] wkup;
 wire        [13:0] wkup_in;
-   
+wire               sm_violation;
+
 // Scan (ASIC version only)
 reg                scan_enable;
 reg                scan_mode;
@@ -183,9 +196,10 @@ wire    [8*32-1:0] inst_full;
 wire        [31:0] inst_number;
 wire        [15:0] inst_pc;
 wire    [8*32-1:0] inst_short;
-   
+
 // Testbench variables
 integer            error;
+reg                violation;
 reg                stimulus_done;
 
 
@@ -202,16 +216,22 @@ reg                stimulus_done;
 // Simple uart tasks
 //`include "uart_tasks.v"
 
+`ifndef NO_STIMULUS
 // Verilog stimulus
 `include "stimulus.v"
+`endif
 
    
 //
 // Initialize ROM
 //------------------------------
+`ifndef PMEM_FILE
+`define PMEM_FILE "./pmem.mem"
+`endif
+
 initial
   begin
-     #10 $readmemh("./pmem.mem", pmem_0.mem);
+    #10 $readmemh(`PMEM_FILE, pmem_0.mem);
   end
 
 //
@@ -255,6 +275,7 @@ initial
 initial
   begin
      error            = 0;
+     violation         = 0;
      stimulus_done    = 1;
      irq              = 14'h0000;
      nmi              = 1'b0;
@@ -356,6 +377,7 @@ openMSP430 dut (
     .puc_rst      (puc_rst),           // Main system reset
     .smclk        (smclk),             // ASIC ONLY: SMCLK
     .smclk_en     (smclk_en),          // FPGA ONLY: SMCLK enable
+    .spm_violation (sm_violation),
 
 // INPUTs
     .cpu_en       (cpu_en),            // Enable CPU code execution (asynchronous)
@@ -473,36 +495,49 @@ omsp_timerA timerA_0 (
 //
 // Simple full duplex UART (8N1 protocol)
 //----------------------------------------
-`ifdef READY_FOR_PRIMETIME
-omsp_uart #(.BASE_ADDR(15'h0080)) uart_0 (
-
-// OUTPUTs
-    .irq_uart_rx  (irq_uart_rx),   // UART receive interrupt
-    .irq_uart_tx  (irq_uart_tx),   // UART transmit interrupt
-    .per_dout     (per_dout_uart), // Peripheral data output
-    .uart_txd     (uart_txd),      // UART Data Transmit (TXD)
-
-// INPUTs
-    .mclk         (mclk),          // Main system clock
-    .per_addr     (per_addr),      // Peripheral address
-    .per_din      (per_din),       // Peripheral data input
-    .per_en       (per_en),        // Peripheral enable (high active)
-    .per_we       (per_we),        // Peripheral write enable (high active)
-    .puc_rst      (puc_rst),       // Main system reset
-    .smclk_en     (smclk_en),      // SMCLK enable (from CPU)
-    .uart_rxd     (uart_rxd)       // UART Data Receive (RXD)
-);
-`else
+//`ifdef READY_FOR_PRIMETIME
+//omsp_uart #(.BASE_ADDR(15'h0080)) uart_0 (
+//
+//// OUTPUTs
+//    .irq_uart_rx  (irq_uart_rx),   // UART receive interrupt
+//    .irq_uart_tx  (irq_uart_tx),   // UART transmit interrupt
+//    .per_dout     (per_dout_uart), // Peripheral data output
+//    .uart_txd     (uart_txd),      // UART Data Transmit (TXD)
+//
+//// INPUTs
+//    .mclk         (mclk),          // Main system clock
+//    .per_addr     (per_addr),      // Peripheral address
+//    .per_din      (per_din),       // Peripheral data input
+//    .per_en       (per_en),        // Peripheral enable (high active)
+//    .per_we       (per_we),        // Peripheral write enable (high active)
+//    .puc_rst      (puc_rst),       // Main system reset
+//    .smclk_en     (smclk_en),      // SMCLK enable (from CPU)
+//    .uart_rxd     (uart_rxd)       // UART Data Receive (RXD)
+//);
+//`else
     assign irq_uart_rx   =  1'b0;
     assign irq_uart_tx   =  1'b0;
     assign per_dout_uart = 16'h0000;
     assign uart_txd      =  1'b0;
-`endif
+//`endif
+
+omsp_uart_print #(.BASE_ADDR(15'h0088)) uart_0 (
+    .per_dout (per_dout_uart),
+    .mclk     (mclk),
+    .per_addr (per_addr),
+    .per_din  (per_din),
+    .per_en   (per_en),
+    .per_we   (per_we),
+    .puc_rst  (puc_rst)
+);
+
+
 
 //
 // Peripheral templates
 //----------------------------------
 
+`ifdef PERIPH_TEMPLATE
 template_periph_8b template_periph_8b_0 (
 
 // OUTPUTs
@@ -533,6 +568,48 @@ template_periph_16b #(.BASE_ADDR((15'd`PER_SIZE-15'h0070) & 15'h7ff8)) template_
     .per_we       (per_we),            // Peripheral write enable (high active)
     .puc_rst      (puc_rst)            // Main system reset
 );
+`else
+//
+// Time Stamp Counter
+//----------------------------------
+omsp_tsc tsc(
+    .per_dout (per_dout_tsc),
+    .mclk     (mclk),
+    .per_addr (per_addr),
+    .per_din  (per_din),
+    .per_en   (per_en),
+    .per_we   (per_we),
+    .puc_rst  (puc_rst)
+);
+
+//
+// LED Digits
+//----------------------------------
+omsp_led_digits led_digits(
+    .per_dout (per_dout_led),
+    .so       (led_so),
+    .mclk     (mclk),
+    .per_addr (per_addr),
+    .per_din  (per_din),
+    .per_en   (per_en),
+    .per_we   (per_we),
+    .puc_rst  (puc_rst)
+);
+
+`endif
+
+//
+// File IO peripheral
+//----------------------------------------
+file_io file_io_0 (
+    .per_dout (per_dout_file_io),
+    .mclk     (mclk),
+    .per_addr (per_addr),
+    .per_din  (per_din),
+    .per_en   (per_en),
+    .per_we   (per_we),
+    .puc_rst  (puc_rst)
+);
 
 // SPI master
 omsp_spi_master spi_master(
@@ -558,8 +635,14 @@ assign per_dout = per_dout_dio       |
                   per_dout_timerA    |
                   per_dout_uart      |
                   per_dout_spi       |
+`ifdef PERIPH_TEMPLATE
                   per_dout_temp_8b   |
-                  per_dout_temp_16b;
+                  per_dout_temp_16b  |
+`else
+                  per_dout_tsc       |
+                  per_dout_led       |
+`endif
+                  per_dout_file_io;
 
 
 //
@@ -632,7 +715,10 @@ initial
           $recordfile ("tb_openMSP430.trn");
           $recordvars;
        `else
-          $dumpfile("tb_openMSP430.vcd");
+          `ifndef DUMPFILE
+            `define DUMPFILE "tb_openMSP430.vcd"
+          `endif
+          $dumpfile(`DUMPFILE);
           $dumpvars(0, tb_openMSP430);
        `endif
      `endif
@@ -666,11 +752,23 @@ initial // Timeout
 
 initial // Normal end of test
   begin
-     @(negedge stimulus_done);
-     wait(inst_pc=='hffff);
-     
+     // finish on stimulus/CPU halt or violation
+    `ifdef NO_STIMULUS
+        @(posedge r2[4] | sm_violation);
+        violation <= sm_violation;
+        repeat(10) @(posedge mclk);
+    `else
+         @(negedge stimulus_done);
+         wait(inst_pc=='hffff);
+    `endif
+
      $display(" ===============================================");
-     if (error!=0)
+     if (violation)
+       begin
+      $display("|               SIMULATION FAILED               |");
+      $display("|          (Sancus violation detected)          |");
+       end
+     else if (error!=0)
        begin
 	  $display("|               SIMULATION FAILED               |");
 	  $display("|     (some verilog stimulus checks failed)     |");

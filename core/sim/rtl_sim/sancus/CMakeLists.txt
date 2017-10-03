@@ -5,12 +5,6 @@ configure_file(commands.f commands.f)
 
 set(SRC
     ${CMAKE_CURRENT_BINARY_DIR}/commands.f
-    msp_debug.v
-    ram.v
-    registers.v
-    omsp_uart_print.v
-    sancus_sim.v
-    file_io.v
 )
 
 install(FILES ${SRC} DESTINATION ${INSTALL_SIM_PATH})

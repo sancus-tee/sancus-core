@@ -41,7 +41,6 @@
 #omsp_timerA_undefines.v
 #omsp_timerA.v
 #omsp_tsc.v
-#file_io.v
 #msp_debug.v
 #ram.v
 #registers.v

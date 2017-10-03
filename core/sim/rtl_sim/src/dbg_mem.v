@@ -39,6 +39,7 @@
 /*===========================================================================*/
 
 `define LONG_TIMEOUT
+`define PERIPH_TEMPLATE
    
 initial
    begin
