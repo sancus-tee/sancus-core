@@ -497,8 +497,7 @@ omsp_timerA timerA_0 (
     assign uart_txd      =  1'b0;
 //`endif
 
-//TODO should this not be UART2 at 0x0088 ?
-omsp_uart_print #(.BASE_ADDR(15'h0080)) uart_0 (
+omsp_uart_print #(.BASE_ADDR(15'h0088)) uart_0 (
     .per_dout (per_dout_uart),
     .mclk     (mclk),
     .per_addr (per_addr),
