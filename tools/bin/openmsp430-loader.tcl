@@ -44,16 +44,21 @@ global omsp_info
 
 proc help {} {
     puts ""
-    puts "USAGE   : openmsp430-loader.tcl \[-device <communication device>\] \[-baudrate <communication speed>\] <elf/ihex-file>"
+    puts "USAGE   : openmsp430-loader.tcl \[-device <communication device>\] \[-baudrate <communication speed>\] \[-dump-io\] <elf/ihex-file>"
     puts ""
     puts "Examples: openmsp430-loader.tcl -device /dev/ttyUSB0 -baudrate  9600  leds.elf"
     puts "          openmsp430-loader.tcl -device COM2:        -baudrate 38400  ta_uart.ihex"
+    puts ""
+    puts "Note    : use the `-dump-io` option to continue printing stdio data on the debug serial"
+    puts "          port after loading. This is useful for FPGAs that only feature a single UART,"
+    puts "          but impedes the use of the debug port for debugging (gdb/mini-debug) purposes."
     puts ""
 }
 
 # Default values
 set serial_device   /dev/ttyUSB0
 set serial_baudrate 115200
+set dump_io         0
 set elf_file        -1
 set bin_file        "[clock clicks].bin"
 
@@ -62,6 +67,7 @@ for {set i 0} {$i < $argc} {incr i} {
     switch -exact -- [lindex $argv $i] {
 	-device   {set serial_device   [lindex $argv [expr $i+1]]; incr i}
 	-baudrate {set serial_baudrate [lindex $argv [expr $i+1]]; incr i}
+	-dump-io  {set dump_io         1}
 	default   {set elf_file        [lindex $argv $i]}
     }
 }
@@ -207,3 +213,25 @@ if {[VerifyMem $StartAddr $DataArray 1]} {
 
 # Release device
 ReleaseDevice 0xfffe
+
+# Sancus-specific: optionally use the debug serial port for stdio.
+# NOTE: this is useful for FPGAs that only feature a single UART, but impedes
+# the use of the debug port for debugging (gdb/mini-debug) purposes.
+if {!$dump_io} {
+    exit 0
+}
+puts "Dumping serial debug port till EOF ($serial_device, $serial_baudrate\ bps)...\n"
+
+global serial
+
+# NOTE: we only print data until EOF indicates no more data is immediately
+# available. Alternatively, we could also block waiting for more data to come
+# (e.g., networking).
+while {![eof $::serial]} {
+    if { [catch {read $::serial 1} rx_data] } {
+        puts "ERROR: while reading from '$serial' : $rx_data"
+        exit 1
+    }
+    puts -nonewline "$rx_data"
+}
+exit 0
