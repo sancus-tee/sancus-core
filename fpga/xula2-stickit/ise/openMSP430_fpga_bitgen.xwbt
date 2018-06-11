@@ -1,0 +1,8 @@
+INTSTYLE=ise
+INFILE=/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/openMSP430_fpga.ncd
+OUTFILE=/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/openMSP430_fpga.bit
+FAMILY=Spartan6
+PART=xc6slx25-2ftg256
+WORKINGDIR=/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise
+LICENSE=WebPack
+USER_INFO=211188008_0_0_274

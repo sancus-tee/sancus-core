@@ -1,0 +1,966 @@
+Release 14.7 Map P.20131013 (lin64)
+Xilinx Mapping Report File for Design 'openMSP430_fpga'
+
+Design Information
+------------------
+Command Line   : map -intstyle ise -p xc6slx25-ftg256-2 -w -logic_opt off -ol
+high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt 2 -detail -ir
+off -pr off -lc off -power off -o openMSP430_fpga_map.ncd openMSP430_fpga.ngd
+openMSP430_fpga.pcf 
+Target Device  : xc6slx25
+Target Package : ftg256
+Target Speed   : -2
+Mapper Version : spartan6 -- $Revision: 1.55 $
+Mapped Date    : Tue Sep  5 19:17:59 2017
+
+Design Summary
+--------------
+Number of errors:      0
+Number of warnings:    2
+Slice Logic Utilization:
+  Number of Slice Registers:                 2,572 out of  30,064    8%
+    Number used as Flip Flops:               2,570
+    Number used as Latches:                      0
+    Number used as Latch-thrus:                  0
+    Number used as AND/OR logics:                2
+  Number of Slice LUTs:                      4,754 out of  15,032   31%
+    Number used as logic:                    4,723 out of  15,032   31%
+      Number using O6 output only:           3,553
+      Number using O5 output only:             169
+      Number using O5 and O6:                1,001
+      Number used as ROM:                        0
+    Number used as Memory:                       0 out of   3,664    0%
+    Number used exclusively as route-thrus:     31
+      Number with same-slice register load:     21
+      Number with same-slice carry load:        10
+      Number with other load:                    0
+
+Slice Logic Distribution:
+  Number of occupied Slices:                 1,618 out of   3,758   43%
+  Number of MUXCYs used:                     1,096 out of   7,516   14%
+  Number of LUT Flip Flop pairs used:        5,220
+    Number with an unused Flip Flop:         2,804 out of   5,220   53%
+    Number with an unused LUT:                 466 out of   5,220    8%
+    Number of fully used LUT-FF pairs:       1,950 out of   5,220   37%
+    Number of unique control sets:             170
+    Number of slice register sites lost
+      to control set restrictions:             518 out of  30,064    1%
+
+  A LUT Flip Flop pair for this architecture represents one LUT paired with
+  one Flip Flop within a slice.  A control set is a unique combination of
+  clock, reset, set, and enable signals for a registered element.
+  The Slice Logic Distribution report is not meaningful if the design is
+  over-mapped for a non-slice resource or if Placement fails.
+
+IO Utilization:
+  Number of bonded IOBs:                        79 out of     186   42%
+    Number of LOCed IOBs:                       79 out of      79  100%
+
+Specific Feature Utilization:
+  Number of RAMB16BWERs:                        24 out of      52   46%
+  Number of RAMB8BWERs:                         10 out of     104    9%
+  Number of BUFIO2/BUFIO2_2CLKs:                 1 out of      32    3%
+    Number used as BUFIO2s:                      1
+    Number used as BUFIO2_2CLKs:                 0
+  Number of BUFIO2FB/BUFIO2FB_2CLKs:             1 out of      32    3%
+    Number used as BUFIO2FBs:                    1
+    Number used as BUFIO2FB_2CLKs:               0
+  Number of BUFG/BUFGMUXs:                       2 out of      16   12%
+    Number used as BUFGs:                        2
+    Number used as BUFGMUX:                      0
+  Number of DCM/DCM_CLKGENs:                     1 out of       4   25%
+    Number used as DCMs:                         1
+    Number used as DCM_CLKGENs:                  0
+  Number of ILOGIC2/ISERDES2s:                   0 out of     272    0%
+  Number of IODELAY2/IODRP2/IODRP2_MCBs:         0 out of     272    0%
+  Number of OLOGIC2/OSERDES2s:                   0 out of     272    0%
+  Number of BSCANs:                              0 out of       4    0%
+  Number of BUFHs:                               0 out of     160    0%
+  Number of BUFPLLs:                             0 out of       8    0%
+  Number of BUFPLL_MCBs:                         0 out of       4    0%
+  Number of DSP48A1s:                            1 out of      38    2%
+  Number of ICAPs:                               0 out of       1    0%
+  Number of MCBs:                                0 out of       2    0%
+  Number of PCILOGICSEs:                         0 out of       2    0%
+  Number of PLL_ADVs:                            0 out of       2    0%
+  Number of PMVs:                                0 out of       1    0%
+  Number of STARTUPs:                            0 out of       1    0%
+  Number of SUSPEND_SYNCs:                       0 out of       1    0%
+
+Average Fanout of Non-Clock Nets:                4.88
+
+Peak Memory Usage:  901 MB
+Total REAL time to MAP completion:  54 secs 
+Total CPU time to MAP completion (all processors):   55 secs 
+
+Table of Contents
+-----------------
+Section 1 - Errors
+Section 2 - Warnings
+Section 3 - Informational
+Section 4 - Removed Logic Summary
+Section 5 - Removed Logic
+Section 6 - IOB Properties
+Section 7 - RPMs
+Section 8 - Guide Report
+Section 9 - Area Group and Partition Summary
+Section 10 - Timing Report
+Section 11 - Configuration String Information
+Section 12 - Control Set Information
+Section 13 - Utilization by Hierarchy
+
+Section 1 - Errors
+------------------
+
+Section 2 - Warnings
+--------------------
+WARNING:Place:1137 - This design is not guaranteed to be routable! This design
+   contains a global buffer instance, <buf_sys_clock>, driving the net,
+   <clk_sys>, that is driving the following (first 30) non-clock load pins.
+   < PIN: io_mux_p1/Mmux_io_dout<4>11.A2; >
+   This is not a recommended design practice in Spartan-6 due to limitations in
+   the global routing that may cause excessive delay, skew or unroutable
+   situations.  It is recommended to only use a BUFG resource to drive clock
+   loads. Please pay extra attention to the timing and routing of this path to
+   ensure the design goals are met. This is normally an ERROR but the
+   CLOCK_DEDICATED_ROUTE constraint was applied on COMP.PIN <buf_sys_clock.O>
+   allowing your design to continue. This constraint disables all clock placer
+   rules related to the specified COMP.PIN.
+WARNING:PhysDesignRules:2410 - This design is using one or more 9K Block RAMs
+   (RAMB8BWER).  9K Block RAM initialization data, both user defined and
+   default, may be incorrect and should not be used.  For more information,
+   please reference Xilinx Answer Record 39999.
+
+Section 3 - Informational
+-------------------------
+INFO:Map:284 - Map is running with the multi-threading option on. Map currently
+   supports the use of up to 2 processors. Based on the the user options and
+   machine load, Map will use 2 processors during this run.
+INFO:LIT:243 - Logical network sdClkFb_i_IBUF has no load.
+INFO:LIT:243 - Logical network miso_i_IBUF has no load.
+INFO:LIT:243 - Logical network sdData_io<15>_IBUF has no load.
+INFO:LIT:243 - Logical network sdData_io<14>_IBUF has no load.
+INFO:LIT:243 - Logical network sdData_io<13>_IBUF has no load.
+INFO:LIT:243 - Logical network sdData_io<12>_IBUF has no load.
+INFO:LIT:243 - Logical network sdData_io<11>_IBUF has no load.
+INFO:LIT:243 - Logical network sdData_io<10>_IBUF has no load.
+INFO:LIT:243 - Logical network sdData_io<9>_IBUF has no load.
+INFO:LIT:243 - Logical network sdData_io<8>_IBUF has no load.
+INFO:LIT:243 - Logical network sdData_io<7>_IBUF has no load.
+INFO:LIT:243 - Logical network sdData_io<6>_IBUF has no load.
+INFO:LIT:243 - Logical network sdData_io<5>_IBUF has no load.
+INFO:LIT:243 - Logical network sdData_io<4>_IBUF has no load.
+INFO:LIT:243 - Logical network sdData_io<3>_IBUF has no load.
+INFO:LIT:243 - Logical network sdData_io<2>_IBUF has no load.
+INFO:LIT:243 - Logical network sdData_io<1>_IBUF has no load.
+INFO:LIT:243 - Logical network sdData_io<0>_IBUF has no load.
+INFO:LIT:243 - Logical network chan_io<31>_IBUF has no load.
+INFO:LIT:243 - Logical network chan_io<30>_IBUF has no load.
+INFO:LIT:243 - Logical network chan_io<29>_IBUF has no load.
+INFO:LIT:243 - Logical network chan_io<27>_IBUF has no load.
+INFO:LIT:243 - Logical network chan_io<24>_IBUF has no load.
+INFO:LIT:243 - Logical network chan_io<22>_IBUF has no load.
+INFO:LIT:243 - Logical network chan_io<20>_IBUF has no load.
+INFO:LIT:243 - Logical network chan_io<19>_IBUF has no load.
+INFO:LIT:243 - Logical network chan_io<12>_IBUF has no load.
+INFO:LIT:243 - Logical network chan_io<9>_IBUF has no load.
+INFO:LIT:243 - Logical network chan_io<6>_IBUF has no load.
+INFO:LIT:243 - Logical network chan_io<5>_IBUF has no load.
+INFO:LIT:243 - Logical network chan_io<2>_IBUF has no load.
+INFO:MapLib:562 - No environment variables are currently set.
+INFO:Pack:1716 - Initializing temperature to 85.000 Celsius. (default - Range:
+   0.000 to 85.000 Celsius)
+INFO:Pack:1720 - Initializing voltage to 1.140 Volts. (default - Range: 1.140 to
+   1.260 Volts)
+INFO:Map:215 - The Interim Design Summary has been generated in the MAP Report
+   (.mrp).
+INFO:Pack:1650 - Map created a placed design.
+INFO:PhysDesignRules:1861 - To achieve optimal frequency synthesis performance
+   with the CLKFX and CLKFX180 outputs of the DCM comp dcm_inst, consult the
+   device Data Sheet.
+
+Section 4 - Removed Logic Summary
+---------------------------------
+   6 block(s) optimized away
+ 181 Block(s) redundant
+
+Section 5 - Removed Logic
+-------------------------
+
+Optimized Block(s):
+TYPE 		BLOCK
+GND 		XST_GND
+VCC 		XST_VCC
+GND 		ram_hi/XST_GND
+GND 		ram_lo/XST_GND
+GND 		rom_hi/XST_GND
+GND 		rom_lo/XST_GND
+
+Redundant Block(s):
+TYPE 		BLOCK
+LUT1 		led_digits/Madd_cur_led[31]_GND_46_o_add_79_OUT_cy<1>_rt
+LUT1 		openMSP430_0/frontend_0/Madd_pc_incr_cy<14>_rt
+LUT1 		openMSP430_0/frontend_0/Madd_pc_incr_cy<13>_rt
+LUT1 		openMSP430_0/frontend_0/Madd_pc_incr_cy<12>_rt
+LUT1 		openMSP430_0/frontend_0/Madd_pc_incr_cy<11>_rt
+LUT1 		openMSP430_0/frontend_0/Madd_pc_incr_cy<10>_rt
+LUT1 		openMSP430_0/frontend_0/Madd_pc_incr_cy<9>_rt
+LUT1 		openMSP430_0/frontend_0/Madd_pc_incr_cy<8>_rt
+LUT1 		openMSP430_0/frontend_0/Madd_pc_incr_cy<7>_rt
+LUT1 		openMSP430_0/frontend_0/Madd_pc_incr_cy<6>_rt
+LUT1 		openMSP430_0/frontend_0/Madd_pc_incr_cy<5>_rt
+LUT1 		openMSP430_0/frontend_0/Madd_pc_incr_cy<4>_rt
+LUT1 		openMSP430_0/frontend_0/Madd_pc_incr_cy<3>_rt
+LUT1 		openMSP430_0/frontend_0/Madd_pc_incr_cy<2>_rt
+LUT1 		openMSP430_0/dbg_0/dbg_uart_0/Mcount_sync_cnt_cy<17>_rt
+LUT1 		openMSP430_0/dbg_0/dbg_uart_0/Mcount_sync_cnt_cy<16>_rt
+LUT1 		openMSP430_0/dbg_0/dbg_uart_0/Mcount_sync_cnt_cy<15>_rt
+LUT1 		openMSP430_0/dbg_0/dbg_uart_0/Mcount_sync_cnt_cy<14>_rt
+LUT1 		openMSP430_0/dbg_0/dbg_uart_0/Mcount_sync_cnt_cy<13>_rt
+LUT1 		openMSP430_0/dbg_0/dbg_uart_0/Mcount_sync_cnt_cy<12>_rt
+LUT1 		openMSP430_0/dbg_0/dbg_uart_0/Mcount_sync_cnt_cy<11>_rt
+LUT1 		openMSP430_0/dbg_0/dbg_uart_0/Mcount_sync_cnt_cy<10>_rt
+LUT1 		openMSP430_0/dbg_0/dbg_uart_0/Mcount_sync_cnt_cy<9>_rt
+LUT1 		openMSP430_0/dbg_0/dbg_uart_0/Mcount_sync_cnt_cy<8>_rt
+LUT1 		openMSP430_0/dbg_0/dbg_uart_0/Mcount_sync_cnt_cy<7>_rt
+LUT1 		openMSP430_0/dbg_0/dbg_uart_0/Mcount_sync_cnt_cy<6>_rt
+LUT1 		openMSP430_0/dbg_0/dbg_uart_0/Mcount_sync_cnt_cy<5>_rt
+LUT1 		openMSP430_0/dbg_0/dbg_uart_0/Mcount_sync_cnt_cy<4>_rt
+LUT1 		openMSP430_0/dbg_0/dbg_uart_0/Mcount_sync_cnt_cy<3>_rt
+LUT1 		openMSP430_0/dbg_0/dbg_uart_0/Mcount_sync_cnt_cy<2>_rt
+LUT1 		openMSP430_0/dbg_0/dbg_uart_0/Mcount_sync_cnt_cy<1>_rt
+LUT1 		openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_cy<15>_rt
+LUT1 		openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_cy<14>_rt
+LUT1 		openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_cy<13>_rt
+LUT1 		openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_cy<12>_rt
+LUT1 		openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_cy<11>_rt
+LUT1 		openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_cy<10>_rt
+LUT1 		openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_cy<9>_rt
+LUT1 		openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_cy<8>_rt
+LUT1 		openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_cy<7>_rt
+LUT1 		openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_cy<6>_rt
+LUT1 		openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_cy<5>_rt
+LUT1 		openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_cy<4>_rt
+LUT1 		openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_cy<3>_rt
+LUT1 		openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_cy<2>_rt
+LUT1 		openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_cy<1>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_cipher[15]_GND_19_o_add_100_OUT_
+cy<14>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_cipher[15]_GND_19_o_add_100_OUT_
+cy<13>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_cipher[15]_GND_19_o_add_100_OUT_
+cy<12>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_cipher[15]_GND_19_o_add_100_OUT_
+cy<11>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_cipher[15]_GND_19_o_add_100_OUT_
+cy<10>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_cipher[15]_GND_19_o_add_100_OUT_
+cy<9>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_cipher[15]_GND_19_o_add_100_OUT_
+cy<8>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_cipher[15]_GND_19_o_add_100_OUT_
+cy<7>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_cipher[15]_GND_19_o_add_100_OUT_
+cy<6>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_cipher[15]_GND_19_o_add_100_OUT_
+cy<5>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_cipher[15]_GND_19_o_add_100_OUT_
+cy<4>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_cipher[15]_GND_19_o_add_100_OUT_
+cy<3>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_cipher[15]_GND_19_o_add_100_OUT_
+cy<2>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_ctr[15]_GND_19_o_add_91_OUT_cy<1
+4>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_ctr[15]_GND_19_o_add_91_OUT_cy<1
+3>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_ctr[15]_GND_19_o_add_91_OUT_cy<1
+2>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_ctr[15]_GND_19_o_add_91_OUT_cy<1
+1>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_ctr[15]_GND_19_o_add_91_OUT_cy<1
+0>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_ctr[15]_GND_19_o_add_91_OUT_cy<9
+>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_ctr[15]_GND_19_o_add_91_OUT_cy<8
+>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_ctr[15]_GND_19_o_add_91_OUT_cy<7
+>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_ctr[15]_GND_19_o_add_91_OUT_cy<6
+>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_ctr[15]_GND_19_o_add_91_OUT_cy<5
+>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_ctr[15]_GND_19_o_add_91_OUT_cy<4
+>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_ctr[15]_GND_19_o_add_91_OUT_cy<3
+>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_ctr[15]_GND_19_o_add_91_OUT_cy<2
+>_rt
+LUT1 		openMSP430_0/execution_unit_0/spm_control_0/Mcount_next_id_cy<14>_rt
+LUT1 		openMSP430_0/execution_unit_0/spm_control_0/Mcount_next_id_cy<13>_rt
+LUT1 		openMSP430_0/execution_unit_0/spm_control_0/Mcount_next_id_cy<12>_rt
+LUT1 		openMSP430_0/execution_unit_0/spm_control_0/Mcount_next_id_cy<11>_rt
+LUT1 		openMSP430_0/execution_unit_0/spm_control_0/Mcount_next_id_cy<10>_rt
+LUT1 		openMSP430_0/execution_unit_0/spm_control_0/Mcount_next_id_cy<9>_rt
+LUT1 		openMSP430_0/execution_unit_0/spm_control_0/Mcount_next_id_cy<8>_rt
+LUT1 		openMSP430_0/execution_unit_0/spm_control_0/Mcount_next_id_cy<7>_rt
+LUT1 		openMSP430_0/execution_unit_0/spm_control_0/Mcount_next_id_cy<6>_rt
+LUT1 		openMSP430_0/execution_unit_0/spm_control_0/Mcount_next_id_cy<5>_rt
+LUT1 		openMSP430_0/execution_unit_0/spm_control_0/Mcount_next_id_cy<4>_rt
+LUT1 		openMSP430_0/execution_unit_0/spm_control_0/Mcount_next_id_cy<3>_rt
+LUT1 		openMSP430_0/execution_unit_0/spm_control_0/Mcount_next_id_cy<2>_rt
+LUT1 		openMSP430_0/execution_unit_0/spm_control_0/Mcount_next_id_cy<1>_rt
+LUT1 		openMSP430_0/watchdog_0/Madd_wdtcnt_nxt_cy<14>_rt
+LUT1 		openMSP430_0/watchdog_0/Madd_wdtcnt_nxt_cy<13>_rt
+LUT1 		openMSP430_0/watchdog_0/Madd_wdtcnt_nxt_cy<12>_rt
+LUT1 		openMSP430_0/watchdog_0/Madd_wdtcnt_nxt_cy<11>_rt
+LUT1 		openMSP430_0/watchdog_0/Madd_wdtcnt_nxt_cy<10>_rt
+LUT1 		openMSP430_0/watchdog_0/Madd_wdtcnt_nxt_cy<9>_rt
+LUT1 		openMSP430_0/watchdog_0/Madd_wdtcnt_nxt_cy<8>_rt
+LUT1 		openMSP430_0/watchdog_0/Madd_wdtcnt_nxt_cy<7>_rt
+LUT1 		openMSP430_0/watchdog_0/Madd_wdtcnt_nxt_cy<6>_rt
+LUT1 		openMSP430_0/watchdog_0/Madd_wdtcnt_nxt_cy<5>_rt
+LUT1 		openMSP430_0/watchdog_0/Madd_wdtcnt_nxt_cy<4>_rt
+LUT1 		openMSP430_0/watchdog_0/Madd_wdtcnt_nxt_cy<3>_rt
+LUT1 		openMSP430_0/watchdog_0/Madd_wdtcnt_nxt_cy<2>_rt
+LUT1 		openMSP430_0/watchdog_0/Madd_wdtcnt_nxt_cy<1>_rt
+LUT1 		tsc/Mcount_tsc_cy<62>_rt
+LUT1 		tsc/Mcount_tsc_cy<61>_rt
+LUT1 		tsc/Mcount_tsc_cy<60>_rt
+LUT1 		tsc/Mcount_tsc_cy<59>_rt
+LUT1 		tsc/Mcount_tsc_cy<58>_rt
+LUT1 		tsc/Mcount_tsc_cy<57>_rt
+LUT1 		tsc/Mcount_tsc_cy<56>_rt
+LUT1 		tsc/Mcount_tsc_cy<55>_rt
+LUT1 		tsc/Mcount_tsc_cy<54>_rt
+LUT1 		tsc/Mcount_tsc_cy<53>_rt
+LUT1 		tsc/Mcount_tsc_cy<52>_rt
+LUT1 		tsc/Mcount_tsc_cy<51>_rt
+LUT1 		tsc/Mcount_tsc_cy<50>_rt
+LUT1 		tsc/Mcount_tsc_cy<49>_rt
+LUT1 		tsc/Mcount_tsc_cy<48>_rt
+LUT1 		tsc/Mcount_tsc_cy<47>_rt
+LUT1 		tsc/Mcount_tsc_cy<46>_rt
+LUT1 		tsc/Mcount_tsc_cy<45>_rt
+LUT1 		tsc/Mcount_tsc_cy<44>_rt
+LUT1 		tsc/Mcount_tsc_cy<43>_rt
+LUT1 		tsc/Mcount_tsc_cy<42>_rt
+LUT1 		tsc/Mcount_tsc_cy<41>_rt
+LUT1 		tsc/Mcount_tsc_cy<40>_rt
+LUT1 		tsc/Mcount_tsc_cy<39>_rt
+LUT1 		tsc/Mcount_tsc_cy<38>_rt
+LUT1 		tsc/Mcount_tsc_cy<37>_rt
+LUT1 		tsc/Mcount_tsc_cy<36>_rt
+LUT1 		tsc/Mcount_tsc_cy<35>_rt
+LUT1 		tsc/Mcount_tsc_cy<34>_rt
+LUT1 		tsc/Mcount_tsc_cy<33>_rt
+LUT1 		tsc/Mcount_tsc_cy<32>_rt
+LUT1 		tsc/Mcount_tsc_cy<31>_rt
+LUT1 		tsc/Mcount_tsc_cy<30>_rt
+LUT1 		tsc/Mcount_tsc_cy<29>_rt
+LUT1 		tsc/Mcount_tsc_cy<28>_rt
+LUT1 		tsc/Mcount_tsc_cy<27>_rt
+LUT1 		tsc/Mcount_tsc_cy<26>_rt
+LUT1 		tsc/Mcount_tsc_cy<25>_rt
+LUT1 		tsc/Mcount_tsc_cy<24>_rt
+LUT1 		tsc/Mcount_tsc_cy<23>_rt
+LUT1 		tsc/Mcount_tsc_cy<22>_rt
+LUT1 		tsc/Mcount_tsc_cy<21>_rt
+LUT1 		tsc/Mcount_tsc_cy<20>_rt
+LUT1 		tsc/Mcount_tsc_cy<19>_rt
+LUT1 		tsc/Mcount_tsc_cy<18>_rt
+LUT1 		tsc/Mcount_tsc_cy<17>_rt
+LUT1 		tsc/Mcount_tsc_cy<16>_rt
+LUT1 		tsc/Mcount_tsc_cy<15>_rt
+LUT1 		tsc/Mcount_tsc_cy<14>_rt
+LUT1 		tsc/Mcount_tsc_cy<13>_rt
+LUT1 		tsc/Mcount_tsc_cy<12>_rt
+LUT1 		tsc/Mcount_tsc_cy<11>_rt
+LUT1 		tsc/Mcount_tsc_cy<10>_rt
+LUT1 		tsc/Mcount_tsc_cy<9>_rt
+LUT1 		tsc/Mcount_tsc_cy<8>_rt
+LUT1 		tsc/Mcount_tsc_cy<7>_rt
+LUT1 		tsc/Mcount_tsc_cy<6>_rt
+LUT1 		tsc/Mcount_tsc_cy<5>_rt
+LUT1 		tsc/Mcount_tsc_cy<4>_rt
+LUT1 		tsc/Mcount_tsc_cy<3>_rt
+LUT1 		tsc/Mcount_tsc_cy<2>_rt
+LUT1 		tsc/Mcount_tsc_cy<1>_rt
+LUT1 		spi_master/spi/Mcount_clk_ctr_cy<6>_rt
+LUT1 		spi_master/spi/Mcount_clk_ctr_cy<5>_rt
+LUT1 		spi_master/spi/Mcount_clk_ctr_cy<4>_rt
+LUT1 		spi_master/spi/Mcount_clk_ctr_cy<3>_rt
+LUT1 		spi_master/spi/Mcount_clk_ctr_cy<2>_rt
+LUT1 		spi_master/spi/Mcount_clk_ctr_cy<1>_rt
+LUT1 		led_digits/Madd_cur_led[31]_GND_46_o_add_79_OUT_xor<2>_rt
+LUT1 		openMSP430_0/frontend_0/Madd_pc_incr_xor<15>_rt
+LUT1 		openMSP430_0/dbg_0/dbg_uart_0/Mcount_sync_cnt_xor<18>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_cipher[15]_GND_19_o_add_100_OUT_
+xor<15>_rt
+LUT1
+		openMSP430_0/execution_unit_0/crypto/Madd_mab_ctr[15]_GND_19_o_add_91_OUT_xor<
+15>_rt
+LUT1 		openMSP430_0/execution_unit_0/spm_control_0/Mcount_next_id_xor<15>_rt
+LUT1 		tsc/Mcount_tsc_xor<63>_rt
+LUT1 		spi_master/spi/Mcount_clk_ctr_xor<7>_rt
+LUT1 		openMSP430_0/execution_unit_0/crypto/state_FSM_FFd1-In1_cy_rt
+INV 		led_digits/mclk_inv1_INV_0
+INV 		openMSP430_0/dbg_0/dbg_uart_0/dbg_uart_rxd_INV_237_o1_INV_0
+INV 		hw_uart/uart_rxd_INV_300_o1_INV_0
+INV
+		openMSP430_0/execution_unit_0/crypto/Mcompar_mem_done_INV_126_o_cy<7>_inv_INV_
+0
+
+Section 6 - IOB Properties
+--------------------------
+
++---------------------------------------------------------------------------------------------------------------------------------------------------------+
+| IOB Name                           | Type             | Direction | IO Standard          | Diff  | Drive    | Slew | Reg (s)      | Resistor | IOB      |
+|                                    |                  |           |                      | Term  | Strength | Rate |              |          | Delay    |
++---------------------------------------------------------------------------------------------------------------------------------------------------------+
+| chanClk_io                         | IOB              | OUTPUT    | LVTTL                |       | 12       | SLOW |              |          |          |
+| chan_io<0>                         | IOB              | OUTPUT    | LVTTL                |       | 12       | SLOW |              |          |          |
+| chan_io<1>                         | IOB              | OUTPUT    | LVTTL                |       | 12       | SLOW |              |          |          |
+| chan_io<2>                         | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| chan_io<3>                         | IOB              | OUTPUT    | LVTTL                |       | 12       | SLOW |              |          |          |
+| chan_io<4>                         | IOB              | OUTPUT    | LVTTL                |       | 12       | SLOW |              |          |          |
+| chan_io<5>                         | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| chan_io<6>                         | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| chan_io<7>                         | IOB              | BIDIR     | LVTTL                |       | 12       | SLOW |              |          |          |
+| chan_io<8>                         | IOB              | BIDIR     | LVTTL                |       | 12       | SLOW |              |          |          |
+| chan_io<9>                         | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| chan_io<10>                        | IOB              | BIDIR     | LVTTL                |       | 12       | SLOW |              |          |          |
+| chan_io<11>                        | IOB              | BIDIR     | LVTTL                |       | 12       | SLOW |              |          |          |
+| chan_io<12>                        | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| chan_io<13>                        | IOB              | BIDIR     | LVTTL                |       | 12       | SLOW |              |          |          |
+| chan_io<14>                        | IOB              | BIDIR     | LVTTL                |       | 12       | SLOW |              |          |          |
+| chan_io<15>                        | IOB              | OUTPUT    | LVTTL                |       | 12       | SLOW |              |          |          |
+| chan_io<16>                        | IOB              | OUTPUT    | LVTTL                |       | 12       | SLOW |              |          |          |
+| chan_io<17>                        | IOB              | OUTPUT    | LVTTL                |       | 12       | SLOW |              |          |          |
+| chan_io<18>                        | IOB              | OUTPUT    | LVTTL                |       | 12       | SLOW |              |          |          |
+| chan_io<19>                        | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| chan_io<20>                        | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| chan_io<21>                        | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| chan_io<22>                        | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| chan_io<23>                        | IOB              | BIDIR     | LVTTL                |       | 12       | SLOW |              |          |          |
+| chan_io<24>                        | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| chan_io<25>                        | IOB              | OUTPUT    | LVTTL                |       | 12       | SLOW |              |          |          |
+| chan_io<26>                        | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| chan_io<27>                        | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| chan_io<28>                        | IOB              | BIDIR     | LVTTL                |       | 12       | SLOW |              |          |          |
+| chan_io<29>                        | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| chan_io<30>                        | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| chan_io<31>                        | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| flashCs_bo                         | IOB              | OUTPUT    | LVTTL                |       | 12       | SLOW |              |          |          |
+| fpgaClk_i                          | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| miso_i                             | IOB              | INPUT     | LVCMOS25             |       |          |      |              |          |          |
+| mosi_o                             | IOB              | OUTPUT    | LVTTL                |       | 12       | SLOW |              |          |          |
+| sclk_o                             | IOB              | OUTPUT    | LVTTL                |       | 12       | SLOW |              |          |          |
+| sdAddr_o<0>                        | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| sdAddr_o<1>                        | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| sdAddr_o<2>                        | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| sdAddr_o<3>                        | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| sdAddr_o<4>                        | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| sdAddr_o<5>                        | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| sdAddr_o<6>                        | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| sdAddr_o<7>                        | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| sdAddr_o<8>                        | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| sdAddr_o<9>                        | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| sdAddr_o<10>                       | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| sdAddr_o<11>                       | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| sdAddr_o<12>                       | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| sdBs_o<0>                          | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| sdBs_o<1>                          | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| sdCas_bo                           | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| sdCe_bo                            | IOB              | OUTPUT    | LVTTL                |       | 12       | SLOW |              |          |          |
+| sdCke_o                            | IOB              | OUTPUT    | LVTTL                |       | 12       | SLOW |              |          |          |
+| sdClkFb_i                          | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| sdClk_o                            | IOB              | OUTPUT    | LVTTL                |       | 8        | FAST |              |          |          |
+| sdData_io<0>                       | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| sdData_io<1>                       | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| sdData_io<2>                       | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| sdData_io<3>                       | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| sdData_io<4>                       | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| sdData_io<5>                       | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| sdData_io<6>                       | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| sdData_io<7>                       | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| sdData_io<8>                       | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| sdData_io<9>                       | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| sdData_io<10>                      | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| sdData_io<11>                      | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| sdData_io<12>                      | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| sdData_io<13>                      | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| sdData_io<14>                      | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| sdData_io<15>                      | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| sdDqmh_o                           | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| sdDqml_o                           | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| sdRas_bo                           | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| sdWe_bo                            | IOB              | OUTPUT    | LVTTL                |       | 6        | SLOW |              |          |          |
+| usdflashCs_bo                      | IOB              | OUTPUT    | LVTTL                |       | 12       | SLOW |              |          |          |
++---------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+Section 7 - RPMs
+----------------
+
+Section 8 - Guide Report
+------------------------
+Guide not run on this design.
+
+Section 9 - Area Group and Partition Summary
+--------------------------------------------
+
+Partition Implementation Status
+-------------------------------
+
+  No Partitions were found in this design.
+
+-------------------------------
+
+Area Group Information
+----------------------
+
+  No area groups were found in this design.
+
+----------------------
+
+Section 10 - Timing Report
+--------------------------
+A logic-level (pre-route) timing report can be generated by using Xilinx static
+timing analysis tools, Timing Analyzer (GUI) or TRCE (command line), with the
+mapped NCD and PCF files. Please note that this timing report will be generated
+using estimated delay information. For accurate numbers, please generate a
+timing report with the post Place and Route NCD file.
+
+For more information about the Timing Analyzer, consult the Xilinx Timing
+Analyzer Reference Manual; for more information about TRCE, consult the Xilinx
+Command Line Tools User Guide "TRACE" chapter.
+
+Section 11 - Configuration String Details
+-----------------------------------------
+DCM "dcm_inst":
+CLKDV_DIVIDE:2.0
+CLKIN_DIVIDE_BY_2:FALSE
+CLKOUT_PHASE_SHIFT:NONE
+CLK_FEEDBACK:1X
+DESKEW_ADJUST:5
+DFS_FREQUENCY_MODE:LOW
+DLL_FREQUENCY_MODE:LOW
+DSS_MODE:NONE
+DUTY_CYCLE_CORRECTION:TRUE
+STARTUP_WAIT:FALSE
+VERY_HIGH_FREQUENCY:FALSE
+CLKFX_DIVIDE = 3
+CLKFX_MULTIPLY = 5
+CLKIN_PERIOD = 83.333000
+PHASE_SHIFT = 0
+
+
+
+Section 12 - Control Set Information
+------------------------------------
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Clock Signal | Reset Signal                                                                        | Set Signal | Enable Signal                                                               | Slice Load Count | Bel Load Count |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| clk_sys      |                                                                                     |            | openMSP430_0/execution_unit_0/crypto/_n0369_inv                             | 8                | 16             |
+| clk_sys      |                                                                                     |            | openMSP430_0/execution_unit_0/crypto/_n0373_inv                             | 8                | 16             |
+| clk_sys      |                                                                                     |            | openMSP430_0/execution_unit_0/crypto/mab_ctr_limit_init                     | 4                | 16             |
+| clk_sys      |                                                                                     |            | openMSP430_0/execution_unit_0/crypto/state_FSM_FFd7                         | 18               | 64             |
+| clk_sys      |                                                                                     |            | openMSP430_0/execution_unit_0/crypto/update_wrap_data_in                    | 8                | 16             |
+| clk_sys      |                                                                                     |            | openMSP430_0/execution_unit_0/spm_control_0/omsp_spms<0>/_n0422_inv         | 16               | 64             |
+| clk_sys      |                                                                                     |            | openMSP430_0/execution_unit_0/spm_control_0/omsp_spms<1>/_n0422_inv         | 16               | 64             |
+| clk_sys      |                                                                                     |            | openMSP430_0/execution_unit_0/spm_control_0/omsp_spms<2>/_n0422_inv         | 16               | 64             |
+| clk_sys      |                                                                                     |            | openMSP430_0/execution_unit_0/spm_control_0/omsp_spms<3>/_n0422_inv         | 16               | 64             |
+| clk_sys      |                                                                                     |            | pmem_cen_n                                                                  | 4                | 10             |
+| clk_sys      | openMSP430_0/clock_module_0/dbg_rst_noscan                                          |            |                                                                             | 23               | 55             |
+| clk_sys      | openMSP430_0/clock_module_0/dbg_rst_noscan                                          |            | openMSP430_0/dbg_0/_n0322_inv                                               | 1                | 1              |
+| clk_sys      | openMSP430_0/clock_module_0/dbg_rst_noscan                                          |            | openMSP430_0/dbg_0/_n0325_inv                                               | 1                | 1              |
+| clk_sys      | openMSP430_0/clock_module_0/dbg_rst_noscan                                          |            | openMSP430_0/dbg_0/_n0332_inv                                               | 4                | 16             |
+| clk_sys      | openMSP430_0/clock_module_0/dbg_rst_noscan                                          |            | openMSP430_0/dbg_0/dbg_halt_cmd2                                            | 1                | 4              |
+| clk_sys      | openMSP430_0/clock_module_0/dbg_rst_noscan                                          |            | openMSP430_0/dbg_0/dbg_uart_0/_n0165_inv                                    | 1                | 1              |
+| clk_sys      | openMSP430_0/clock_module_0/dbg_rst_noscan                                          |            | openMSP430_0/dbg_0/dbg_uart_0/_n0172_inv                                    | 2                | 4              |
+| clk_sys      | openMSP430_0/clock_module_0/dbg_rst_noscan                                          |            | openMSP430_0/dbg_0/dbg_uart_0/_n0177_inv                                    | 5                | 16             |
+| clk_sys      | openMSP430_0/clock_module_0/dbg_rst_noscan                                          |            | openMSP430_0/dbg_0/dbg_uart_0/_n0180_inv                                    | 7                | 20             |
+| clk_sys      | openMSP430_0/clock_module_0/dbg_rst_noscan                                          |            | openMSP430_0/dbg_0/dbg_uart_0/cmd_valid                                     | 3                | 7              |
+| clk_sys      | openMSP430_0/clock_module_0/dbg_rst_noscan                                          |            | openMSP430_0/dbg_0/dbg_uart_0/sync_busy_sync_busy_OR_541_o                  | 5                | 19             |
+| clk_sys      | openMSP430_0/clock_module_0/dbg_rst_noscan                                          |            | openMSP430_0/dbg_0/dbg_uart_0/xfer_bit_inc_tx_active_AND_994_o              | 1                | 1              |
+| clk_sys      | openMSP430_0/clock_module_0/dbg_rst_noscan                                          |            | openMSP430_0/dbg_0/reg_wr<4>                                                | 1                | 3              |
+| clk_sys      | openMSP430_0/clock_module_0/por_a                                                   |            |                                                                             | 1                | 2              |
+| clk_sys      | openMSP430_0/clock_module_0/puc_a                                                   |            |                                                                             | 2                | 2              |
+| clk_sys      | openMSP430_0/clock_module_0/sync_reset_por/data_sync<1>                             |            |                                                                             | 2                | 2              |
+| clk_sys      | openMSP430_0/clock_module_0/sync_reset_por/data_sync<1>                             |            | openMSP430_0/watchdog_0/_n0101_inv                                          | 1                | 1              |
+| clk_sys      | openMSP430_0/execution_unit_0/crypto/_n0311_inv_0                                   |            |                                                                             | 4                | 16             |
+| clk_sys      | openMSP430_0/execution_unit_0/crypto/cmd_key_0                                      |            |                                                                             | 1                | 1              |
+| clk_sys      | openMSP430_0/execution_unit_0/crypto/key_done_0                                     |            |                                                                             | 1                | 1              |
+| clk_sys      | openMSP430_0/execution_unit_0/crypto/mem_done_INV_126_o_0                           |            |                                                                             | 1                | 1              |
+| clk_sys      | openMSP430_0/execution_unit_0/crypto/reset_key_ctr_reset_OR_395_o                   |            | openMSP430_0/execution_unit_0/sm_write_key                                  | 1                | 3              |
+| clk_sys      | openMSP430_0/execution_unit_0/crypto/reset_set_reg_write_OR_411_o                   |            |                                                                             | 4                | 8              |
+| clk_sys      | openMSP430_0/execution_unit_0/crypto/reset_set_wrap_start_continue_OR_394_o         |            |                                                                             | 2                | 2              |
+| clk_sys      | openMSP430_0/execution_unit_0/crypto/reset_wrap_reset_OR_432_o                      |            |                                                                             | 6                | 17             |
+| clk_sys      | openMSP430_0/execution_unit_0/crypto/reset_wrap_reset_OR_432_o                      |            | openMSP430_0/execution_unit_0/crypto/wrap/FSM_FFd11                         | 1                | 3              |
+| clk_sys      | openMSP430_0/execution_unit_0/crypto/reset_wrap_reset_OR_432_o                      |            | openMSP430_0/execution_unit_0/crypto/wrap/sponge/sample_state               | 40               | 176            |
+| clk_sys      | openMSP430_0/execution_unit_0/crypto/sm_data_needed_sm_data_select_valid_OR_407_o_0 |            |                                                                             | 1                | 1              |
+| clk_sys      | openMSP430_0/execution_unit_0/crypto/wrap/sponge/fsm_instance/unset_busy            |            |                                                                             | 1                | 1              |
+| clk_sys      | openMSP430_0/execution_unit_0/crypto/wrap/sponge/init_lfsr                          |            | openMSP430_0/execution_unit_0/crypto/wrap/sponge/sample_state               | 2                | 7              |
+| clk_sys      | openMSP430_0/execution_unit_0/crypto/wrap/start_continue_0                          |            |                                                                             | 2                | 2              |
+| clk_sys      | openMSP430_0/execution_unit_0/crypto/wrap_busy_0                                    |            |                                                                             | 7                | 7              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            |                                                                             | 138              | 340            |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | gpio_0/reg_hi_wr<25>                                                        | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | gpio_0/reg_hi_wr<27>                                                        | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | gpio_0/reg_hi_wr<29>                                                        | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | gpio_0/reg_hi_wr<31>                                                        | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | gpio_0/reg_hi_wr<33>                                                        | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | gpio_0/reg_hi_wr<37>                                                        | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | gpio_0/reg_hi_wr<41>                                                        | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | gpio_0/reg_hi_wr<45>                                                        | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | gpio_0/reg_lo_wr<26>                                                        | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | gpio_0/reg_lo_wr<30>                                                        | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | gpio_0/reg_lo_wr<34>                                                        | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | gpio_0/reg_lo_wr<36>                                                        | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | gpio_0/reg_lo_wr<38>                                                        | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | gpio_0/reg_lo_wr<42>                                                        | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | gpio_0/reg_lo_wr<44>                                                        | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | gpio_0/reg_lo_wr<46>                                                        | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart/_n0378_inv                                                          | 2                | 9              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart/_n0387_inv                                                          | 1                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart/_n0397_inv                                                          | 1                | 4              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart/_n0406_inv                                                          | 1                | 4              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart/_n0415_inv                                                          | 5                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart/_n0424_inv                                                          | 5                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart/_n0427_inv                                                          | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart/_n0430_inv                                                          | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart/_n0433_inv                                                          | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart/_n0436_inv                                                          | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart/_n0439_inv                                                          | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart/reg_lo_wr<0>                                                        | 2                | 5              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart/reg_lo_wr<2>                                                        | 3                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart/reg_lo_wr<4>                                                        | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart/status_rx_pnd_set                                                   | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart2/_n0371_inv                                                         | 2                | 9              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart2/_n0380_inv                                                         | 1                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart2/_n0390_inv                                                         | 1                | 4              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart2/_n0399_inv                                                         | 1                | 4              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart2/_n0408_inv                                                         | 5                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart2/_n0417_inv                                                         | 5                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart2/_n0420_inv                                                         | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart2/_n0423_inv                                                         | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart2/_n0426_inv                                                         | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart2/_n0429_inv                                                         | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart2/_n0432_inv                                                         | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart2/reg_lo_wr<0>                                                       | 2                | 5              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart2/reg_lo_wr<2>                                                       | 3                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart2/reg_lo_wr<4>                                                       | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | hw_uart2/status_rx_pnd_set                                                  | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | led_digits/GND_46_o_GND_46_o_equal_79_o                                     | 1                | 3              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | led_digits/reg_hi_wr<1>                                                     | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | led_digits/reg_hi_wr<3>                                                     | 3                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | led_digits/reg_hi_wr<5>                                                     | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | led_digits/reg_hi_wr<7>                                                     | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | led_digits/reg_lo_wr<0>                                                     | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | led_digits/reg_lo_wr<2>                                                     | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | led_digits/reg_lo_wr<4>                                                     | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | led_digits/reg_lo_wr<6>                                                     | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/clock_module_0/bcsctl2[2]_smclk_in_AND_44_o                    | 1                | 3              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/clock_module_0/reg_hi_wr<7>                                    | 1                | 2              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/clock_module_0/reg_lo_wr<8>                                    | 1                | 3              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/eu_mb_en                                                       | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/exec_done                                                      | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/_n0347_inv                                    | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/_n0351_inv                                    | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/crypto/update_key_select                      | 1                | 3              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/mdb_in_buf_en                                 | 5                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/register_file_0/_n0421_inv                    | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/register_file_0/_n0424_inv                    | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/register_file_0/_n0427_inv                    | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/register_file_0/_n0430_inv                    | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/register_file_0/_n0433_inv                    | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/register_file_0/_n0436_inv                    | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/register_file_0/_n0439_inv                    | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/register_file_0/_n0442_inv                    | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/register_file_0/_n0445_inv                    | 10               | 22             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/register_file_0/_n0448_inv                    | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/register_file_0/_n0451_inv                    | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/register_file_0/_n0454_inv                    | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/register_file_0/_n0459_inv                    | 4                | 15             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/register_file_0/r3_wr                         | 6                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/spm_control_0/n0041_inv                       | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/spm_control_0/omsp_spms<0>/_n0370_inv         | 21               | 81             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/spm_control_0/omsp_spms<1>/_n0370_inv         | 21               | 81             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/spm_control_0/omsp_spms<2>/_n0370_inv         | 21               | 81             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/spm_control_0/omsp_spms<3>/_n0370_inv         | 22               | 81             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/execution_unit_0/spm_control_0/update_spm_enable_spm_AND_275_o | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/frontend_0/_n0648_inv                                          | 6                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/frontend_0/_n0666_inv                                          | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/frontend_0/_n0669_inv                                          | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/frontend_0/_n0672_inv                                          | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/frontend_0/_n0675_inv                                          | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/frontend_0/decode                                              | 35               | 103            |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/frontend_0/inst_dext_rdy                                       | 5                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/frontend_0/irq_detect                                          | 3                | 4              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/mem_backbone_0/_n0154_inv                                      | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/multiplier_0/_n0322_inv                                        | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/multiplier_0/_n0327_inv                                        | 7                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/multiplier_0/_n0331_inv                                        | 1                | 2              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/multiplier_0/op1_wr                                            | 6                | 18             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/multiplier_0/reg_wr<8>                                         | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/sfr_0/_n0150_inv                                               | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/sfr_0/_n0153_inv                                               | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/sfr_0/reg_lo_wr<0>                                             | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/watchdog_0/_n0097_inv                                          | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | openMSP430_0/watchdog_0/reg_wr<0>                                           | 2                | 6              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | spi_master/reg_hi_wr<1>                                                     | 2                | 6              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | spi_master/spi/_n0097_inv                                                   | 2                | 8              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | timerA_0/_n0750_inv                                                         | 5                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | timerA_0/_n0753_inv                                                         | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | timerA_0/_n0756_inv                                                         | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | timerA_0/_n0759_inv                                                         | 4                | 16             |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | timerA_0/_n0762_inv                                                         | 1                | 3              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | timerA_0/_n0768_inv                                                         | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | timerA_0/_n0774_inv                                                         | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | timerA_0/_n0777_inv                                                         | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | timerA_0/_n0780_inv                                                         | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | timerA_0/_n0783_inv                                                         | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | timerA_0/_n0786_inv                                                         | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | timerA_0/_n0789_inv                                                         | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | timerA_0/_n0792_inv                                                         | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | timerA_0/_n0795_inv                                                         | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | timerA_0/_n0798_inv                                                         | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | timerA_0/tar_clk_equ0_AND_1739_o                                            | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | timerA_0/tar_clk_equ1_AND_1740_o                                            | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | timerA_0/tar_clk_equ2_AND_1741_o                                            | 1                | 1              |
+| clk_sys      | openMSP430_0/puc_pnd_set                                                            |            | tsc/reg_write                                                               | 15               | 64             |
+| clk_sys      | spi_master/spi/rst_clk_ctr_wrap_OR_798_o                                            |            |                                                                             | 2                | 8              |
+| clk_sys      | spi_master/spi/rst_init_OR_797_o                                                    |            | spi_master/spi/do_count                                                     | 1                | 4              |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ~clk_sys     | openMSP430_0/puc_pnd_set                                                            |            |                                                                             | 2                | 4              |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+Section 13 - Utilization by Hierarchy
+-------------------------------------
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Module                                | Partition | Slices*       | Slice Reg     | LUTs          | LUTRAM        | BRAM/FIFO | DSP48A1 | BUFG  | BUFIO | BUFR  | DCM   | PLL_ADV   | Full Hierarchical Name                                                                                                    |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| openMSP430_fpga/                      |           | 19/2326       | 0/2570        | 12/4754       | 0/0           | 0/34      | 0/1     | 2/2   | 0/0   | 0/0   | 1/1   | 0/0       | openMSP430_fpga                                                                                                           |
+| +gpio_0                               |           | 54/66         | 152/168       | 49/49         | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/gpio_0                                                                                                    |
+| ++sync_cell_p1in_0                    |           | 2/2           | 2/2           | 0/0           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/gpio_0/sync_cell_p1in_0                                                                                   |
+| ++sync_cell_p1in_1                    |           | 2/2           | 2/2           | 0/0           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/gpio_0/sync_cell_p1in_1                                                                                   |
+| ++sync_cell_p1in_2                    |           | 2/2           | 2/2           | 0/0           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/gpio_0/sync_cell_p1in_2                                                                                   |
+| ++sync_cell_p1in_3                    |           | 2/2           | 2/2           | 0/0           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/gpio_0/sync_cell_p1in_3                                                                                   |
+| ++sync_cell_p1in_4                    |           | 1/1           | 2/2           | 0/0           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/gpio_0/sync_cell_p1in_4                                                                                   |
+| ++sync_cell_p1in_5                    |           | 1/1           | 2/2           | 0/0           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/gpio_0/sync_cell_p1in_5                                                                                   |
+| ++sync_cell_p1in_6                    |           | 1/1           | 2/2           | 0/0           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/gpio_0/sync_cell_p1in_6                                                                                   |
+| ++sync_cell_p1in_7                    |           | 1/1           | 2/2           | 0/0           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/gpio_0/sync_cell_p1in_7                                                                                   |
+| +hw_uart                              |           | 51/52         | 104/106       | 127/127       | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/hw_uart                                                                                                   |
+| ++sync_cell_uart_rxd                  |           | 1/1           | 2/2           | 0/0           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/hw_uart/sync_cell_uart_rxd                                                                                |
+| +hw_uart2                             |           | 53/54         | 104/106       | 125/126       | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/hw_uart2                                                                                                  |
+| ++sync_cell_uart_rxd                  |           | 1/1           | 2/2           | 1/1           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/hw_uart2/sync_cell_uart_rxd                                                                               |
+| +io_mux_p1                            |           | 16/16         | 0/0           | 15/15         | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/io_mux_p1                                                                                                 |
+| +led_digits                           |           | 42/42         | 71/71         | 50/50         | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/led_digits                                                                                                |
+| +openMSP430_0                         |           | 149/1912      | 1/1809        | 288/4010      | 0/0           | 0/0       | 0/1     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0                                                                                              |
+| ++clock_module_0                      |           | 10/13         | 10/14         | 13/13         | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/clock_module_0                                                                               |
+| +++sync_cell_puc                      |           | 2/2           | 2/2           | 0/0           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/clock_module_0/sync_cell_puc                                                                 |
+| +++sync_reset_por                     |           | 1/1           | 2/2           | 0/0           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/clock_module_0/sync_reset_por                                                                |
+| ++dbg_0                               |           | 66/123        | 72/148        | 127/268       | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/dbg_0                                                                                        |
+| +++dbg_uart_0                         |           | 56/57         | 74/76         | 141/141       | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/dbg_0/dbg_uart_0                                                                             |
+| ++++sync_cell_uart_rxd                |           | 1/1           | 2/2           | 0/0           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/dbg_0/dbg_uart_0/sync_cell_uart_rxd                                                          |
+| ++execution_unit_0                    |           | 143/1304      | 35/1329       | 251/2866      | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0                                                                             |
+| +++alu_0                              |           | 82/82         | 0/0           | 191/191       | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/alu_0                                                                       |
+| +++crypto                             |           | 198/402       | 223/429       | 443/819       | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto                                                                      |
+| ++++wrap                              |           | 102/204       | 18/206        | 250/376       | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap                                                                 |
+| +++++sponge                           |           | 0/102         | 0/188         | 0/126         | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge                                                          |
+| ++++++datapath_instance               |           | 44/98         | 176/183       | 16/121        | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance                                        |
+| +++++++gen_for_sbox[0].sbox_instance  |           | 2/2           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[0].sbox_instance          |
+| +++++++gen_for_sbox[10].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[10].sbox_instance         |
+| +++++++gen_for_sbox[11].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[11].sbox_instance         |
+| +++++++gen_for_sbox[12].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[12].sbox_instance         |
+| +++++++gen_for_sbox[13].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[13].sbox_instance         |
+| +++++++gen_for_sbox[14].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[14].sbox_instance         |
+| +++++++gen_for_sbox[15].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[15].sbox_instance         |
+| +++++++gen_for_sbox[16].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[16].sbox_instance         |
+| +++++++gen_for_sbox[17].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[17].sbox_instance         |
+| +++++++gen_for_sbox[18].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[18].sbox_instance         |
+| +++++++gen_for_sbox[19].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[19].sbox_instance         |
+| +++++++gen_for_sbox[1].sbox_instance  |           | 2/2           | 0/0           | 4/4           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[1].sbox_instance          |
+| +++++++gen_for_sbox[20].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[20].sbox_instance         |
+| +++++++gen_for_sbox[21].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[21].sbox_instance         |
+| +++++++gen_for_sbox[22].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[22].sbox_instance         |
+| +++++++gen_for_sbox[23].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[23].sbox_instance         |
+| +++++++gen_for_sbox[24].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[24].sbox_instance         |
+| +++++++gen_for_sbox[25].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[25].sbox_instance         |
+| +++++++gen_for_sbox[26].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[26].sbox_instance         |
+| +++++++gen_for_sbox[27].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[27].sbox_instance         |
+| +++++++gen_for_sbox[28].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[28].sbox_instance         |
+| +++++++gen_for_sbox[29].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[29].sbox_instance         |
+| +++++++gen_for_sbox[2].sbox_instance  |           | 2/2           | 0/0           | 4/4           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[2].sbox_instance          |
+| +++++++gen_for_sbox[30].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[30].sbox_instance         |
+| +++++++gen_for_sbox[31].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[31].sbox_instance         |
+| +++++++gen_for_sbox[32].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[32].sbox_instance         |
+| +++++++gen_for_sbox[33].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[33].sbox_instance         |
+| +++++++gen_for_sbox[34].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[34].sbox_instance         |
+| +++++++gen_for_sbox[35].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[35].sbox_instance         |
+| +++++++gen_for_sbox[36].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[36].sbox_instance         |
+| +++++++gen_for_sbox[37].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[37].sbox_instance         |
+| +++++++gen_for_sbox[38].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[38].sbox_instance         |
+| +++++++gen_for_sbox[39].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[39].sbox_instance         |
+| +++++++gen_for_sbox[3].sbox_instance  |           | 2/2           | 0/0           | 4/4           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[3].sbox_instance          |
+| +++++++gen_for_sbox[40].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[40].sbox_instance         |
+| +++++++gen_for_sbox[41].sbox_instance |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[41].sbox_instance         |
+| +++++++gen_for_sbox[42].sbox_instance |           | 2/2           | 0/0           | 5/5           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[42].sbox_instance         |
+| +++++++gen_for_sbox[43].sbox_instance |           | 2/2           | 0/0           | 4/4           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[43].sbox_instance         |
+| +++++++gen_for_sbox[4].sbox_instance  |           | 3/3           | 0/0           | 7/7           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[4].sbox_instance          |
+| +++++++gen_for_sbox[5].sbox_instance  |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[5].sbox_instance          |
+| +++++++gen_for_sbox[6].sbox_instance  |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[6].sbox_instance          |
+| +++++++gen_for_sbox[7].sbox_instance  |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[7].sbox_instance          |
+| +++++++gen_for_sbox[8].sbox_instance  |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[8].sbox_instance          |
+| +++++++gen_for_sbox[9].sbox_instance  |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[9].sbox_instance          |
+| +++++++lfsr_instance                  |           | 2/2           | 7/7           | 1/1           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/lfsr_instance                          |
+| ++++++fsm_instance                    |           | 3/4           | 5/5           | 5/5           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/fsm_instance                                             |
+| +++++++state_current_sponge           |           | 1/1           | 0/0           | 0/0           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/crypto/wrap/sponge/fsm_instance/state_current_sponge                        |
+| +++register_file_0                    |           | 206/206       | 237/237       | 522/522       | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/register_file_0                                                             |
+| +++spm_control_0                      |           | 93/471        | 48/628        | 192/1083      | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/spm_control_0                                                               |
+| ++++omsp_spms<0>                      |           | 117/117       | 145/145       | 258/258       | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/spm_control_0/omsp_spms<0>                                                  |
+| ++++omsp_spms<1>                      |           | 89/89         | 145/145       | 210/210       | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/spm_control_0/omsp_spms<1>                                                  |
+| ++++omsp_spms<2>                      |           | 86/86         | 145/145       | 213/213       | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/spm_control_0/omsp_spms<2>                                                  |
+| ++++omsp_spms<3>                      |           | 86/86         | 145/145       | 210/210       | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/execution_unit_0/spm_control_0/omsp_spms<3>                                                  |
+| ++frontend_0                          |           | 128/128       | 178/178       | 240/240       | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/frontend_0                                                                                   |
+| ++mem_backbone_0                      |           | 127/127       | 39/39         | 190/190       | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/mem_backbone_0                                                                               |
+| ++multiplier_0                        |           | 37/37         | 70/70         | 89/89         | 0/0           | 0/0       | 1/1     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/multiplier_0                                                                                 |
+| ++sfr_0                               |           | 9/10          | 4/6           | 10/10         | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/sfr_0                                                                                        |
+| +++sync_cell_nmi                      |           | 1/1           | 2/2           | 0/0           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/sfr_0/sync_cell_nmi                                                                          |
+| ++watchdog_0                          |           | 21/21         | 24/24         | 46/46         | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/openMSP430_0/watchdog_0                                                                                   |
+| +ram_hi                               |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/4       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_hi                                                                                                    |
+| ++U0                                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/4       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_hi/U0                                                                                                 |
+| +++xst_blk_mem_generator              |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/4       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_hi/U0/xst_blk_mem_generator                                                                           |
+| ++++gnativebmg.native_blk_mem_gen     |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/4       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen                                             |
+| +++++valid.cstr                       |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/4       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr                                  |
+| ++++++ramloop[0].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/s6_noinit.ram   |
+| ++++++ramloop[1].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[1].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[1].ram.r/s6_noinit.ram   |
+| ++++++ramloop[2].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[2].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[2].ram.r/s6_noinit.ram   |
+| ++++++ramloop[3].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/s6_noinit.ram   |
+| +ram_lo                               |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/4       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_lo                                                                                                    |
+| ++U0                                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/4       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_lo/U0                                                                                                 |
+| +++xst_blk_mem_generator              |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/4       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_lo/U0/xst_blk_mem_generator                                                                           |
+| ++++gnativebmg.native_blk_mem_gen     |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/4       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen                                             |
+| +++++valid.cstr                       |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/4       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr                                  |
+| ++++++ramloop[0].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/s6_noinit.ram   |
+| ++++++ramloop[1].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[1].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[1].ram.r/s6_noinit.ram   |
+| ++++++ramloop[2].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[2].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[2].ram.r/s6_noinit.ram   |
+| ++++++ramloop[3].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/ram_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/s6_noinit.ram   |
+| +rom_hi                               |           | 0/10          | 0/5           | 0/12          | 0/0           | 0/13      | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi                                                                                                    |
+| ++U0                                  |           | 0/10          | 0/5           | 0/12          | 0/0           | 0/13      | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0                                                                                                 |
+| +++xst_blk_mem_generator              |           | 0/10          | 0/5           | 0/12          | 0/0           | 0/13      | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator                                                                           |
+| ++++gnativebmg.native_blk_mem_gen     |           | 0/10          | 0/5           | 0/12          | 0/0           | 0/13      | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen                                             |
+| +++++valid.cstr                       |           | 1/10          | 0/5           | 1/12          | 0/0           | 0/13      | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr                                  |
+| ++++++bindec_a.bindec_inst_a          |           | 1/1           | 0/0           | 2/2           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/bindec_a.bindec_inst_a           |
+| ++++++has_mux_a.A                     |           | 8/8           | 5/5           | 9/9           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/has_mux_a.A                      |
+| ++++++ramloop[0].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/s6_noinit.ram   |
+| ++++++ramloop[10].ram.r               |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[10].ram.r                |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[10].ram.r/s6_noinit.ram  |
+| ++++++ramloop[11].ram.r               |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[11].ram.r                |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[11].ram.r/s6_noinit.ram  |
+| ++++++ramloop[12].ram.r               |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[12].ram.r                |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[12].ram.r/s6_noinit.ram  |
+| ++++++ramloop[1].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[1].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[1].ram.r/s6_noinit.ram   |
+| ++++++ramloop[2].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[2].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[2].ram.r/s6_noinit.ram   |
+| ++++++ramloop[3].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/s6_noinit.ram   |
+| ++++++ramloop[4].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[4].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[4].ram.r/s6_noinit.ram   |
+| ++++++ramloop[5].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[5].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[5].ram.r/s6_noinit.ram   |
+| ++++++ramloop[6].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[6].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[6].ram.r/s6_noinit.ram   |
+| ++++++ramloop[7].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[7].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[7].ram.r/s6_noinit.ram   |
+| ++++++ramloop[8].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[8].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[8].ram.r/s6_noinit.ram   |
+| ++++++ramloop[9].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram   |
+| +rom_lo                               |           | 0/10          | 0/5           | 0/11          | 0/0           | 0/13      | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo                                                                                                    |
+| ++U0                                  |           | 0/10          | 0/5           | 0/11          | 0/0           | 0/13      | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0                                                                                                 |
+| +++xst_blk_mem_generator              |           | 0/10          | 0/5           | 0/11          | 0/0           | 0/13      | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator                                                                           |
+| ++++gnativebmg.native_blk_mem_gen     |           | 0/10          | 0/5           | 0/11          | 0/0           | 0/13      | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen                                             |
+| +++++valid.cstr                       |           | 1/10          | 0/5           | 1/11          | 0/0           | 0/13      | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr                                  |
+| ++++++bindec_a.bindec_inst_a          |           | 1/1           | 0/0           | 1/1           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/bindec_a.bindec_inst_a           |
+| ++++++has_mux_a.A                     |           | 8/8           | 5/5           | 9/9           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/has_mux_a.A                      |
+| ++++++ramloop[0].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/s6_noinit.ram   |
+| ++++++ramloop[10].ram.r               |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[10].ram.r                |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[10].ram.r/s6_noinit.ram  |
+| ++++++ramloop[11].ram.r               |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[11].ram.r                |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[11].ram.r/s6_noinit.ram  |
+| ++++++ramloop[12].ram.r               |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[12].ram.r                |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[12].ram.r/s6_noinit.ram  |
+| ++++++ramloop[1].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[1].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[1].ram.r/s6_noinit.ram   |
+| ++++++ramloop[2].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[2].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[2].ram.r/s6_noinit.ram   |
+| ++++++ramloop[3].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/s6_noinit.ram   |
+| ++++++ramloop[4].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[4].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[4].ram.r/s6_noinit.ram   |
+| ++++++ramloop[5].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[5].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[5].ram.r/s6_noinit.ram   |
+| ++++++ramloop[6].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[6].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[6].ram.r/s6_noinit.ram   |
+| ++++++ramloop[7].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[7].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[7].ram.r/s6_noinit.ram   |
+| ++++++ramloop[8].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[8].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[8].ram.r/s6_noinit.ram   |
+| ++++++ramloop[9].ram.r                |           | 0/0           | 0/0           | 0/0           | 0/0           | 0/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r                 |
+| +++++++s6_noinit.ram                  |           | 0/0           | 0/0           | 0/0           | 0/0           | 1/1       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram   |
+| +spi_master                           |           | 5/12          | 7/30          | 4/30          | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/spi_master                                                                                                |
+| ++spi                                 |           | 7/7           | 23/23         | 26/26         | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/spi_master/spi                                                                                            |
+| +timerA_0                             |           | 96/100        | 134/142       | 241/241       | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/timerA_0                                                                                                  |
+| ++sync_cell_cci0                      |           | 1/1           | 2/2           | 0/0           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/timerA_0/sync_cell_cci0                                                                                   |
+| ++sync_cell_cci1                      |           | 1/1           | 2/2           | 0/0           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/timerA_0/sync_cell_cci1                                                                                   |
+| ++sync_cell_cci2                      |           | 1/1           | 2/2           | 0/0           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/timerA_0/sync_cell_cci2                                                                                   |
+| ++sync_cell_taclk                     |           | 1/1           | 2/2           | 0/0           | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/timerA_0/sync_cell_taclk                                                                                  |
+| +tsc                                  |           | 33/33         | 128/128       | 71/71         | 0/0           | 0/0       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | openMSP430_fpga/tsc                                                                                                       |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+* Slices can be packed with basic elements from multiple hierarchies.
+  Therefore, a slice will be counted in every hierarchical module
+  that each of its packed basic elements belong to.
+** For each column, there are two numbers reported <A>/<B>.
+   <A> is the number of elements that belong to that specific hierarchical module.
+   <B> is the total number of elements from that hierarchical module and any lower level
+   hierarchical modules below.
+*** The LUTRAM column counts all LUTs used as memory including RAM, ROM, and shift registers.

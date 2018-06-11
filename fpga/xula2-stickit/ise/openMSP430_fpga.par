@@ -1,0 +1,235 @@
+Release 14.7 par P.20131013 (lin64)
+Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
+
+tschumi::  Tue Sep 05 19:18:56 2017
+
+par -w -intstyle ise -ol high -mt 4 openMSP430_fpga_map.ncd openMSP430_fpga.ncd
+openMSP430_fpga.pcf 
+
+
+Constraints file: openMSP430_fpga.pcf.
+Loading device for application Rf_Device from file '6slx25.nph' in environment /opt/Xilinx/14.7/ISE_DS/ISE/.
+   "openMSP430_fpga" is an NCD, version 3.2, device xc6slx25, package ftg256, speed -2
+
+Initializing temperature to 85.000 Celsius. (default - Range: 0.000 to 85.000 Celsius)
+Initializing voltage to 1.140 Volts. (default - Range: 1.140 to 1.260 Volts)
+
+
+Device speed data version:  "PRODUCTION 1.23 2013-10-13".
+
+
+
+Device Utilization Summary:
+
+Slice Logic Utilization:
+  Number of Slice Registers:                 2,572 out of  30,064    8%
+    Number used as Flip Flops:               2,570
+    Number used as Latches:                      0
+    Number used as Latch-thrus:                  0
+    Number used as AND/OR logics:                2
+  Number of Slice LUTs:                      4,754 out of  15,032   31%
+    Number used as logic:                    4,723 out of  15,032   31%
+      Number using O6 output only:           3,553
+      Number using O5 output only:             169
+      Number using O5 and O6:                1,001
+      Number used as ROM:                        0
+    Number used as Memory:                       0 out of   3,664    0%
+    Number used exclusively as route-thrus:     31
+      Number with same-slice register load:     21
+      Number with same-slice carry load:        10
+      Number with other load:                    0
+
+Slice Logic Distribution:
+  Number of occupied Slices:                 1,618 out of   3,758   43%
+  Number of MUXCYs used:                     1,096 out of   7,516   14%
+  Number of LUT Flip Flop pairs used:        5,220
+    Number with an unused Flip Flop:         2,804 out of   5,220   53%
+    Number with an unused LUT:                 466 out of   5,220    8%
+    Number of fully used LUT-FF pairs:       1,950 out of   5,220   37%
+    Number of slice register sites lost
+      to control set restrictions:               0 out of  30,064    0%
+
+  A LUT Flip Flop pair for this architecture represents one LUT paired with
+  one Flip Flop within a slice.  A control set is a unique combination of
+  clock, reset, set, and enable signals for a registered element.
+  The Slice Logic Distribution report is not meaningful if the design is
+  over-mapped for a non-slice resource or if Placement fails.
+
+IO Utilization:
+  Number of bonded IOBs:                        79 out of     186   42%
+    Number of LOCed IOBs:                       79 out of      79  100%
+
+Specific Feature Utilization:
+  Number of RAMB16BWERs:                        24 out of      52   46%
+  Number of RAMB8BWERs:                         10 out of     104    9%
+  Number of BUFIO2/BUFIO2_2CLKs:                 1 out of      32    3%
+    Number used as BUFIO2s:                      1
+    Number used as BUFIO2_2CLKs:                 0
+  Number of BUFIO2FB/BUFIO2FB_2CLKs:             1 out of      32    3%
+    Number used as BUFIO2FBs:                    1
+    Number used as BUFIO2FB_2CLKs:               0
+  Number of BUFG/BUFGMUXs:                       2 out of      16   12%
+    Number used as BUFGs:                        2
+    Number used as BUFGMUX:                      0
+  Number of DCM/DCM_CLKGENs:                     1 out of       4   25%
+    Number used as DCMs:                         1
+    Number used as DCM_CLKGENs:                  0
+  Number of ILOGIC2/ISERDES2s:                   0 out of     272    0%
+  Number of IODELAY2/IODRP2/IODRP2_MCBs:         0 out of     272    0%
+  Number of OLOGIC2/OSERDES2s:                   0 out of     272    0%
+  Number of BSCANs:                              0 out of       4    0%
+  Number of BUFHs:                               0 out of     160    0%
+  Number of BUFPLLs:                             0 out of       8    0%
+  Number of BUFPLL_MCBs:                         0 out of       4    0%
+  Number of DSP48A1s:                            1 out of      38    2%
+  Number of ICAPs:                               0 out of       1    0%
+  Number of MCBs:                                0 out of       2    0%
+  Number of PCILOGICSEs:                         0 out of       2    0%
+  Number of PLL_ADVs:                            0 out of       2    0%
+  Number of PMVs:                                0 out of       1    0%
+  Number of STARTUPs:                            0 out of       1    0%
+  Number of SUSPEND_SYNCs:                       0 out of       1    0%
+
+
+Overall effort level (-ol):   High 
+Router effort level (-rl):    High 
+
+PAR will use up to 4 processors
+WARNING:Par:288 - The signal chan_io<2>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal chan_io<5>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal chan_io<6>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal chan_io<9>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal sdClkFb_i_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal sdData_io<0>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal sdData_io<1>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal sdData_io<2>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal sdData_io<3>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal sdData_io<4>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal sdData_io<5>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal sdData_io<6>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal sdData_io<7>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal sdData_io<8>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal sdData_io<9>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal chan_io<12>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal chan_io<20>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal chan_io<22>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal chan_io<30>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal chan_io<31>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal chan_io<24>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal chan_io<19>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal chan_io<27>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal chan_io<29>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal miso_i_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal sdData_io<10>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal sdData_io<11>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal sdData_io<12>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal sdData_io<13>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal sdData_io<14>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal sdData_io<15>_IBUF has no load.  PAR will not attempt to route this signal.
+Starting Multi-threaded Router
+
+
+Phase  1  : 31732 unrouted;      REAL time: 5 secs 
+
+Phase  2  : 26711 unrouted;      REAL time: 7 secs 
+
+Phase  3  : 14867 unrouted;      REAL time: 12 secs 
+
+Phase  4  : 14867 unrouted; (Setup:0, Hold:0, Component Switching Limit:0)     REAL time: 13 secs 
+
+Updating file: openMSP430_fpga.ncd with current fully routed design.
+
+Phase  5  : 0 unrouted; (Setup:0, Hold:0, Component Switching Limit:0)     REAL time: 19 secs 
+
+Phase  6  : 0 unrouted; (Setup:0, Hold:0, Component Switching Limit:0)     REAL time: 19 secs 
+
+Phase  7  : 0 unrouted; (Setup:0, Hold:0, Component Switching Limit:0)     REAL time: 19 secs 
+
+Phase  8  : 0 unrouted; (Setup:0, Hold:0, Component Switching Limit:0)     REAL time: 19 secs 
+
+Phase  9  : 0 unrouted; (Setup:0, Hold:0, Component Switching Limit:0)     REAL time: 19 secs 
+
+Phase 10  : 0 unrouted; (Setup:0, Hold:0, Component Switching Limit:0)     REAL time: 22 secs 
+Total REAL time to Router completion: 22 secs 
+Total CPU time to Router completion (all processors): 34 secs 
+
+Generating "PAR" statistics.
+
+**************************
+Generating Clock Report
+**************************
+
++---------------------+--------------+------+------+------------+-------------+
+|        Clock Net    |   Resource   |Locked|Fanout|Net Skew(ns)|Max Delay(ns)|
++---------------------+--------------+------+------+------------+-------------+
+|             clk_sys |  BUFGMUX_X2Y2| No   |  843 |  0.226     |  1.750      |
++---------------------+--------------+------+------+------------+-------------+
+
+* Net Skew is the difference between the minimum and maximum routing
+only delays for the net. Note this is different from Clock Skew which
+is reported in TRCE timing report. Clock Skew is the difference between
+the minimum and maximum path delays which includes logic delays.
+
+* The fanout is the number of component pins not the individual BEL loads,
+for example SLICE loads not FF loads.
+
+Timing Score: 0 (Setup: 0, Hold: 0, Component Switching Limit: 0)
+
+Number of Timing Constraints that were not applied: 1
+
+Asterisk (*) preceding a constraint indicates it was not met.
+   This may be due to a setup or hold violation.
+
+----------------------------------------------------------------------------------------------------------
+  Constraint                                |    Check    | Worst Case |  Best Case | Timing |   Timing   
+                                            |             |    Slack   | Achievable | Errors |    Score   
+----------------------------------------------------------------------------------------------------------
+  TS_dcm_clk = PERIOD TIMEGRP "dcm_clk" TSf | SETUP       |     9.759ns|    40.240ns|       0|           0
+  pgaClk_i * 1.66666667 HIGH 50%            | HOLD        |     0.394ns|            |       0|           0
+----------------------------------------------------------------------------------------------------------
+  TSfpgaClk_i = PERIOD TIMEGRP "fpgaClk_i"  | MINLOWPULSE |    51.332ns|    32.000ns|       0|           0
+  12 MHz HIGH 50%                           |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+
+
+Derived Constraint Report
+Review Timing Report for more details on the following derived constraints.
+To create a Timing Report, run "trce -v 12 -fastpaths -o design_timing_report design.ncd design.pcf"
+or "Run Timing Analysis" from Timing Analyzer (timingan).
+Derived Constraints for TSfpgaClk_i
++-------------------------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+
+|                               |   Period    |       Actual Period       |      Timing Errors        |      Paths Analyzed       |
+|           Constraint          | Requirement |-------------+-------------|-------------+-------------|-------------+-------------|
+|                               |             |   Direct    | Derivative  |   Direct    | Derivative  |   Direct    | Derivative  |
++-------------------------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+
+|TSfpgaClk_i                    |     83.333ns|     32.000ns|     67.067ns|            0|            0|            0|  14659703524|
+| TS_dcm_clk                    |     50.000ns|     40.240ns|          N/A|            0|            0|  14659703524|            0|
++-------------------------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+
+
+All constraints were met.
+
+
+Generating Pad Report.
+
+All signals are completely routed.
+
+WARNING:Par:283 - There are 31 loadless signals in this design. This design will cause Bitgen to issue DRC warnings.
+
+Total REAL time to PAR completion: 32 secs 
+Total CPU time to PAR completion (all processors): 44 secs 
+
+Peak Memory Usage:  1155 MB
+
+Placer: Placement generated during map.
+Routing: Completed - No errors found.
+Timing: Completed - No errors found.
+
+Number of error messages: 0
+Number of warning messages: 33
+Number of info messages: 0
+
+Writing design to file openMSP430_fpga.ncd
+
+
+
+PAR done!

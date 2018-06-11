@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- IMPORTANT: This is an internal file that has been generated
+     by the Xilinx ISE software.  Any direct editing or
+     changes made to this file may result in unpredictable
+     behavior or data corruption.  It is strongly advised that
+     users do not edit the contents of this file. -->
+<messages>
+<msg type="warning" file="HDLCompiler" num="248" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_spm_control.v" Line 77: Block identifier is required on this block
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1016" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 184: Port <arg fmt="%s" index="1">CLK180</arg> is not connected to this instance
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1016" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 233: Port <arg fmt="%s" index="1">aclk</arg> is not connected to this instance
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_clock_module.v" Line 509: Assignment to <arg fmt="%s" index="1">cpu_en_wkup</arg> ignored, since the identifier is never used
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_clock_module.v" Line 562: Assignment to <arg fmt="%s" index="1">nodiv_mclk_n</arg> ignored, since the identifier is never used
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_clock_module.v" Line 577: Assignment to <arg fmt="%s" index="1">mclk_wkup_s</arg> ignored, since the identifier is never used
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_clock_module.v" Line 755: Assignment to <arg fmt="%s" index="1">nodiv_smclk</arg> ignored, since the identifier is never used
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_execution_unit.v" Line 522: Assignment to <arg fmt="%s" index="1">sm_current_id</arg> ignored, since the identifier is never used
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="413" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" Line 272: Result of <arg fmt="%d" index="1">17</arg>-bit expression is truncated to fit in <arg fmt="%d" index="2">16</arg>-bit target.
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="413" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" Line 498: Result of <arg fmt="%d" index="1">17</arg>-bit expression is truncated to fit in <arg fmt="%d" index="2">16</arg>-bit target.
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="413" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" Line 519: Result of <arg fmt="%d" index="1">17</arg>-bit expression is truncated to fit in <arg fmt="%d" index="2">16</arg>-bit target.
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="413" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" Line 550: Result of <arg fmt="%d" index="1">4</arg>-bit expression is truncated to fit in <arg fmt="%d" index="2">3</arg>-bit target.
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1625" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" Line 605: Canot display values larger than 32 bits in h/d/o/x format
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="413" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v" Line 185: Result of <arg fmt="%d" index="1">4</arg>-bit expression is truncated to fit in <arg fmt="%d" index="2">3</arg>-bit target.
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 295: Assignment to <arg fmt="%s" index="1">p3_dout</arg> ignored, since the identifier is never used
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 296: Assignment to <arg fmt="%s" index="1">p3_dout_en</arg> ignored, since the identifier is never used
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="413" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/ps2_keyboard.v" Line 452: Result of <arg fmt="%d" index="1">5</arg>-bit expression is truncated to fit in <arg fmt="%d" index="2">4</arg>-bit target.
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="413" delta="new" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/ps2_keyboard.v" Line 481: Result of <arg fmt="%d" index="1">13</arg>-bit expression is truncated to fit in <arg fmt="%d" index="2">12</arg>-bit target.
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="413" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/ps2_keyboard.v" Line 489: Result of <arg fmt="%d" index="1">9</arg>-bit expression is truncated to fit in <arg fmt="%d" index="2">8</arg>-bit target.
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="634" delta="new" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/omsp_ps2.v" Line 108: Net &lt;<arg fmt="%s" index="1">ps2_busy</arg>&gt; does not have a driver.
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="634" delta="new" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/omsp_ps2.v" Line 109: Net &lt;<arg fmt="%s" index="1">ps2_error</arg>&gt; does not have a driver.
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="413" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/periph/spi_master.v" Line 99: Result of <arg fmt="%d" index="1">9</arg>-bit expression is truncated to fit in <arg fmt="%d" index="2">8</arg>-bit target.
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="413" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/periph/spi_master.v" Line 146: Result of <arg fmt="%d" index="1">5</arg>-bit expression is truncated to fit in <arg fmt="%d" index="2">4</arg>-bit target.
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 527: Assignment to <arg fmt="%s" index="1">p1_io_mux_b_unconnected</arg> ignored, since the identifier is never used
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 526: Assignment to <arg fmt="%s" index="1">p1_io_mux_b_unconnected</arg> ignored, since the identifier is never used
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 525: Assignment to <arg fmt="%s" index="1">p1_io_mux_b_unconnected</arg> ignored, since the identifier is never used
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 524: Assignment to <arg fmt="%s" index="1">p1_io_mux_b_unconnected</arg> ignored, since the identifier is never used
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 583: Assignment to <arg fmt="%s" index="1">p2_io_mux_b_unconnected</arg> ignored, since the identifier is never used
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 580: Assignment to <arg fmt="%s" index="1">p2_io_mux_b_unconnected</arg> ignored, since the identifier is never used
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 579: Assignment to <arg fmt="%s" index="1">p2_io_mux_b_unconnected</arg> ignored, since the identifier is never used
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 578: Assignment to <arg fmt="%s" index="1">p2_io_mux_b_unconnected</arg> ignored, since the identifier is never used
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 577: Assignment to <arg fmt="%s" index="1">p2_io_mux_b_unconnected</arg> ignored, since the identifier is never used
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 576: Assignment to <arg fmt="%s" index="1">p2_io_mux_b_unconnected</arg> ignored, since the identifier is never used
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 605: Assignment to <arg fmt="%s" index="1">p2_io_dout</arg> ignored, since the identifier is never used
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1127" delta="old" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 606: Assignment to <arg fmt="%s" index="1">p2_io_dout_en</arg> ignored, since the identifier is never used
+</msg>
+
+<msg type="error" file="HDLCompiler" num="1654" delta="new" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 642: Instantiating &lt;<arg fmt="%s" index="1">ram_hi</arg>&gt; from unknown module &lt;<arg fmt="%s" index="2">ram_8x12k</arg>&gt;
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="1499" delta="new" >"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 37: Empty module &lt;<arg fmt="%s" index="1">openMSP430_fpga</arg>&gt; remains a black box.
+</msg>
+
+</messages>
+

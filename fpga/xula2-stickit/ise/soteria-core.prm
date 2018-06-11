@@ -1,0 +1,17 @@
+PROMGEN: Xilinx Prom Generator P.20131013
+Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
+
+promgen -w -p mcs -c FF -o /media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise//soteria-core -s 8192 -u 0000 /media/DATA/Documents/sancus/soteria/soteria-core/fpga/xula2-stickit/ise/openMSP430_fpga_cclktemp.bit -spi 
+
+PROM /media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/soteria-core.prm map: Wed May 30 19:56:03 2018
+
+Calculating PROM checksum with fill value ff
+
+Format        Mcs86 (32-bit)
+Size          8192K
+PROM start    0000:0000
+PROM end      007f:ffff
+PROM checksum 73fbfeec
+
+        Addr1        Addr2                     Date File(s)
+    0000:0000    000c:3ce1     May 30 19:55:58 2018 /media/DATA/Documents/sancus/soteria/soteria-core/fpga/xula2-stickit/ise/openMSP430_fpga_cclktemp.bit

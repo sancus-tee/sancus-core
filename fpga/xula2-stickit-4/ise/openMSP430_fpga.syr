@@ -1,0 +1,2533 @@
+Release 14.7 - xst P.20131013 (lin64)
+Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
+--> 
+Parameter TMPDIR set to xst/projnav.tmp
+
+
+Total REAL time to Xst completion: 0.00 secs
+Total CPU time to Xst completion: 0.03 secs
+ 
+--> 
+Parameter xsthdpdir set to xst
+
+
+Total REAL time to Xst completion: 0.00 secs
+Total CPU time to Xst completion: 0.03 secs
+ 
+--> 
+Reading design: openMSP430_fpga.prj
+
+TABLE OF CONTENTS
+  1) Synthesis Options Summary
+  2) HDL Parsing
+  3) HDL Elaboration
+  4) HDL Synthesis
+       4.1) HDL Synthesis Report
+  5) Advanced HDL Synthesis
+       5.1) Advanced HDL Synthesis Report
+  6) Low Level Synthesis
+  7) Partition Report
+  8) Design Summary
+       8.1) Primitive and Black Box Usage
+       8.2) Device utilization summary
+       8.3) Partition Resource Summary
+       8.4) Timing Report
+            8.4.1) Clock Information
+            8.4.2) Asynchronous Control Signals Information
+            8.4.3) Timing Summary
+            8.4.4) Timing Details
+            8.4.5) Cross Clock Domains Report
+
+
+=========================================================================
+*                      Synthesis Options Summary                        *
+=========================================================================
+---- Source Parameters
+Input File Name                    : "openMSP430_fpga.prj"
+Ignore Synthesis Constraint File   : NO
+Verilog Include Directory          : { "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430" }
+
+---- Target Parameters
+Output File Name                   : "openMSP430_fpga"
+Output Format                      : NGC
+Target Device                      : xc6slx25-2-ftg256
+
+---- Source Options
+Top Module Name                    : openMSP430_fpga
+Automatic FSM Extraction           : YES
+FSM Encoding Algorithm             : Auto
+Safe Implementation                : No
+FSM Style                          : LUT
+RAM Extraction                     : Yes
+RAM Style                          : Auto
+ROM Extraction                     : Yes
+Shift Register Extraction          : YES
+ROM Style                          : Auto
+Resource Sharing                   : YES
+Asynchronous To Synchronous        : NO
+Shift Register Minimum Size        : 2
+Use DSP Block                      : Auto
+Automatic Register Balancing       : No
+
+---- Target Options
+LUT Combining                      : Auto
+Reduce Control Sets                : Auto
+Add IO Buffers                     : YES
+Global Maximum Fanout              : 100000
+Add Generic Clock Buffer(BUFG)     : 16
+Register Duplication               : YES
+Optimize Instantiated Primitives   : NO
+Use Clock Enable                   : Auto
+Use Synchronous Set                : Auto
+Use Synchronous Reset              : Auto
+Pack IO Registers into IOBs        : Auto
+Equivalent register Removal        : YES
+
+---- General Options
+Optimization Goal                  : Speed
+Optimization Effort                : 1
+Power Reduction                    : NO
+Keep Hierarchy                     : No
+Netlist Hierarchy                  : As_Optimized
+RTL Output                         : Yes
+Global Optimization                : AllClockNets
+Read Cores                         : YES
+Write Timing Constraints           : NO
+Cross Clock Analysis               : NO
+Hierarchy Separator                : /
+Bus Delimiter                      : <>
+Case Specifier                     : Maintain
+Slice Utilization Ratio            : 100
+BRAM Utilization Ratio             : 100
+DSP48 Utilization Ratio            : 100
+Auto BRAM Packing                  : NO
+Slice Utilization Ratio Delta      : 5
+
+---- Other Options
+Cores Search Directories           : {"rtl/verilog/coregen"  }
+
+=========================================================================
+
+
+=========================================================================
+*                          HDL Parsing                                  *
+=========================================================================
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent_sbox.v" into library work
+Parsing module <spongent_sbox>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent_player.v" into library work
+Parsing module <spongent_player>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/lfsr.v" into library work
+Parsing module <lfsr>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent_fsm.v" into library work
+Parsing module <spongent_fsm>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent_datapath.v" into library work
+Parsing module <spongent_datapath>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 1.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <spongent>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_sync_cell.v" into library work
+Parsing module <omsp_sync_cell>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_spm.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 3.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_spm>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 1.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <sponge_wrap>.
+INFO:HDLCompiler:693 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v" Line 25. parameter declaration becomes local in sponge_wrap with formal parameter declaration list
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_sync_reset.v" into library work
+Parsing module <omsp_sync_reset>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_spm_control.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 3.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_spm_control>.
+WARNING:HDLCompiler:248 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_spm_control.v" Line 80: Block identifier is required on this block
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_register_file.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_register_file>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 629.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_dbg_uart.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_dbg_uart>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 297.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_alu.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_alu>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 257.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 1.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <crypto_control>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/spi_master.v" into library work
+Parsing module <spi_master>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_watchdog.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_watchdog>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 555.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_sfr.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 46.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_sfr>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 352.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_multiplier.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_multiplier>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 419.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_mem_backbone.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_mem_backbone>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 289.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_frontend.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_frontend>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 1037.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_execution_unit.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_execution_unit>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 589.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_dbg.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_dbg>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 826.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_clock_module.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_clock_module>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 1057.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_tsc.v" into library work
+Parsing module <omsp_tsc>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_timerA.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_timerA_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_timerA_undefines.v" included at line 46.
+Parsing module <omsp_timerA>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_timerA_undefines.v" included at line 758.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_spi_master.v" into library work
+Parsing module <omsp_spi_master>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_led_digits.v" into library work
+Parsing module <omsp_led_digits>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_gpio.v" into library work
+Parsing module <omsp_gpio>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <openMSP430>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 622.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/omsp_uart.v" into library work
+Parsing module <omsp_uart>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/io_mux.v" into library work
+Parsing module <io_mux>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/coregen/rom_8x20_5k.v" into library work
+Parsing module <rom_8x20_5k>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/coregen/ram_8x8k.v" into library work
+Parsing module <ram_8x8k>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 35.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <openMSP430_fpga>.
+
+=========================================================================
+*                            HDL Elaboration                            *
+=========================================================================
+WARNING:HDLCompiler:1016 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 202: Port CLK180 is not connected to this instance
+WARNING:HDLCompiler:1016 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 251: Port aclk is not connected to this instance
+
+Elaborating module <openMSP430_fpga>.
+
+Elaborating module <IBUFG>.
+
+Elaborating module <DCM_SP(CLKFX_MULTIPLY=5,CLKFX_DIVIDE=3,CLKIN_PERIOD=83.333)>.
+
+Elaborating module <BUFG>.
+
+Elaborating module <openMSP430>.
+
+Elaborating module <omsp_clock_module>.
+
+Elaborating module <omsp_sync_cell>.
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_clock_module.v" Line 509: Assignment to cpu_en_wkup ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_clock_module.v" Line 562: Assignment to nodiv_mclk_n ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_clock_module.v" Line 577: Assignment to mclk_wkup_s ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_clock_module.v" Line 755: Assignment to nodiv_smclk ignored, since the identifier is never used
+
+Elaborating module <omsp_sync_reset>.
+
+Elaborating module <omsp_frontend>.
+WARNING:HDLCompiler:1016 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_execution_unit.v" Line 536: Port cmd_decrypt is not connected to this instance
+
+Elaborating module <omsp_execution_unit>.
+
+Elaborating module <omsp_register_file>.
+
+Elaborating module <omsp_alu>.
+
+Elaborating module <omsp_spm_control(KEY_IDX_SIZE=4)>.
+
+Elaborating module <omsp_spm(KEY_IDX_SIZE=4)>.
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_spm.v" Line 100. $display New SM config: 0 0 0 0, 1'b.
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_spm.v" Line 104. $display Invalid SM config: 0 0 0 0, 1'b.
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_spm.v" Line 115. $display SM disabled
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_spm.v" Line 142. $display mem violation @0, from 0
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_spm.v" Line 144. $display exec violation 0 -> 0
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_spm.v" Line 147. $display create violation:
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_spm.v" Line 148. $display \tme:  0 0 0 0
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_spm.v" Line 149. $display \tnew: 0 0 0 0
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_execution_unit.v" Line 530: Assignment to sm_current_id ignored, since the identifier is never used
+
+Elaborating module <crypto_control(KEY_IDX_SIZE=4)>.
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" Line 277: Result of 17-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" Line 348: Result of 17-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" Line 602: Result of 17-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" Line 698: Result of 17-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" Line 719: Result of 17-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" Line 750: Result of 5-bit expression is truncated to fit in 4-bit target.
+WARNING:HDLCompiler:1625 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" Line 847: Canot display values larger than 32 bits in h/d/o/x format
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" Line 847. $display Key: < ??? >
+
+Elaborating module <sponge_wrap(RATE=16,SECURITY=128)>.
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v" Line 235. $display === SpongeWrap parameters ===
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v" Line 236. $display Rate:           16
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v" Line 237. $display Security:      128
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v" Line 238. $display Blocks in key:   8
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v" Line 239. $display =============================
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v" Line 185: Result of 5-bit expression is truncated to fit in 4-bit target.
+
+Elaborating module <spongent(RATE=18,MIN_CAPACITY=256)>.
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent.v" Line 138. $display === Spongent parameters ===
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent.v" Line 139. $display Rate:        18
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent.v" Line 140. $display State size: 336
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent.v" Line 141. $display ===========================
+
+Elaborating module <spongent_fsm>.
+
+Elaborating module <spongent_datapath(STATE_SIZE=336,RATE=18,LFSR_POLY=9'b100011101,LFSR_INIT=8'b01010010,LFSR_SIZE=8)>.
+
+Elaborating module <spongent_player(SPONGENT_B=336)>.
+
+Elaborating module <lfsr(LFSR_POLY=9'b100011101,LFSR_INIT=8'b01010010,LFSR_SIZE=8)>.
+
+Elaborating module <spongent_sbox>.
+WARNING:HDLCompiler:552 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_execution_unit.v" Line 538: Input port cmd_decrypt is not connected on this instance
+
+Elaborating module <omsp_mem_backbone>.
+
+Elaborating module <omsp_sfr>.
+
+Elaborating module <omsp_watchdog>.
+
+Elaborating module <omsp_multiplier>.
+
+Elaborating module <omsp_dbg>.
+
+Elaborating module <omsp_dbg_uart>.
+
+Elaborating module <omsp_gpio(P1_EN=1,P2_EN=1,P3_EN=1,P4_EN=1,P5_EN=0,P6_EN=0)>.
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 313: Assignment to p3_dout ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 314: Assignment to p3_dout_en ignored, since the identifier is never used
+
+Elaborating module <omsp_timerA>.
+
+Elaborating module <omsp_uart(BASE_ADDR=15'b010000000)>.
+
+Elaborating module <omsp_uart(BASE_ADDR=15'b010001000)>.
+
+Elaborating module <omsp_tsc>.
+
+Elaborating module <omsp_spi_master>.
+
+Elaborating module <spi_master>.
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/spi_master.v" Line 99: Result of 9-bit expression is truncated to fit in 8-bit target.
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/spi_master.v" Line 146: Result of 5-bit expression is truncated to fit in 4-bit target.
+
+Elaborating module <omsp_led_digits>.
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_led_digits.v" Line 232: Result of 5-bit expression is truncated to fit in 4-bit target.
+
+Elaborating module <io_mux(WIDTH=8)>.
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 560: Assignment to p1_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 559: Assignment to p1_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 558: Assignment to p1_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 557: Assignment to p1_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 616: Assignment to p2_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 613: Assignment to p2_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 612: Assignment to p2_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 611: Assignment to p2_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 610: Assignment to p2_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 609: Assignment to p2_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 638: Assignment to p2_io_dout ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 639: Assignment to p2_io_dout_en ignored, since the identifier is never used
+
+Elaborating module <ram_8x8k>.
+WARNING:HDLCompiler:1499 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/coregen/ram_8x8k.v" Line 39: Empty module <ram_8x8k> remains a black box.
+
+Elaborating module <rom_8x20_5k>.
+WARNING:HDLCompiler:1499 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/coregen/rom_8x20_5k.v" Line 39: Empty module <rom_8x20_5k> remains a black box.
+WARNING:HDLCompiler:634 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 119: Net <p3_din[7]> does not have a driver.
+WARNING:HDLCompiler:634 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 155: Net <reset_pin> does not have a driver.
+WARNING:HDLCompiler:634 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 602: Net <p2_io_din[7]> does not have a driver.
+WARNING:HDLCompiler:552 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" Line 251: Input port scan_enable is not connected on this instance
+
+=========================================================================
+*                           HDL Synthesis                               *
+=========================================================================
+
+Synthesizing Unit <openMSP430_fpga>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v".
+        foo = 4
+WARNING:Xst:2898 - Port 'scan_enable', unconnected in block instance 'openMSP430_0', is tied to GND.
+WARNING:Xst:2898 - Port 'scan_mode', unconnected in block instance 'openMSP430_0', is tied to GND.
+WARNING:Xst:2898 - Port 'wkup', unconnected in block instance 'openMSP430_0', is tied to GND.
+WARNING:Xst:647 - Input <sdClkFb_i> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <miso_i> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 251: Output port <aclk> of the instance <openMSP430_0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 251: Output port <dco_enable> of the instance <openMSP430_0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 251: Output port <dco_wkup> of the instance <openMSP430_0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 251: Output port <lfxt_enable> of the instance <openMSP430_0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 251: Output port <lfxt_wkup> of the instance <openMSP430_0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 251: Output port <smclk> of the instance <openMSP430_0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 251: Output port <spm_violation> of the instance <openMSP430_0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 302: Output port <p3_dout> of the instance <gpio_0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 302: Output port <p3_dout_en> of the instance <gpio_0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 302: Output port <p3_sel> of the instance <gpio_0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 302: Output port <p4_dout> of the instance <gpio_0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 302: Output port <p4_dout_en> of the instance <gpio_0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 302: Output port <p4_sel> of the instance <gpio_0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 302: Output port <p5_dout> of the instance <gpio_0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 302: Output port <p5_dout_en> of the instance <gpio_0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 302: Output port <p5_sel> of the instance <gpio_0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 302: Output port <p6_dout> of the instance <gpio_0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 302: Output port <p6_dout_en> of the instance <gpio_0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 302: Output port <p6_sel> of the instance <gpio_0> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 408: Output port <irq_uart_rx> of the instance <hw_uart2> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 408: Output port <irq_uart_tx> of the instance <hw_uart2> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 604: Output port <io_dout> of the instance <io_mux_p2> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v" line 604: Output port <io_dout_en> of the instance <io_mux_p2> is unconnected or connected to loadless signal.
+WARNING:Xst:653 - Signal <p3_din> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <p2_io_din> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <reset_pin> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+    Found 1-bit tristate buffer for signal <chan_io<7>> created at line 654
+    Found 1-bit tristate buffer for signal <chan_io<8>> created at line 655
+    Found 1-bit tristate buffer for signal <chan_io<9>> created at line 656
+    Found 1-bit tristate buffer for signal <chan_io<10>> created at line 657
+    Found 1-bit tristate buffer for signal <chan_io<11>> created at line 658
+    Found 1-bit tristate buffer for signal <chan_io<12>> created at line 659
+    Found 1-bit tristate buffer for signal <chan_io<13>> created at line 660
+    Found 1-bit tristate buffer for signal <chan_io<14>> created at line 661
+    Summary:
+	inferred   8 Tristate(s).
+Unit <openMSP430_fpga> synthesized.
+
+Synthesizing Unit <openMSP430>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430.v".
+    Found 1-bit register for signal <spm_violation>.
+    Summary:
+	inferred   1 D-type flip-flop(s).
+Unit <openMSP430> synthesized.
+
+Synthesizing Unit <omsp_clock_module>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_clock_module.v".
+        BASE_ADDR = 15'b000000001010000
+        DEC_WD = 4
+        BCSCTL1 = 4'b0111
+        BCSCTL2 = 4'b1000
+        DEC_SZ = 16
+        BASE_REG = 16'b0000000000000001
+        BCSCTL1_D = 16'b0000000010000000
+        BCSCTL2_D = 16'b0000000100000000
+WARNING:Xst:647 - Input <cpuoff> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <mclk_enable> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <mclk_wkup> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <scan_enable> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <scan_mode> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <scg0> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+    Found 1-bit register for signal <dbg_rst_noscan>.
+    Found 8-bit register for signal <bcsctl2>.
+    Found 8-bit register for signal <bcsctl1>.
+    Found 3-bit register for signal <aclk_div>.
+    Found 3-bit register for signal <smclk_div>.
+    Found 1-bit register for signal <lfxt_clk_dly>.
+    Found 1-bit register for signal <aclk_en>.
+    Found 1-bit register for signal <smclk_en>.
+    Found 3-bit adder for signal <aclk_div[2]_GND_6_o_add_36_OUT> created at line 730.
+    Found 3-bit adder for signal <smclk_div[2]_GND_6_o_add_45_OUT> created at line 883.
+    Found 1-bit 4-to-1 multiplexer for signal <aclk_div[2]_PWR_6_o_MUX_11_o> created at line 723.
+    Found 1-bit 4-to-1 multiplexer for signal <smclk_div[2]_PWR_6_o_MUX_18_o> created at line 872.
+    Summary:
+	inferred   2 Adder/Subtractor(s).
+	inferred  26 D-type flip-flop(s).
+	inferred   3 Multiplexer(s).
+Unit <omsp_clock_module> synthesized.
+
+Synthesizing Unit <omsp_sync_cell>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_sync_cell.v".
+    Found 2-bit register for signal <data_sync>.
+    Summary:
+	inferred   2 D-type flip-flop(s).
+Unit <omsp_sync_cell> synthesized.
+
+Synthesizing Unit <omsp_sync_reset>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_sync_reset.v".
+    Found 2-bit register for signal <data_sync>.
+    Summary:
+	inferred   2 D-type flip-flop(s).
+Unit <omsp_sync_reset> synthesized.
+
+Synthesizing Unit <omsp_frontend>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_frontend.v".
+        I_IRQ_FETCH = 3'b000
+        I_IRQ_DONE = 3'b001
+        I_DEC = 3'b010
+        I_EXT1 = 3'b011
+        I_EXT2 = 3'b100
+        I_IDLE = 3'b101
+        E_IRQ_0 = 4'b0010
+        E_IRQ_1 = 4'b0001
+        E_IRQ_2 = 4'b0000
+        E_IRQ_3 = 4'b0011
+        E_IRQ_4 = 4'b0100
+        E_SRC_AD = 4'b0101
+        E_SRC_RD = 4'b0110
+        E_SRC_WR = 4'b0111
+        E_DST_AD = 4'b1000
+        E_DST_RD = 4'b1001
+        E_DST_WR = 4'b1010
+        E_EXEC = 4'b1011
+        E_JUMP = 4'b1100
+        E_IDLE = 4'b1101
+        E_SPM = 4'b1110
+        E_DST_WR2 = 4'b1111
+WARNING:Xst:647 - Input <nmi_wkup> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <scan_enable> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <wdt_wkup> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <wkup> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+    Found 4-bit register for signal <irq_num>.
+    Found 16-bit register for signal <current_inst_pc>.
+    Found 16-bit register for signal <prev_inst_pc>.
+    Found 16-bit register for signal <pc>.
+    Found 16-bit register for signal <inst_sext>.
+    Found 16-bit register for signal <inst_dext>.
+    Found 4-bit register for signal <inst_dest_bin>.
+    Found 4-bit register for signal <inst_src_bin>.
+    Found 3-bit register for signal <inst_type>.
+    Found 3-bit register for signal <inst_jmp_bin>.
+    Found 3-bit register for signal <i_state>.
+    Found 9-bit register for signal <inst_so>.
+    Found 8-bit register for signal <spm_command>.
+    Found 8-bit register for signal <inst_as>.
+    Found 8-bit register for signal <inst_ad>.
+    Found 2-bit register for signal <inst_sz>.
+    Found 4-bit register for signal <e_state>.
+    Found 12-bit register for signal <inst_alu>.
+    Found 1-bit register for signal <dbg_halt_st>.
+    Found 1-bit register for signal <sm_irq>.
+    Found 1-bit register for signal <pmem_busy>.
+    Found 1-bit register for signal <inst_mov>.
+    Found 1-bit register for signal <inst_bw>.
+    Found 1-bit register for signal <exec_jmp>.
+    Found 1-bit register for signal <exec_dst_wr>.
+    Found 1-bit register for signal <exec_src_wr>.
+    Found 1-bit register for signal <exec_dext_rdy>.
+    Found 1-bit register for signal <handling_irq>.
+    Found 1-bit register for signal <inst_irq_rst>.
+    Found finite state machine <FSM_0> for signal <i_state>.
+    -----------------------------------------------------------------------
+    | States             | 6                                              |
+    | Transitions        | 45                                             |
+    | Inputs             | 11                                             |
+    | Outputs            | 10                                             |
+    | Clock              | mclk (rising_edge)                             |
+    | Reset              | puc_rst (positive)                             |
+    | Reset type         | asynchronous                                   |
+    | Reset State        | 000                                            |
+    | Encoding           | auto                                           |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found finite state machine <FSM_1> for signal <e_state>.
+    -----------------------------------------------------------------------
+    | States             | 16                                             |
+    | Transitions        | 126                                            |
+    | Inputs             | 19                                             |
+    | Outputs            | 16                                             |
+    | Clock              | mclk (rising_edge)                             |
+    | Reset              | puc_rst (positive)                             |
+    | Reset type         | asynchronous                                   |
+    | Reset State        | 0001                                           |
+    | Encoding           | auto                                           |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found 16-bit adder for signal <pc_incr> created at line 409.
+    Found 16-bit adder for signal <ext_nxt> created at line 458.
+    Found 2-bit adder for signal <inst_sz_nxt> created at line 828.
+    Found 13-bit 4-to-1 multiplexer for signal <_n0613> created at line 720.
+    Found 8-bit 4-to-1 multiplexer for signal <_n0616> created at line 795.
+    Summary:
+	inferred   3 Adder/Subtractor(s).
+	inferred 156 D-type flip-flop(s).
+	inferred  40 Multiplexer(s).
+	inferred   2 Finite State Machine(s).
+Unit <omsp_frontend> synthesized.
+
+Synthesizing Unit <omsp_execution_unit>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_execution_unit.v".
+        KEY_IDX_SIZE = 4
+WARNING:Xst:2898 - Port 'cmd_decrypt', unconnected in block instance 'crypto', is tied to GND.
+WARNING:Xst:647 - Input <inst_ad<5:1>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <inst_ad<7:7>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+INFO:Xst:3210 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_execution_unit.v" line 501: Output port <spm_current_id> of the instance <spm_control_0> is unconnected or connected to loadless signal.
+    Found 16-bit register for signal <mdb_in_buf>.
+    Found 16-bit register for signal <mdb_out_nxt>.
+    Found 1-bit register for signal <mab_lsb>.
+    Found 1-bit register for signal <mdb_in_buf_en>.
+    Found 1-bit register for signal <mdb_in_buf_valid>.
+    Summary:
+	inferred  35 D-type flip-flop(s).
+	inferred  43 Multiplexer(s).
+Unit <omsp_execution_unit> synthesized.
+
+Synthesizing Unit <omsp_register_file>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_register_file.v".
+WARNING:Xst:647 - Input <scan_enable> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+    Found 16-bit register for signal <r2>.
+    Found 16-bit register for signal <r3>.
+    Found 16-bit register for signal <r4>.
+    Found 16-bit register for signal <r5>.
+    Found 16-bit register for signal <r6>.
+    Found 16-bit register for signal <r7>.
+    Found 16-bit register for signal <r8>.
+    Found 16-bit register for signal <r9>.
+    Found 16-bit register for signal <r10>.
+    Found 16-bit register for signal <r11>.
+    Found 16-bit register for signal <r12>.
+    Found 16-bit register for signal <r13>.
+    Found 16-bit register for signal <r14>.
+    Found 16-bit register for signal <r15>.
+    Found 16-bit register for signal <r1>.
+    Found 16-bit adder for signal <reg_incr_val> created at line 135.
+    Summary:
+	inferred   1 Adder/Subtractor(s).
+	inferred 240 D-type flip-flop(s).
+	inferred  33 Multiplexer(s).
+Unit <omsp_register_file> synthesized.
+
+Synthesizing Unit <omsp_alu>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_alu.v".
+WARNING:Xst:647 - Input <inst_alu<11:11>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <inst_jmp<7:7>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <inst_so<2:2>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <inst_so<7:4>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+    Found 17-bit adder for signal <alu_add> created at line 171.
+    Found 17-bit adder for signal <alu_add_inc> created at line 180.
+    Found 5-bit adder for signal <n0236> created at line 100.
+    Found 5-bit adder for signal <n0239> created at line 100.
+    Found 5-bit adder for signal <BUS_0049_GND_15_o_add_12_OUT> created at line 102.
+    Found 5-bit adder for signal <n0244> created at line 100.
+    Found 5-bit adder for signal <n0247> created at line 100.
+    Found 5-bit adder for signal <BUS_0098_GND_15_o_add_17_OUT> created at line 102.
+    Found 5-bit adder for signal <n0252> created at line 100.
+    Found 5-bit adder for signal <n0255> created at line 100.
+    Found 5-bit adder for signal <BUS_0147_GND_15_o_add_22_OUT> created at line 102.
+    Found 5-bit adder for signal <n0260> created at line 100.
+    Found 5-bit adder for signal <n0263> created at line 100.
+    Found 5-bit adder for signal <BUS_0196_GND_15_o_add_27_OUT> created at line 102.
+    Found 5-bit comparator greater for signal <BUS_0049_GND_15_o_LessThan_12_o> created at line 101
+    Found 5-bit comparator greater for signal <BUS_0098_GND_15_o_LessThan_17_o> created at line 101
+    Found 5-bit comparator greater for signal <BUS_0147_GND_15_o_LessThan_22_o> created at line 101
+    Found 5-bit comparator greater for signal <BUS_0196_GND_15_o_LessThan_27_o> created at line 101
+    Summary:
+	inferred  14 Adder/Subtractor(s).
+	inferred   4 Comparator(s).
+	inferred  20 Multiplexer(s).
+Unit <omsp_alu> synthesized.
+
+Synthesizing Unit <omsp_spm_control>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_spm_control.v".
+        KEY_IDX_SIZE = 4
+    Found 16-bit register for signal <prev_cycle_spm_id>.
+    Found 16-bit register for signal <spm_prev_id>.
+    Found 16-bit register for signal <next_id>.
+    Found 16-bit adder for signal <next_id[15]_GND_16_o_add_5_OUT> created at line 72.
+    Found 16-bit adder for signal <PWR_15_o_GND_16_o_add_24_OUT> created at line 117.
+    Found 16-bit comparator equal for signal <n0041> created at line 134
+    Summary:
+	inferred   2 Adder/Subtractor(s).
+	inferred  48 D-type flip-flop(s).
+	inferred   1 Comparator(s).
+	inferred  12 Multiplexer(s).
+Unit <omsp_spm_control> synthesized.
+
+Synthesizing Unit <omsp_spm>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_spm.v".
+        KEY_IDX_SIZE = 4
+WARNING:Xst:647 - Input <r10> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+    Found 16-bit register for signal <public_start>.
+    Found 16-bit register for signal <public_end>.
+    Found 16-bit register for signal <secret_start>.
+    Found 16-bit register for signal <secret_end>.
+    Found 16-bit register for signal <id>.
+    Found 1-bit register for signal <enabled>.
+    Found 128-bit register for signal <key>.
+    Found 16-bit 5-to-1 multiplexer for signal <requested_data> created at line 162.
+    Found 16-bit comparator greater for signal <r12[15]_r13[15]_LessThan_1_o> created at line 92
+    Found 16-bit comparator lessequal for signal <n0001> created at line 92
+    Found 16-bit comparator lessequal for signal <n0010> created at line 107
+    Found 16-bit comparator greater for signal <pc[15]_public_end[15]_LessThan_13_o> created at line 107
+    Found 16-bit comparator lessequal for signal <n0171> created at line 123
+    Found 16-bit comparator greater for signal <eu_mab[15]_public_end[15]_LessThan_169_o> created at line 123
+    Found 16-bit comparator lessequal for signal <n0176> created at line 124
+    Found 16-bit comparator greater for signal <eu_mab[15]_secret_end[15]_LessThan_171_o> created at line 124
+    Found 16-bit comparator lessequal for signal <n0191> created at line 53
+    Found 16-bit comparator greater for signal <prev_pc[15]_public_end[15]_LessThan_183_o> created at line 53
+    Found 16-bit comparator not equal for signal <n0197> created at line 128
+    Found 16-bit comparator greater for signal <r12[15]_public_end[15]_LessThan_185_o> created at line 64
+    Found 16-bit comparator greater for signal <public_start[15]_r13[15]_LessThan_186_o> created at line 64
+    Found 16-bit comparator lessequal for signal <n0208> created at line 155
+    Found 16-bit comparator greater for signal <spm_data_select[15]_public_end[15]_LessThan_189_o> created at line 156
+    Found 16-bit comparator equal for signal <id_selected> created at line 157
+    Found 16-bit comparator lessequal for signal <n0217> created at line 171
+    Found 16-bit comparator greater for signal <spm_key_select[15]_public_end[15]_LessThan_194_o> created at line 172
+    Summary:
+	inferred 209 D-type flip-flop(s).
+	inferred  18 Comparator(s).
+	inferred 135 Multiplexer(s).
+Unit <omsp_spm> synthesized.
+
+Synthesizing Unit <crypto_control>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/crypto_control.v".
+        KEY_IDX_SIZE = 4
+WARNING:Xst:647 - Input <cmd_decrypt> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+    Found 16-bit register for signal <mab_ctr>.
+    Found 16-bit register for signal <mab_ctr_limit_reg>.
+    Found 16-bit register for signal <mab_cipher>.
+    Found 16-bit register for signal <wrap_data_in>.
+    Found 1-bit register for signal <wrap_start_continue>.
+    Found 4-bit register for signal <key_ctr>.
+    Found 128-bit register for signal <loaded_key>.
+    Found 3-bit register for signal <key_select>.
+    Found 1-bit register for signal <sm_valid>.
+    Found 1-bit register for signal <reg_write>.
+    Found 16-bit register for signal <dest_reg>.
+    Found 16-bit register for signal <reg_data_out>.
+    Found 6-bit register for signal <state>.
+    Found finite state machine <FSM_2> for signal <state>.
+    -----------------------------------------------------------------------
+    | States             | 61                                             |
+    | Transitions        | 107                                            |
+    | Inputs             | 16                                             |
+    | Outputs            | 22                                             |
+    | Clock              | clk (rising_edge)                              |
+    | Reset              | reset (positive)                               |
+    | Reset type         | synchronous                                    |
+    | Reset State        | 000000                                         |
+    | Encoding           | auto                                           |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found 16-bit adder for signal <r9[15]_GND_19_o_add_48_OUT> created at line 277.
+    Found 16-bit adder for signal <r15[15]_GND_19_o_add_51_OUT> created at line 348.
+    Found 16-bit adder for signal <mab_ctr[15]_GND_19_o_add_91_OUT> created at line 698.
+    Found 16-bit adder for signal <mab_cipher[15]_GND_19_o_add_100_OUT> created at line 719.
+    Found 4-bit adder for signal <key_ctr[3]_GND_19_o_add_112_OUT> created at line 750.
+    Found 16-bit comparator equal for signal <r12[15]_r13[15]_equal_89_o> created at line 684
+    Found 16-bit comparator greater for signal <mem_done_INV_127_o> created at line 707
+    Found 16-bit comparator equal for signal <wrap_data_out[15]_mem_in[15]_equal_110_o> created at line 740
+    Summary:
+	inferred   4 Adder/Subtractor(s).
+	inferred 234 D-type flip-flop(s).
+	inferred   3 Comparator(s).
+	inferred  44 Multiplexer(s).
+	inferred   1 Finite State Machine(s).
+Unit <crypto_control> synthesized.
+
+Synthesizing Unit <sponge_wrap>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v".
+        RATE = 16
+        SECURITY = 128
+    Found 4-bit register for signal <key_counter>.
+    Found 4-bit register for signal <state>.
+    Found finite state machine <FSM_3> for signal <state>.
+    -----------------------------------------------------------------------
+    | States             | 13                                             |
+    | Transitions        | 24                                             |
+    | Inputs             | 4                                              |
+    | Outputs            | 17                                             |
+    | Clock              | clk (rising_edge)                              |
+    | Reset              | reset (positive)                               |
+    | Reset type         | synchronous                                    |
+    | Reset State        | 0000                                           |
+    | Encoding           | auto                                           |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found 4-bit adder for signal <key_counter[3]_GND_20_o_add_27_OUT> created at line 185.
+    Found 128-bit shifter logical left for signal <n0056> created at line 201
+    Summary:
+	inferred   1 Adder/Subtractor(s).
+	inferred   4 D-type flip-flop(s).
+	inferred   6 Multiplexer(s).
+	inferred   1 Combinational logic shifter(s).
+	inferred   1 Finite State Machine(s).
+Unit <sponge_wrap> synthesized.
+
+Synthesizing Unit <spongent>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent.v".
+        MIN_CAPACITY = 256
+        RATE = 18
+    Summary:
+	no macro.
+Unit <spongent> synthesized.
+
+Synthesizing Unit <spongent_fsm>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent_fsm.v".
+    Found 4-bit register for signal <state_current>.
+    Found 1-bit register for signal <reg_busy>.
+    Found finite state machine <FSM_4> for signal <state_current>.
+    -----------------------------------------------------------------------
+    | States             | 4                                              |
+    | Transitions        | 7                                              |
+    | Inputs             | 4                                              |
+    | Outputs            | 7                                              |
+    | Clock              | clk (rising_edge)                              |
+    | Reset              | reset (positive)                               |
+    | Reset type         | asynchronous                                   |
+    | Reset State        | 0001                                           |
+    | Encoding           | auto                                           |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Summary:
+	inferred   1 D-type flip-flop(s).
+	inferred   1 Finite State Machine(s).
+Unit <spongent_fsm> synthesized.
+
+Synthesizing Unit <spongent_datapath>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent_datapath.v".
+        STATE_SIZE = 336
+        RATE = 18
+        LFSR_POLY = 9'b100011101
+        LFSR_SIZE = 8
+        LFSR_INIT = 8'b01010010
+    Found 336-bit register for signal <reg_state>.
+    Summary:
+	inferred 336 D-type flip-flop(s).
+	inferred   1 Multiplexer(s).
+Unit <spongent_datapath> synthesized.
+
+Synthesizing Unit <spongent_player>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent_player.v".
+        SPONGENT_B = 336
+    Summary:
+	no macro.
+Unit <spongent_player> synthesized.
+
+Synthesizing Unit <lfsr>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/lfsr.v".
+        LFSR_SIZE = 8
+        LFSR_POLY = 9'b100011101
+        LFSR_INIT = 8'b01010010
+    Found 8-bit register for signal <data_out>.
+    Summary:
+	inferred   8 D-type flip-flop(s).
+Unit <lfsr> synthesized.
+
+Synthesizing Unit <spongent_sbox>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent_sbox.v".
+    Found 16x4-bit Read Only RAM for signal <data_out>
+    Summary:
+	inferred   1 RAM(s).
+Unit <spongent_sbox> synthesized.
+
+Synthesizing Unit <omsp_mem_backbone>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_mem_backbone.v".
+        PMEM_OFFSET = 32'b00000000000000000101110000000000
+WARNING:Xst:647 - Input <dbg_mem_addr<0:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <scan_enable> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+    Found 16-bit register for signal <pmem_dout_bckup>.
+    Found 16-bit register for signal <per_dout_val>.
+    Found 2-bit register for signal <eu_mdb_in_sel>.
+    Found 2-bit register for signal <dbg_mem_din_sel>.
+    Found 1-bit register for signal <fe_pmem_cen_dly>.
+    Found 1-bit register for signal <pmem_dout_bckup_sel>.
+    Found 1-bit register for signal <do_mask_eu>.
+    Found 13-bit subtractor for signal <eu_dmem_addr<12:0>> created at line 142.
+    Found 13-bit subtractor for signal <dbg_dmem_addr<12:0>> created at line 147.
+    Found 15-bit subtractor for signal <eu_pmem_addr<14:0>> created at line 163.
+    Found 15-bit subtractor for signal <fe_pmem_addr<14:0>> created at line 167.
+    Found 15-bit subtractor for signal <dbg_pmem_addr<14:0>> created at line 171.
+    Found 15-bit comparator greater for signal <n0000> created at line 140
+    Found 15-bit comparator greater for signal <eu_mab[14]_GND_28_o_LessThan_2_o> created at line 141
+    Found 15-bit comparator greater for signal <n0007> created at line 145
+    Found 15-bit comparator greater for signal <dbg_mem_addr[15]_GND_28_o_LessThan_5_o> created at line 146
+    Found 15-bit comparator lessequal for signal <n0020> created at line 162
+    Found 15-bit comparator lessequal for signal <n0025> created at line 166
+    Found 15-bit comparator lessequal for signal <n0030> created at line 170
+    Summary:
+	inferred   2 Adder/Subtractor(s).
+	inferred  39 D-type flip-flop(s).
+	inferred   7 Comparator(s).
+	inferred  15 Multiplexer(s).
+Unit <omsp_mem_backbone> synthesized.
+
+Synthesizing Unit <omsp_sfr>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_sfr.v".
+        BASE_ADDR = 15'b000000000000000
+        DEC_WD = 3
+        IE1 = 3'b000
+        IFG1 = 3'b010
+        CPU_ID_LO = 3'b100
+        CPU_ID_HI = 3'b110
+        DEC_SZ = 8
+        BASE_REG = 8'b00000001
+        IE1_D = 8'b00000001
+        IFG1_D = 8'b00000100
+        CPU_ID_LO_D = 8'b00010000
+        CPU_ID_HI_D = 8'b01000000
+WARNING:Xst:647 - Input <per_din<15:8>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <scan_mode> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+    Found 1-bit register for signal <wdtie>.
+    Found 1-bit register for signal <nmiifg>.
+    Found 1-bit register for signal <nmi_dly>.
+    Found 1-bit register for signal <nmie>.
+    Summary:
+	inferred   4 D-type flip-flop(s).
+	inferred   2 Multiplexer(s).
+Unit <omsp_sfr> synthesized.
+
+Synthesizing Unit <omsp_watchdog>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_watchdog.v".
+        BASE_ADDR = 15'b000000100100000
+        DEC_WD = 2
+        WDTCTL = 2'b00
+        DEC_SZ = 4
+        BASE_REG = 4'b0001
+        WDTCTL_D = 4'b0001
+        WDTNMIES_MASK = 8'b01000000
+        WDTSSEL_MASK = 8'b00000100
+        WDTCTL_MASK = 8'b11010111
+        WDTNMI_RD_MASK = 8'b00100000
+        WDTSSEL_RD_MASK = 8'b00000000
+        WDTCTL_RD_MASK = 8'b00100000
+WARNING:Xst:647 - Input <aclk> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <scan_enable> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <scan_mode> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <smclk> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+    Found 16-bit register for signal <wdtcnt>.
+    Found 8-bit register for signal <wdtctl>.
+    Found 1-bit register for signal <wdtifg>.
+    Found 1-bit register for signal <wdt_reset>.
+    Found 16-bit adder for signal <wdtcnt_nxt> created at line 493.
+    Found 1-bit 4-to-1 multiplexer for signal <wdtqn> created at line 506.
+    Summary:
+	inferred   1 Adder/Subtractor(s).
+	inferred  26 D-type flip-flop(s).
+	inferred   3 Multiplexer(s).
+Unit <omsp_watchdog> synthesized.
+
+Synthesizing Unit <omsp_multiplier>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_multiplier.v".
+        BASE_ADDR = 15'b000000100110000
+        DEC_WD = 4
+        OP1_MPY = 4'b0000
+        OP1_MPYS = 4'b0010
+        OP1_MAC = 4'b0100
+        OP1_MACS = 4'b0110
+        OP2 = 4'b1000
+        RESLO = 4'b1010
+        RESHI = 4'b1100
+        SUMEXT = 4'b1110
+        DEC_SZ = 16
+        BASE_REG = 16'b0000000000000001
+        OP1_MPY_D = 16'b0000000000000001
+        OP1_MPYS_D = 16'b0000000000000100
+        OP1_MAC_D = 16'b0000000000010000
+        OP1_MACS_D = 16'b0000000001000000
+        OP2_D = 16'b0000000100000000
+        RESLO_D = 16'b0000010000000000
+        RESHI_D = 16'b0001000000000000
+        SUMEXT_D = 16'b0100000000000000
+WARNING:Xst:647 - Input <scan_enable> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+    Found 16-bit register for signal <op2>.
+    Found 16-bit register for signal <reslo>.
+    Found 16-bit register for signal <reshi>.
+    Found 16-bit register for signal <op1>.
+    Found 2-bit register for signal <sumext_s>.
+    Found 2-bit register for signal <cycle>.
+    Found 1-bit register for signal <sign_sel>.
+    Found 1-bit register for signal <acc_sel>.
+    Found 33-bit adder for signal <n0220> created at line 399.
+    Found 17x9-bit multiplier for signal <product> created at line 393.
+    Summary:
+	inferred   1 Multiplier(s).
+	inferred   1 Adder/Subtractor(s).
+	inferred  70 D-type flip-flop(s).
+	inferred  11 Multiplexer(s).
+Unit <omsp_multiplier> synthesized.
+
+Synthesizing Unit <omsp_dbg>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_dbg.v".
+        NR_REG = 24
+        CPU_ID_LO = 6'b000000
+        CPU_ID_HI = 6'b000001
+        CPU_CTL = 6'b000010
+        CPU_STAT = 6'b000011
+        MEM_CTL = 6'b000100
+        MEM_ADDR = 6'b000101
+        MEM_DATA = 6'b000110
+        MEM_CNT = 6'b000111
+        BASE_D = 24'b000000000000000000000001
+        CPU_ID_LO_D = 24'b000000000000000000000001
+        CPU_ID_HI_D = 24'b000000000000000000000010
+        CPU_CTL_D = 24'b000000000000000000000100
+        CPU_STAT_D = 24'b000000000000000000001000
+        MEM_CTL_D = 24'b000000000000000000010000
+        MEM_ADDR_D = 24'b000000000000000000100000
+        MEM_DATA_D = 24'b000000000000000001000000
+        MEM_CNT_D = 24'b000000000000000010000000
+        M_IDLE = 2'b00
+        M_SET_BRK = 2'b01
+        M_ACCESS_BRK = 2'b10
+        M_ACCESS = 2'b11
+WARNING:Xst:647 - Input <eu_mab> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <eu_mb_wr> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <eu_mdb_in> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <eu_mdb_out> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <pc> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <eu_mb_en> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <exec_done> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <fe_mb_en> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+    Found 1-bit register for signal <mem_start>.
+    Found 1-bit register for signal <dbg_rd_rdy>.
+    Found 1-bit register for signal <halt_flag>.
+    Found 1-bit register for signal <mem_burst>.
+    Found 1-bit register for signal <mem_startb>.
+    Found 1-bit register for signal <dbg_mem_rd_dly>.
+    Found 2-bit register for signal <cpu_stat>.
+    Found 2-bit register for signal <inc_step>.
+    Found 2-bit register for signal <mem_state>.
+    Found 3-bit register for signal <mem_ctl>.
+    Found 16-bit register for signal <mem_data>.
+    Found 16-bit register for signal <mem_addr>.
+    Found 16-bit register for signal <mem_cnt>.
+    Found 4-bit register for signal <cpu_ctl>.
+    Found finite state machine <FSM_5> for signal <inc_step>.
+    -----------------------------------------------------------------------
+    | States             | 3                                              |
+    | Transitions        | 12                                             |
+    | Inputs             | 3                                              |
+    | Outputs            | 1                                              |
+    | Clock              | dbg_clk (rising_edge)                          |
+    | Reset              | dbg_rst (positive)                             |
+    | Reset type         | asynchronous                                   |
+    | Reset State        | 00                                             |
+    | Encoding           | auto                                           |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found finite state machine <FSM_6> for signal <mem_state>.
+    -----------------------------------------------------------------------
+    | States             | 4                                              |
+    | Transitions        | 7                                              |
+    | Inputs             | 2                                              |
+    | Outputs            | 5                                              |
+    | Clock              | dbg_clk (rising_edge)                          |
+    | Reset              | dbg_rst (positive)                             |
+    | Reset type         | asynchronous                                   |
+    | Reset State        | 00                                             |
+    | Encoding           | auto                                           |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found 16-bit adder for signal <mem_addr[15]_mem_addr_inc[15]_add_38_OUT> created at line 416.
+    Found 16-bit adder for signal <mem_cnt[15]_mem_cnt_dec[15]_add_44_OUT> created at line 429.
+    Summary:
+	inferred   2 Adder/Subtractor(s).
+	inferred  63 D-type flip-flop(s).
+	inferred  16 Multiplexer(s).
+	inferred   2 Finite State Machine(s).
+Unit <omsp_dbg> synthesized.
+
+Synthesizing Unit <omsp_dbg_uart>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_dbg_uart.v".
+        RX_SYNC = 3'b000
+        RX_CMD = 3'b001
+        RX_DATA1 = 3'b010
+        RX_DATA2 = 3'b011
+        TX_DATA1 = 3'b100
+        TX_DATA2 = 3'b101
+    Found 1-bit register for signal <rxd_maj>.
+    Found 1-bit register for signal <dbg_uart_txd>.
+    Found 2-bit register for signal <rxd_buf>.
+    Found 1-bit register for signal <sync_busy>.
+    Found 1-bit register for signal <dbg_bw>.
+    Found 3-bit register for signal <uart_state>.
+    Found 19-bit register for signal <sync_cnt>.
+    Found 4-bit register for signal <xfer_bit>.
+    Found 16-bit register for signal <xfer_cnt>.
+    Found 20-bit register for signal <xfer_buf>.
+    Found 6-bit register for signal <dbg_addr>.
+    Found finite state machine <FSM_7> for signal <uart_state>.
+    -----------------------------------------------------------------------
+    | States             | 6                                              |
+    | Transitions        | 25                                             |
+    | Inputs             | 8                                              |
+    | Outputs            | 6                                              |
+    | Clock              | dbg_clk (rising_edge)                          |
+    | Reset              | dbg_rst (positive)                             |
+    | Reset type         | asynchronous                                   |
+    | Reset State        | 000                                            |
+    | Encoding           | auto                                           |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found 19-bit adder for signal <sync_cnt[18]_GND_34_o_add_24_OUT> created at line 215.
+    Found 4-bit adder for signal <xfer_bit[3]_GND_34_o_add_35_OUT> created at line 241.
+    Found 16-bit adder for signal <xfer_cnt[15]_PWR_33_o_add_41_OUT> created at line 247.
+    Summary:
+	inferred   3 Adder/Subtractor(s).
+	inferred  71 D-type flip-flop(s).
+	inferred   9 Multiplexer(s).
+	inferred   1 Finite State Machine(s).
+Unit <omsp_dbg_uart> synthesized.
+
+Synthesizing Unit <omsp_gpio>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_gpio.v".
+        P1_EN = 1
+        P2_EN = 1
+        P3_EN = 1
+        P4_EN = 1
+        P5_EN = 0
+        P6_EN = 0
+        P1_EN_MSK = 8'b11111111
+        P2_EN_MSK = 8'b11111111
+        P3_EN_MSK = 8'b11111111
+        P4_EN_MSK = 8'b11111111
+        P5_EN_MSK = 8'b00000000
+        P6_EN_MSK = 8'b00000000
+        BASE_ADDR = 15'b000000000000000
+        DEC_WD = 6
+        P1IN = 6'b100000
+        P1OUT = 6'b100001
+        P1DIR = 6'b100010
+        P1IFG = 6'b100011
+        P1IES = 6'b100100
+        P1IE = 6'b100101
+        P1SEL = 6'b100110
+        P2IN = 6'b101000
+        P2OUT = 6'b101001
+        P2DIR = 6'b101010
+        P2IFG = 6'b101011
+        P2IES = 6'b101100
+        P2IE = 6'b101101
+        P2SEL = 6'b101110
+        P3IN = 6'b011000
+        P3OUT = 6'b011001
+        P3DIR = 6'b011010
+        P3SEL = 6'b011011
+        P4IN = 6'b011100
+        P4OUT = 6'b011101
+        P4DIR = 6'b011110
+        P4SEL = 6'b011111
+        P5IN = 6'b110000
+        P5OUT = 6'b110001
+        P5DIR = 6'b110010
+        P5SEL = 6'b110011
+        P6IN = 6'b110100
+        P6OUT = 6'b110101
+        P6DIR = 6'b110110
+        P6SEL = 6'b110111
+        DEC_SZ = 64
+        BASE_REG = 64'b0000000000000000000000000000000000000000000000000000000000000001
+        P1IN_D = 64'b0000000000000000000000000000000100000000000000000000000000000000
+        P1OUT_D = 64'b0000000000000000000000000000001000000000000000000000000000000000
+        P1DIR_D = 64'b0000000000000000000000000000010000000000000000000000000000000000
+        P1IFG_D = 64'b0000000000000000000000000000100000000000000000000000000000000000
+        P1IES_D = 64'b0000000000000000000000000001000000000000000000000000000000000000
+        P1IE_D = 64'b0000000000000000000000000010000000000000000000000000000000000000
+        P1SEL_D = 64'b0000000000000000000000000100000000000000000000000000000000000000
+        P2IN_D = 64'b0000000000000000000000010000000000000000000000000000000000000000
+        P2OUT_D = 64'b0000000000000000000000100000000000000000000000000000000000000000
+        P2DIR_D = 64'b0000000000000000000001000000000000000000000000000000000000000000
+        P2IFG_D = 64'b0000000000000000000010000000000000000000000000000000000000000000
+        P2IES_D = 64'b0000000000000000000100000000000000000000000000000000000000000000
+        P2IE_D = 64'b0000000000000000001000000000000000000000000000000000000000000000
+        P2SEL_D = 64'b0000000000000000010000000000000000000000000000000000000000000000
+        P3IN_D = 64'b0000000000000000000000000000000000000001000000000000000000000000
+        P3OUT_D = 64'b0000000000000000000000000000000000000010000000000000000000000000
+        P3DIR_D = 64'b0000000000000000000000000000000000000100000000000000000000000000
+        P3SEL_D = 64'b0000000000000000000000000000000000001000000000000000000000000000
+        P4IN_D = 64'b0000000000000000000000000000000000010000000000000000000000000000
+        P4OUT_D = 64'b0000000000000000000000000000000000100000000000000000000000000000
+        P4DIR_D = 64'b0000000000000000000000000000000001000000000000000000000000000000
+        P4SEL_D = 64'b0000000000000000000000000000000010000000000000000000000000000000
+        P5IN_D = 64'b0000000000000001000000000000000000000000000000000000000000000000
+        P5OUT_D = 64'b0000000000000010000000000000000000000000000000000000000000000000
+        P5DIR_D = 64'b0000000000000100000000000000000000000000000000000000000000000000
+        P5SEL_D = 64'b0000000000001000000000000000000000000000000000000000000000000000
+        P6IN_D = 64'b0000000000010000000000000000000000000000000000000000000000000000
+        P6OUT_D = 64'b0000000000100000000000000000000000000000000000000000000000000000
+        P6DIR_D = 64'b0000000001000000000000000000000000000000000000000000000000000000
+        P6SEL_D = 64'b0000000010000000000000000000000000000000000000000000000000000000
+WARNING:Xst:647 - Input <p5_din> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <p6_din> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+    Found 8-bit register for signal <p1dir>.
+    Found 8-bit register for signal <p1ifg>.
+    Found 8-bit register for signal <p1ies>.
+    Found 8-bit register for signal <p1ie>.
+    Found 8-bit register for signal <p1sel>.
+    Found 8-bit register for signal <p2out>.
+    Found 8-bit register for signal <p2dir>.
+    Found 8-bit register for signal <p2ifg>.
+    Found 8-bit register for signal <p2ies>.
+    Found 8-bit register for signal <p2ie>.
+    Found 8-bit register for signal <p2sel>.
+    Found 8-bit register for signal <p3out>.
+    Found 8-bit register for signal <p3dir>.
+    Found 8-bit register for signal <p3sel>.
+    Found 8-bit register for signal <p4out>.
+    Found 8-bit register for signal <p4dir>.
+    Found 8-bit register for signal <p4sel>.
+    Found 8-bit register for signal <p5out>.
+    Found 8-bit register for signal <p5dir>.
+    Found 8-bit register for signal <p5sel>.
+    Found 8-bit register for signal <p6out>.
+    Found 8-bit register for signal <p6dir>.
+    Found 8-bit register for signal <p6sel>.
+    Found 8-bit register for signal <p1in_dly>.
+    Found 8-bit register for signal <p2in_dly>.
+    Found 8-bit register for signal <p1out>.
+    Summary:
+	inferred 160 D-type flip-flop(s).
+	inferred  18 Multiplexer(s).
+Unit <omsp_gpio> synthesized.
+
+Synthesizing Unit <omsp_timerA>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_timerA.v".
+        BASE_ADDR = 15'b000000100000000
+        DEC_WD = 7
+        TACTL = 7'b1100000
+        TAR = 7'b1110000
+        TACCTL0 = 7'b1100010
+        TACCR0 = 7'b1110010
+        TACCTL1 = 7'b1100100
+        TACCR1 = 7'b1110100
+        TACCTL2 = 7'b1100110
+        TACCR2 = 7'b1110110
+        TAIV = 7'b0101110
+        DEC_SZ = 128
+        BASE_REG = 128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+        TACTL_D = 128'b00000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        TAR_D = 128'b00000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        TACCTL0_D = 128'b00000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        TACCR0_D = 128'b00000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        TACCTL1_D = 128'b00000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        TACCR1_D = 128'b00000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        TACCTL2_D = 128'b00000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        TACCR2_D = 128'b00000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        TAIV_D = 128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000
+    Found 16-bit register for signal <tar>.
+    Found 16-bit register for signal <tacctl0>.
+    Found 16-bit register for signal <taccr0>.
+    Found 16-bit register for signal <tacctl1>.
+    Found 16-bit register for signal <taccr1>.
+    Found 16-bit register for signal <tacctl2>.
+    Found 16-bit register for signal <taccr2>.
+    Found 3-bit register for signal <clk_div>.
+    Found 10-bit register for signal <tactl>.
+    Found 1-bit register for signal <taclk_dly>.
+    Found 1-bit register for signal <inclk_dly>.
+    Found 1-bit register for signal <tar_dir>.
+    Found 1-bit register for signal <cci0_dly>.
+    Found 1-bit register for signal <cci1_dly>.
+    Found 1-bit register for signal <cci2_dly>.
+    Found 1-bit register for signal <scci0>.
+    Found 1-bit register for signal <scci1>.
+    Found 1-bit register for signal <scci2>.
+    Found 1-bit register for signal <cci0_evt_s>.
+    Found 1-bit register for signal <cci1_evt_s>.
+    Found 1-bit register for signal <cci2_evt_s>.
+    Found 1-bit register for signal <cci0_sync>.
+    Found 1-bit register for signal <cci1_sync>.
+    Found 1-bit register for signal <cci2_sync>.
+    Found 1-bit register for signal <cap0_taken>.
+    Found 1-bit register for signal <cap1_taken>.
+    Found 1-bit register for signal <cap2_taken>.
+    Found 1-bit register for signal <ta_out0>.
+    Found 1-bit register for signal <ta_out1>.
+    Found 1-bit register for signal <ta_out2>.
+    Found 16-bit adder for signal <tar[15]_tar_add[15]_add_41_OUT> created at line 214.
+    Found 3-bit adder for signal <clk_div[2]_GND_38_o_add_112_OUT> created at line 422.
+    Found 1-bit 4-to-1 multiplexer for signal <sel_clk> created at line 405.
+    Found 1-bit 4-to-1 multiplexer for signal <clk_div[2]_PWR_35_o_MUX_1863_o> created at line 414.
+    Found 1-bit 4-to-1 multiplexer for signal <cci0_evt> created at line 537.
+    Found 1-bit 4-to-1 multiplexer for signal <cci1_evt> created at line 542.
+    Found 1-bit 4-to-1 multiplexer for signal <cci2_evt> created at line 547.
+    Found 1-bit 8-to-1 multiplexer for signal <ta_out0_nxt> created at line 648.
+    Found 1-bit 8-to-1 multiplexer for signal <ta_out1_nxt> created at line 682.
+    Found 1-bit 8-to-1 multiplexer for signal <ta_out2_nxt> created at line 716.
+    Found 16-bit comparator greater for signal <n0169> created at line 445
+    Found 16-bit comparator equal for signal <tar_nxt[15]_taccr0[15]_equal_129_o> created at line 452
+    Found 16-bit comparator equal for signal <n0174> created at line 452
+    Found 16-bit comparator equal for signal <tar_nxt[15]_taccr1[15]_equal_131_o> created at line 453
+    Found 16-bit comparator not equal for signal <n0178> created at line 453
+    Found 16-bit comparator equal for signal <tar_nxt[15]_taccr2[15]_equal_133_o> created at line 454
+    Found 16-bit comparator not equal for signal <n0182> created at line 454
+    Summary:
+	inferred   2 Adder/Subtractor(s).
+	inferred 146 D-type flip-flop(s).
+	inferred   7 Comparator(s).
+	inferred  61 Multiplexer(s).
+Unit <omsp_timerA> synthesized.
+
+Synthesizing Unit <omsp_uart_1>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/omsp_uart.v".
+        BASE_ADDR = 15'b000000010000000
+        DEC_WD = 3
+        CTRL = 3'b000
+        STATUS = 3'b001
+        BAUD_LO = 3'b010
+        BAUD_HI = 3'b011
+        DATA_TX = 3'b100
+        DATA_RX = 3'b101
+        DEC_SZ = 8
+        BASE_REG = 8'b00000001
+        CTRL_D = 8'b00000001
+        STATUS_D = 8'b00000010
+        BAUD_LO_D = 8'b00000100
+        BAUD_HI_D = 8'b00001000
+        DATA_TX_D = 8'b00010000
+        DATA_RX_D = 8'b00100000
+    Found 1-bit register for signal <rxd_maj>.
+    Found 2-bit register for signal <rxd_buf>.
+    Found 9-bit register for signal <txfer_buf>.
+    Found 8-bit register for signal <baud_lo>.
+    Found 8-bit register for signal <baud_hi>.
+    Found 8-bit register for signal <data_tx>.
+    Found 8-bit register for signal <data_rx>.
+    Found 8-bit register for signal <rxfer_buf>.
+    Found 8-bit register for signal <ctrl>.
+    Found 4-bit register for signal <rxfer_bit>.
+    Found 4-bit register for signal <txfer_bit>.
+    Found 16-bit register for signal <rxfer_cnt>.
+    Found 16-bit register for signal <txfer_cnt>.
+    Found 1-bit register for signal <status_tx_empty_pnd>.
+    Found 1-bit register for signal <status_tx_pnd>.
+    Found 1-bit register for signal <status_rx_ovflw_pnd>.
+    Found 1-bit register for signal <status_rx_pnd>.
+    Found 1-bit register for signal <rxfer_done_dly>.
+    Found 1-bit register for signal <txfer_triggered>.
+    Found 1-bit register for signal <txfer_done_dly>.
+    Found 2-bit adder for signal <n0299> created at line 317.
+    Found 2-bit adder for signal <rxd_maj_cnt> created at line 317.
+    Found 4-bit adder for signal <rxfer_bit[3]_GND_39_o_add_60_OUT> created at line 350.
+    Found 16-bit adder for signal <rxfer_cnt[15]_PWR_36_o_add_68_OUT> created at line 360.
+    Found 4-bit adder for signal <txfer_bit[3]_GND_39_o_add_85_OUT> created at line 424.
+    Found 16-bit adder for signal <txfer_cnt[15]_PWR_36_o_add_93_OUT> created at line 434.
+    Found 2-bit comparator greater for signal <rxd_maj_nxt_INV_303_o> created at line 320
+    Summary:
+	inferred   6 Adder/Subtractor(s).
+	inferred 107 D-type flip-flop(s).
+	inferred   1 Comparator(s).
+	inferred  16 Multiplexer(s).
+Unit <omsp_uart_1> synthesized.
+
+Synthesizing Unit <omsp_uart_2>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/omsp_uart.v".
+        BASE_ADDR = 15'b000000010001000
+        DEC_WD = 3
+        CTRL = 3'b000
+        STATUS = 3'b001
+        BAUD_LO = 3'b010
+        BAUD_HI = 3'b011
+        DATA_TX = 3'b100
+        DATA_RX = 3'b101
+        DEC_SZ = 8
+        BASE_REG = 8'b00000001
+        CTRL_D = 8'b00000001
+        STATUS_D = 8'b00000010
+        BAUD_LO_D = 8'b00000100
+        BAUD_HI_D = 8'b00001000
+        DATA_TX_D = 8'b00010000
+        DATA_RX_D = 8'b00100000
+    Found 2-bit register for signal <rxd_buf>.
+    Found 9-bit register for signal <txfer_buf>.
+    Found 8-bit register for signal <baud_lo>.
+    Found 8-bit register for signal <baud_hi>.
+    Found 8-bit register for signal <data_tx>.
+    Found 8-bit register for signal <data_rx>.
+    Found 8-bit register for signal <rxfer_buf>.
+    Found 8-bit register for signal <ctrl>.
+    Found 4-bit register for signal <rxfer_bit>.
+    Found 4-bit register for signal <txfer_bit>.
+    Found 16-bit register for signal <rxfer_cnt>.
+    Found 16-bit register for signal <txfer_cnt>.
+    Found 1-bit register for signal <status_tx_empty_pnd>.
+    Found 1-bit register for signal <status_tx_pnd>.
+    Found 1-bit register for signal <status_rx_ovflw_pnd>.
+    Found 1-bit register for signal <status_rx_pnd>.
+    Found 1-bit register for signal <rxfer_done_dly>.
+    Found 1-bit register for signal <txfer_triggered>.
+    Found 1-bit register for signal <txfer_done_dly>.
+    Found 1-bit register for signal <rxd_maj>.
+    Found 2-bit adder for signal <n0299> created at line 317.
+    Found 2-bit adder for signal <rxd_maj_cnt> created at line 317.
+    Found 4-bit adder for signal <rxfer_bit[3]_GND_41_o_add_60_OUT> created at line 350.
+    Found 16-bit adder for signal <rxfer_cnt[15]_PWR_37_o_add_68_OUT> created at line 360.
+    Found 4-bit adder for signal <txfer_bit[3]_GND_41_o_add_85_OUT> created at line 424.
+    Found 16-bit adder for signal <txfer_cnt[15]_PWR_37_o_add_93_OUT> created at line 434.
+    Found 2-bit comparator greater for signal <rxd_maj_nxt_INV_315_o> created at line 320
+    Summary:
+	inferred   6 Adder/Subtractor(s).
+	inferred 107 D-type flip-flop(s).
+	inferred   1 Comparator(s).
+	inferred  16 Multiplexer(s).
+Unit <omsp_uart_2> synthesized.
+
+Synthesizing Unit <omsp_tsc>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_tsc.v".
+        BASE_ADDR = 15'b000000110010000
+        DEC_WD = 3
+        TSC1 = 3'b000
+        TSC2 = 3'b010
+        TSC3 = 3'b100
+        TSC4 = 3'b110
+        DEC_SZ = 8
+        BASE_REG = 8'b00000001
+        TSC1_D = 8'b00000001
+        TSC2_D = 8'b00000100
+        TSC3_D = 8'b00010000
+        TSC4_D = 8'b01000000
+WARNING:Xst:647 - Input <per_din> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+    Found 64-bit register for signal <tsc_snapshot>.
+    Found 64-bit register for signal <tsc>.
+    Found 64-bit adder for signal <tsc[63]_GND_43_o_add_16_OUT> created at line 92.
+    Summary:
+	inferred   1 Adder/Subtractor(s).
+	inferred 128 D-type flip-flop(s).
+Unit <omsp_tsc> synthesized.
+
+Synthesizing Unit <omsp_spi_master>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_spi_master.v".
+        BASE_ADDR = 15'b000000101010000
+        DEC_WD = 2
+        DATA = 2'b00
+        CNTRL = 2'b01
+        STATUS = 2'b10
+        DEC_SZ = 4
+        BASE_REG = 4'b0001
+        DATA_D = 4'b0001
+        CNTRL_D = 4'b0010
+        STATUS_D = 4'b0100
+    Found 8-bit register for signal <cntrl>.
+    Found 1-bit register for signal <spi_start>.
+    Summary:
+	inferred   9 D-type flip-flop(s).
+Unit <omsp_spi_master> synthesized.
+
+Synthesizing Unit <spi_master>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/spi_master.v".
+        CTR_WIDTH = 4
+    Found 8-bit register for signal <clk_ctr>.
+    Found 1-bit register for signal <sck>.
+    Found 1-bit register for signal <capture>.
+    Found 8-bit register for signal <buffer>.
+    Found 4-bit register for signal <buffer_ctr>.
+    Found 2-bit register for signal <state>.
+    Found finite state machine <FSM_8> for signal <state>.
+    -----------------------------------------------------------------------
+    | States             | 4                                              |
+    | Transitions        | 7                                              |
+    | Inputs             | 3                                              |
+    | Outputs            | 5                                              |
+    | Clock              | clk (rising_edge)                              |
+    | Reset              | rst (positive)                                 |
+    | Reset type         | synchronous                                    |
+    | Reset State        | 00                                             |
+    | Encoding           | auto                                           |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found 8-bit adder for signal <clk_ctr[7]_GND_45_o_add_16_OUT> created at line 99.
+    Found 4-bit adder for signal <buffer_ctr[3]_GND_45_o_add_28_OUT> created at line 146.
+    Found 1-bit comparator equal for signal <rx_on_rising> created at line 43
+    Found 8-bit comparator equal for signal <clk_ctr_wrap> created at line 93
+    Summary:
+	inferred   2 Adder/Subtractor(s).
+	inferred  22 D-type flip-flop(s).
+	inferred   2 Comparator(s).
+	inferred   7 Multiplexer(s).
+	inferred   1 Finite State Machine(s).
+Unit <spi_master> synthesized.
+
+Synthesizing Unit <omsp_led_digits>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_led_digits.v".
+        BASE_ADDR = 15'b000000010010000
+        DEC_WD = 3
+        LED1 = 3'b000
+        LED2 = 3'b001
+        LED3 = 3'b010
+        LED4 = 3'b011
+        LED5 = 3'b100
+        LED6 = 3'b101
+        LED7 = 3'b110
+        LED8 = 3'b111
+        DEC_SZ = 8
+        BASE_REG = 8'b00000001
+        LED1_D = 8'b00000001
+        LED2_D = 8'b00000010
+        LED3_D = 8'b00000100
+        LED4_D = 8'b00001000
+        LED5_D = 8'b00010000
+        LED6_D = 8'b00100000
+        LED7_D = 8'b01000000
+        LED8_D = 8'b10000000
+    Found 8-bit register for signal <led2>.
+    Found 8-bit register for signal <led3>.
+    Found 8-bit register for signal <led4>.
+    Found 8-bit register for signal <led5>.
+    Found 8-bit register for signal <led6>.
+    Found 8-bit register for signal <led7>.
+    Found 8-bit register for signal <led8>.
+    Found 8-bit register for signal <led1>.
+    Found 4-bit register for signal <div>.
+    Found 32-bit register for signal <cur_led>.
+    Found 32-bit subtractor for signal <cur_led[31]_unary_minus_81_OUT> created at line 238.
+    Found 32-bit subtractor for signal <GND_46_o_unary_minus_83_OUT> created at line 238.
+    Found 4-bit adder for signal <div[3]_GND_46_o_add_76_OUT> created at line 232.
+    Found 32-bit adder for signal <cur_led[31]_GND_46_o_add_79_OUT> created at line 238.
+    Found 32-bit adder for signal <n0665> created at line 252.
+    Found 32-bit adder for signal <GND_46_o_GND_46_o_add_95_OUT> created at line 249.
+    Found 32-bit adder for signal <n0669> created at line 252.
+    Found 32-bit adder for signal <GND_46_o_GND_46_o_add_104_OUT> created at line 249.
+    Found 32-bit adder for signal <n0673> created at line 252.
+    Found 32-bit adder for signal <GND_46_o_GND_46_o_add_113_OUT> created at line 249.
+    Found 32-bit adder for signal <n0677> created at line 252.
+    Found 32-bit adder for signal <GND_46_o_GND_46_o_add_122_OUT> created at line 249.
+    Found 32-bit adder for signal <n0681> created at line 252.
+    Found 32-bit adder for signal <GND_46_o_GND_46_o_add_131_OUT> created at line 249.
+    Found 32-bit adder for signal <n0685> created at line 252.
+    Found 32-bit adder for signal <GND_46_o_GND_46_o_add_140_OUT> created at line 249.
+    Found 1-bit 8-to-1 multiplexer for signal <cur_led[2]_leds[7][0]_Mux_88_o> created at line 250.
+    Found 1-bit 8-to-1 multiplexer for signal <cur_led[2]_leds[7][1]_Mux_97_o> created at line 250.
+    Found 1-bit 8-to-1 multiplexer for signal <cur_led[2]_leds[7][2]_Mux_106_o> created at line 250.
+    Found 1-bit 8-to-1 multiplexer for signal <cur_led[2]_leds[7][3]_Mux_115_o> created at line 250.
+    Found 1-bit 8-to-1 multiplexer for signal <cur_led[2]_leds[7][4]_Mux_124_o> created at line 250.
+    Found 1-bit 8-to-1 multiplexer for signal <cur_led[2]_leds[7][5]_Mux_133_o> created at line 250.
+    Found 1-bit 8-to-1 multiplexer for signal <cur_led[2]_leds[7][6]_Mux_142_o> created at line 250.
+    Found 1-bit tristate buffer for signal <so<7>> created at line 244
+    Found 1-bit tristate buffer for signal <so<6>> created at line 244
+    Found 1-bit tristate buffer for signal <so<5>> created at line 244
+    Found 1-bit tristate buffer for signal <so<4>> created at line 244
+    Found 1-bit tristate buffer for signal <so<3>> created at line 244
+    Found 1-bit tristate buffer for signal <so<2>> created at line 244
+    Found 1-bit tristate buffer for signal <so<1>> created at line 244
+    Found 1-bit tristate buffer for signal <so<0>> created at line 244
+    Found 32-bit comparator lessequal for signal <n0093> created at line 251
+    Found 32-bit comparator lessequal for signal <n0095> created at line 251
+    Found 32-bit comparator lessequal for signal <n0121> created at line 251
+    Found 32-bit comparator lessequal for signal <n0123> created at line 251
+    Found 32-bit comparator lessequal for signal <n0149> created at line 251
+    Found 32-bit comparator lessequal for signal <n0151> created at line 251
+    Found 32-bit comparator lessequal for signal <n0177> created at line 251
+    Found 32-bit comparator lessequal for signal <n0179> created at line 251
+    Found 32-bit comparator lessequal for signal <n0205> created at line 251
+    Found 32-bit comparator lessequal for signal <n0207> created at line 251
+    Found 32-bit comparator lessequal for signal <n0233> created at line 251
+    Found 32-bit comparator lessequal for signal <n0235> created at line 251
+    Found 32-bit comparator lessequal for signal <n0261> created at line 251
+    Found 32-bit comparator lessequal for signal <n0263> created at line 251
+    Found 32-bit comparator lessequal for signal <n0283> created at line 254
+    Found 32-bit comparator lessequal for signal <n0285> created at line 254
+    Summary:
+	inferred  16 Adder/Subtractor(s).
+	inferred 100 D-type flip-flop(s).
+	inferred  16 Comparator(s).
+	inferred 215 Multiplexer(s).
+	inferred   8 Tristate(s).
+Unit <omsp_led_digits> synthesized.
+
+Synthesizing Unit <io_mux>.
+    Related source file is "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/io_mux.v".
+        WIDTH = 8
+    Summary:
+	inferred  32 Multiplexer(s).
+Unit <io_mux> synthesized.
+
+=========================================================================
+HDL Synthesis Report
+
+Macro Statistics
+# RAMs                                                 : 84
+ 16x4-bit single-port Read Only RAM                    : 84
+# Multipliers                                          : 1
+ 17x9-bit multiplier                                   : 1
+# Adders/Subtractors                                   : 69
+ 13-bit subtractor                                     : 1
+ 15-bit subtractor                                     : 1
+ 16-bit adder                                          : 17
+ 17-bit adder                                          : 2
+ 19-bit adder                                          : 1
+ 2-bit adder                                           : 5
+ 3-bit adder                                           : 3
+ 32-bit adder                                          : 13
+ 32-bit subtractor                                     : 2
+ 33-bit adder                                          : 1
+ 4-bit adder                                           : 9
+ 5-bit adder                                           : 12
+ 64-bit adder                                          : 1
+ 8-bit adder                                           : 1
+# Registers                                            : 317
+ 1-bit register                                        : 88
+ 10-bit register                                       : 1
+ 12-bit register                                       : 1
+ 128-bit register                                      : 5
+ 16-bit register                                       : 73
+ 19-bit register                                       : 1
+ 2-bit register                                        : 69
+ 20-bit register                                       : 1
+ 3-bit register                                        : 7
+ 32-bit register                                       : 1
+ 336-bit register                                      : 1
+ 4-bit register                                        : 13
+ 6-bit register                                        : 1
+ 64-bit register                                       : 2
+ 8-bit register                                        : 50
+ 9-bit register                                        : 3
+# Comparators                                          : 114
+ 1-bit comparator equal                                : 1
+ 15-bit comparator greater                             : 4
+ 15-bit comparator lessequal                           : 3
+ 16-bit comparator equal                               : 11
+ 16-bit comparator greater                             : 38
+ 16-bit comparator lessequal                           : 28
+ 16-bit comparator not equal                           : 6
+ 2-bit comparator greater                              : 2
+ 32-bit comparator lessequal                           : 16
+ 5-bit comparator greater                              : 4
+ 8-bit comparator equal                                : 1
+# Multiplexers                                         : 1195
+ 1-bit 2-to-1 multiplexer                              : 408
+ 1-bit 4-to-1 multiplexer                              : 8
+ 1-bit 8-to-1 multiplexer                              : 10
+ 10-bit 2-to-1 multiplexer                             : 5
+ 11-bit 2-to-1 multiplexer                             : 4
+ 12-bit 2-to-1 multiplexer                             : 4
+ 128-bit 2-to-1 multiplexer                            : 3
+ 13-bit 2-to-1 multiplexer                             : 6
+ 13-bit 4-to-1 multiplexer                             : 1
+ 14-bit 2-to-1 multiplexer                             : 4
+ 15-bit 2-to-1 multiplexer                             : 6
+ 16-bit 2-to-1 multiplexer                             : 615
+ 16-bit 5-to-1 multiplexer                             : 4
+ 17-bit 2-to-1 multiplexer                             : 2
+ 18-bit 2-to-1 multiplexer                             : 1
+ 2-bit 2-to-1 multiplexer                              : 16
+ 20-bit 2-to-1 multiplexer                             : 1
+ 24-bit 2-to-1 multiplexer                             : 1
+ 3-bit 2-to-1 multiplexer                              : 9
+ 32-bit 2-to-1 multiplexer                             : 11
+ 4-bit 2-to-1 multiplexer                              : 36
+ 5-bit 2-to-1 multiplexer                              : 9
+ 6-bit 2-to-1 multiplexer                              : 5
+ 7-bit 2-to-1 multiplexer                              : 4
+ 8-bit 2-to-1 multiplexer                              : 11
+ 8-bit 4-to-1 multiplexer                              : 1
+ 9-bit 2-to-1 multiplexer                              : 10
+# Logic shifters                                       : 1
+ 128-bit shifter logical left                          : 1
+# Tristates                                            : 16
+ 1-bit tristate buffer                                 : 16
+# FSMs                                                 : 9
+# Xors                                                 : 13
+ 1-bit xor2                                            : 6
+ 1-bit xor8                                            : 1
+ 16-bit xor2                                           : 2
+ 17-bit xor2                                           : 1
+ 18-bit xor2                                           : 2
+ 8-bit xor2                                            : 1
+
+=========================================================================
+INFO:Xst:1767 - HDL ADVISOR - Resource sharing has identified that some arithmetic operations in this design can share the same physical resources for reduced device utilization. For improved clock frequency you may try to disable resource sharing.
+
+=========================================================================
+*                       Advanced HDL Synthesis                          *
+=========================================================================
+
+Reading core <rtl/verilog/coregen/ram_8x8k.ngc>.
+Reading core <rtl/verilog/coregen/rom_8x20_5k.ngc>.
+Loading core <ram_8x8k> for timing and area information for instance <ram_hi>.
+Loading core <ram_8x8k> for timing and area information for instance <ram_lo>.
+Loading core <rom_8x20_5k> for timing and area information for instance <rom_hi>.
+Loading core <rom_8x20_5k> for timing and area information for instance <rom_lo>.
+INFO:Xst:2261 - The FF/Latch <inst_src_bin_2> in Unit <frontend_0> is equivalent to the following FF/Latch, which will be removed : <inst_jmp_bin_0> 
+INFO:Xst:2261 - The FF/Latch <inst_src_bin_3> in Unit <frontend_0> is equivalent to the following FF/Latch, which will be removed : <inst_jmp_bin_1> 
+INFO:Xst:2261 - The FF/Latch <bcsctl1_0> in Unit <clock_module_0> is equivalent to the following 5 FFs/Latches, which will be removed : <bcsctl1_1> <bcsctl1_2> <bcsctl1_3> <bcsctl1_6> <bcsctl1_7> 
+INFO:Xst:2261 - The FF/Latch <bcsctl2_0> in Unit <clock_module_0> is equivalent to the following 4 FFs/Latches, which will be removed : <bcsctl2_4> <bcsctl2_5> <bcsctl2_6> <bcsctl2_7> 
+INFO:Xst:2261 - The FF/Latch <ctrl_2> in Unit <hw_uart> is equivalent to the following 2 FFs/Latches, which will be removed : <ctrl_3> <ctrl_7> 
+INFO:Xst:2261 - The FF/Latch <ctrl_2> in Unit <hw_uart2> is equivalent to the following 2 FFs/Latches, which will be removed : <ctrl_3> <ctrl_7> 
+WARNING:Xst:1710 - FF/Latch <ctrl_2> (without init value) has a constant value of 0 in block <hw_uart2>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <data_sync_0> (without init value) has a constant value of 0 in block <sync_cell_p4in_7>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <data_sync_0> (without init value) has a constant value of 0 in block <sync_cell_p4in_6>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <data_sync_0> (without init value) has a constant value of 0 in block <sync_cell_p4in_5>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <data_sync_0> (without init value) has a constant value of 0 in block <sync_cell_p4in_4>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <data_sync_0> (without init value) has a constant value of 0 in block <sync_cell_p4in_3>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <data_sync_0> (without init value) has a constant value of 0 in block <sync_cell_p4in_2>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <data_sync_0> (without init value) has a constant value of 0 in block <sync_cell_p4in_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <data_sync_0> (without init value) has a constant value of 0 in block <sync_cell_p4in_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <data_sync_0> (without init value) has a constant value of 0 in block <sync_cell_p3in_7>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <data_sync_0> (without init value) has a constant value of 0 in block <sync_cell_p3in_6>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <data_sync_0> (without init value) has a constant value of 0 in block <sync_cell_p3in_5>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <data_sync_0> (without init value) has a constant value of 0 in block <sync_cell_p3in_4>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <data_sync_0> (without init value) has a constant value of 0 in block <sync_cell_p3in_3>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <data_sync_0> (without init value) has a constant value of 0 in block <sync_cell_p3in_2>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <data_sync_0> (without init value) has a constant value of 0 in block <sync_cell_lfxt_clk>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <lfxt_clk_dly> (without init value) has a constant value of 0 in block <clock_module_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <aclk_en> (without init value) has a constant value of 0 in block <clock_module_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <bcsctl2_0> (without init value) has a constant value of 0 in block <clock_module_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <bcsctl1_0> (without init value) has a constant value of 0 in block <clock_module_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <aclk_div_0> (without init value) has a constant value of 0 in block <clock_module_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <aclk_div_1> (without init value) has a constant value of 0 in block <clock_module_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <aclk_div_2> (without init value) has a constant value of 0 in block <clock_module_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <wdtctl_3> (without init value) has a constant value of 0 in block <watchdog_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ctrl_2> (without init value) has a constant value of 0 in block <hw_uart>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <data_sync_0> (without init value) has a constant value of 0 in block <sync_cell_p3in_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <data_sync_0> (without init value) has a constant value of 0 in block <sync_cell_p3in_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <data_sync_1> (without init value) has a constant value of 0 in block <sync_cell_p3in_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <data_sync_1> (without init value) has a constant value of 0 in block <sync_cell_p4in_7>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <data_sync_1> (without init value) has a constant value of 0 in block <sync_cell_lfxt_clk>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <data_sync_1> (without init value) has a constant value of 0 in block <sync_cell_p4in_6>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <data_sync_1> (without init value) has a constant value of 0 in block <sync_cell_p3in_2>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <data_sync_1> (without init value) has a constant value of 0 in block <sync_cell_p4in_5>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <data_sync_1> (without init value) has a constant value of 0 in block <sync_cell_p4in_4>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <data_sync_1> (without init value) has a constant value of 0 in block <sync_cell_p3in_3>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <data_sync_1> (without init value) has a constant value of 0 in block <sync_cell_p4in_3>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <data_sync_1> (without init value) has a constant value of 0 in block <sync_cell_p3in_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <data_sync_1> (without init value) has a constant value of 0 in block <sync_cell_p4in_2>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <data_sync_1> (without init value) has a constant value of 0 in block <sync_cell_p3in_4>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <data_sync_1> (without init value) has a constant value of 0 in block <sync_cell_p4in_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <data_sync_1> (without init value) has a constant value of 0 in block <sync_cell_p4in_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <data_sync_1> (without init value) has a constant value of 0 in block <sync_cell_p3in_5>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <data_sync_1> (without init value) has a constant value of 0 in block <sync_cell_p3in_7>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <data_sync_1> (without init value) has a constant value of 0 in block <sync_cell_p3in_6>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:2677 - Node <inst_so_2> of sequential type is unconnected in block <frontend_0>.
+WARNING:Xst:2677 - Node <inst_ad_2> of sequential type is unconnected in block <frontend_0>.
+WARNING:Xst:2677 - Node <inst_ad_3> of sequential type is unconnected in block <frontend_0>.
+WARNING:Xst:2677 - Node <inst_ad_5> of sequential type is unconnected in block <frontend_0>.
+WARNING:Xst:2677 - Node <inst_ad_7> of sequential type is unconnected in block <frontend_0>.
+WARNING:Xst:2677 - Node <wdtctl_5> of sequential type is unconnected in block <watchdog_0>.
+WARNING:Xst:1290 - Hierarchical block <sync_cell_lfxt_clk> is unconnected in block <clock_module_0>.
+   It will be removed from the design.
+WARNING:Xst:1290 - Hierarchical block <sync_cell_p3in_0> is unconnected in block <gpio_0>.
+   It will be removed from the design.
+WARNING:Xst:1290 - Hierarchical block <sync_cell_p3in_1> is unconnected in block <gpio_0>.
+   It will be removed from the design.
+WARNING:Xst:1290 - Hierarchical block <sync_cell_p3in_2> is unconnected in block <gpio_0>.
+   It will be removed from the design.
+WARNING:Xst:1290 - Hierarchical block <sync_cell_p3in_3> is unconnected in block <gpio_0>.
+   It will be removed from the design.
+WARNING:Xst:1290 - Hierarchical block <sync_cell_p3in_4> is unconnected in block <gpio_0>.
+   It will be removed from the design.
+WARNING:Xst:1290 - Hierarchical block <sync_cell_p3in_5> is unconnected in block <gpio_0>.
+   It will be removed from the design.
+WARNING:Xst:1290 - Hierarchical block <sync_cell_p3in_6> is unconnected in block <gpio_0>.
+   It will be removed from the design.
+WARNING:Xst:1290 - Hierarchical block <sync_cell_p3in_7> is unconnected in block <gpio_0>.
+   It will be removed from the design.
+WARNING:Xst:1290 - Hierarchical block <sync_cell_p4in_0> is unconnected in block <gpio_0>.
+   It will be removed from the design.
+WARNING:Xst:1290 - Hierarchical block <sync_cell_p4in_1> is unconnected in block <gpio_0>.
+   It will be removed from the design.
+WARNING:Xst:1290 - Hierarchical block <sync_cell_p4in_2> is unconnected in block <gpio_0>.
+   It will be removed from the design.
+WARNING:Xst:1290 - Hierarchical block <sync_cell_p4in_3> is unconnected in block <gpio_0>.
+   It will be removed from the design.
+WARNING:Xst:1290 - Hierarchical block <sync_cell_p4in_4> is unconnected in block <gpio_0>.
+   It will be removed from the design.
+WARNING:Xst:1290 - Hierarchical block <sync_cell_p4in_5> is unconnected in block <gpio_0>.
+   It will be removed from the design.
+WARNING:Xst:1290 - Hierarchical block <sync_cell_p4in_6> is unconnected in block <gpio_0>.
+   It will be removed from the design.
+WARNING:Xst:1290 - Hierarchical block <sync_cell_p4in_7> is unconnected in block <gpio_0>.
+   It will be removed from the design.
+WARNING:Xst:2404 -  FFs/Latches <bcsctl2<7:4>> (without init value) have a constant value of 0 in block <omsp_clock_module>.
+WARNING:Xst:2404 -  FFs/Latches <bcsctl1<7:6>> (without init value) have a constant value of 0 in block <omsp_clock_module>.
+WARNING:Xst:2404 -  FFs/Latches <ctrl<7:7>> (without init value) have a constant value of 0 in block <omsp_uart_1>.
+WARNING:Xst:2404 -  FFs/Latches <ctrl<7:7>> (without init value) have a constant value of 0 in block <omsp_uart_2>.
+
+Synthesizing (advanced) Unit <crypto_control>.
+The following registers are absorbed into counter <key_ctr>: 1 register on signal <key_ctr>.
+Unit <crypto_control> synthesized (advanced).
+
+Synthesizing (advanced) Unit <omsp_clock_module>.
+The following registers are absorbed into counter <aclk_div>: 1 register on signal <aclk_div>.
+The following registers are absorbed into counter <smclk_div>: 1 register on signal <smclk_div>.
+Unit <omsp_clock_module> synthesized (advanced).
+
+Synthesizing (advanced) Unit <omsp_dbg>.
+The following registers are absorbed into accumulator <mem_addr>: 1 register on signal <mem_addr>.
+The following registers are absorbed into accumulator <mem_cnt>: 1 register on signal <mem_cnt>.
+Unit <omsp_dbg> synthesized (advanced).
+
+Synthesizing (advanced) Unit <omsp_dbg_uart>.
+The following registers are absorbed into counter <sync_cnt>: 1 register on signal <sync_cnt>.
+Unit <omsp_dbg_uart> synthesized (advanced).
+
+Synthesizing (advanced) Unit <omsp_led_digits>.
+The following registers are absorbed into counter <div>: 1 register on signal <div>.
+Unit <omsp_led_digits> synthesized (advanced).
+
+Synthesizing (advanced) Unit <omsp_spm_control>.
+The following registers are absorbed into counter <next_id>: 1 register on signal <next_id>.
+Unit <omsp_spm_control> synthesized (advanced).
+
+Synthesizing (advanced) Unit <omsp_timerA>.
+The following registers are absorbed into counter <clk_div>: 1 register on signal <clk_div>.
+Unit <omsp_timerA> synthesized (advanced).
+
+Synthesizing (advanced) Unit <omsp_tsc>.
+The following registers are absorbed into counter <tsc>: 1 register on signal <tsc>.
+Unit <omsp_tsc> synthesized (advanced).
+
+Synthesizing (advanced) Unit <spi_master>.
+The following registers are absorbed into counter <clk_ctr>: 1 register on signal <clk_ctr>.
+The following registers are absorbed into counter <buffer_ctr>: 1 register on signal <buffer_ctr>.
+Unit <spi_master> synthesized (advanced).
+
+Synthesizing (advanced) Unit <sponge_wrap>.
+The following registers are absorbed into counter <key_counter>: 1 register on signal <key_counter>.
+Unit <sponge_wrap> synthesized (advanced).
+
+Synthesizing (advanced) Unit <spongent_sbox>.
+INFO:Xst:3231 - The small RAM <Mram_data_out> will be implemented on LUTs in order to maximize performance and save block RAM resources. If you want to force its implementation on block, use option/constraint ram_style.
+    -----------------------------------------------------------------------
+    | ram_type           | Distributed                         |          |
+    -----------------------------------------------------------------------
+    | Port A                                                              |
+    |     aspect ratio   | 16-word x 4-bit                     |          |
+    |     weA            | connected to signal <GND>           | high     |
+    |     addrA          | connected to signal <data_in>       |          |
+    |     diA            | connected to signal <GND>           |          |
+    |     doA            | connected to signal <data_out>      |          |
+    -----------------------------------------------------------------------
+Unit <spongent_sbox> synthesized (advanced).
+WARNING:Xst:2677 - Node <wdtctl_5> of sequential type is unconnected in block <omsp_watchdog>.
+
+=========================================================================
+Advanced HDL Synthesis Report
+
+Macro Statistics
+# RAMs                                                 : 84
+ 16x4-bit single-port distributed Read Only RAM        : 84
+# Multipliers                                          : 1
+ 17x9-bit multiplier                                   : 1
+# Adders/Subtractors                                   : 50
+ 13-bit subtractor                                     : 1
+ 15-bit subtractor                                     : 1
+ 16-bit adder                                          : 14
+ 17-bit adder                                          : 2
+ 2-bit adder                                           : 1
+ 2-bit adder carry in                                  : 2
+ 32-bit adder                                          : 13
+ 32-bit subtractor                                     : 2
+ 33-bit adder                                          : 1
+ 4-bit adder                                           : 5
+ 5-bit adder                                           : 4
+ 5-bit adder carry in                                  : 4
+# Counters                                             : 11
+ 16-bit up counter                                     : 1
+ 19-bit up counter                                     : 1
+ 3-bit up counter                                      : 3
+ 4-bit up counter                                      : 4
+ 64-bit up counter                                     : 1
+ 8-bit up counter                                      : 1
+# Accumulators                                         : 2
+ 16-bit up loadable accumulator                        : 2
+# Registers                                            : 2892
+ Flip-Flops                                            : 2892
+# Comparators                                          : 114
+ 1-bit comparator equal                                : 1
+ 15-bit comparator greater                             : 4
+ 15-bit comparator lessequal                           : 3
+ 16-bit comparator equal                               : 11
+ 16-bit comparator greater                             : 38
+ 16-bit comparator lessequal                           : 28
+ 16-bit comparator not equal                           : 6
+ 2-bit comparator greater                              : 2
+ 32-bit comparator lessequal                           : 16
+ 5-bit comparator greater                              : 4
+ 8-bit comparator equal                                : 1
+# Multiplexers                                         : 8581
+ 1-bit 2-to-1 multiplexer                              : 8256
+ 1-bit 4-to-1 multiplexer                              : 8
+ 1-bit 5-to-1 multiplexer                              : 64
+ 1-bit 8-to-1 multiplexer                              : 10
+ 10-bit 2-to-1 multiplexer                             : 1
+ 128-bit 2-to-1 multiplexer                            : 3
+ 13-bit 2-to-1 multiplexer                             : 2
+ 13-bit 4-to-1 multiplexer                             : 1
+ 15-bit 2-to-1 multiplexer                             : 2
+ 16-bit 2-to-1 multiplexer                             : 154
+ 17-bit 2-to-1 multiplexer                             : 2
+ 18-bit 2-to-1 multiplexer                             : 1
+ 2-bit 2-to-1 multiplexer                              : 12
+ 20-bit 2-to-1 multiplexer                             : 1
+ 24-bit 2-to-1 multiplexer                             : 1
+ 3-bit 2-to-1 multiplexer                              : 4
+ 32-bit 2-to-1 multiplexer                             : 11
+ 4-bit 2-to-1 multiplexer                              : 32
+ 5-bit 2-to-1 multiplexer                              : 5
+ 6-bit 2-to-1 multiplexer                              : 1
+ 8-bit 2-to-1 multiplexer                              : 6
+ 8-bit 4-to-1 multiplexer                              : 1
+ 9-bit 2-to-1 multiplexer                              : 3
+# Logic shifters                                       : 1
+ 128-bit shifter logical left                          : 1
+# FSMs                                                 : 9
+# Xors                                                 : 13
+ 1-bit xor2                                            : 6
+ 1-bit xor8                                            : 1
+ 16-bit xor2                                           : 2
+ 17-bit xor2                                           : 1
+ 18-bit xor2                                           : 2
+ 8-bit xor2                                            : 1
+
+=========================================================================
+
+=========================================================================
+*                         Low Level Synthesis                           *
+=========================================================================
+WARNING:Xst:1989 - Unit <omsp_gpio>: instances <sync_cell_p3in_0>, <sync_cell_p3in_1> of unit <omsp_sync_cell> are equivalent, second instance is removed
+WARNING:Xst:1989 - Unit <omsp_gpio>: instances <sync_cell_p3in_0>, <sync_cell_p3in_2> of unit <omsp_sync_cell> are equivalent, second instance is removed
+WARNING:Xst:1989 - Unit <omsp_gpio>: instances <sync_cell_p3in_0>, <sync_cell_p3in_3> of unit <omsp_sync_cell> are equivalent, second instance is removed
+WARNING:Xst:1989 - Unit <omsp_gpio>: instances <sync_cell_p3in_0>, <sync_cell_p3in_4> of unit <omsp_sync_cell> are equivalent, second instance is removed
+WARNING:Xst:1989 - Unit <omsp_gpio>: instances <sync_cell_p3in_0>, <sync_cell_p3in_5> of unit <omsp_sync_cell> are equivalent, second instance is removed
+WARNING:Xst:1989 - Unit <omsp_gpio>: instances <sync_cell_p3in_0>, <sync_cell_p3in_6> of unit <omsp_sync_cell> are equivalent, second instance is removed
+WARNING:Xst:1989 - Unit <omsp_gpio>: instances <sync_cell_p3in_0>, <sync_cell_p3in_7> of unit <omsp_sync_cell> are equivalent, second instance is removed
+WARNING:Xst:1989 - Unit <omsp_gpio>: instances <sync_cell_p3in_0>, <sync_cell_p4in_0> of unit <omsp_sync_cell> are equivalent, second instance is removed
+WARNING:Xst:1989 - Unit <omsp_gpio>: instances <sync_cell_p3in_0>, <sync_cell_p4in_1> of unit <omsp_sync_cell> are equivalent, second instance is removed
+WARNING:Xst:1989 - Unit <omsp_gpio>: instances <sync_cell_p3in_0>, <sync_cell_p4in_2> of unit <omsp_sync_cell> are equivalent, second instance is removed
+WARNING:Xst:1989 - Unit <omsp_gpio>: instances <sync_cell_p3in_0>, <sync_cell_p4in_3> of unit <omsp_sync_cell> are equivalent, second instance is removed
+WARNING:Xst:1989 - Unit <omsp_gpio>: instances <sync_cell_p3in_0>, <sync_cell_p4in_4> of unit <omsp_sync_cell> are equivalent, second instance is removed
+WARNING:Xst:1989 - Unit <omsp_gpio>: instances <sync_cell_p3in_0>, <sync_cell_p4in_5> of unit <omsp_sync_cell> are equivalent, second instance is removed
+WARNING:Xst:1989 - Unit <omsp_gpio>: instances <sync_cell_p3in_0>, <sync_cell_p4in_6> of unit <omsp_sync_cell> are equivalent, second instance is removed
+WARNING:Xst:1989 - Unit <omsp_gpio>: instances <sync_cell_p3in_0>, <sync_cell_p4in_7> of unit <omsp_sync_cell> are equivalent, second instance is removed
+WARNING:Xst:1710 - FF/Latch <bcsctl2_0> (without init value) has a constant value of 0 in block <omsp_clock_module>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <bcsctl1_0> (without init value) has a constant value of 0 in block <omsp_clock_module>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <bcsctl1_1> (without init value) has a constant value of 0 in block <omsp_clock_module>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <bcsctl1_2> (without init value) has a constant value of 0 in block <omsp_clock_module>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <bcsctl1_3> (without init value) has a constant value of 0 in block <omsp_clock_module>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <wdtctl_3> (without init value) has a constant value of 0 in block <omsp_watchdog>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ctrl_2> (without init value) has a constant value of 0 in block <omsp_uart_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ctrl_3> (without init value) has a constant value of 0 in block <omsp_uart_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ctrl_2> (without init value) has a constant value of 0 in block <omsp_uart_2>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ctrl_3> (without init value) has a constant value of 0 in block <omsp_uart_2>. This FF/Latch will be trimmed during the optimization process.
+INFO:Xst:2261 - The FF/Latch <inst_src_bin_2> in Unit <omsp_frontend> is equivalent to the following FF/Latch, which will be removed : <inst_jmp_bin_0> 
+INFO:Xst:2261 - The FF/Latch <inst_src_bin_3> in Unit <omsp_frontend> is equivalent to the following FF/Latch, which will be removed : <inst_jmp_bin_1> 
+WARNING:Xst:1710 - FF/Latch <aclk_en> (without init value) has a constant value of 0 in block <omsp_clock_module>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <sync_cell_lfxt_clk/data_sync_0> (without init value) has a constant value of 0 in block <omsp_clock_module>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <sync_cell_lfxt_clk/data_sync_1> (without init value) has a constant value of 0 in block <omsp_clock_module>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <lfxt_clk_dly> (without init value) has a constant value of 0 in block <omsp_clock_module>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <sync_cell_p3in_0/data_sync_0> (without init value) has a constant value of 0 in block <omsp_gpio>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <sync_cell_p3in_0/data_sync_1> (without init value) has a constant value of 0 in block <omsp_gpio>. This FF/Latch will be trimmed during the optimization process.
+Analyzing FSM <MFsm> for best encoding.
+Optimizing FSM <openMSP430_0/frontend_0/FSM_1> on signal <e_state[1:4]> with user encoding.
+-------------------
+ State | Encoding
+-------------------
+ 0001  | 0001
+ 0011  | 0011
+ 0000  | 0000
+ 0100  | 0100
+ 1011  | 1011
+ 0101  | 0101
+ 0110  | 0110
+ 1001  | 1001
+ 1000  | 1000
+ 1101  | 1101
+ 0010  | 0010
+ 1111  | 1111
+ 1100  | 1100
+ 1110  | 1110
+ 0111  | 0111
+ 1010  | 1010
+-------------------
+Analyzing FSM <MFsm> for best encoding.
+Optimizing FSM <openMSP430_0/frontend_0/FSM_0> on signal <i_state[1:3]> with user encoding.
+-------------------
+ State | Encoding
+-------------------
+ 000   | 000
+ 001   | 001
+ 010   | 010
+ 011   | 011
+ 101   | 101
+ 100   | 100
+-------------------
+Analyzing FSM <MFsm> for best encoding.
+Optimizing FSM <openMSP430_0/dbg_0/FSM_6> on signal <mem_state[1:2]> with sequential encoding.
+-------------------
+ State | Encoding
+-------------------
+ 00    | 00
+ 01    | 01
+ 11    | 10
+ 10    | 11
+-------------------
+Analyzing FSM <MFsm> for best encoding.
+Optimizing FSM <openMSP430_0/dbg_0/FSM_5> on signal <inc_step[1:2]> with user encoding.
+-------------------
+ State | Encoding
+-------------------
+ 00    | 00
+ 10    | 10
+ 11    | 11
+-------------------
+Analyzing FSM <MFsm> for best encoding.
+Optimizing FSM <openMSP430_0/dbg_0/dbg_uart_0/FSM_7> on signal <uart_state[1:3]> with user encoding.
+-------------------
+ State | Encoding
+-------------------
+ 000   | 000
+ 001   | 001
+ 100   | 100
+ 101   | 101
+ 010   | 010
+ 011   | 011
+-------------------
+Analyzing FSM <MFsm> for best encoding.
+Optimizing FSM <openMSP430_0/execution_unit_0/crypto/FSM_2> on signal <state[1:61]> with one-hot encoding.
+-------------------------------------------------------------------------
+ State  | Encoding
+-------------------------------------------------------------------------
+ 000000 | 0000000000000000000000000000000000000000000000000000000000001
+ 000001 | 0000000000000000000000000000000000000000000000000000000000010
+ 110011 | 0000000000000000000000000000000000000000000000000000000000100
+ 110110 | 0000000000000000000000000000000000000000000000000000000001000
+ 110111 | 0000000000000000000000000000000000000000000000000000000010000
+ 110010 | 0000000000000000000000000000000000000000000000000000000100000
+ 100011 | 0000000000000000000000000000000000000000000000000000001000000
+ 001101 | 0000000000000000000000000000000000000000000000000000010000000
+ 000010 | 0000000000000000000000000000000000000000000000000000100000000
+ 110001 | 0000000000000000000000000000000000000000000000000001000000000
+ 000100 | 0000000000000000000000000000000000000000000000000010000000000
+ 000101 | 0000000000000000000000000000000000000000000000000100000000000
+ 100101 | 0000000000000000000000000000000000000000000000001000000000000
+ 000011 | 0000000000000000000000000000000000000000000000010000000000000
+ 000111 | 0000000000000000000000000000000000000000000000100000000000000
+ 000110 | 0000000000000000000000000000000000000000000001000000000000000
+ 001000 | 0000000000000000000000000000000000000000000010000000000000000
+ 001100 | 0000000000000000000000000000000000000000000100000000000000000
+ 001010 | 0000000000000000000000000000000000000000001000000000000000000
+ 001001 | 0000000000000000000000000000000000000000010000000000000000000
+ 001011 | 0000000000000000000000000000000000000000100000000000000000000
+ 001110 | 0000000000000000000000000000000000000001000000000000000000000
+ 001111 | 0000000000000000000000000000000000000010000000000000000000000
+ 010000 | 0000000000000000000000000000000000000100000000000000000000000
+ 010010 | 0000000000000000000000000000000000001000000000000000000000000
+ 010001 | 0000000000000000000000000000000000010000000000000000000000000
+ 010011 | 0000000000000000000000000000000000100000000000000000000000000
+ 010100 | 0000000000000000000000000000000001000000000000000000000000000
+ 100111 | 0000000000000000000000000000000010000000000000000000000000000
+ 010101 | 0000000000000000000000000000000100000000000000000000000000000
+ 010111 | 0000000000000000000000000000001000000000000000000000000000000
+ 010110 | 0000000000000000000000000000010000000000000000000000000000000
+ 011000 | 0000000000000000000000000000100000000000000000000000000000000
+ 011001 | 0000000000000000000000000001000000000000000000000000000000000
+ 011010 | 0000000000000000000000000010000000000000000000000000000000000
+ 011011 | 0000000000000000000000000100000000000000000000000000000000000
+ 011100 | 0000000000000000000000001000000000000000000000000000000000000
+ 011101 | 0000000000000000000000010000000000000000000000000000000000000
+ 011110 | 0000000000000000000000100000000000000000000000000000000000000
+ 011111 | 0000000000000000000001000000000000000000000000000000000000000
+ 100000 | 0000000000000000000010000000000000000000000000000000000000000
+ 100010 | 0000000000000000000100000000000000000000000000000000000000000
+ 100001 | 0000000000000000001000000000000000000000000000000000000000000
+ 100100 | 0000000000000000010000000000000000000000000000000000000000000
+ 100110 | 0000000000000000100000000000000000000000000000000000000000000
+ 101000 | 0000000000000001000000000000000000000000000000000000000000000
+ 101001 | 0000000000000010000000000000000000000000000000000000000000000
+ 101010 | 0000000000000100000000000000000000000000000000000000000000000
+ 101011 | 0000000000001000000000000000000000000000000000000000000000000
+ 101101 | 0000000000010000000000000000000000000000000000000000000000000
+ 101100 | 0000000000100000000000000000000000000000000000000000000000000
+ 101110 | 0000000001000000000000000000000000000000000000000000000000000
+ 110000 | 0000000010000000000000000000000000000000000000000000000000000
+ 101111 | 0000000100000000000000000000000000000000000000000000000000000
+ 110101 | 0000001000000000000000000000000000000000000000000000000000000
+ 110100 | 0000010000000000000000000000000000000000000000000000000000000
+ 111000 | 0000100000000000000000000000000000000000000000000000000000000
+ 111001 | 0001000000000000000000000000000000000000000000000000000000000
+ 111010 | 0010000000000000000000000000000000000000000000000000000000000
+ 111011 | 0100000000000000000000000000000000000000000000000000000000000
+ 111100 | 1000000000000000000000000000000000000000000000000000000000000
+-------------------------------------------------------------------------
+Analyzing FSM <MFsm> for best encoding.
+Optimizing FSM <openMSP430_0/execution_unit_0/crypto/wrap/FSM_3> on signal <state[1:13]> with one-hot encoding.
+------------------------
+ State | Encoding
+------------------------
+ 0000  | 0000000000001
+ 0001  | 0000000000010
+ 0010  | 0000000000100
+ 0011  | 0000000001000
+ 0101  | 0000000010000
+ 0100  | 0000000100000
+ 0110  | 0000001000000
+ 0111  | 0000010000000
+ 1000  | 0000100000000
+ 1001  | 0001000000000
+ 1010  | 0010000000000
+ 1011  | 0100000000000
+ 1100  | 1000000000000
+------------------------
+Analyzing FSM <MFsm> for best encoding.
+Optimizing FSM <openMSP430_0/execution_unit_0/crypto/wrap/FSM_4> on signal <state_current[1:4]> with user encoding.
+-------------------
+ State | Encoding
+-------------------
+ 0001  | 0001
+ 0010  | 0010
+ 0100  | 0100
+ 1000  | 1000
+-------------------
+Analyzing FSM <MFsm> for best encoding.
+Optimizing FSM <spi_master/spi/FSM_8> on signal <state[1:2]> with gray encoding.
+-------------------
+ State | Encoding
+-------------------
+ 00    | 00
+ 01    | 01
+ 10    | 11
+ 11    | 10
+-------------------
+WARNING:Xst:1710 - FF/Latch <inst_ad_2> (without init value) has a constant value of 0 in block <omsp_frontend>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <inst_ad_3> (without init value) has a constant value of 0 in block <omsp_frontend>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <inst_ad_5> (without init value) has a constant value of 0 in block <omsp_frontend>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <inst_ad_7> (without init value) has a constant value of 0 in block <omsp_frontend>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <r1_0> (without init value) has a constant value of 0 in block <omsp_register_file>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <r2_6> (without init value) has a constant value of 0 in block <omsp_register_file>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <r2_9> (without init value) has a constant value of 0 in block <omsp_register_file>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <r2_10> (without init value) has a constant value of 0 in block <omsp_register_file>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <r2_11> (without init value) has a constant value of 0 in block <omsp_register_file>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <r2_12> (without init value) has a constant value of 0 in block <omsp_register_file>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <r2_13> (without init value) has a constant value of 0 in block <omsp_register_file>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <r2_14> (without init value) has a constant value of 0 in block <omsp_register_file>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <r2_15> (without init value) has a constant value of 0 in block <omsp_register_file>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <dest_reg_1> (without init value) has a constant value of 0 in block <crypto_control>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <dest_reg_2> (without init value) has a constant value of 0 in block <crypto_control>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <dest_reg_3> (without init value) has a constant value of 0 in block <crypto_control>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <dest_reg_4> (without init value) has a constant value of 0 in block <crypto_control>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <dest_reg_5> (without init value) has a constant value of 0 in block <crypto_control>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <dest_reg_6> (without init value) has a constant value of 0 in block <crypto_control>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <dest_reg_7> (without init value) has a constant value of 0 in block <crypto_control>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <dest_reg_8> (without init value) has a constant value of 0 in block <crypto_control>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <dest_reg_9> (without init value) has a constant value of 0 in block <crypto_control>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <dest_reg_10> (without init value) has a constant value of 0 in block <crypto_control>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <dest_reg_11> (without init value) has a constant value of 0 in block <crypto_control>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <dest_reg_12> (without init value) has a constant value of 0 in block <crypto_control>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <dest_reg_13> (without init value) has a constant value of 0 in block <crypto_control>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <dest_reg_14> (without init value) has a constant value of 0 in block <crypto_control>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <tacctl0_3> (without init value) has a constant value of 0 in block <omsp_timerA>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <tacctl0_9> (without init value) has a constant value of 0 in block <omsp_timerA>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <tacctl0_10> (without init value) has a constant value of 0 in block <omsp_timerA>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <tactl_2> (without init value) has a constant value of 0 in block <omsp_timerA>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <tactl_3> (without init value) has a constant value of 0 in block <omsp_timerA>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <tacctl1_3> (without init value) has a constant value of 0 in block <omsp_timerA>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <tacctl1_9> (without init value) has a constant value of 0 in block <omsp_timerA>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <tacctl1_10> (without init value) has a constant value of 0 in block <omsp_timerA>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <tacctl2_3> (without init value) has a constant value of 0 in block <omsp_timerA>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <tacctl2_9> (without init value) has a constant value of 0 in block <omsp_timerA>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <tacctl2_10> (without init value) has a constant value of 0 in block <omsp_timerA>. This FF/Latch will be trimmed during the optimization process.
+INFO:Xst:2261 - The FF/Latch <cur_led_3> in Unit <omsp_led_digits> is equivalent to the following 28 FFs/Latches, which will be removed : <cur_led_4> <cur_led_5> <cur_led_6> <cur_led_7> <cur_led_8> <cur_led_9> <cur_led_10> <cur_led_11> <cur_led_12> <cur_led_13> <cur_led_14> <cur_led_15> <cur_led_16> <cur_led_17> <cur_led_18> <cur_led_19> <cur_led_20> <cur_led_21> <cur_led_22> <cur_led_23> <cur_led_24> <cur_led_25> <cur_led_26> <cur_led_27> <cur_led_28> <cur_led_29> <cur_led_30> <cur_led_31> 
+WARNING:Xst:2170 - Unit omsp_frontend : the following signal(s) form a combinatorial loop: pc_incr<15>, Madd_pc_incr_cy<7>, Madd_pc_incr_lut<1>, pc_nxt<15>, Madd_pc_incr_cy<6>, Madd_pc_incr_cy<10>, irq_detect, Madd_pc_incr_cy<11>, e_state_FSM_FFd4-In, pc_incr[15]_irq_addr[15]_mux_54_OUT<15>, Madd_pc_incr_cy<9>, Madd_pc_incr_cy<2>, Mmux_exec_done, Madd_pc_incr_cy<1>, n0286, exec_done_i_state[2]_OR_66_o, Madd_pc_incr_cy<8>, e_state_FSM_FFd4-In1, Madd_pc_incr_cy<12>, Madd_pc_incr_cy<4>, Madd_pc_incr_cy<3>, Madd_pc_incr_cy<13>, fetch, exec_done, Madd_pc_incr_cy<5>, Madd_pc_incr_cy<14>.
+
+Optimizing unit <openMSP430_fpga> ...
+
+Optimizing unit <openMSP430> ...
+
+Optimizing unit <omsp_mem_backbone> ...
+
+Optimizing unit <omsp_frontend> ...
+
+Optimizing unit <omsp_dbg> ...
+
+Optimizing unit <omsp_dbg_uart> ...
+
+Optimizing unit <omsp_clock_module> ...
+
+Optimizing unit <omsp_sfr> ...
+
+Optimizing unit <omsp_execution_unit> ...
+
+Optimizing unit <omsp_alu> ...
+
+Optimizing unit <omsp_register_file> ...
+
+Optimizing unit <crypto_control> ...
+
+Optimizing unit <sponge_wrap> ...
+
+Optimizing unit <spongent_datapath> ...
+
+Optimizing unit <lfsr> ...
+
+Optimizing unit <omsp_spm_control> ...
+
+Optimizing unit <omsp_watchdog> ...
+
+Optimizing unit <omsp_multiplier> ...
+
+Optimizing unit <omsp_uart_1> ...
+
+Optimizing unit <omsp_spi_master> ...
+
+Optimizing unit <spi_master> ...
+
+Optimizing unit <omsp_gpio> ...
+
+Optimizing unit <omsp_timerA> ...
+
+Optimizing unit <omsp_uart_2> ...
+
+Optimizing unit <omsp_tsc> ...
+WARNING:Xst:1710 - FF/Latch <gpio_0/sync_cell_p2in_0/data_sync_0> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <gpio_0/sync_cell_p2in_1/data_sync_0> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <timerA_0/sync_cell_inclk/data_sync_0> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <gpio_0/sync_cell_p2in_2/data_sync_0> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <gpio_0/sync_cell_p2in_3/data_sync_0> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <gpio_0/sync_cell_p2in_7/data_sync_0> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <gpio_0/sync_cell_p2in_4/data_sync_0> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <gpio_0/sync_cell_p2in_5/data_sync_0> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <gpio_0/sync_cell_p2in_6/data_sync_0> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <timerA_0/sync_cell_inclk/data_sync_1> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <gpio_0/sync_cell_p2in_7/data_sync_1> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <gpio_0/sync_cell_p2in_6/data_sync_1> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <gpio_0/sync_cell_p2in_5/data_sync_1> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <gpio_0/sync_cell_p2in_4/data_sync_1> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <gpio_0/sync_cell_p2in_3/data_sync_1> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <gpio_0/sync_cell_p2in_2/data_sync_1> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <gpio_0/sync_cell_p2in_1/data_sync_1> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <gpio_0/sync_cell_p2in_0/data_sync_1> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <gpio_0/p2in_dly_7> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <gpio_0/p2in_dly_6> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <gpio_0/p2in_dly_5> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <gpio_0/p2in_dly_4> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <gpio_0/p2in_dly_3> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <gpio_0/p2in_dly_2> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <gpio_0/p2in_dly_1> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <gpio_0/p2in_dly_0> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <timerA_0/inclk_dly> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:2677 - Node <openMSP430_0/frontend_0/inst_so_2> of sequential type is unconnected in block <openMSP430_fpga>.
+WARNING:Xst:1710 - FF/Latch <led_digits/cur_led_3> (without init value) has a constant value of 0 in block <openMSP430_fpga>. This FF/Latch will be trimmed during the optimization process.
+INFO:Xst:2261 - The FF/Latch <openMSP430_0/spm_violation> in Unit <openMSP430_fpga> is equivalent to the following FF/Latch, which will be removed : <openMSP430_0/frontend_0/sm_irq> 
+
+Mapping all equations...
+Building and optimizing final netlist ...
+Found area constraint ratio of 100 (+ 5) on block openMSP430_fpga, actual ratio is 49.
+FlipFlop openMSP430_0/dbg_0/mem_addr_0 has been replicated 1 time(s)
+FlipFlop openMSP430_0/dbg_0/mem_addr_1 has been replicated 3 time(s)
+FlipFlop openMSP430_0/dbg_0/mem_addr_2 has been replicated 3 time(s)
+FlipFlop openMSP430_0/execution_unit_0/crypto/reg_write has been replicated 3 time(s)
+FlipFlop openMSP430_0/execution_unit_0/crypto/state_FSM_FFd7 has been replicated 1 time(s)
+FlipFlop openMSP430_0/execution_unit_0/crypto/wrap/state_FSM_FFd6 has been replicated 2 time(s)
+FlipFlop openMSP430_0/execution_unit_0/crypto/wrap_start_continue has been replicated 2 time(s)
+FlipFlop openMSP430_0/execution_unit_0/register_file_0/r12_0 has been replicated 1 time(s)
+FlipFlop openMSP430_0/execution_unit_0/register_file_0/r12_1 has been replicated 1 time(s)
+FlipFlop openMSP430_0/execution_unit_0/register_file_0/r12_10 has been replicated 1 time(s)
+FlipFlop openMSP430_0/execution_unit_0/register_file_0/r12_11 has been replicated 1 time(s)
+FlipFlop openMSP430_0/execution_unit_0/register_file_0/r12_12 has been replicated 1 time(s)
+FlipFlop openMSP430_0/execution_unit_0/register_file_0/r12_13 has been replicated 1 time(s)
+FlipFlop openMSP430_0/execution_unit_0/register_file_0/r12_2 has been replicated 1 time(s)
+FlipFlop openMSP430_0/execution_unit_0/register_file_0/r12_3 has been replicated 1 time(s)
+FlipFlop openMSP430_0/execution_unit_0/register_file_0/r12_4 has been replicated 1 time(s)
+FlipFlop openMSP430_0/execution_unit_0/register_file_0/r12_5 has been replicated 1 time(s)
+FlipFlop openMSP430_0/execution_unit_0/register_file_0/r12_6 has been replicated 1 time(s)
+FlipFlop openMSP430_0/execution_unit_0/register_file_0/r12_7 has been replicated 1 time(s)
+FlipFlop openMSP430_0/execution_unit_0/register_file_0/r12_8 has been replicated 1 time(s)
+FlipFlop openMSP430_0/execution_unit_0/register_file_0/r12_9 has been replicated 1 time(s)
+FlipFlop openMSP430_0/frontend_0/dbg_halt_st has been replicated 2 time(s)
+FlipFlop openMSP430_0/frontend_0/e_state_FSM_FFd1 has been replicated 1 time(s)
+FlipFlop openMSP430_0/frontend_0/e_state_FSM_FFd2 has been replicated 1 time(s)
+FlipFlop openMSP430_0/frontend_0/e_state_FSM_FFd3 has been replicated 1 time(s)
+FlipFlop openMSP430_0/frontend_0/inst_dest_bin_0 has been replicated 2 time(s)
+FlipFlop openMSP430_0/frontend_0/spm_command_0 has been replicated 1 time(s)
+FlipFlop openMSP430_0/frontend_0/spm_command_1 has been replicated 2 time(s)
+FlipFlop openMSP430_0/frontend_0/spm_command_2 has been replicated 2 time(s)
+FlipFlop openMSP430_0/frontend_0/spm_command_3 has been replicated 2 time(s)
+FlipFlop openMSP430_0/frontend_0/spm_command_6 has been replicated 1 time(s)
+FlipFlop openMSP430_0/frontend_0/spm_command_7 has been replicated 1 time(s)
+
+Final Macro Processing ...
+
+=========================================================================
+Final Register Report
+
+Macro Statistics
+# Registers                                            : 3048
+ Flip-Flops                                            : 3048
+
+=========================================================================
+
+=========================================================================
+*                           Partition Report                            *
+=========================================================================
+
+Partition Implementation Status
+-------------------------------
+
+  No Partitions were found in this design.
+
+-------------------------------
+
+=========================================================================
+*                            Design Summary                             *
+=========================================================================
+
+Top Level Output File Name         : openMSP430_fpga.ngc
+
+Primitive and Black Box Usage:
+------------------------------
+# BELS                             : 7641
+#      GND                         : 5
+#      INV                         : 102
+#      LUT1                        : 177
+#      LUT2                        : 298
+#      LUT3                        : 332
+#      LUT4                        : 1569
+#      LUT5                        : 1031
+#      LUT6                        : 2705
+#      MUXCY                       : 962
+#      MUXF7                       : 48
+#      VCC                         : 1
+#      XORCY                       : 411
+# FlipFlops/Latches                : 3058
+#      FDC                         : 338
+#      FDCE                        : 1465
+#      FDE                         : 714
+#      FDP                         : 14
+#      FDPE                        : 44
+#      FDR                         : 113
+#      FDRE                        : 365
+#      FDS                         : 2
+#      FDSE                        : 3
+# RAMS                             : 34
+#      RAMB16BWER                  : 24
+#      RAMB8BWER                   : 10
+# Clock Buffers                    : 2
+#      BUFG                        : 2
+# IO Buffers                       : 53
+#      IBUF                        : 3
+#      IBUFG                       : 1
+#      IOBUF                       : 8
+#      OBUF                        : 33
+#      OBUFT                       : 8
+# DCMs                             : 1
+#      DCM_SP                      : 1
+# DSPs                             : 1
+#      DSP48A1                     : 1
+
+Device utilization summary:
+---------------------------
+
+Selected Device : 6slx25ftg256-2 
+
+
+Slice Logic Utilization: 
+ Number of Slice Registers:            3058  out of  30064    10%  
+ Number of Slice LUTs:                 6214  out of  15032    41%  
+    Number used as Logic:              6214  out of  15032    41%  
+
+Slice Logic Distribution: 
+ Number of LUT Flip Flop pairs used:   7477
+   Number with an unused Flip Flop:    4419  out of   7477    59%  
+   Number with an unused LUT:          1263  out of   7477    16%  
+   Number of fully used LUT-FF pairs:  1795  out of   7477    24%  
+   Number of unique control sets:       174
+
+IO Utilization: 
+ Number of IOs:                          79
+ Number of bonded IOBs:                  53  out of    186    28%  
+
+Specific Feature Utilization:
+ Number of Block RAM/FIFO:               29  out of     52    55%  
+    Number using Block RAM only:         29
+ Number of BUFG/BUFGCTRLs:                2  out of     16    12%  
+ Number of DSP48A1s:                      1  out of     38     2%  
+
+---------------------------
+Partition Resource Summary:
+---------------------------
+
+  No Partitions were found in this design.
+
+---------------------------
+
+
+=========================================================================
+Timing Report
+
+NOTE: THESE TIMING NUMBERS ARE ONLY A SYNTHESIS ESTIMATE.
+      FOR ACCURATE TIMING INFORMATION PLEASE REFER TO THE TRACE REPORT
+      GENERATED AFTER PLACE-and-ROUTE.
+
+Clock Information:
+------------------
+-----------------------------------+------------------------------------------------------------------------------------------------------------------------------------+-------+
+Clock Signal                       | Clock buffer(FF name)                                                                                                              | Load  |
+-----------------------------------+------------------------------------------------------------------------------------------------------------------------------------+-------+
+fpgaClk_i                          | DCM_SP:CLKFX                                                                                                                       | 3092  |
+ram_lo/N1                          | NONE(ram_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram) | 4     |
+ram_hi/N1                          | NONE(ram_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram) | 4     |
+rom_lo/N1                          | NONE(rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[12].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram)| 13    |
+rom_hi/N1                          | NONE(rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[12].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram)| 13    |
+-----------------------------------+------------------------------------------------------------------------------------------------------------------------------------+-------+
+INFO:Xst:2169 - HDL ADVISOR - Some clock signals were not automatically buffered by XST with BUFG/BUFR resources. Please use the buffer_type constraint in order to insert these buffers to the clock signals to help prevent skew problems.
+
+Asynchronous Control Signals Information:
+----------------------------------------
+No asynchronous control signals found in this design
+
+Timing Summary:
+---------------
+Speed Grade: -2
+
+   Minimum period: 49.305ns (Maximum Frequency: 20.282MHz)
+   Minimum input arrival time before clock: 7.110ns
+   Maximum output required time after clock: 9.823ns
+   Maximum combinational path delay: No path found
+
+Timing Details:
+---------------
+All values displayed in nanoseconds (ns)
+
+=========================================================================
+Timing constraint: Default period analysis for Clock 'fpgaClk_i'
+  Clock period: 49.305ns (frequency: 20.282MHz)
+  Total number of paths / destination ports: 13103948621 / 8635
+-------------------------------------------------------------------------
+Delay:               29.583ns (Levels of Logic = 32)
+  Source:            openMSP430_0/frontend_0/dbg_halt_st_1 (FF)
+  Destination:       openMSP430_0/frontend_0/inst_sext_15 (FF)
+  Source Clock:      fpgaClk_i rising 1.7X
+  Destination Clock: fpgaClk_i rising 1.7X
+
+  Data Path: openMSP430_0/frontend_0/dbg_halt_st_1 to openMSP430_0/frontend_0/inst_sext_15
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDC:C->Q              7   0.525   1.340  openMSP430_0/frontend_0/dbg_halt_st_1 (openMSP430_0/frontend_0/dbg_halt_st_1)
+     LUT5:I0->O           25   0.254   1.403  openMSP430_0/frontend_0/Mmux_inst_dest1011 (openMSP430_0/frontend_0/Mmux_inst_dest101)
+     LUT6:I5->O           26   0.254   1.528  openMSP430_0/execution_unit_0/Mmux_dest_reg13 (openMSP430_0/execution_unit_0/dest_reg<6>)
+     LUT6:I4->O            1   0.250   0.790  openMSP430_0/execution_unit_0/register_file_0/reg_dest<2>5 (openMSP430_0/execution_unit_0/register_file_0/reg_dest<2>4)
+     LUT6:I4->O            4   0.250   0.804  openMSP430_0/execution_unit_0/register_file_0/reg_dest<2>7 (openMSP430_0/dbg_reg_din<2>)
+     LUT5:I4->O            1   0.254   0.790  openMSP430_0/execution_unit_0/Mmux_op_dst171_SW1 (N666)
+     LUT6:I4->O            7   0.250   0.910  openMSP430_0/execution_unit_0/Mmux_op_dst172 (openMSP430_0/execution_unit_0/op_dst<2>)
+     LUT5:I4->O            1   0.254   0.000  openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_lut<2> (openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_lut<2>)
+     MUXCY:S->O            1   0.215   0.000  openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<2> (openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<2>)
+     XORCY:CI->O           3   0.206   0.766  openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_xor<3> (openMSP430_0/execution_unit_0/alu_out_add<3>)
+     LUT1:I0->O            1   0.254   0.000  openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_cy<3>_rt (openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_cy<3>_rt)
+     MUXCY:S->O            1   0.215   0.000  openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_cy<3> (openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_cy<3>)
+     XORCY:CI->O           3   0.206   0.766  openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_inc_xor<4> (openMSP430_0/execution_unit_0/alu_0/alu_add_inc<4>)
+     LUT6:I5->O            1   0.254   0.790  openMSP430_0/execution_unit_0/alu_0/Mmux_alu_out_nxt114_SW1 (N669)
+     LUT6:I4->O            6   0.250   1.331  openMSP430_0/execution_unit_0/register_file_0/cpuoff1 (openMSP430_0/cpuoff)
+     LUT6:I0->O            2   0.254   0.834  openMSP430_0/frontend_0/e_state_FSM_FFd3-In54 (openMSP430_0/frontend_0/e_state_FSM_FFd3-In5)
+     LUT6:I4->O            2   0.250   0.726  openMSP430_0/frontend_0/e_state_FSM_FFd3-In8 (openMSP430_0/frontend_0/e_state_FSM_FFd3-In8)
+     LUT2:I1->O            3   0.254   0.874  openMSP430_0/frontend_0/e_state_FSM_FFd3-In9 (openMSP430_0/frontend_0/e_state_FSM_FFd3-In)
+     LUT6:I4->O            1   0.250   1.112  openMSP430_0/frontend_0/Mmux_exec_done26 (openMSP430_0/frontend_0/Mmux_exec_done25)
+     LUT6:I1->O           13   0.254   1.098  openMSP430_0/frontend_0/Mmux_exec_done27 (openMSP430_0/exec_done)
+     LUT6:I5->O            2   0.254   0.834  openMSP430_0/dbg_0/_n0322_inv2 (openMSP430_0/dbg_0/_n0322_inv2)
+     LUT3:I1->O            9   0.250   1.431  openMSP430_0/dbg_0/dbg_halt_cmd1 (openMSP430_0/dbg_halt_cmd)
+     LUT6:I0->O            5   0.254   0.841  openMSP430_0/frontend_0/i_state_FSM_FFd3-In35 (openMSP430_0/frontend_0/i_state_FSM_FFd3-In3)
+     LUT6:I5->O            9   0.254   1.204  openMSP430_0/frontend_0/i_state_FSM_FFd1-In1 (openMSP430_0/frontend_0/i_state_FSM_FFd1-In)
+     LUT4:I1->O            6   0.235   1.104  openMSP430_0/frontend_0/Madd_ext_nxt_lut<10>_SW0 (N1110)
+     LUT6:I3->O            1   0.235   0.000  openMSP430_0/frontend_0/Madd_ext_nxt_lut<10> (openMSP430_0/frontend_0/Madd_ext_nxt_lut<10>)
+     MUXCY:S->O            1   0.215   0.000  openMSP430_0/frontend_0/Madd_ext_nxt_cy<10> (openMSP430_0/frontend_0/Madd_ext_nxt_cy<10>)
+     MUXCY:CI->O           1   0.023   0.000  openMSP430_0/frontend_0/Madd_ext_nxt_cy<11> (openMSP430_0/frontend_0/Madd_ext_nxt_cy<11>)
+     MUXCY:CI->O           1   0.023   0.000  openMSP430_0/frontend_0/Madd_ext_nxt_cy<12> (openMSP430_0/frontend_0/Madd_ext_nxt_cy<12>)
+     MUXCY:CI->O           1   0.023   0.000  openMSP430_0/frontend_0/Madd_ext_nxt_cy<13> (openMSP430_0/frontend_0/Madd_ext_nxt_cy<13>)
+     MUXCY:CI->O           0   0.023   0.000  openMSP430_0/frontend_0/Madd_ext_nxt_cy<14> (openMSP430_0/frontend_0/Madd_ext_nxt_cy<14>)
+     XORCY:CI->O           2   0.206   0.834  openMSP430_0/frontend_0/Madd_ext_nxt_xor<15> (openMSP430_0/frontend_0/ext_nxt<15>)
+     LUT6:I4->O            1   0.250   0.000  openMSP430_0/frontend_0/Mmux_inst_sext[15]_sconst_nxt[15]_mux_69_OUT71 (openMSP430_0/frontend_0/inst_sext[15]_sconst_nxt[15]_mux_69_OUT<15>)
+     FDCE:D                    0.074          openMSP430_0/frontend_0/inst_sext_15
+    ----------------------------------------
+    Total                     29.583ns (7.473ns logic, 22.110ns route)
+                                       (25.3% logic, 74.7% route)
+
+=========================================================================
+Timing constraint: Default OFFSET IN BEFORE for Clock 'fpgaClk_i'
+  Total number of paths / destination ports: 18 / 16
+-------------------------------------------------------------------------
+Offset:              7.110ns (Levels of Logic = 6)
+  Source:            chan_io<8> (PAD)
+  Destination:       openMSP430_0/mem_backbone_0/per_dout_val_3 (FF)
+  Destination Clock: fpgaClk_i rising 1.7X
+
+  Data Path: chan_io<8> to openMSP430_0/mem_backbone_0/per_dout_val_3
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     IOBUF:IO->O           2   1.328   0.726  chan_io_8_IOBUF (N401)
+     LUT4:I3->O            2   0.254   0.954  timerA_0/cci01 (timerA_0/cci0)
+     LUT6:I3->O            1   0.235   0.682  openMSP430_0/per_dout_or<3>10 (openMSP430_0/per_dout_or<3>10)
+     LUT6:I5->O            1   0.254   1.137  openMSP430_0/per_dout_or<3>13 (openMSP430_0/per_dout_or<3>13)
+     LUT6:I0->O            1   0.254   0.958  openMSP430_0/per_dout_or<3>15 (openMSP430_0/per_dout_or<3>15)
+     LUT4:I0->O            1   0.254   0.000  openMSP430_0/per_dout_or<3>20 (openMSP430_0/per_dout_or<3>)
+     FDC:D                     0.074          openMSP430_0/mem_backbone_0/per_dout_val_3
+    ----------------------------------------
+    Total                      7.110ns (2.653ns logic, 4.457ns route)
+                                       (37.3% logic, 62.7% route)
+
+=========================================================================
+Timing constraint: Default OFFSET OUT AFTER for Clock 'fpgaClk_i'
+  Total number of paths / destination ports: 434 / 22
+-------------------------------------------------------------------------
+Offset:              9.823ns (Levels of Logic = 8)
+  Source:            led_digits/cur_led_1 (FF)
+  Destination:       chan_io<24> (PAD)
+  Source Clock:      fpgaClk_i rising 1.7X
+
+  Data Path: led_digits/cur_led_1 to chan_io<24>
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDCE:C->Q            34   0.525   1.661  led_digits/cur_led_1 (led_digits/cur_led_1)
+     LUT2:I0->O            1   0.250   0.000  led_digits/Madd_GND_46_o_GND_46_o_add_140_OUT_lut<0> (led_digits/Madd_GND_46_o_GND_46_o_add_140_OUT_lut<0>)
+     MUXCY:S->O            1   0.215   0.000  led_digits/Madd_GND_46_o_GND_46_o_add_140_OUT_cy<0> (led_digits/Madd_GND_46_o_GND_46_o_add_140_OUT_cy<0>)
+     MUXCY:CI->O           1   0.023   0.000  led_digits/Madd_GND_46_o_GND_46_o_add_140_OUT_cy<1> (led_digits/Madd_GND_46_o_GND_46_o_add_140_OUT_cy<1>)
+     XORCY:CI->O           7   0.206   1.138  led_digits/Madd_GND_46_o_GND_46_o_add_140_OUT_xor<2> (led_digits/GND_46_o_GND_46_o_add_140_OUT<2>)
+     LUT4:I1->O            1   0.235   0.682  led_digits/cur_led[3]_cur_led[2]_OR_848_o_inv1 (led_digits/cur_led[3]_cur_led[2]_OR_848_o_inv1)
+     LUT6:I5->O            1   0.254   0.790  led_digits/cur_led[3]_cur_led[2]_OR_848_o_inv2 (led_digits/cur_led[3]_cur_led[2]_OR_848_o_inv2)
+     LUT6:I4->O            1   0.250   0.681  led_digits/cur_led[3]_cur_led[2]_OR_848_o_inv3 (led_digits/cur_led[3]_cur_led[2]_OR_848_o_inv)
+     OBUFT:T->O                2.912          chan_io_24_OBUFT (chan_io<24>)
+    ----------------------------------------
+    Total                      9.823ns (4.870ns logic, 4.952ns route)
+                                       (49.6% logic, 50.4% route)
+
+=========================================================================
+
+Cross Clock Domains Report:
+--------------------------
+
+Clock to Setup on destination clock fpgaClk_i
+---------------+---------+---------+---------+---------+
+               | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
+Source Clock   |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
+---------------+---------+---------+---------+---------+
+fpgaClk_i      |   29.583|    2.848|    5.385|         |
+---------------+---------+---------+---------+---------+
+
+=========================================================================
+
+
+Total REAL time to Xst completion: 54.00 secs
+Total CPU time to Xst completion: 53.46 secs
+ 
+--> 
+
+
+Total memory usage is 470284 kilobytes
+
+Number of errors   :    0 (   0 filtered)
+Number of warnings :  260 (   0 filtered)
+Number of infos    :   37 (   0 filtered)
+

@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- IMPORTANT: This is an internal file that has been generated   -->
+<!--     by the Xilinx ISE software.  Any direct editing or        -->
+<!--     changes made to this file may result in unpredictable     -->
+<!--     behavior or data corruption.  It is strongly advised that -->
+<!--     users do not edit the contents of this file.              -->
+<!--                                                               -->
+<!-- Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.    -->
+
+<messages>
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/alias.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/io_mux.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/omsp_ps2.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/omsp_uart.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v</arg>&quot; Line <arg fmt="%d" index="2">35</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v&quot; line 35
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v</arg>&quot; Line <arg fmt="%d" index="2">49</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&quot; line 49
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/crypto_control.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/crypto_control.v</arg>&quot; Line <arg fmt="%d" index="2">1</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/crypto_control.v&quot; line 1
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v</arg>&quot; Line <arg fmt="%d" index="2">49</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&quot; line 49
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/lfsr.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v</arg>&quot; Line <arg fmt="%d" index="2">1</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v&quot; line 1
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v</arg>&quot; Line <arg fmt="%d" index="2">49</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&quot; line 49
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent.v</arg>&quot; Line <arg fmt="%d" index="2">1</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent.v&quot; line 1
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v</arg>&quot; Line <arg fmt="%d" index="2">49</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&quot; line 49
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent_datapath.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent_fsm.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent_player.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/crypto/spongent_sbox.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_alu.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_alu.v</arg>&quot; Line <arg fmt="%d" index="2">45</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_alu.v&quot; line 45
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v</arg>&quot; Line <arg fmt="%d" index="2">49</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&quot; line 49
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_alu.v</arg>&quot; Line <arg fmt="%d" index="2">257</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_alu.v&quot; line 257
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_clock_module.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_clock_module.v</arg>&quot; Line <arg fmt="%d" index="2">45</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_clock_module.v&quot; line 45
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v</arg>&quot; Line <arg fmt="%d" index="2">49</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&quot; line 49
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_clock_module.v</arg>&quot; Line <arg fmt="%d" index="2">1057</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_clock_module.v&quot; line 1057
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_dbg.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_dbg.v</arg>&quot; Line <arg fmt="%d" index="2">45</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_dbg.v&quot; line 45
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v</arg>&quot; Line <arg fmt="%d" index="2">49</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&quot; line 49
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_dbg.v</arg>&quot; Line <arg fmt="%d" index="2">826</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_dbg.v&quot; line 826
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_dbg_hwbrk.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_dbg_hwbrk.v</arg>&quot; Line <arg fmt="%d" index="2">45</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_dbg_hwbrk.v&quot; line 45
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v</arg>&quot; Line <arg fmt="%d" index="2">49</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&quot; line 49
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_dbg_hwbrk.v</arg>&quot; Line <arg fmt="%d" index="2">281</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_dbg_hwbrk.v&quot; line 281
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_dbg_uart.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_dbg_uart.v</arg>&quot; Line <arg fmt="%d" index="2">45</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_dbg_uart.v&quot; line 45
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v</arg>&quot; Line <arg fmt="%d" index="2">49</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&quot; line 49
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_dbg_uart.v</arg>&quot; Line <arg fmt="%d" index="2">297</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_dbg_uart.v&quot; line 297
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_execution_unit.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_execution_unit.v</arg>&quot; Line <arg fmt="%d" index="2">45</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_execution_unit.v&quot; line 45
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v</arg>&quot; Line <arg fmt="%d" index="2">49</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&quot; line 49
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_execution_unit.v</arg>&quot; Line <arg fmt="%d" index="2">589</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_execution_unit.v&quot; line 589
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_frontend.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_frontend.v</arg>&quot; Line <arg fmt="%d" index="2">45</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_frontend.v&quot; line 45
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v</arg>&quot; Line <arg fmt="%d" index="2">49</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&quot; line 49
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_frontend.v</arg>&quot; Line <arg fmt="%d" index="2">1037</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_frontend.v&quot; line 1037
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_mem_backbone.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_mem_backbone.v</arg>&quot; Line <arg fmt="%d" index="2">45</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_mem_backbone.v&quot; line 45
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v</arg>&quot; Line <arg fmt="%d" index="2">49</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&quot; line 49
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_mem_backbone.v</arg>&quot; Line <arg fmt="%d" index="2">289</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_mem_backbone.v&quot; line 289
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_multiplier.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_multiplier.v</arg>&quot; Line <arg fmt="%d" index="2">45</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_multiplier.v&quot; line 45
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v</arg>&quot; Line <arg fmt="%d" index="2">49</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&quot; line 49
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_multiplier.v</arg>&quot; Line <arg fmt="%d" index="2">419</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_multiplier.v&quot; line 419
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_register_file.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_register_file.v</arg>&quot; Line <arg fmt="%d" index="2">45</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_register_file.v&quot; line 45
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v</arg>&quot; Line <arg fmt="%d" index="2">49</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&quot; line 49
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_register_file.v</arg>&quot; Line <arg fmt="%d" index="2">629</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_register_file.v&quot; line 629
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_sfr.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_sfr.v</arg>&quot; Line <arg fmt="%d" index="2">46</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_sfr.v&quot; line 46
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v</arg>&quot; Line <arg fmt="%d" index="2">49</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&quot; line 49
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_sfr.v</arg>&quot; Line <arg fmt="%d" index="2">352</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_sfr.v&quot; line 352
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_spm.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_spm.v</arg>&quot; Line <arg fmt="%d" index="2">3</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_spm.v&quot; line 3
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v</arg>&quot; Line <arg fmt="%d" index="2">49</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&quot; line 49
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_spm_control.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_spm_control.v</arg>&quot; Line <arg fmt="%d" index="2">3</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_spm_control.v&quot; line 3
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v</arg>&quot; Line <arg fmt="%d" index="2">49</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&quot; line 49
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_sync_cell.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_sync_reset.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_watchdog.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_watchdog.v</arg>&quot; Line <arg fmt="%d" index="2">45</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_watchdog.v&quot; line 45
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v</arg>&quot; Line <arg fmt="%d" index="2">49</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&quot; line 49
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_watchdog.v</arg>&quot; Line <arg fmt="%d" index="2">555</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/omsp_watchdog.v&quot; line 555
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430.v</arg>&quot; Line <arg fmt="%d" index="2">45</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430.v&quot; line 45
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v</arg>&quot; Line <arg fmt="%d" index="2">49</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/config.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_defines.v&quot; line 49
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430.v</arg>&quot; Line <arg fmt="%d" index="2">622</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430_undefines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/openMSP430.v&quot; line 622
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_gpio.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_led_digits.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_spi_master.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_timerA.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_timerA.v</arg>&quot; Line <arg fmt="%d" index="2">45</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_timerA_defines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_timerA.v&quot; line 45
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_timerA_defines.v</arg>&quot; Line <arg fmt="%d" index="2">46</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_timerA_undefines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_timerA_defines.v&quot; line 46
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1065" >&quot;<arg fmt="%s" index="1">/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_timerA.v</arg>&quot; Line <arg fmt="%d" index="2">758</arg>. <arg fmt="%s" index="3">Include file found: &apos;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_timerA_undefines.v&apos; in file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_timerA.v&quot; line 758
+</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/omsp_tsc.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/spi_master.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/template_periph_16b.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openmsp430/periph/template_periph_8b.v&quot; into library work</arg>
+</msg>
+
+<msg type="info" file="ProjectMgmt" num="1845" ><arg fmt="%s" index="1">Analyzing Verilog file &quot;/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/ps2_keyboard.v&quot; into library work</arg>
+</msg>
+
+</messages>
+

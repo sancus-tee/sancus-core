@@ -1,0 +1,10 @@
+Storage Target: SPI Flash Single FPGA
+Auto Select Storage Device
+FF
+soteria-core
+/media/DATA/Documents/sancus/soteria/soteria-core/fpga/xula2-stickit/ise
+
+MCS
+
+
+MCS

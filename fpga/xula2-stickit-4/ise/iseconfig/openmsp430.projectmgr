@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--This is an ISE project configuration file.-->
+<!--It holds project specific layout data for the projectmgr plugin.-->
+<!--Copyright (c) 1995-2009 Xilinx, Inc.  All rights reserved.-->
+<Project version="2" owner="projectmgr" name="openmsp430" >
+   <!--This is an ISE project configuration file.-->
+   <ItemView engineview="SynthesisOnly" guiview="Source" compilemode="AutoCompile" >
+      <ClosedNodes>
+         <ClosedNodesVersion>2</ClosedNodesVersion>
+         <ClosedNode>/Automatic `includes</ClosedNode>
+         <ClosedNode>/omsp_ps2 |media|DATA|Documents|sancus|github|sancus-core|fpga|xula2-stickit-4|ise|rtl|verilog|omsp_ps2.v</ClosedNode>
+         <ClosedNode>/openMSP430_fpga |media|DATA|Documents|sancus|github|sancus-core|fpga|xula2-stickit-4|ise|rtl|verilog|openMSP430_fpga.v/gpio_0 - omsp_gpio</ClosedNode>
+         <ClosedNode>/openMSP430_fpga |media|DATA|Documents|sancus|github|sancus-core|fpga|xula2-stickit-4|ise|rtl|verilog|openMSP430_fpga.v/hw_uart - omsp_uart</ClosedNode>
+         <ClosedNode>/openMSP430_fpga |media|DATA|Documents|sancus|github|sancus-core|fpga|xula2-stickit-4|ise|rtl|verilog|openMSP430_fpga.v/hw_uart2 - omsp_uart</ClosedNode>
+         <ClosedNode>/openMSP430_fpga |media|DATA|Documents|sancus|github|sancus-core|fpga|xula2-stickit-4|ise|rtl|verilog|openMSP430_fpga.v/openMSP430_0 - openMSP430</ClosedNode>
+         <ClosedNode>/openMSP430_fpga |media|DATA|Documents|sancus|github|sancus-core|fpga|xula2-stickit-4|ise|rtl|verilog|openMSP430_fpga.v/spi_master - omsp_spi_master</ClosedNode>
+         <ClosedNode>/openMSP430_fpga |media|DATA|Documents|sancus|github|sancus-core|fpga|xula2-stickit-4|ise|rtl|verilog|openMSP430_fpga.v/timerA_0 - omsp_timerA</ClosedNode>
+      </ClosedNodes>
+      <SelectedItems>
+         <SelectedItem>openMSP430_fpga (/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v)</SelectedItem>
+      </SelectedItems>
+      <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
+      <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
+      <ViewHeaderState orientation="horizontal" >000000ff000000000000000100000001000000000000000000000000000000000202000000010000000100000064000001ac000000020000000000000000000000000200000064ffffffff000000810000000300000002000001ac0000000100000003000000000000000100000003</ViewHeaderState>
+      <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
+      <CurrentItem>openMSP430_fpga (/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/rtl/verilog/openMSP430_fpga.v)</CurrentItem>
+   </ItemView>
+   <ItemView engineview="SynthesisOnly" sourcetype="DESUT_VERILOG" guiview="Process" >
+      <ClosedNodes>
+         <ClosedNodesVersion>1</ClosedNodesVersion>
+         <ClosedNode>Configure Target Device</ClosedNode>
+         <ClosedNode>Design Utilities</ClosedNode>
+         <ClosedNode>Implement Design</ClosedNode>
+         <ClosedNode>Synthesize - XST</ClosedNode>
+         <ClosedNode>User Constraints</ClosedNode>
+      </ClosedNodes>
+      <SelectedItems>
+         <SelectedItem>Configure Target Device</SelectedItem>
+      </SelectedItems>
+      <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
+      <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
+      <ViewHeaderState orientation="horizontal" >000000ff0000000000000001000000010000000000000000000000000000000000000000000000017f000000010000000100000000000000000000000064ffffffff0000008100000000000000010000017f0000000100000000</ViewHeaderState>
+      <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
+      <CurrentItem>Configure Target Device</CurrentItem>
+   </ItemView>
+   <ItemView guiview="File" >
+      <ClosedNodes>
+         <ClosedNodesVersion>1</ClosedNodesVersion>
+      </ClosedNodes>
+      <SelectedItems/>
+      <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
+      <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
+      <ViewHeaderState orientation="horizontal" >000000ff000000000000000100000000000000000100000000000000000000000000000000000006d4000000040101000100000000000000000000000064ffffffff000000810000000000000004000000c500000001000000000000011b0000000100000000000000840000000100000000000004700000000100000000</ViewHeaderState>
+      <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
+      <CurrentItem>alias.v</CurrentItem>
+   </ItemView>
+   <ItemView guiview="Library" >
+      <ClosedNodes>
+         <ClosedNodesVersion>1</ClosedNodesVersion>
+         <ClosedNode>work</ClosedNode>
+      </ClosedNodes>
+      <SelectedItems/>
+      <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
+      <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
+      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000000000000010000000000000000000000000000000000000125000000010001000100000000000000000000000064ffffffff000000810000000000000001000001250000000100000000</ViewHeaderState>
+      <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
+      <CurrentItem>work</CurrentItem>
+   </ItemView>
+   <SourceProcessView>000000ff0000000000000002000001510000012001000000060100000002</SourceProcessView>
+   <CurrentView>Implementation</CurrentView>
+   <ItemView engineview="SynthesisOnly" sourcetype="" guiview="Process" >
+      <ClosedNodes>
+         <ClosedNodesVersion>1</ClosedNodesVersion>
+         <ClosedNode>Design Utilities/Compile HDL Simulation Libraries</ClosedNode>
+      </ClosedNodes>
+      <SelectedItems>
+         <SelectedItem>Design Utilities</SelectedItem>
+      </SelectedItems>
+      <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
+      <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
+      <ViewHeaderState orientation="horizontal" >000000ff0000000000000001000000010000000000000000000000000000000000000000000000017f000000010000000100000000000000000000000064ffffffff0000008100000000000000010000017f0000000100000000</ViewHeaderState>
+      <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
+      <CurrentItem>Design Utilities</CurrentItem>
+   </ItemView>
+</Project>

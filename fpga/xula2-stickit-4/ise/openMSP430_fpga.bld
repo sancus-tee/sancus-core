@@ -1,0 +1,75 @@
+Release 14.7 ngdbuild P.20131013 (lin64)
+Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
+
+Command Line: /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/unwrapped/ngdbuild -intstyle
+ise -dd _ngo -sd rtl/verilog/coregen -nt timestamp -uc openMSP430_fpga.ucf -p
+xc6slx25-ftg256-2 openMSP430_fpga.ngc openMSP430_fpga.ngd
+
+Reading NGO file
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMS
+P430_fpga.ngc" ...
+Loading design module "rtl/verilog/coregen/ram_8x8k.ngc"...
+Loading design module "rtl/verilog/coregen/rom_8x20_5k.ngc"...
+Gathering constraint information from source properties...
+Done.
+
+Annotating constraints to design from ucf file "openMSP430_fpga.ucf" ...
+Resolving constraint associations...
+Checking Constraint Associations...
+INFO:ConstraintSystem:178 - TNM 'fpgaClk_i', used in period specification
+   'TSfpgaClk_i', was traced into DCM_SP instance dcm_inst. The following new
+   TNM groups and period specifications were generated at the DCM_SP output(s): 
+   CLKFX: <TIMESPEC TS_dcm_clk = PERIOD "dcm_clk" TSfpgaClk_i * 1.666666667 HIGH
+   50%>
+
+Done...
+
+WARNING:NgdBuild:1212 - User specified non-default attribute value (83.333000)
+   was detected for the CLKIN_PERIOD attribute on DCM "dcm_inst".  This does not
+   match the PERIOD constraint value (12 MHz.).  The uncertainty calculation
+   will use the non-default attribute value.  This could result in incorrect
+   uncertainty calculated for DCM output clocks.
+Checking expanded design ...
+WARNING:NgdBuild:470 - bidirect pad net 'sdData_io<15>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'sdData_io<14>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'sdData_io<13>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'sdData_io<12>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'sdData_io<11>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'sdData_io<10>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'sdData_io<9>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'sdData_io<8>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'sdData_io<7>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'sdData_io<6>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'sdData_io<5>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'sdData_io<4>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'sdData_io<3>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'sdData_io<2>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'sdData_io<1>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'sdData_io<0>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'chan_io<31>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'chan_io<22>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'chan_io<21>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'chan_io<16>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'chan_io<15>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'chan_io<5>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'chan_io<3>' has no legal driver
+WARNING:NgdBuild:470 - bidirect pad net 'chan_io<1>' has no legal driver
+
+Partition Implementation Status
+-------------------------------
+
+  No Partitions were found in this design.
+
+-------------------------------
+
+NGDBUILD Design Results Summary:
+  Number of errors:     0
+  Number of warnings:  25
+
+Total memory usage is 436704 kilobytes
+
+Writing NGD file "openMSP430_fpga.ngd" ...
+Total REAL time to NGDBUILD completion:  4 sec
+Total CPU time to NGDBUILD completion:   4 sec
+
+Writing NGDBUILD log file "openMSP430_fpga.bld"...

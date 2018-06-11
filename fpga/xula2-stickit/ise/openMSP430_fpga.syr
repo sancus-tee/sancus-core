@@ -1,0 +1,383 @@
+Release 14.7 - xst P.20131013 (lin64)
+Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
+--> 
+Parameter TMPDIR set to xst/projnav.tmp
+
+
+Total REAL time to Xst completion: 0.00 secs
+Total CPU time to Xst completion: 0.04 secs
+ 
+--> 
+Parameter xsthdpdir set to xst
+
+
+Total REAL time to Xst completion: 0.00 secs
+Total CPU time to Xst completion: 0.04 secs
+ 
+--> 
+Reading design: openMSP430_fpga.prj
+
+TABLE OF CONTENTS
+  1) Synthesis Options Summary
+  2) HDL Parsing
+  3) HDL Elaboration
+  4) HDL Synthesis
+       4.1) HDL Synthesis Report
+  5) Advanced HDL Synthesis
+       5.1) Advanced HDL Synthesis Report
+  6) Low Level Synthesis
+  7) Partition Report
+  8) Design Summary
+       8.1) Primitive and Black Box Usage
+       8.2) Device utilization summary
+       8.3) Partition Resource Summary
+       8.4) Timing Report
+            8.4.1) Clock Information
+            8.4.2) Asynchronous Control Signals Information
+            8.4.3) Timing Summary
+            8.4.4) Timing Details
+            8.4.5) Cross Clock Domains Report
+
+
+=========================================================================
+*                      Synthesis Options Summary                        *
+=========================================================================
+---- Source Parameters
+Input File Name                    : "openMSP430_fpga.prj"
+Ignore Synthesis Constraint File   : NO
+Verilog Include Directory          : { "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430" }
+
+---- Target Parameters
+Output File Name                   : "openMSP430_fpga"
+Output Format                      : NGC
+Target Device                      : xc6slx25-2-ftg256
+
+---- Source Options
+Top Module Name                    : openMSP430_fpga
+Automatic FSM Extraction           : YES
+FSM Encoding Algorithm             : Auto
+Safe Implementation                : No
+FSM Style                          : LUT
+RAM Extraction                     : Yes
+RAM Style                          : Auto
+ROM Extraction                     : Yes
+Shift Register Extraction          : YES
+ROM Style                          : Auto
+Resource Sharing                   : YES
+Asynchronous To Synchronous        : NO
+Shift Register Minimum Size        : 2
+Use DSP Block                      : Auto
+Automatic Register Balancing       : No
+
+---- Target Options
+LUT Combining                      : Auto
+Reduce Control Sets                : Auto
+Add IO Buffers                     : YES
+Global Maximum Fanout              : 100000
+Add Generic Clock Buffer(BUFG)     : 16
+Register Duplication               : YES
+Optimize Instantiated Primitives   : NO
+Use Clock Enable                   : Auto
+Use Synchronous Set                : Auto
+Use Synchronous Reset              : Auto
+Pack IO Registers into IOBs        : Auto
+Equivalent register Removal        : YES
+
+---- General Options
+Optimization Goal                  : Speed
+Optimization Effort                : 1
+Power Reduction                    : NO
+Keep Hierarchy                     : No
+Netlist Hierarchy                  : As_Optimized
+RTL Output                         : Yes
+Global Optimization                : AllClockNets
+Read Cores                         : YES
+Write Timing Constraints           : NO
+Cross Clock Analysis               : NO
+Hierarchy Separator                : /
+Bus Delimiter                      : <>
+Case Specifier                     : Maintain
+Slice Utilization Ratio            : 100
+BRAM Utilization Ratio             : 100
+DSP48 Utilization Ratio            : 100
+Auto BRAM Packing                  : NO
+Slice Utilization Ratio Delta      : 5
+
+---- Other Options
+Cores Search Directories           : {"rtl/verilog/coregen"  }
+
+=========================================================================
+
+
+=========================================================================
+*                          HDL Parsing                                  *
+=========================================================================
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/spongent_sbox.v" into library work
+Parsing module <spongent_sbox>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/spongent_player.v" into library work
+Parsing module <spongent_player>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/lfsr.v" into library work
+Parsing module <lfsr>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/spongent_fsm.v" into library work
+Parsing module <spongent_fsm>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/spongent_datapath.v" into library work
+Parsing module <spongent_datapath>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/spongent.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 1.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <spongent>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_sync_cell.v" into library work
+Parsing module <omsp_sync_cell>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_spm.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 3.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_spm>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 1.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <sponge_wrap>.
+INFO:HDLCompiler:693 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v" Line 25. parameter declaration becomes local in sponge_wrap with formal parameter declaration list
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_sync_reset.v" into library work
+Parsing module <omsp_sync_reset>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_spm_control.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 3.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_spm_control>.
+WARNING:HDLCompiler:248 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_spm_control.v" Line 77: Block identifier is required on this block
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_register_file.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_register_file>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 627.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_dbg_uart.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_dbg_uart>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 297.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_alu.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_alu>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 257.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 1.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <crypto_control>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/ps2_keyboard.v" into library work
+Parsing module <ps2_keyboard_interface>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/periph/spi_master.v" into library work
+Parsing module <spi_master>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_watchdog.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_watchdog>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 555.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_sfr.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 46.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_sfr>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 352.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_multiplier.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_multiplier>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 419.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_mem_backbone.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_mem_backbone>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 289.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_frontend.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_frontend>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 1032.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_execution_unit.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_execution_unit>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 577.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_dbg.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_dbg>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 826.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_clock_module.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <omsp_clock_module>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 1057.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/periph/omsp_tsc.v" into library work
+Parsing module <omsp_tsc>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/periph/omsp_timerA.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/periph/omsp_timerA_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/periph/omsp_timerA_undefines.v" included at line 46.
+Parsing module <omsp_timerA>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/periph/omsp_timerA_undefines.v" included at line 758.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/periph/omsp_spi_master.v" into library work
+Parsing module <omsp_spi_master>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/periph/omsp_gpio.v" into library work
+Parsing module <omsp_gpio>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 45.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <openMSP430>.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_undefines.v" included at line 609.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/omsp_uart.v" into library work
+Parsing module <omsp_uart>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/omsp_ps2.v" into library work
+Parsing module <omsp_ps2>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/io_mux.v" into library work
+Parsing module <io_mux>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/alias.v" into library work
+Parsing module <alias>.
+Analyzing Verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" into library work
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/openMSP430_defines.v" included at line 35.
+Parsing verilog file "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/config.v" included at line 49.
+Parsing module <openMSP430_fpga>.
+
+=========================================================================
+*                            HDL Elaboration                            *
+=========================================================================
+WARNING:HDLCompiler:1016 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 184: Port CLK180 is not connected to this instance
+WARNING:HDLCompiler:1016 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 233: Port aclk is not connected to this instance
+
+Elaborating module <openMSP430_fpga>.
+
+Elaborating module <alias>.
+
+Elaborating module <IBUFG>.
+
+Elaborating module <DCM_SP(CLKFX_MULTIPLY=5,CLKFX_DIVIDE=3,CLKIN_PERIOD=83.333)>.
+
+Elaborating module <BUFG>.
+
+Elaborating module <openMSP430>.
+
+Elaborating module <omsp_clock_module>.
+
+Elaborating module <omsp_sync_cell>.
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_clock_module.v" Line 509: Assignment to cpu_en_wkup ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_clock_module.v" Line 562: Assignment to nodiv_mclk_n ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_clock_module.v" Line 577: Assignment to mclk_wkup_s ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_clock_module.v" Line 755: Assignment to nodiv_smclk ignored, since the identifier is never used
+
+Elaborating module <omsp_sync_reset>.
+
+Elaborating module <omsp_frontend>.
+
+Elaborating module <omsp_execution_unit>.
+
+Elaborating module <omsp_register_file>.
+
+Elaborating module <omsp_alu>.
+
+Elaborating module <omsp_spm_control(KEY_IDX_SIZE=3)>.
+
+Elaborating module <omsp_spm(KEY_IDX_SIZE=3)>.
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_spm.v" Line 97. $display New SM config: 0 0 0 0
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_spm.v" Line 101. $display Invalid SM config: 0 0 0 0
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_spm.v" Line 112. $display SM disabled
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_spm.v" Line 136. $display mem violation @0, from 0
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_spm.v" Line 138. $display exec violation 0 -> 0
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_spm.v" Line 141. $display create violation:
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_spm.v" Line 142. $display \tme:  0 0 0 0
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_spm.v" Line 143. $display \tnew: 0 0 0 0
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/omsp_execution_unit.v" Line 522: Assignment to sm_current_id ignored, since the identifier is never used
+
+Elaborating module <crypto_control(KEY_IDX_SIZE=3)>.
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" Line 272: Result of 17-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" Line 498: Result of 17-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" Line 519: Result of 17-bit expression is truncated to fit in 16-bit target.
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" Line 550: Result of 4-bit expression is truncated to fit in 3-bit target.
+WARNING:HDLCompiler:1625 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" Line 605: Canot display values larger than 32 bits in h/d/o/x format
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/crypto_control.v" Line 605. $display Key: < ??? >
+
+Elaborating module <sponge_wrap(RATE=16,SECURITY=64)>.
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v" Line 235. $display === SpongeWrap parameters ===
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v" Line 236. $display Rate:           16
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v" Line 237. $display Security:       64
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v" Line 238. $display Blocks in key:   4
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v" Line 239. $display =============================
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/sponge_wrap.v" Line 185: Result of 4-bit expression is truncated to fit in 3-bit target.
+
+Elaborating module <spongent(RATE=18,MIN_CAPACITY=128)>.
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/spongent.v" Line 138. $display === Spongent parameters ===
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/spongent.v" Line 139. $display Rate:        18
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/spongent.v" Line 140. $display State size: 176
+"/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/crypto/spongent.v" Line 141. $display ===========================
+
+Elaborating module <spongent_fsm>.
+
+Elaborating module <spongent_datapath(STATE_SIZE=176,RATE=18,LFSR_POLY=8'b11000001,LFSR_INIT=7'b1000101,LFSR_SIZE=7)>.
+
+Elaborating module <spongent_player(SPONGENT_B=176)>.
+
+Elaborating module <lfsr(LFSR_POLY=8'b11000001,LFSR_INIT=7'b1000101,LFSR_SIZE=7)>.
+
+Elaborating module <spongent_sbox>.
+
+Elaborating module <omsp_mem_backbone>.
+
+Elaborating module <omsp_sfr>.
+
+Elaborating module <omsp_watchdog>.
+
+Elaborating module <omsp_multiplier>.
+
+Elaborating module <omsp_dbg>.
+
+Elaborating module <omsp_dbg_uart>.
+
+Elaborating module <omsp_gpio(P1_EN=1,P2_EN=1,P3_EN=1,P4_EN=1,P5_EN=0,P6_EN=0)>.
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 295: Assignment to p3_dout ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 296: Assignment to p3_dout_en ignored, since the identifier is never used
+
+Elaborating module <omsp_timerA>.
+
+Elaborating module <omsp_uart(BASE_ADDR=15'b010000000)>.
+
+Elaborating module <omsp_uart(BASE_ADDR=15'b010001000)>.
+
+Elaborating module <omsp_ps2>.
+
+Elaborating module <ps2_keyboard_interface>.
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/ps2_keyboard.v" Line 452: Result of 5-bit expression is truncated to fit in 4-bit target.
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/ps2_keyboard.v" Line 481: Result of 13-bit expression is truncated to fit in 12-bit target.
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/ps2_keyboard.v" Line 489: Result of 9-bit expression is truncated to fit in 8-bit target.
+WARNING:HDLCompiler:634 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/omsp_ps2.v" Line 108: Net <ps2_busy> does not have a driver.
+WARNING:HDLCompiler:634 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/omsp_ps2.v" Line 109: Net <ps2_error> does not have a driver.
+
+Elaborating module <omsp_tsc>.
+
+Elaborating module <omsp_spi_master>.
+
+Elaborating module <spi_master>.
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/periph/spi_master.v" Line 99: Result of 9-bit expression is truncated to fit in 8-bit target.
+WARNING:HDLCompiler:413 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openmsp430/periph/spi_master.v" Line 146: Result of 5-bit expression is truncated to fit in 4-bit target.
+
+Elaborating module <io_mux(WIDTH=8)>.
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 527: Assignment to p1_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 526: Assignment to p1_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 525: Assignment to p1_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 524: Assignment to p1_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 583: Assignment to p2_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 580: Assignment to p2_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 579: Assignment to p2_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 578: Assignment to p2_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 577: Assignment to p2_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 576: Assignment to p2_io_mux_b_unconnected ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 605: Assignment to p2_io_dout ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 606: Assignment to p2_io_dout_en ignored, since the identifier is never used
+ERROR:HDLCompiler:1654 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 642: Instantiating <ram_hi> from unknown module <ram_8x12k>
+Module openMSP430_fpga remains a blackbox, due to errors in its contents
+WARNING:HDLCompiler:1499 - "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit/ise/rtl/verilog/openMSP430_fpga.v" Line 37: Empty module <openMSP430_fpga> remains a black box.
+--> 
+
+
+Total memory usage is 348400 kilobytes
+
+Number of errors   :    1 (   0 filtered)
+Number of warnings :   36 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+

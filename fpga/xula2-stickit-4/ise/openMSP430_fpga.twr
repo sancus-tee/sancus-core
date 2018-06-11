@@ -1,0 +1,1169 @@
+--------------------------------------------------------------------------------
+Release 14.7 Trace  (lin64)
+Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
+
+/opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/unwrapped/trce -intstyle ise -v 3 -s 2 -n
+3 -fastpaths -xml openMSP430_fpga.twx openMSP430_fpga.ncd -o
+openMSP430_fpga.twr openMSP430_fpga.pcf -ucf openMSP430_fpga.ucf
+
+Design file:              openMSP430_fpga.ncd
+Physical constraint file: openMSP430_fpga.pcf
+Device,package,speed:     xc6slx25,ftg256,C,-2 (PRODUCTION 1.23 2013-10-13)
+Report level:             verbose report
+
+Environment Variable      Effect 
+--------------------      ------ 
+NONE                      No environment variables were set
+--------------------------------------------------------------------------------
+
+INFO:Timing:3412 - To improve timing, see the Timing Closure User Guide (UG612).
+INFO:Timing:2752 - To get complete path coverage, use the unconstrained paths 
+   option. All paths that are not constrained will be reported in the 
+   unconstrained paths section(s) of the report.
+INFO:Timing:3339 - The clock-to-out numbers in this timing report are based on 
+   a 50 Ohm transmission line loading model.  For the details of this model, 
+   and for more information on accounting for different loading conditions, 
+   please see the device datasheet.
+3 logic loops found and disabled.
+
+  ----------------------------------------------------------------------
+ ! Warning: The following connections close logic loops, and some paths !
+ !          through these connections may not be analyzed. To better    !
+ !          understand the logic associated with these loops, run a     !
+ !          Analyze Against User-Defined End-Point Analysis inside      !
+ !          Timing Analyzer (timingan) with the listed signal as a      !
+ !          source NET (*signal_name). The Timing Report will display   !
+ !          all the paths associated with this signal and the logic     !
+ !          loop will be reported.                                      !
+ !                                                                      !
+ ! Signal                            Driver            Load             !
+ ! --------------------------------  ----------------  ---------------- !
+ ! openMSP430_0/dbg_halt_cmd         SLICE_X18Y46.D    SLICE_X18Y36.B1  !
+ ! openMSP430_0/exec_done            SLICE_X18Y46.A    SLICE_X18Y36.B2  !
+ ! openMSP430_0/dbg_halt_cmd         SLICE_X18Y46.D    SLICE_X19Y41.D2  !
+  ---------------------------------------------------------------------- 
+
+
+================================================================================
+Timing constraint: TSfpgaClk_i = PERIOD TIMEGRP "fpgaClk_i" 12 MHz HIGH 50%;
+For more information, see Period Analysis in the Timing Closure User Guide (UG612).
+
+ 0 paths analyzed, 0 endpoints analyzed, 0 failing endpoints
+ 0 timing errors detected. (0 component switching limit errors)
+ Minimum period is  32.000ns.
+--------------------------------------------------------------------------------
+
+Component Switching Limit Checks: TSfpgaClk_i = PERIOD TIMEGRP "fpgaClk_i" 12 MHz HIGH 50%;
+--------------------------------------------------------------------------------
+Slack: 47.000ns (period - min period limit)
+  Period: 50.000ns
+  Min period limit: 3.000ns (333.333MHz) (Tdcmper_CLKFX)
+  Physical resource: dcm_inst/CLKFX
+  Logical resource: dcm_inst/CLKFX
+  Location pin: DCM_X0Y2.CLKFX
+  Clock network: dcm_clk
+--------------------------------------------------------------------------------
+Slack: 51.333ns (period - (min low pulse limit / (low pulse / period)))
+  Period: 83.333ns
+  Low pulse: 41.666ns
+  Low pulse limit: 16.000ns (Tdcmpw_CLKIN_10_25)
+  Physical resource: dcm_inst/CLKIN
+  Logical resource: dcm_inst/CLKIN
+  Location pin: DCM_X0Y2.CLKIN
+  Clock network: dcm_inst_ML_NEW_DIVCLK
+--------------------------------------------------------------------------------
+Slack: 51.333ns (period - (min high pulse limit / (high pulse / period)))
+  Period: 83.333ns
+  High pulse: 41.666ns
+  High pulse limit: 16.000ns (Tdcmpw_CLKIN_10_25)
+  Physical resource: dcm_inst/CLKIN
+  Logical resource: dcm_inst/CLKIN
+  Location pin: DCM_X0Y2.CLKIN
+  Clock network: dcm_inst_ML_NEW_DIVCLK
+--------------------------------------------------------------------------------
+
+================================================================================
+Timing constraint: TS_dcm_clk = PERIOD TIMEGRP "dcm_clk" TSfpgaClk_i * 
+1.66666667 HIGH 50%;
+For more information, see Period Analysis in the Timing Closure User Guide (UG612).
+
+ 13107820350 paths analyzed, 17439 endpoints analyzed, 0 failing endpoints
+ 0 timing errors detected. (0 setup errors, 0 hold errors, 0 component switching limit errors)
+ Minimum period is  38.166ns.
+--------------------------------------------------------------------------------
+
+Paths for end point rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram (RAMB16_X0Y26.ADDRA12), 17337690 paths
+--------------------------------------------------------------------------------
+Slack (setup path):     11.834ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               openMSP430_0/dbg_0/mem_addr_3 (FF)
+  Destination:          rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram (RAM)
+  Requirement:          50.000ns
+  Data Path Delay:      37.762ns (Levels of Logic = 23)
+  Clock Path Skew:      0.154ns (0.482 - 0.328)
+  Source Clock:         clk_sys rising at 0.000ns
+  Destination Clock:    clk_sys rising at 50.000ns
+  Clock Uncertainty:    0.558ns
+
+  Clock Uncertainty:          0.558ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Total Input Jitter (TIJ):   0.000ns
+    Discrete Jitter (DJ):       1.045ns
+    Phase Error (PE):           0.000ns
+
+  Maximum Data Path at Slow Process Corner: openMSP430_0/dbg_0/mem_addr_3 to rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X28Y48.DQ      Tcko                  0.476   openMSP430_0/dbg_0/mem_addr<3>
+                                                       openMSP430_0/dbg_0/mem_addr_3
+    SLICE_X42Y29.D3      net (fanout=15)       3.583   openMSP430_0/dbg_0/mem_addr<3>
+    SLICE_X42Y29.D       Tilo                  0.254   openMSP430_0/frontend_0/_n0753<3>1
+                                                       openMSP430_0/frontend_0/_n0753<3>11
+    SLICE_X40Y27.C6      net (fanout=3)        0.577   openMSP430_0/frontend_0/_n0753<3>1
+    SLICE_X40Y27.C       Tilo                  0.235   openMSP430_0/execution_unit_0/Mmux_dest_reg11
+                                                       openMSP430_0/execution_unit_0/Mmux_dest_reg13
+    SLICE_X36Y26.A1      net (fanout=25)       1.176   openMSP430_0/execution_unit_0/dest_reg<6>
+    SLICE_X36Y26.A       Tilo                  0.235   openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>3
+                                                       openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>5
+    SLICE_X31Y32.A3      net (fanout=1)        1.747   openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>4
+    SLICE_X31Y32.A       Tilo                  0.259   N777
+                                                       openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>7
+    SLICE_X27Y40.C3      net (fanout=4)        1.329   openMSP430_0/dbg_reg_din<7>
+    SLICE_X27Y40.C       Tilo                  0.259   N778
+                                                       openMSP430_0/execution_unit_0/Mmux_op_dst271_SW1
+    SLICE_X31Y32.C3      net (fanout=1)        1.798   N778
+    SLICE_X31Y32.C       Tilo                  0.259   N777
+                                                       openMSP430_0/execution_unit_0/Mmux_op_dst272
+    SLICE_X30Y35.DX      net (fanout=9)        1.421   openMSP430_0/execution_unit_0/op_dst<7>
+    SLICE_X30Y35.COUT    Tdxcy                 0.109   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+    SLICE_X30Y36.CIN     net (fanout=1)        0.003   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+    SLICE_X30Y36.COUT    Tbyp                  0.093   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+    SLICE_X30Y37.CIN     net (fanout=1)        0.003   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+    SLICE_X30Y37.CMUX    Tcinc                 0.279   openMSP430_0/execution_unit_0/alu_out_add<15>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<15>
+    SLICE_X24Y25.C4      net (fanout=4)        1.831   openMSP430_0/execution_unit_0/alu_out_add<14>
+    SLICE_X24Y25.C       Tilo                  0.235   openMSP430_0/execution_unit_0/crypto/mab_select_cipher
+                                                       openMSP430_0/execution_unit_0/Mmux_mab61_1
+    SLICE_X37Y33.D1      net (fanout=2)        1.892   openMSP430_0/execution_unit_0/Mmux_mab61
+    SLICE_X37Y33.D       Tilo                  0.259   openMSP430_0/mem_backbone_0/eu_mdb_in_sel<1>
+                                                       openMSP430_0/mem_backbone_0/eu_mb_en_GND_28_o_AND_834_o
+    SLICE_X14Y38.C4      net (fanout=30)       2.865   openMSP430_0/mem_backbone_0/eu_mb_en_GND_28_o_AND_834_o
+    SLICE_X14Y38.CMUX    Tilo                  0.326   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In13_SW1
+    SLICE_X14Y38.A2      net (fanout=1)        1.159   N1100
+    SLICE_X14Y38.A       Tilo                  0.254   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In13
+    SLICE_X14Y38.B6      net (fanout=1)        0.143   openMSP430_0/frontend_0/e_state_FSM_FFd4-In13
+    SLICE_X14Y38.B       Tilo                  0.254   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In14
+    SLICE_X19Y38.C2      net (fanout=2)        1.324   openMSP430_0/frontend_0/e_state_FSM_FFd4-In
+    SLICE_X19Y38.C       Tilo                  0.259   openMSP430_0/frontend_0/e_state_FSM_FFd3
+                                                       openMSP430_0/frontend_0/Mmux_exec_done26
+    SLICE_X18Y46.A1      net (fanout=1)        1.267   openMSP430_0/frontend_0/Mmux_exec_done25
+    SLICE_X18Y46.A       Tilo                  0.254   openMSP430_0/dbg_halt_cmd
+                                                       openMSP430_0/frontend_0/Mmux_exec_done27
+    SLICE_X20Y38.D5      net (fanout=13)       1.375   openMSP430_0/exec_done
+    SLICE_X20Y38.D       Tilo                  0.235   openMSP430_0/frontend_0/fetch
+                                                       openMSP430_0/frontend_0/fetch
+    SLICE_X20Y33.A2      net (fanout=3)        0.943   openMSP430_0/frontend_0/fetch
+    SLICE_X20Y33.COUT    Topcya                0.472   openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_lut<1>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+    SLICE_X20Y34.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+    SLICE_X20Y34.COUT    Tbyp                  0.091   openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+    SLICE_X20Y35.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+    SLICE_X20Y35.COUT    Tbyp                  0.091   openMSP430_0/frontend_0/Madd_pc_incr_cy<12>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<12>
+    SLICE_X20Y36.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<12>
+    SLICE_X20Y36.AMUX    Tcina                 0.210   openMSP430_0/frontend_0/pc_incr<15>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_xor<15>
+    SLICE_X19Y36.B4      net (fanout=2)        0.586   openMSP430_0/frontend_0/pc_incr<13>
+    SLICE_X19Y36.B       Tilo                  0.259   openMSP430_0/frontend_0/pc<15>
+                                                       openMSP430_0/frontend_0/Mmux_pc_nxt51
+    SLICE_X32Y37.C6      net (fanout=7)        1.680   openMSP430_0/fe_mab<13>
+    SLICE_X32Y37.C       Tilo                  0.235   rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/has_mux_a.A/sel_pipe<2>
+                                                       openMSP430_0/mem_backbone_0/Mmux_pmem_addr_rs_xor<12>13
+    RAMB16_X0Y26.ADDRA12 net (fanout=21)       4.759   pmem_addr<12>
+    RAMB16_X0Y26.CLKA    Trcck_ADDRA           0.400   rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+                                                       rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+    -------------------------------------------------  ---------------------------
+    Total                                     37.762ns (6.292ns logic, 31.470ns route)
+                                                       (16.7% logic, 83.3% route)
+
+--------------------------------------------------------------------------------
+Slack (setup path):     11.919ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               openMSP430_0/dbg_0/mem_addr_3 (FF)
+  Destination:          rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram (RAM)
+  Requirement:          50.000ns
+  Data Path Delay:      37.677ns (Levels of Logic = 23)
+  Clock Path Skew:      0.154ns (0.482 - 0.328)
+  Source Clock:         clk_sys rising at 0.000ns
+  Destination Clock:    clk_sys rising at 50.000ns
+  Clock Uncertainty:    0.558ns
+
+  Clock Uncertainty:          0.558ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Total Input Jitter (TIJ):   0.000ns
+    Discrete Jitter (DJ):       1.045ns
+    Phase Error (PE):           0.000ns
+
+  Maximum Data Path at Slow Process Corner: openMSP430_0/dbg_0/mem_addr_3 to rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X28Y48.DQ      Tcko                  0.476   openMSP430_0/dbg_0/mem_addr<3>
+                                                       openMSP430_0/dbg_0/mem_addr_3
+    SLICE_X43Y29.D6      net (fanout=15)       3.549   openMSP430_0/dbg_0/mem_addr<3>
+    SLICE_X43Y29.D       Tilo                  0.259   openMSP430_0/frontend_0/_n0755<3>1
+                                                       openMSP430_0/frontend_0/_n0755<3>11
+    SLICE_X40Y27.B4      net (fanout=3)        0.736   openMSP430_0/frontend_0/_n0755<3>1
+    SLICE_X40Y27.B       Tilo                  0.235   openMSP430_0/execution_unit_0/Mmux_dest_reg11
+                                                       openMSP430_0/execution_unit_0/Mmux_dest_reg12
+    SLICE_X36Y26.A3      net (fanout=25)       0.961   openMSP430_0/execution_unit_0/dest_reg<5>
+    SLICE_X36Y26.A       Tilo                  0.235   openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>3
+                                                       openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>5
+    SLICE_X31Y32.A3      net (fanout=1)        1.747   openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>4
+    SLICE_X31Y32.A       Tilo                  0.259   N777
+                                                       openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>7
+    SLICE_X27Y40.C3      net (fanout=4)        1.329   openMSP430_0/dbg_reg_din<7>
+    SLICE_X27Y40.C       Tilo                  0.259   N778
+                                                       openMSP430_0/execution_unit_0/Mmux_op_dst271_SW1
+    SLICE_X31Y32.C3      net (fanout=1)        1.798   N778
+    SLICE_X31Y32.C       Tilo                  0.259   N777
+                                                       openMSP430_0/execution_unit_0/Mmux_op_dst272
+    SLICE_X30Y35.DX      net (fanout=9)        1.421   openMSP430_0/execution_unit_0/op_dst<7>
+    SLICE_X30Y35.COUT    Tdxcy                 0.109   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+    SLICE_X30Y36.CIN     net (fanout=1)        0.003   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+    SLICE_X30Y36.COUT    Tbyp                  0.093   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+    SLICE_X30Y37.CIN     net (fanout=1)        0.003   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+    SLICE_X30Y37.CMUX    Tcinc                 0.279   openMSP430_0/execution_unit_0/alu_out_add<15>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<15>
+    SLICE_X24Y25.C4      net (fanout=4)        1.831   openMSP430_0/execution_unit_0/alu_out_add<14>
+    SLICE_X24Y25.C       Tilo                  0.235   openMSP430_0/execution_unit_0/crypto/mab_select_cipher
+                                                       openMSP430_0/execution_unit_0/Mmux_mab61_1
+    SLICE_X37Y33.D1      net (fanout=2)        1.892   openMSP430_0/execution_unit_0/Mmux_mab61
+    SLICE_X37Y33.D       Tilo                  0.259   openMSP430_0/mem_backbone_0/eu_mdb_in_sel<1>
+                                                       openMSP430_0/mem_backbone_0/eu_mb_en_GND_28_o_AND_834_o
+    SLICE_X14Y38.C4      net (fanout=30)       2.865   openMSP430_0/mem_backbone_0/eu_mb_en_GND_28_o_AND_834_o
+    SLICE_X14Y38.CMUX    Tilo                  0.326   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In13_SW1
+    SLICE_X14Y38.A2      net (fanout=1)        1.159   N1100
+    SLICE_X14Y38.A       Tilo                  0.254   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In13
+    SLICE_X14Y38.B6      net (fanout=1)        0.143   openMSP430_0/frontend_0/e_state_FSM_FFd4-In13
+    SLICE_X14Y38.B       Tilo                  0.254   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In14
+    SLICE_X19Y38.C2      net (fanout=2)        1.324   openMSP430_0/frontend_0/e_state_FSM_FFd4-In
+    SLICE_X19Y38.C       Tilo                  0.259   openMSP430_0/frontend_0/e_state_FSM_FFd3
+                                                       openMSP430_0/frontend_0/Mmux_exec_done26
+    SLICE_X18Y46.A1      net (fanout=1)        1.267   openMSP430_0/frontend_0/Mmux_exec_done25
+    SLICE_X18Y46.A       Tilo                  0.254   openMSP430_0/dbg_halt_cmd
+                                                       openMSP430_0/frontend_0/Mmux_exec_done27
+    SLICE_X20Y38.D5      net (fanout=13)       1.375   openMSP430_0/exec_done
+    SLICE_X20Y38.D       Tilo                  0.235   openMSP430_0/frontend_0/fetch
+                                                       openMSP430_0/frontend_0/fetch
+    SLICE_X20Y33.A2      net (fanout=3)        0.943   openMSP430_0/frontend_0/fetch
+    SLICE_X20Y33.COUT    Topcya                0.472   openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_lut<1>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+    SLICE_X20Y34.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+    SLICE_X20Y34.COUT    Tbyp                  0.091   openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+    SLICE_X20Y35.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+    SLICE_X20Y35.COUT    Tbyp                  0.091   openMSP430_0/frontend_0/Madd_pc_incr_cy<12>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<12>
+    SLICE_X20Y36.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<12>
+    SLICE_X20Y36.AMUX    Tcina                 0.210   openMSP430_0/frontend_0/pc_incr<15>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_xor<15>
+    SLICE_X19Y36.B4      net (fanout=2)        0.586   openMSP430_0/frontend_0/pc_incr<13>
+    SLICE_X19Y36.B       Tilo                  0.259   openMSP430_0/frontend_0/pc<15>
+                                                       openMSP430_0/frontend_0/Mmux_pc_nxt51
+    SLICE_X32Y37.C6      net (fanout=7)        1.680   openMSP430_0/fe_mab<13>
+    SLICE_X32Y37.C       Tilo                  0.235   rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/has_mux_a.A/sel_pipe<2>
+                                                       openMSP430_0/mem_backbone_0/Mmux_pmem_addr_rs_xor<12>13
+    RAMB16_X0Y26.ADDRA12 net (fanout=21)       4.759   pmem_addr<12>
+    RAMB16_X0Y26.CLKA    Trcck_ADDRA           0.400   rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+                                                       rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+    -------------------------------------------------  ---------------------------
+    Total                                     37.677ns (6.297ns logic, 31.380ns route)
+                                                       (16.7% logic, 83.3% route)
+
+--------------------------------------------------------------------------------
+Slack (setup path):     11.985ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               openMSP430_0/dbg_0/mem_addr_3 (FF)
+  Destination:          rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram (RAM)
+  Requirement:          50.000ns
+  Data Path Delay:      37.611ns (Levels of Logic = 23)
+  Clock Path Skew:      0.154ns (0.482 - 0.328)
+  Source Clock:         clk_sys rising at 0.000ns
+  Destination Clock:    clk_sys rising at 50.000ns
+  Clock Uncertainty:    0.558ns
+
+  Clock Uncertainty:          0.558ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Total Input Jitter (TIJ):   0.000ns
+    Discrete Jitter (DJ):       1.045ns
+    Phase Error (PE):           0.000ns
+
+  Maximum Data Path at Slow Process Corner: openMSP430_0/dbg_0/mem_addr_3 to rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X28Y48.DQ      Tcko                  0.476   openMSP430_0/dbg_0/mem_addr<3>
+                                                       openMSP430_0/dbg_0/mem_addr_3
+    SLICE_X43Y29.B1      net (fanout=15)       3.743   openMSP430_0/dbg_0/mem_addr<3>
+    SLICE_X43Y29.B       Tilo                  0.259   openMSP430_0/frontend_0/_n0755<3>1
+                                                       openMSP430_0/frontend_0/_n0751<3>11
+    SLICE_X39Y28.A3      net (fanout=4)        0.864   openMSP430_0/frontend_0/_n0751<3>1
+    SLICE_X39Y28.A       Tilo                  0.259   openMSP430_0/execution_unit_0/register_file_0/reg_dest<8>3
+                                                       openMSP430_0/execution_unit_0/Mmux_dest_reg16
+    SLICE_X36Y26.B1      net (fanout=24)       1.044   openMSP430_0/execution_unit_0/dest_reg<9>
+    SLICE_X36Y26.B       Tilo                  0.235   openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>3
+                                                       openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>4
+    SLICE_X31Y32.A2      net (fanout=1)        1.252   openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>3
+    SLICE_X31Y32.A       Tilo                  0.259   N777
+                                                       openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>7
+    SLICE_X27Y40.C3      net (fanout=4)        1.329   openMSP430_0/dbg_reg_din<7>
+    SLICE_X27Y40.C       Tilo                  0.259   N778
+                                                       openMSP430_0/execution_unit_0/Mmux_op_dst271_SW1
+    SLICE_X31Y32.C3      net (fanout=1)        1.798   N778
+    SLICE_X31Y32.C       Tilo                  0.259   N777
+                                                       openMSP430_0/execution_unit_0/Mmux_op_dst272
+    SLICE_X30Y35.DX      net (fanout=9)        1.421   openMSP430_0/execution_unit_0/op_dst<7>
+    SLICE_X30Y35.COUT    Tdxcy                 0.109   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+    SLICE_X30Y36.CIN     net (fanout=1)        0.003   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+    SLICE_X30Y36.COUT    Tbyp                  0.093   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+    SLICE_X30Y37.CIN     net (fanout=1)        0.003   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+    SLICE_X30Y37.CMUX    Tcinc                 0.279   openMSP430_0/execution_unit_0/alu_out_add<15>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<15>
+    SLICE_X24Y25.C4      net (fanout=4)        1.831   openMSP430_0/execution_unit_0/alu_out_add<14>
+    SLICE_X24Y25.C       Tilo                  0.235   openMSP430_0/execution_unit_0/crypto/mab_select_cipher
+                                                       openMSP430_0/execution_unit_0/Mmux_mab61_1
+    SLICE_X37Y33.D1      net (fanout=2)        1.892   openMSP430_0/execution_unit_0/Mmux_mab61
+    SLICE_X37Y33.D       Tilo                  0.259   openMSP430_0/mem_backbone_0/eu_mdb_in_sel<1>
+                                                       openMSP430_0/mem_backbone_0/eu_mb_en_GND_28_o_AND_834_o
+    SLICE_X14Y38.C4      net (fanout=30)       2.865   openMSP430_0/mem_backbone_0/eu_mb_en_GND_28_o_AND_834_o
+    SLICE_X14Y38.CMUX    Tilo                  0.326   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In13_SW1
+    SLICE_X14Y38.A2      net (fanout=1)        1.159   N1100
+    SLICE_X14Y38.A       Tilo                  0.254   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In13
+    SLICE_X14Y38.B6      net (fanout=1)        0.143   openMSP430_0/frontend_0/e_state_FSM_FFd4-In13
+    SLICE_X14Y38.B       Tilo                  0.254   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In14
+    SLICE_X19Y38.C2      net (fanout=2)        1.324   openMSP430_0/frontend_0/e_state_FSM_FFd4-In
+    SLICE_X19Y38.C       Tilo                  0.259   openMSP430_0/frontend_0/e_state_FSM_FFd3
+                                                       openMSP430_0/frontend_0/Mmux_exec_done26
+    SLICE_X18Y46.A1      net (fanout=1)        1.267   openMSP430_0/frontend_0/Mmux_exec_done25
+    SLICE_X18Y46.A       Tilo                  0.254   openMSP430_0/dbg_halt_cmd
+                                                       openMSP430_0/frontend_0/Mmux_exec_done27
+    SLICE_X20Y38.D5      net (fanout=13)       1.375   openMSP430_0/exec_done
+    SLICE_X20Y38.D       Tilo                  0.235   openMSP430_0/frontend_0/fetch
+                                                       openMSP430_0/frontend_0/fetch
+    SLICE_X20Y33.A2      net (fanout=3)        0.943   openMSP430_0/frontend_0/fetch
+    SLICE_X20Y33.COUT    Topcya                0.472   openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_lut<1>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+    SLICE_X20Y34.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+    SLICE_X20Y34.COUT    Tbyp                  0.091   openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+    SLICE_X20Y35.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+    SLICE_X20Y35.COUT    Tbyp                  0.091   openMSP430_0/frontend_0/Madd_pc_incr_cy<12>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<12>
+    SLICE_X20Y36.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<12>
+    SLICE_X20Y36.AMUX    Tcina                 0.210   openMSP430_0/frontend_0/pc_incr<15>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_xor<15>
+    SLICE_X19Y36.B4      net (fanout=2)        0.586   openMSP430_0/frontend_0/pc_incr<13>
+    SLICE_X19Y36.B       Tilo                  0.259   openMSP430_0/frontend_0/pc<15>
+                                                       openMSP430_0/frontend_0/Mmux_pc_nxt51
+    SLICE_X32Y37.C6      net (fanout=7)        1.680   openMSP430_0/fe_mab<13>
+    SLICE_X32Y37.C       Tilo                  0.235   rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/has_mux_a.A/sel_pipe<2>
+                                                       openMSP430_0/mem_backbone_0/Mmux_pmem_addr_rs_xor<12>13
+    RAMB16_X0Y26.ADDRA12 net (fanout=21)       4.759   pmem_addr<12>
+    RAMB16_X0Y26.CLKA    Trcck_ADDRA           0.400   rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+                                                       rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+    -------------------------------------------------  ---------------------------
+    Total                                     37.611ns (6.321ns logic, 31.290ns route)
+                                                       (16.8% logic, 83.2% route)
+
+--------------------------------------------------------------------------------
+
+Paths for end point rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram (RAMB16_X0Y26.ADDRA6), 3967085 paths
+--------------------------------------------------------------------------------
+Slack (setup path):     11.903ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               openMSP430_0/dbg_0/mem_addr_3 (FF)
+  Destination:          rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram (RAM)
+  Requirement:          50.000ns
+  Data Path Delay:      37.693ns (Levels of Logic = 21)
+  Clock Path Skew:      0.154ns (0.482 - 0.328)
+  Source Clock:         clk_sys rising at 0.000ns
+  Destination Clock:    clk_sys rising at 50.000ns
+  Clock Uncertainty:    0.558ns
+
+  Clock Uncertainty:          0.558ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Total Input Jitter (TIJ):   0.000ns
+    Discrete Jitter (DJ):       1.045ns
+    Phase Error (PE):           0.000ns
+
+  Maximum Data Path at Slow Process Corner: openMSP430_0/dbg_0/mem_addr_3 to rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X28Y48.DQ      Tcko                  0.476   openMSP430_0/dbg_0/mem_addr<3>
+                                                       openMSP430_0/dbg_0/mem_addr_3
+    SLICE_X42Y29.D3      net (fanout=15)       3.583   openMSP430_0/dbg_0/mem_addr<3>
+    SLICE_X42Y29.D       Tilo                  0.254   openMSP430_0/frontend_0/_n0753<3>1
+                                                       openMSP430_0/frontend_0/_n0753<3>11
+    SLICE_X40Y27.C6      net (fanout=3)        0.577   openMSP430_0/frontend_0/_n0753<3>1
+    SLICE_X40Y27.C       Tilo                  0.235   openMSP430_0/execution_unit_0/Mmux_dest_reg11
+                                                       openMSP430_0/execution_unit_0/Mmux_dest_reg13
+    SLICE_X36Y26.A1      net (fanout=25)       1.176   openMSP430_0/execution_unit_0/dest_reg<6>
+    SLICE_X36Y26.A       Tilo                  0.235   openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>3
+                                                       openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>5
+    SLICE_X31Y32.A3      net (fanout=1)        1.747   openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>4
+    SLICE_X31Y32.A       Tilo                  0.259   N777
+                                                       openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>7
+    SLICE_X27Y40.C3      net (fanout=4)        1.329   openMSP430_0/dbg_reg_din<7>
+    SLICE_X27Y40.C       Tilo                  0.259   N778
+                                                       openMSP430_0/execution_unit_0/Mmux_op_dst271_SW1
+    SLICE_X31Y32.C3      net (fanout=1)        1.798   N778
+    SLICE_X31Y32.C       Tilo                  0.259   N777
+                                                       openMSP430_0/execution_unit_0/Mmux_op_dst272
+    SLICE_X30Y35.DX      net (fanout=9)        1.421   openMSP430_0/execution_unit_0/op_dst<7>
+    SLICE_X30Y35.COUT    Tdxcy                 0.109   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+    SLICE_X30Y36.CIN     net (fanout=1)        0.003   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+    SLICE_X30Y36.COUT    Tbyp                  0.093   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+    SLICE_X30Y37.CIN     net (fanout=1)        0.003   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+    SLICE_X30Y37.CMUX    Tcinc                 0.279   openMSP430_0/execution_unit_0/alu_out_add<15>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<15>
+    SLICE_X24Y25.C4      net (fanout=4)        1.831   openMSP430_0/execution_unit_0/alu_out_add<14>
+    SLICE_X24Y25.C       Tilo                  0.235   openMSP430_0/execution_unit_0/crypto/mab_select_cipher
+                                                       openMSP430_0/execution_unit_0/Mmux_mab61_1
+    SLICE_X37Y33.D1      net (fanout=2)        1.892   openMSP430_0/execution_unit_0/Mmux_mab61
+    SLICE_X37Y33.D       Tilo                  0.259   openMSP430_0/mem_backbone_0/eu_mdb_in_sel<1>
+                                                       openMSP430_0/mem_backbone_0/eu_mb_en_GND_28_o_AND_834_o
+    SLICE_X14Y38.C4      net (fanout=30)       2.865   openMSP430_0/mem_backbone_0/eu_mb_en_GND_28_o_AND_834_o
+    SLICE_X14Y38.CMUX    Tilo                  0.326   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In13_SW1
+    SLICE_X14Y38.A2      net (fanout=1)        1.159   N1100
+    SLICE_X14Y38.A       Tilo                  0.254   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In13
+    SLICE_X14Y38.B6      net (fanout=1)        0.143   openMSP430_0/frontend_0/e_state_FSM_FFd4-In13
+    SLICE_X14Y38.B       Tilo                  0.254   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In14
+    SLICE_X19Y38.C2      net (fanout=2)        1.324   openMSP430_0/frontend_0/e_state_FSM_FFd4-In
+    SLICE_X19Y38.C       Tilo                  0.259   openMSP430_0/frontend_0/e_state_FSM_FFd3
+                                                       openMSP430_0/frontend_0/Mmux_exec_done26
+    SLICE_X18Y46.A1      net (fanout=1)        1.267   openMSP430_0/frontend_0/Mmux_exec_done25
+    SLICE_X18Y46.A       Tilo                  0.254   openMSP430_0/dbg_halt_cmd
+                                                       openMSP430_0/frontend_0/Mmux_exec_done27
+    SLICE_X20Y38.D5      net (fanout=13)       1.375   openMSP430_0/exec_done
+    SLICE_X20Y38.D       Tilo                  0.235   openMSP430_0/frontend_0/fetch
+                                                       openMSP430_0/frontend_0/fetch
+    SLICE_X20Y33.A2      net (fanout=3)        0.943   openMSP430_0/frontend_0/fetch
+    SLICE_X20Y33.COUT    Topcya                0.472   openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_lut<1>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+    SLICE_X20Y34.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+    SLICE_X20Y34.CMUX    Tcinc                 0.289   openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+    SLICE_X27Y34.C3      net (fanout=1)        1.071   openMSP430_0/frontend_0/pc_incr<7>
+    SLICE_X27Y34.C       Tilo                  0.259   openMSP430_0/frontend_0/pc<7>
+                                                       openMSP430_0/frontend_0/Mmux_pc_nxt141
+    SLICE_X38Y34.C6      net (fanout=2)        1.598   openMSP430_0/fe_mab<7>
+    SLICE_X38Y34.C       Tilo                  0.255   pmem_addr<6>
+                                                       openMSP430_0/mem_backbone_0/Mmux_pmem_addr_A121
+    RAMB16_X0Y26.ADDRA6  net (fanout=26)       4.376   pmem_addr<6>
+    RAMB16_X0Y26.CLKA    Trcck_ADDRA           0.400   rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+                                                       rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+    -------------------------------------------------  ---------------------------
+    Total                                     37.693ns (6.209ns logic, 31.484ns route)
+                                                       (16.5% logic, 83.5% route)
+
+--------------------------------------------------------------------------------
+Slack (setup path):     11.988ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               openMSP430_0/dbg_0/mem_addr_3 (FF)
+  Destination:          rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram (RAM)
+  Requirement:          50.000ns
+  Data Path Delay:      37.608ns (Levels of Logic = 21)
+  Clock Path Skew:      0.154ns (0.482 - 0.328)
+  Source Clock:         clk_sys rising at 0.000ns
+  Destination Clock:    clk_sys rising at 50.000ns
+  Clock Uncertainty:    0.558ns
+
+  Clock Uncertainty:          0.558ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Total Input Jitter (TIJ):   0.000ns
+    Discrete Jitter (DJ):       1.045ns
+    Phase Error (PE):           0.000ns
+
+  Maximum Data Path at Slow Process Corner: openMSP430_0/dbg_0/mem_addr_3 to rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X28Y48.DQ      Tcko                  0.476   openMSP430_0/dbg_0/mem_addr<3>
+                                                       openMSP430_0/dbg_0/mem_addr_3
+    SLICE_X43Y29.D6      net (fanout=15)       3.549   openMSP430_0/dbg_0/mem_addr<3>
+    SLICE_X43Y29.D       Tilo                  0.259   openMSP430_0/frontend_0/_n0755<3>1
+                                                       openMSP430_0/frontend_0/_n0755<3>11
+    SLICE_X40Y27.B4      net (fanout=3)        0.736   openMSP430_0/frontend_0/_n0755<3>1
+    SLICE_X40Y27.B       Tilo                  0.235   openMSP430_0/execution_unit_0/Mmux_dest_reg11
+                                                       openMSP430_0/execution_unit_0/Mmux_dest_reg12
+    SLICE_X36Y26.A3      net (fanout=25)       0.961   openMSP430_0/execution_unit_0/dest_reg<5>
+    SLICE_X36Y26.A       Tilo                  0.235   openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>3
+                                                       openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>5
+    SLICE_X31Y32.A3      net (fanout=1)        1.747   openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>4
+    SLICE_X31Y32.A       Tilo                  0.259   N777
+                                                       openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>7
+    SLICE_X27Y40.C3      net (fanout=4)        1.329   openMSP430_0/dbg_reg_din<7>
+    SLICE_X27Y40.C       Tilo                  0.259   N778
+                                                       openMSP430_0/execution_unit_0/Mmux_op_dst271_SW1
+    SLICE_X31Y32.C3      net (fanout=1)        1.798   N778
+    SLICE_X31Y32.C       Tilo                  0.259   N777
+                                                       openMSP430_0/execution_unit_0/Mmux_op_dst272
+    SLICE_X30Y35.DX      net (fanout=9)        1.421   openMSP430_0/execution_unit_0/op_dst<7>
+    SLICE_X30Y35.COUT    Tdxcy                 0.109   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+    SLICE_X30Y36.CIN     net (fanout=1)        0.003   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+    SLICE_X30Y36.COUT    Tbyp                  0.093   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+    SLICE_X30Y37.CIN     net (fanout=1)        0.003   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+    SLICE_X30Y37.CMUX    Tcinc                 0.279   openMSP430_0/execution_unit_0/alu_out_add<15>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<15>
+    SLICE_X24Y25.C4      net (fanout=4)        1.831   openMSP430_0/execution_unit_0/alu_out_add<14>
+    SLICE_X24Y25.C       Tilo                  0.235   openMSP430_0/execution_unit_0/crypto/mab_select_cipher
+                                                       openMSP430_0/execution_unit_0/Mmux_mab61_1
+    SLICE_X37Y33.D1      net (fanout=2)        1.892   openMSP430_0/execution_unit_0/Mmux_mab61
+    SLICE_X37Y33.D       Tilo                  0.259   openMSP430_0/mem_backbone_0/eu_mdb_in_sel<1>
+                                                       openMSP430_0/mem_backbone_0/eu_mb_en_GND_28_o_AND_834_o
+    SLICE_X14Y38.C4      net (fanout=30)       2.865   openMSP430_0/mem_backbone_0/eu_mb_en_GND_28_o_AND_834_o
+    SLICE_X14Y38.CMUX    Tilo                  0.326   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In13_SW1
+    SLICE_X14Y38.A2      net (fanout=1)        1.159   N1100
+    SLICE_X14Y38.A       Tilo                  0.254   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In13
+    SLICE_X14Y38.B6      net (fanout=1)        0.143   openMSP430_0/frontend_0/e_state_FSM_FFd4-In13
+    SLICE_X14Y38.B       Tilo                  0.254   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In14
+    SLICE_X19Y38.C2      net (fanout=2)        1.324   openMSP430_0/frontend_0/e_state_FSM_FFd4-In
+    SLICE_X19Y38.C       Tilo                  0.259   openMSP430_0/frontend_0/e_state_FSM_FFd3
+                                                       openMSP430_0/frontend_0/Mmux_exec_done26
+    SLICE_X18Y46.A1      net (fanout=1)        1.267   openMSP430_0/frontend_0/Mmux_exec_done25
+    SLICE_X18Y46.A       Tilo                  0.254   openMSP430_0/dbg_halt_cmd
+                                                       openMSP430_0/frontend_0/Mmux_exec_done27
+    SLICE_X20Y38.D5      net (fanout=13)       1.375   openMSP430_0/exec_done
+    SLICE_X20Y38.D       Tilo                  0.235   openMSP430_0/frontend_0/fetch
+                                                       openMSP430_0/frontend_0/fetch
+    SLICE_X20Y33.A2      net (fanout=3)        0.943   openMSP430_0/frontend_0/fetch
+    SLICE_X20Y33.COUT    Topcya                0.472   openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_lut<1>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+    SLICE_X20Y34.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+    SLICE_X20Y34.CMUX    Tcinc                 0.289   openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+    SLICE_X27Y34.C3      net (fanout=1)        1.071   openMSP430_0/frontend_0/pc_incr<7>
+    SLICE_X27Y34.C       Tilo                  0.259   openMSP430_0/frontend_0/pc<7>
+                                                       openMSP430_0/frontend_0/Mmux_pc_nxt141
+    SLICE_X38Y34.C6      net (fanout=2)        1.598   openMSP430_0/fe_mab<7>
+    SLICE_X38Y34.C       Tilo                  0.255   pmem_addr<6>
+                                                       openMSP430_0/mem_backbone_0/Mmux_pmem_addr_A121
+    RAMB16_X0Y26.ADDRA6  net (fanout=26)       4.376   pmem_addr<6>
+    RAMB16_X0Y26.CLKA    Trcck_ADDRA           0.400   rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+                                                       rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+    -------------------------------------------------  ---------------------------
+    Total                                     37.608ns (6.214ns logic, 31.394ns route)
+                                                       (16.5% logic, 83.5% route)
+
+--------------------------------------------------------------------------------
+Slack (setup path):     12.054ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               openMSP430_0/dbg_0/mem_addr_3 (FF)
+  Destination:          rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram (RAM)
+  Requirement:          50.000ns
+  Data Path Delay:      37.542ns (Levels of Logic = 21)
+  Clock Path Skew:      0.154ns (0.482 - 0.328)
+  Source Clock:         clk_sys rising at 0.000ns
+  Destination Clock:    clk_sys rising at 50.000ns
+  Clock Uncertainty:    0.558ns
+
+  Clock Uncertainty:          0.558ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Total Input Jitter (TIJ):   0.000ns
+    Discrete Jitter (DJ):       1.045ns
+    Phase Error (PE):           0.000ns
+
+  Maximum Data Path at Slow Process Corner: openMSP430_0/dbg_0/mem_addr_3 to rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X28Y48.DQ      Tcko                  0.476   openMSP430_0/dbg_0/mem_addr<3>
+                                                       openMSP430_0/dbg_0/mem_addr_3
+    SLICE_X43Y29.B1      net (fanout=15)       3.743   openMSP430_0/dbg_0/mem_addr<3>
+    SLICE_X43Y29.B       Tilo                  0.259   openMSP430_0/frontend_0/_n0755<3>1
+                                                       openMSP430_0/frontend_0/_n0751<3>11
+    SLICE_X39Y28.A3      net (fanout=4)        0.864   openMSP430_0/frontend_0/_n0751<3>1
+    SLICE_X39Y28.A       Tilo                  0.259   openMSP430_0/execution_unit_0/register_file_0/reg_dest<8>3
+                                                       openMSP430_0/execution_unit_0/Mmux_dest_reg16
+    SLICE_X36Y26.B1      net (fanout=24)       1.044   openMSP430_0/execution_unit_0/dest_reg<9>
+    SLICE_X36Y26.B       Tilo                  0.235   openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>3
+                                                       openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>4
+    SLICE_X31Y32.A2      net (fanout=1)        1.252   openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>3
+    SLICE_X31Y32.A       Tilo                  0.259   N777
+                                                       openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>7
+    SLICE_X27Y40.C3      net (fanout=4)        1.329   openMSP430_0/dbg_reg_din<7>
+    SLICE_X27Y40.C       Tilo                  0.259   N778
+                                                       openMSP430_0/execution_unit_0/Mmux_op_dst271_SW1
+    SLICE_X31Y32.C3      net (fanout=1)        1.798   N778
+    SLICE_X31Y32.C       Tilo                  0.259   N777
+                                                       openMSP430_0/execution_unit_0/Mmux_op_dst272
+    SLICE_X30Y35.DX      net (fanout=9)        1.421   openMSP430_0/execution_unit_0/op_dst<7>
+    SLICE_X30Y35.COUT    Tdxcy                 0.109   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+    SLICE_X30Y36.CIN     net (fanout=1)        0.003   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+    SLICE_X30Y36.COUT    Tbyp                  0.093   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+    SLICE_X30Y37.CIN     net (fanout=1)        0.003   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+    SLICE_X30Y37.CMUX    Tcinc                 0.279   openMSP430_0/execution_unit_0/alu_out_add<15>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<15>
+    SLICE_X24Y25.C4      net (fanout=4)        1.831   openMSP430_0/execution_unit_0/alu_out_add<14>
+    SLICE_X24Y25.C       Tilo                  0.235   openMSP430_0/execution_unit_0/crypto/mab_select_cipher
+                                                       openMSP430_0/execution_unit_0/Mmux_mab61_1
+    SLICE_X37Y33.D1      net (fanout=2)        1.892   openMSP430_0/execution_unit_0/Mmux_mab61
+    SLICE_X37Y33.D       Tilo                  0.259   openMSP430_0/mem_backbone_0/eu_mdb_in_sel<1>
+                                                       openMSP430_0/mem_backbone_0/eu_mb_en_GND_28_o_AND_834_o
+    SLICE_X14Y38.C4      net (fanout=30)       2.865   openMSP430_0/mem_backbone_0/eu_mb_en_GND_28_o_AND_834_o
+    SLICE_X14Y38.CMUX    Tilo                  0.326   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In13_SW1
+    SLICE_X14Y38.A2      net (fanout=1)        1.159   N1100
+    SLICE_X14Y38.A       Tilo                  0.254   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In13
+    SLICE_X14Y38.B6      net (fanout=1)        0.143   openMSP430_0/frontend_0/e_state_FSM_FFd4-In13
+    SLICE_X14Y38.B       Tilo                  0.254   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In14
+    SLICE_X19Y38.C2      net (fanout=2)        1.324   openMSP430_0/frontend_0/e_state_FSM_FFd4-In
+    SLICE_X19Y38.C       Tilo                  0.259   openMSP430_0/frontend_0/e_state_FSM_FFd3
+                                                       openMSP430_0/frontend_0/Mmux_exec_done26
+    SLICE_X18Y46.A1      net (fanout=1)        1.267   openMSP430_0/frontend_0/Mmux_exec_done25
+    SLICE_X18Y46.A       Tilo                  0.254   openMSP430_0/dbg_halt_cmd
+                                                       openMSP430_0/frontend_0/Mmux_exec_done27
+    SLICE_X20Y38.D5      net (fanout=13)       1.375   openMSP430_0/exec_done
+    SLICE_X20Y38.D       Tilo                  0.235   openMSP430_0/frontend_0/fetch
+                                                       openMSP430_0/frontend_0/fetch
+    SLICE_X20Y33.A2      net (fanout=3)        0.943   openMSP430_0/frontend_0/fetch
+    SLICE_X20Y33.COUT    Topcya                0.472   openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_lut<1>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+    SLICE_X20Y34.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+    SLICE_X20Y34.CMUX    Tcinc                 0.289   openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+    SLICE_X27Y34.C3      net (fanout=1)        1.071   openMSP430_0/frontend_0/pc_incr<7>
+    SLICE_X27Y34.C       Tilo                  0.259   openMSP430_0/frontend_0/pc<7>
+                                                       openMSP430_0/frontend_0/Mmux_pc_nxt141
+    SLICE_X38Y34.C6      net (fanout=2)        1.598   openMSP430_0/fe_mab<7>
+    SLICE_X38Y34.C       Tilo                  0.255   pmem_addr<6>
+                                                       openMSP430_0/mem_backbone_0/Mmux_pmem_addr_A121
+    RAMB16_X0Y26.ADDRA6  net (fanout=26)       4.376   pmem_addr<6>
+    RAMB16_X0Y26.CLKA    Trcck_ADDRA           0.400   rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+                                                       rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[9].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+    -------------------------------------------------  ---------------------------
+    Total                                     37.542ns (6.238ns logic, 31.304ns route)
+                                                       (16.6% logic, 83.4% route)
+
+--------------------------------------------------------------------------------
+
+Paths for end point rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram (RAMB16_X2Y8.ENA), 87795440 paths
+--------------------------------------------------------------------------------
+Slack (setup path):     12.084ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               openMSP430_0/dbg_0/mem_addr_3 (FF)
+  Destination:          rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram (RAM)
+  Requirement:          50.000ns
+  Data Path Delay:      37.411ns (Levels of Logic = 25)
+  Clock Path Skew:      0.053ns (0.599 - 0.546)
+  Source Clock:         clk_sys rising at 0.000ns
+  Destination Clock:    clk_sys rising at 50.000ns
+  Clock Uncertainty:    0.558ns
+
+  Clock Uncertainty:          0.558ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Total Input Jitter (TIJ):   0.000ns
+    Discrete Jitter (DJ):       1.045ns
+    Phase Error (PE):           0.000ns
+
+  Maximum Data Path at Slow Process Corner: openMSP430_0/dbg_0/mem_addr_3 to rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X28Y48.DQ      Tcko                  0.476   openMSP430_0/dbg_0/mem_addr<3>
+                                                       openMSP430_0/dbg_0/mem_addr_3
+    SLICE_X42Y29.D3      net (fanout=15)       3.583   openMSP430_0/dbg_0/mem_addr<3>
+    SLICE_X42Y29.D       Tilo                  0.254   openMSP430_0/frontend_0/_n0753<3>1
+                                                       openMSP430_0/frontend_0/_n0753<3>11
+    SLICE_X40Y27.C6      net (fanout=3)        0.577   openMSP430_0/frontend_0/_n0753<3>1
+    SLICE_X40Y27.C       Tilo                  0.235   openMSP430_0/execution_unit_0/Mmux_dest_reg11
+                                                       openMSP430_0/execution_unit_0/Mmux_dest_reg13
+    SLICE_X36Y26.A1      net (fanout=25)       1.176   openMSP430_0/execution_unit_0/dest_reg<6>
+    SLICE_X36Y26.A       Tilo                  0.235   openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>3
+                                                       openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>5
+    SLICE_X31Y32.A3      net (fanout=1)        1.747   openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>4
+    SLICE_X31Y32.A       Tilo                  0.259   N777
+                                                       openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>7
+    SLICE_X27Y40.C3      net (fanout=4)        1.329   openMSP430_0/dbg_reg_din<7>
+    SLICE_X27Y40.C       Tilo                  0.259   N778
+                                                       openMSP430_0/execution_unit_0/Mmux_op_dst271_SW1
+    SLICE_X31Y32.C3      net (fanout=1)        1.798   N778
+    SLICE_X31Y32.C       Tilo                  0.259   N777
+                                                       openMSP430_0/execution_unit_0/Mmux_op_dst272
+    SLICE_X30Y35.DX      net (fanout=9)        1.421   openMSP430_0/execution_unit_0/op_dst<7>
+    SLICE_X30Y35.COUT    Tdxcy                 0.109   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+    SLICE_X30Y36.CIN     net (fanout=1)        0.003   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+    SLICE_X30Y36.COUT    Tbyp                  0.093   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+    SLICE_X30Y37.CIN     net (fanout=1)        0.003   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+    SLICE_X30Y37.CMUX    Tcinc                 0.279   openMSP430_0/execution_unit_0/alu_out_add<15>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<15>
+    SLICE_X24Y25.C4      net (fanout=4)        1.831   openMSP430_0/execution_unit_0/alu_out_add<14>
+    SLICE_X24Y25.C       Tilo                  0.235   openMSP430_0/execution_unit_0/crypto/mab_select_cipher
+                                                       openMSP430_0/execution_unit_0/Mmux_mab61_1
+    SLICE_X37Y33.D1      net (fanout=2)        1.892   openMSP430_0/execution_unit_0/Mmux_mab61
+    SLICE_X37Y33.D       Tilo                  0.259   openMSP430_0/mem_backbone_0/eu_mdb_in_sel<1>
+                                                       openMSP430_0/mem_backbone_0/eu_mb_en_GND_28_o_AND_834_o
+    SLICE_X14Y38.C4      net (fanout=30)       2.865   openMSP430_0/mem_backbone_0/eu_mb_en_GND_28_o_AND_834_o
+    SLICE_X14Y38.CMUX    Tilo                  0.326   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In13_SW1
+    SLICE_X14Y38.A2      net (fanout=1)        1.159   N1100
+    SLICE_X14Y38.A       Tilo                  0.254   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In13
+    SLICE_X14Y38.B6      net (fanout=1)        0.143   openMSP430_0/frontend_0/e_state_FSM_FFd4-In13
+    SLICE_X14Y38.B       Tilo                  0.254   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In14
+    SLICE_X19Y38.C2      net (fanout=2)        1.324   openMSP430_0/frontend_0/e_state_FSM_FFd4-In
+    SLICE_X19Y38.C       Tilo                  0.259   openMSP430_0/frontend_0/e_state_FSM_FFd3
+                                                       openMSP430_0/frontend_0/Mmux_exec_done26
+    SLICE_X18Y46.A1      net (fanout=1)        1.267   openMSP430_0/frontend_0/Mmux_exec_done25
+    SLICE_X18Y46.A       Tilo                  0.254   openMSP430_0/dbg_halt_cmd
+                                                       openMSP430_0/frontend_0/Mmux_exec_done27
+    SLICE_X20Y38.D5      net (fanout=13)       1.375   openMSP430_0/exec_done
+    SLICE_X20Y38.D       Tilo                  0.235   openMSP430_0/frontend_0/fetch
+                                                       openMSP430_0/frontend_0/fetch
+    SLICE_X20Y33.A2      net (fanout=3)        0.943   openMSP430_0/frontend_0/fetch
+    SLICE_X20Y33.COUT    Topcya                0.472   openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_lut<1>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+    SLICE_X20Y34.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+    SLICE_X20Y34.COUT    Tbyp                  0.091   openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+    SLICE_X20Y35.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+    SLICE_X20Y35.COUT    Tbyp                  0.091   openMSP430_0/frontend_0/Madd_pc_incr_cy<12>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<12>
+    SLICE_X20Y36.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<12>
+    SLICE_X20Y36.BMUX    Tcinb                 0.277   openMSP430_0/frontend_0/pc_incr<15>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_xor<15>
+    SLICE_X19Y36.C6      net (fanout=1)        0.371   openMSP430_0/frontend_0/pc_incr<14>
+    SLICE_X19Y36.C       Tilo                  0.259   openMSP430_0/frontend_0/pc<15>
+                                                       openMSP430_0/frontend_0/Mmux_pc_nxt61
+    SLICE_X12Y37.CX      net (fanout=9)        1.118   openMSP430_0/fe_mab<14>
+    SLICE_X12Y37.CMUX    Tcxc                  0.192   N705
+                                                       openMSP430_0/mem_backbone_0/Mmux_pmem_addr_rs_xor<14>11_SW3
+    SLICE_X21Y37.C6      net (fanout=1)        0.755   N705
+    SLICE_X21Y37.C       Tilo                  0.259   rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/has_mux_a.A/sel_pipe<4>
+                                                       openMSP430_0/mem_backbone_0/Mmux_pmem_addr_rs_xor<14>12
+    SLICE_X19Y37.B4      net (fanout=5)        0.575   pmem_addr<14>
+    SLICE_X19Y37.BMUX    Tilo                  0.337   rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ena_array<20>
+                                                       rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/out1
+    RAMB16_X2Y8.ENA      net (fanout=8)        3.415   rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.ram_ena
+    RAMB16_X2Y8.CLKA     Trcck_ENA             0.220   rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+                                                       rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+    -------------------------------------------------  ---------------------------
+    Total                                     37.411ns (6.732ns logic, 30.679ns route)
+                                                       (18.0% logic, 82.0% route)
+
+--------------------------------------------------------------------------------
+Slack (setup path):     12.169ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               openMSP430_0/dbg_0/mem_addr_3 (FF)
+  Destination:          rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram (RAM)
+  Requirement:          50.000ns
+  Data Path Delay:      37.326ns (Levels of Logic = 25)
+  Clock Path Skew:      0.053ns (0.599 - 0.546)
+  Source Clock:         clk_sys rising at 0.000ns
+  Destination Clock:    clk_sys rising at 50.000ns
+  Clock Uncertainty:    0.558ns
+
+  Clock Uncertainty:          0.558ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Total Input Jitter (TIJ):   0.000ns
+    Discrete Jitter (DJ):       1.045ns
+    Phase Error (PE):           0.000ns
+
+  Maximum Data Path at Slow Process Corner: openMSP430_0/dbg_0/mem_addr_3 to rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X28Y48.DQ      Tcko                  0.476   openMSP430_0/dbg_0/mem_addr<3>
+                                                       openMSP430_0/dbg_0/mem_addr_3
+    SLICE_X43Y29.D6      net (fanout=15)       3.549   openMSP430_0/dbg_0/mem_addr<3>
+    SLICE_X43Y29.D       Tilo                  0.259   openMSP430_0/frontend_0/_n0755<3>1
+                                                       openMSP430_0/frontend_0/_n0755<3>11
+    SLICE_X40Y27.B4      net (fanout=3)        0.736   openMSP430_0/frontend_0/_n0755<3>1
+    SLICE_X40Y27.B       Tilo                  0.235   openMSP430_0/execution_unit_0/Mmux_dest_reg11
+                                                       openMSP430_0/execution_unit_0/Mmux_dest_reg12
+    SLICE_X36Y26.A3      net (fanout=25)       0.961   openMSP430_0/execution_unit_0/dest_reg<5>
+    SLICE_X36Y26.A       Tilo                  0.235   openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>3
+                                                       openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>5
+    SLICE_X31Y32.A3      net (fanout=1)        1.747   openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>4
+    SLICE_X31Y32.A       Tilo                  0.259   N777
+                                                       openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>7
+    SLICE_X27Y40.C3      net (fanout=4)        1.329   openMSP430_0/dbg_reg_din<7>
+    SLICE_X27Y40.C       Tilo                  0.259   N778
+                                                       openMSP430_0/execution_unit_0/Mmux_op_dst271_SW1
+    SLICE_X31Y32.C3      net (fanout=1)        1.798   N778
+    SLICE_X31Y32.C       Tilo                  0.259   N777
+                                                       openMSP430_0/execution_unit_0/Mmux_op_dst272
+    SLICE_X30Y35.DX      net (fanout=9)        1.421   openMSP430_0/execution_unit_0/op_dst<7>
+    SLICE_X30Y35.COUT    Tdxcy                 0.109   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+    SLICE_X30Y36.CIN     net (fanout=1)        0.003   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+    SLICE_X30Y36.COUT    Tbyp                  0.093   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+    SLICE_X30Y37.CIN     net (fanout=1)        0.003   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+    SLICE_X30Y37.CMUX    Tcinc                 0.279   openMSP430_0/execution_unit_0/alu_out_add<15>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<15>
+    SLICE_X24Y25.C4      net (fanout=4)        1.831   openMSP430_0/execution_unit_0/alu_out_add<14>
+    SLICE_X24Y25.C       Tilo                  0.235   openMSP430_0/execution_unit_0/crypto/mab_select_cipher
+                                                       openMSP430_0/execution_unit_0/Mmux_mab61_1
+    SLICE_X37Y33.D1      net (fanout=2)        1.892   openMSP430_0/execution_unit_0/Mmux_mab61
+    SLICE_X37Y33.D       Tilo                  0.259   openMSP430_0/mem_backbone_0/eu_mdb_in_sel<1>
+                                                       openMSP430_0/mem_backbone_0/eu_mb_en_GND_28_o_AND_834_o
+    SLICE_X14Y38.C4      net (fanout=30)       2.865   openMSP430_0/mem_backbone_0/eu_mb_en_GND_28_o_AND_834_o
+    SLICE_X14Y38.CMUX    Tilo                  0.326   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In13_SW1
+    SLICE_X14Y38.A2      net (fanout=1)        1.159   N1100
+    SLICE_X14Y38.A       Tilo                  0.254   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In13
+    SLICE_X14Y38.B6      net (fanout=1)        0.143   openMSP430_0/frontend_0/e_state_FSM_FFd4-In13
+    SLICE_X14Y38.B       Tilo                  0.254   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In14
+    SLICE_X19Y38.C2      net (fanout=2)        1.324   openMSP430_0/frontend_0/e_state_FSM_FFd4-In
+    SLICE_X19Y38.C       Tilo                  0.259   openMSP430_0/frontend_0/e_state_FSM_FFd3
+                                                       openMSP430_0/frontend_0/Mmux_exec_done26
+    SLICE_X18Y46.A1      net (fanout=1)        1.267   openMSP430_0/frontend_0/Mmux_exec_done25
+    SLICE_X18Y46.A       Tilo                  0.254   openMSP430_0/dbg_halt_cmd
+                                                       openMSP430_0/frontend_0/Mmux_exec_done27
+    SLICE_X20Y38.D5      net (fanout=13)       1.375   openMSP430_0/exec_done
+    SLICE_X20Y38.D       Tilo                  0.235   openMSP430_0/frontend_0/fetch
+                                                       openMSP430_0/frontend_0/fetch
+    SLICE_X20Y33.A2      net (fanout=3)        0.943   openMSP430_0/frontend_0/fetch
+    SLICE_X20Y33.COUT    Topcya                0.472   openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_lut<1>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+    SLICE_X20Y34.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+    SLICE_X20Y34.COUT    Tbyp                  0.091   openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+    SLICE_X20Y35.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+    SLICE_X20Y35.COUT    Tbyp                  0.091   openMSP430_0/frontend_0/Madd_pc_incr_cy<12>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<12>
+    SLICE_X20Y36.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<12>
+    SLICE_X20Y36.BMUX    Tcinb                 0.277   openMSP430_0/frontend_0/pc_incr<15>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_xor<15>
+    SLICE_X19Y36.C6      net (fanout=1)        0.371   openMSP430_0/frontend_0/pc_incr<14>
+    SLICE_X19Y36.C       Tilo                  0.259   openMSP430_0/frontend_0/pc<15>
+                                                       openMSP430_0/frontend_0/Mmux_pc_nxt61
+    SLICE_X12Y37.CX      net (fanout=9)        1.118   openMSP430_0/fe_mab<14>
+    SLICE_X12Y37.CMUX    Tcxc                  0.192   N705
+                                                       openMSP430_0/mem_backbone_0/Mmux_pmem_addr_rs_xor<14>11_SW3
+    SLICE_X21Y37.C6      net (fanout=1)        0.755   N705
+    SLICE_X21Y37.C       Tilo                  0.259   rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/has_mux_a.A/sel_pipe<4>
+                                                       openMSP430_0/mem_backbone_0/Mmux_pmem_addr_rs_xor<14>12
+    SLICE_X19Y37.B4      net (fanout=5)        0.575   pmem_addr<14>
+    SLICE_X19Y37.BMUX    Tilo                  0.337   rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ena_array<20>
+                                                       rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/out1
+    RAMB16_X2Y8.ENA      net (fanout=8)        3.415   rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.ram_ena
+    RAMB16_X2Y8.CLKA     Trcck_ENA             0.220   rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+                                                       rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+    -------------------------------------------------  ---------------------------
+    Total                                     37.326ns (6.737ns logic, 30.589ns route)
+                                                       (18.0% logic, 82.0% route)
+
+--------------------------------------------------------------------------------
+Slack (setup path):     12.235ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               openMSP430_0/dbg_0/mem_addr_3 (FF)
+  Destination:          rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram (RAM)
+  Requirement:          50.000ns
+  Data Path Delay:      37.260ns (Levels of Logic = 25)
+  Clock Path Skew:      0.053ns (0.599 - 0.546)
+  Source Clock:         clk_sys rising at 0.000ns
+  Destination Clock:    clk_sys rising at 50.000ns
+  Clock Uncertainty:    0.558ns
+
+  Clock Uncertainty:          0.558ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Total Input Jitter (TIJ):   0.000ns
+    Discrete Jitter (DJ):       1.045ns
+    Phase Error (PE):           0.000ns
+
+  Maximum Data Path at Slow Process Corner: openMSP430_0/dbg_0/mem_addr_3 to rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X28Y48.DQ      Tcko                  0.476   openMSP430_0/dbg_0/mem_addr<3>
+                                                       openMSP430_0/dbg_0/mem_addr_3
+    SLICE_X43Y29.B1      net (fanout=15)       3.743   openMSP430_0/dbg_0/mem_addr<3>
+    SLICE_X43Y29.B       Tilo                  0.259   openMSP430_0/frontend_0/_n0755<3>1
+                                                       openMSP430_0/frontend_0/_n0751<3>11
+    SLICE_X39Y28.A3      net (fanout=4)        0.864   openMSP430_0/frontend_0/_n0751<3>1
+    SLICE_X39Y28.A       Tilo                  0.259   openMSP430_0/execution_unit_0/register_file_0/reg_dest<8>3
+                                                       openMSP430_0/execution_unit_0/Mmux_dest_reg16
+    SLICE_X36Y26.B1      net (fanout=24)       1.044   openMSP430_0/execution_unit_0/dest_reg<9>
+    SLICE_X36Y26.B       Tilo                  0.235   openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>3
+                                                       openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>4
+    SLICE_X31Y32.A2      net (fanout=1)        1.252   openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>3
+    SLICE_X31Y32.A       Tilo                  0.259   N777
+                                                       openMSP430_0/execution_unit_0/register_file_0/reg_dest<7>7
+    SLICE_X27Y40.C3      net (fanout=4)        1.329   openMSP430_0/dbg_reg_din<7>
+    SLICE_X27Y40.C       Tilo                  0.259   N778
+                                                       openMSP430_0/execution_unit_0/Mmux_op_dst271_SW1
+    SLICE_X31Y32.C3      net (fanout=1)        1.798   N778
+    SLICE_X31Y32.C       Tilo                  0.259   N777
+                                                       openMSP430_0/execution_unit_0/Mmux_op_dst272
+    SLICE_X30Y35.DX      net (fanout=9)        1.421   openMSP430_0/execution_unit_0/op_dst<7>
+    SLICE_X30Y35.COUT    Tdxcy                 0.109   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+    SLICE_X30Y36.CIN     net (fanout=1)        0.003   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<7>
+    SLICE_X30Y36.COUT    Tbyp                  0.093   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+    SLICE_X30Y37.CIN     net (fanout=1)        0.003   openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<11>
+    SLICE_X30Y37.CMUX    Tcinc                 0.279   openMSP430_0/execution_unit_0/alu_out_add<15>
+                                                       openMSP430_0/execution_unit_0/alu_0/Madd_alu_add_cy<15>
+    SLICE_X24Y25.C4      net (fanout=4)        1.831   openMSP430_0/execution_unit_0/alu_out_add<14>
+    SLICE_X24Y25.C       Tilo                  0.235   openMSP430_0/execution_unit_0/crypto/mab_select_cipher
+                                                       openMSP430_0/execution_unit_0/Mmux_mab61_1
+    SLICE_X37Y33.D1      net (fanout=2)        1.892   openMSP430_0/execution_unit_0/Mmux_mab61
+    SLICE_X37Y33.D       Tilo                  0.259   openMSP430_0/mem_backbone_0/eu_mdb_in_sel<1>
+                                                       openMSP430_0/mem_backbone_0/eu_mb_en_GND_28_o_AND_834_o
+    SLICE_X14Y38.C4      net (fanout=30)       2.865   openMSP430_0/mem_backbone_0/eu_mb_en_GND_28_o_AND_834_o
+    SLICE_X14Y38.CMUX    Tilo                  0.326   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In13_SW1
+    SLICE_X14Y38.A2      net (fanout=1)        1.159   N1100
+    SLICE_X14Y38.A       Tilo                  0.254   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In13
+    SLICE_X14Y38.B6      net (fanout=1)        0.143   openMSP430_0/frontend_0/e_state_FSM_FFd4-In13
+    SLICE_X14Y38.B       Tilo                  0.254   openMSP430_0/frontend_0/e_state_FSM_FFd4
+                                                       openMSP430_0/frontend_0/e_state_FSM_FFd4-In14
+    SLICE_X19Y38.C2      net (fanout=2)        1.324   openMSP430_0/frontend_0/e_state_FSM_FFd4-In
+    SLICE_X19Y38.C       Tilo                  0.259   openMSP430_0/frontend_0/e_state_FSM_FFd3
+                                                       openMSP430_0/frontend_0/Mmux_exec_done26
+    SLICE_X18Y46.A1      net (fanout=1)        1.267   openMSP430_0/frontend_0/Mmux_exec_done25
+    SLICE_X18Y46.A       Tilo                  0.254   openMSP430_0/dbg_halt_cmd
+                                                       openMSP430_0/frontend_0/Mmux_exec_done27
+    SLICE_X20Y38.D5      net (fanout=13)       1.375   openMSP430_0/exec_done
+    SLICE_X20Y38.D       Tilo                  0.235   openMSP430_0/frontend_0/fetch
+                                                       openMSP430_0/frontend_0/fetch
+    SLICE_X20Y33.A2      net (fanout=3)        0.943   openMSP430_0/frontend_0/fetch
+    SLICE_X20Y33.COUT    Topcya                0.472   openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_lut<1>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+    SLICE_X20Y34.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<4>
+    SLICE_X20Y34.COUT    Tbyp                  0.091   openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+    SLICE_X20Y35.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<8>
+    SLICE_X20Y35.COUT    Tbyp                  0.091   openMSP430_0/frontend_0/Madd_pc_incr_cy<12>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_cy<12>
+    SLICE_X20Y36.CIN     net (fanout=1)        0.003   openMSP430_0/frontend_0/Madd_pc_incr_cy<12>
+    SLICE_X20Y36.BMUX    Tcinb                 0.277   openMSP430_0/frontend_0/pc_incr<15>
+                                                       openMSP430_0/frontend_0/Madd_pc_incr_xor<15>
+    SLICE_X19Y36.C6      net (fanout=1)        0.371   openMSP430_0/frontend_0/pc_incr<14>
+    SLICE_X19Y36.C       Tilo                  0.259   openMSP430_0/frontend_0/pc<15>
+                                                       openMSP430_0/frontend_0/Mmux_pc_nxt61
+    SLICE_X12Y37.CX      net (fanout=9)        1.118   openMSP430_0/fe_mab<14>
+    SLICE_X12Y37.CMUX    Tcxc                  0.192   N705
+                                                       openMSP430_0/mem_backbone_0/Mmux_pmem_addr_rs_xor<14>11_SW3
+    SLICE_X21Y37.C6      net (fanout=1)        0.755   N705
+    SLICE_X21Y37.C       Tilo                  0.259   rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/has_mux_a.A/sel_pipe<4>
+                                                       openMSP430_0/mem_backbone_0/Mmux_pmem_addr_rs_xor<14>12
+    SLICE_X19Y37.B4      net (fanout=5)        0.575   pmem_addr<14>
+    SLICE_X19Y37.BMUX    Tilo                  0.337   rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ena_array<20>
+                                                       rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/out1
+    RAMB16_X2Y8.ENA      net (fanout=8)        3.415   rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.ram_ena
+    RAMB16_X2Y8.CLKA     Trcck_ENA             0.220   rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+                                                       rom_lo/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram
+    -------------------------------------------------  ---------------------------
+    Total                                     37.260ns (6.761ns logic, 30.499ns route)
+                                                       (18.1% logic, 81.9% route)
+
+--------------------------------------------------------------------------------
+
+Hold Paths: TS_dcm_clk = PERIOD TIMEGRP "dcm_clk" TSfpgaClk_i * 1.66666667 HIGH 50%;
+--------------------------------------------------------------------------------
+
+Paths for end point openMSP430_0/dbg_0/dbg_uart_0/sync_cell_uart_rxd/data_sync_1 (SLICE_X4Y49.DX), 1 path
+--------------------------------------------------------------------------------
+Slack (hold path):      0.385ns (requirement - (clock path skew + uncertainty - data path))
+  Source:               openMSP430_0/dbg_0/dbg_uart_0/sync_cell_uart_rxd/data_sync_0 (FF)
+  Destination:          openMSP430_0/dbg_0/dbg_uart_0/sync_cell_uart_rxd/data_sync_1 (FF)
+  Requirement:          0.000ns
+  Data Path Delay:      0.385ns (Levels of Logic = 0)
+  Clock Path Skew:      0.000ns
+  Source Clock:         clk_sys rising at 50.000ns
+  Destination Clock:    clk_sys rising at 50.000ns
+  Clock Uncertainty:    0.000ns
+
+  Minimum Data Path at Fast Process Corner: openMSP430_0/dbg_0/dbg_uart_0/sync_cell_uart_rxd/data_sync_0 to openMSP430_0/dbg_0/dbg_uart_0/sync_cell_uart_rxd/data_sync_1
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X4Y49.CQ       Tcko                  0.200   openMSP430_0/dbg_0/dbg_uart_0/sync_cell_uart_rxd/data_sync<1>
+                                                       openMSP430_0/dbg_0/dbg_uart_0/sync_cell_uart_rxd/data_sync_0
+    SLICE_X4Y49.DX       net (fanout=1)        0.137   openMSP430_0/dbg_0/dbg_uart_0/sync_cell_uart_rxd/data_sync<0>
+    SLICE_X4Y49.CLK      Tckdi       (-Th)    -0.048   openMSP430_0/dbg_0/dbg_uart_0/sync_cell_uart_rxd/data_sync<1>
+                                                       openMSP430_0/dbg_0/dbg_uart_0/sync_cell_uart_rxd/data_sync_1
+    -------------------------------------------------  ---------------------------
+    Total                                      0.385ns (0.248ns logic, 0.137ns route)
+                                                       (64.4% logic, 35.6% route)
+
+--------------------------------------------------------------------------------
+
+Paths for end point openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_2 (SLICE_X8Y37.C5), 1 path
+--------------------------------------------------------------------------------
+Slack (hold path):      0.388ns (requirement - (clock path skew + uncertainty - data path))
+  Source:               openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_61 (FF)
+  Destination:          openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_2 (FF)
+  Requirement:          0.000ns
+  Data Path Delay:      0.388ns (Levels of Logic = 1)
+  Clock Path Skew:      0.000ns
+  Source Clock:         clk_sys rising at 50.000ns
+  Destination Clock:    clk_sys rising at 50.000ns
+  Clock Uncertainty:    0.000ns
+
+  Minimum Data Path at Fast Process Corner: openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_61 to openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_2
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X8Y37.CQ       Tcko                  0.200   openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_120
+                                                       openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_61
+    SLICE_X8Y37.C5       net (fanout=2)        0.067   openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_61
+    SLICE_X8Y37.CLK      Tah         (-Th)    -0.121   openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_120
+                                                       openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[56].sbox_instance/Mram_data_out31
+                                                       openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_2
+    -------------------------------------------------  ---------------------------
+    Total                                      0.388ns (0.321ns logic, 0.067ns route)
+                                                       (82.7% logic, 17.3% route)
+
+--------------------------------------------------------------------------------
+
+Paths for end point openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_2 (SLICE_X12Y33.C5), 1 path
+--------------------------------------------------------------------------------
+Slack (hold path):      0.389ns (requirement - (clock path skew + uncertainty - data path))
+  Source:               openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_60 (FF)
+  Destination:          openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_2 (FF)
+  Requirement:          0.000ns
+  Data Path Delay:      0.389ns (Levels of Logic = 1)
+  Clock Path Skew:      0.000ns
+  Source Clock:         clk_sys rising at 50.000ns
+  Destination Clock:    clk_sys rising at 50.000ns
+  Clock Uncertainty:    0.000ns
+
+  Minimum Data Path at Fast Process Corner: openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_60 to openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_2
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X12Y33.CQ      Tcko                  0.200   openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_118
+                                                       openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_60
+    SLICE_X12Y33.C5      net (fanout=2)        0.068   openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_60
+    SLICE_X12Y33.CLK     Tah         (-Th)    -0.121   openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_118
+                                                       openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/gen_for_sbox[55].sbox_instance/Mram_data_out31
+                                                       openMSP430_0/execution_unit_0/crypto/wrap/sponge/datapath_instance/reg_state_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_sliced_2
+    -------------------------------------------------  ---------------------------
+    Total                                      0.389ns (0.321ns logic, 0.068ns route)
+                                                       (82.5% logic, 17.5% route)
+
+--------------------------------------------------------------------------------
+
+Component Switching Limit Checks: TS_dcm_clk = PERIOD TIMEGRP "dcm_clk" TSfpgaClk_i * 1.66666667 HIGH 50%;
+--------------------------------------------------------------------------------
+Slack: 46.430ns (period - min period limit)
+  Period: 50.000ns
+  Min period limit: 3.570ns (280.112MHz) (Trper_CLKA(Fmax))
+  Physical resource: rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram/CLKA
+  Logical resource: rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram/CLKA
+  Location pin: RAMB16_X0Y12.CLKA
+  Clock network: clk_sys
+--------------------------------------------------------------------------------
+Slack: 46.430ns (period - min period limit)
+  Period: 50.000ns
+  Min period limit: 3.570ns (280.112MHz) (Trper_CLKA(Fmax))
+  Physical resource: rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram/CLKA
+  Logical resource: rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram/CLKA
+  Location pin: RAMB16_X1Y8.CLKA
+  Clock network: clk_sys
+--------------------------------------------------------------------------------
+Slack: 46.430ns (period - min period limit)
+  Period: 50.000ns
+  Min period limit: 3.570ns (280.112MHz) (Trper_CLKA(Fmax))
+  Physical resource: rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[4].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram/CLKA
+  Logical resource: rom_hi/U0/xst_blk_mem_generator/gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[4].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram/CLKA
+  Location pin: RAMB16_X1Y12.CLKA
+  Clock network: clk_sys
+--------------------------------------------------------------------------------
+
+
+Derived Constraint Report
+Derived Constraints for TSfpgaClk_i
++-------------------------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+
+|                               |   Period    |       Actual Period       |      Timing Errors        |      Paths Analyzed       |
+|           Constraint          | Requirement |-------------+-------------|-------------+-------------|-------------+-------------|
+|                               |             |   Direct    | Derivative  |   Direct    | Derivative  |   Direct    | Derivative  |
++-------------------------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+
+|TSfpgaClk_i                    |     83.333ns|     32.000ns|     63.610ns|            0|            0|            0|  13107820350|
+| TS_dcm_clk                    |     50.000ns|     38.166ns|          N/A|            0|            0|  13107820350|            0|
++-------------------------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+
+
+All constraints were met.
+
+
+Data Sheet report:
+-----------------
+All values displayed in nanoseconds (ns)
+
+Clock to Setup on destination clock fpgaClk_i
+---------------+---------+---------+---------+---------+
+               | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
+Source Clock   |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
+---------------+---------+---------+---------+---------+
+fpgaClk_i      |   38.166|    3.197|    6.931|    2.291|
+---------------+---------+---------+---------+---------+
+
+
+Timing summary:
+---------------
+
+Timing errors: 0  Score: 0  (Setup/Max: 0, Hold: 0)
+
+Constraints cover 13107820350 paths, 0 nets, and 30292 connections
+
+Design statistics:
+   Minimum period:  38.166ns{1}   (Maximum frequency:  26.201MHz)
+
+
+------------------------------------Footnotes-----------------------------------
+1)  The minimum period statistic assumes all single cycle delays.
+
+Analysis completed Fri Sep  8 21:30:25 2017 
+--------------------------------------------------------------------------------
+
+Trace Settings:
+-------------------------
+Trace Settings 
+
+Peak Memory Usage: 524 MB
+
+
+

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<document>
+<!--The data in this file is primarily intended for consumption by Xilinx tools.
+The structure and the elements are likely to change over the next few releases.
+This means code written to parse this file will need to be revisited each subsequent release.-->
+<application name="pn" timeStamp="Fri Sep  8 21:29:13 2017">
+<section name="Project Information" visible="false">
+<property name="ProjectID" value="5D4BFD0DE9D443C40CA52791433D4B89" type="project"/>
+<property name="ProjectIteration" value="7" type="project"/>
+<property name="ProjectFile" value="/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openmsp430.xise" type="project"/>
+<property name="ProjectCreationTimestamp" value="2013-01-18T10:24:58" type="project"/>
+</section>
+<section name="Project Statistics" visible="true">
+<property name="PROP_Enable_Message_Filtering" value="false" type="design"/>
+<property name="PROP_FitterReportFormat" value="HTML" type="process"/>
+<property name="PROP_LastAppliedGoal" value="Balanced" type="design"/>
+<property name="PROP_LastAppliedStrategy" value="Xilinx Default (unlocked)" type="design"/>
+<property name="PROP_ManualCompileOrderImp" value="false" type="design"/>
+<property name="PROP_PropSpecInProjFile" value="Store all values" type="design"/>
+<property name="PROP_Simulator" value="ISim (VHDL/Verilog)" type="design"/>
+<property name="PROP_SynthTopFile" value="changed" type="process"/>
+<property name="PROP_Top_Level_Module_Type" value="HDL" type="design"/>
+<property name="PROP_UseSmartGuide" value="false" type="design"/>
+<property name="PROP_UserBrowsedStrategyFiles" value="/home/job/install/xilinx/14.3/ISE_DS/ISE/spartan6/data/spartan6_area_strategy2.xds" type="process"/>
+<property name="PROP_UserConstraintEditorPreference" value="Text Editor" type="process"/>
+<property name="PROP_intProjectCreationTimestamp" value="2013-01-18T10:24:58" type="design"/>
+<property name="PROP_intWbtProjectID" value="5D4BFD0DE9D443C40CA52791433D4B89" type="design"/>
+<property name="PROP_intWbtProjectIteration" value="7" type="process"/>
+<property name="PROP_intWorkingDirLocWRTProjDir" value="Same" type="design"/>
+<property name="PROP_intWorkingDirUsed" value="No" type="design"/>
+<property name="PROP_lockPinsUcfFile" value="changed" type="process"/>
+<property name="PROP_xilxBitgCfg_Rate_spartan6" value="10" type="process"/>
+<property name="PROP_xilxBitgCfg_TCK" value="Pull Down" type="process"/>
+<property name="PROP_xilxBitgCfg_Unused" value="Pull Up" type="process"/>
+<property name="PROP_xilxBitgStart_Clk" value="JTAG Clock" type="process"/>
+<property name="PROP_xilxMapReportDetail" value="true" type="process"/>
+<property name="PROP_xstVeriIncludeDir_Global" value="changed" type="process"/>
+<property name="PROP_AutoTop" value="false" type="design"/>
+<property name="PROP_DevFamily" value="Spartan6" type="design"/>
+<property name="PROP_xilxMapEnableMultiThreading" value="2" type="process"/>
+<property name="PROP_DevDevice" value="xc6slx25" type="design"/>
+<property name="PROP_DevFamilyPMName" value="spartan6" type="design"/>
+<property name="PROP_DevPackage" value="ftg256" type="design"/>
+<property name="PROP_Synthesis_Tool" value="XST (VHDL/Verilog)" type="design"/>
+<property name="PROP_parEnableMultiThreading_spartan6" value="4" type="process"/>
+<property name="PROP_DevSpeed" value="-2" type="design"/>
+<property name="PROP_PreferredLanguage" value="Verilog" type="design"/>
+<property name="FILE_COREGEN" value="14" type="source"/>
+<property name="FILE_ISE" value="4" type="source"/>
+<property name="FILE_UCF" value="1" type="source"/>
+<property name="FILE_VERILOG" value="39" type="source"/>
+</section>
+</application>
+</document>

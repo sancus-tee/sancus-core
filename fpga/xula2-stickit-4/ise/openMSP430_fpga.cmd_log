@@ -1,0 +1,42 @@
+xst -intstyle ise -ifn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.xst" -ofn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd rtl/verilog/coregen -nt timestamp -uc openMSP430_fpga.ucf -p xc6slx25-ftg256-2 openMSP430_fpga.ngc openMSP430_fpga.ngd  
+map -intstyle ise -p xc6slx25-ftg256-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt 2 -detail -ir off -pr off -lc off -power off -o openMSP430_fpga_map.ncd openMSP430_fpga.ngd openMSP430_fpga.pcf 
+par -w -intstyle ise -ol high -mt 4 openMSP430_fpga_map.ncd openMSP430_fpga.ncd openMSP430_fpga.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml openMSP430_fpga.twx openMSP430_fpga.ncd -o openMSP430_fpga.twr openMSP430_fpga.pcf -ucf openMSP430_fpga.ucf 
+xst -intstyle ise -ifn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.xst" -ofn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd rtl/verilog/coregen -nt timestamp -uc openMSP430_fpga.ucf -p xc6slx25-ftg256-2 openMSP430_fpga.ngc openMSP430_fpga.ngd  
+map -intstyle ise -p xc6slx25-ftg256-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt 2 -detail -ir off -pr off -lc off -power off -o openMSP430_fpga_map.ncd openMSP430_fpga.ngd openMSP430_fpga.pcf 
+par -w -intstyle ise -ol high -mt 4 openMSP430_fpga_map.ncd openMSP430_fpga.ncd openMSP430_fpga.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml openMSP430_fpga.twx openMSP430_fpga.ncd -o openMSP430_fpga.twr openMSP430_fpga.pcf -ucf openMSP430_fpga.ucf 
+bitgen -intstyle ise -f openMSP430_fpga.ut openMSP430_fpga.ncd 
+xst -intstyle ise -ifn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.xst" -ofn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.syr" 
+xst -intstyle ise -ifn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.xst" -ofn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.syr" 
+xst -intstyle ise -ifn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.xst" -ofn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.syr" 
+xst -intstyle ise -ifn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.xst" -ofn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd rtl/verilog/coregen -nt timestamp -uc openMSP430_fpga.ucf -p xc6slx25-ftg256-2 openMSP430_fpga.ngc openMSP430_fpga.ngd  
+map -intstyle ise -p xc6slx25-ftg256-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt 2 -detail -ir off -pr off -lc off -power off -o openMSP430_fpga_map.ncd openMSP430_fpga.ngd openMSP430_fpga.pcf 
+par -w -intstyle ise -ol high -mt 4 openMSP430_fpga_map.ncd openMSP430_fpga.ncd openMSP430_fpga.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml openMSP430_fpga.twx openMSP430_fpga.ncd -o openMSP430_fpga.twr openMSP430_fpga.pcf -ucf openMSP430_fpga.ucf 
+bitgen -intstyle ise -f openMSP430_fpga.ut openMSP430_fpga.ncd 
+xst -intstyle ise -ifn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.xst" -ofn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd rtl/verilog/coregen -nt timestamp -uc openMSP430_fpga.ucf -p xc6slx25-ftg256-2 openMSP430_fpga.ngc openMSP430_fpga.ngd  
+map -intstyle ise -p xc6slx25-ftg256-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt 2 -detail -ir off -pr off -lc off -power off -o openMSP430_fpga_map.ncd openMSP430_fpga.ngd openMSP430_fpga.pcf 
+par -w -intstyle ise -ol high -mt 4 openMSP430_fpga_map.ncd openMSP430_fpga.ncd openMSP430_fpga.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml openMSP430_fpga.twx openMSP430_fpga.ncd -o openMSP430_fpga.twr openMSP430_fpga.pcf -ucf openMSP430_fpga.ucf 
+bitgen -intstyle ise -f openMSP430_fpga.ut openMSP430_fpga.ncd 
+xst -intstyle ise -ifn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.xst" -ofn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.syr" 
+xst -intstyle ise -ifn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.xst" -ofn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.syr" 
+xst -intstyle ise -ifn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.xst" -ofn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd rtl/verilog/coregen -nt timestamp -uc openMSP430_fpga.ucf -p xc6slx25-ftg256-2 openMSP430_fpga.ngc openMSP430_fpga.ngd  
+map -intstyle ise -p xc6slx25-ftg256-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt 2 -detail -ir off -pr off -lc off -power off -o openMSP430_fpga_map.ncd openMSP430_fpga.ngd openMSP430_fpga.pcf 
+par -w -intstyle ise -ol high -mt 4 openMSP430_fpga_map.ncd openMSP430_fpga.ncd openMSP430_fpga.pcf 
+xst -intstyle ise -ifn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.xst" -ofn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd rtl/verilog/coregen -nt timestamp -uc openMSP430_fpga.ucf -p xc6slx25-ftg256-2 openMSP430_fpga.ngc openMSP430_fpga.ngd  
+map -intstyle ise -p xc6slx25-ftg256-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt 2 -detail -ir off -pr off -lc off -power off -o openMSP430_fpga_map.ncd openMSP430_fpga.ngd openMSP430_fpga.pcf 
+par -w -intstyle ise -ol high -mt 4 openMSP430_fpga_map.ncd openMSP430_fpga.ncd openMSP430_fpga.pcf 
+xst -intstyle ise -ifn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.xst" -ofn "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd rtl/verilog/coregen -nt timestamp -uc openMSP430_fpga.ucf -p xc6slx25-ftg256-2 openMSP430_fpga.ngc openMSP430_fpga.ngd  
+map -intstyle ise -p xc6slx25-ftg256-2 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt 2 -detail -ir off -pr off -lc off -power off -o openMSP430_fpga_map.ncd openMSP430_fpga.ngd openMSP430_fpga.pcf 
+par -w -intstyle ise -ol high -mt 4 openMSP430_fpga_map.ncd openMSP430_fpga.ncd openMSP430_fpga.pcf 
+trce -intstyle ise -v 3 -s 2 -n 3 -fastpaths -xml openMSP430_fpga.twx openMSP430_fpga.ncd -o openMSP430_fpga.twr openMSP430_fpga.pcf -ucf openMSP430_fpga.ucf 
+bitgen -intstyle ise -f openMSP430_fpga.ut openMSP430_fpga.ncd 

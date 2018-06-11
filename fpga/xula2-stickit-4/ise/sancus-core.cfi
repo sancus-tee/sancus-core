@@ -1,0 +1,11 @@
+# PROMGEN: Xilinx Prom Generator P.20131013
+# Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
+
+SOFTWARE_VERSION P.20131013
+DATE             9/ 8/2017 - 21:36
+SOURCE          /media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/sancus-core.mcs
+DEVICE          8192K
+DATA_WIDTH      1
+FILL_DATA       0xFF
+SIGNATURE       0x73FD1312
+START_ADDRESS   0x00000000 END_ADDRESS 0x000C3CE1 DIRECTION_UP   "/media/DATA/Documents/sancus/github/sancus-core/fpga/xula2-stickit-4/ise/openMSP430_fpga_cclktemp.bit" 6slx25ftg256
