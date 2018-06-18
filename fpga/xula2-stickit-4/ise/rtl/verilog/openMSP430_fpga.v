@@ -35,7 +35,7 @@
 `include "openmsp430/openMSP430_defines.v"
 
 // include charlieplexer on PM3/HAT (and exclude P3)
-`define FPGA_CHARLIE
+//`define FPGA_CHARLIE
 
 module openMSP430_fpga (
     // 12MHz clock
@@ -170,11 +170,11 @@ assign hw_uart_rxd = chan_io[19];
 //alias alias2(ps2_data, chan_io[15]);
 
 // SPI master on PM2
-assign chan_io[6]  = spi_sck;
-assign spi_miso    = chan_io[4];
-assign chan_io[2]  = spi_mosi;
-assign chan_io[0]  = spi_ss[0];
-assign chanClk_io  = spi_ss[1];
+assign chan_io[6]  = spi_ss[1];
+assign chan_io[5]  = spi_ss[0];
+assign spi_miso    = chan_io[3];
+assign chan_io[1]  = spi_mosi;
+assign chanClk_io  = spi_sck;
 
 // LED digits charlieplexer on PM3
 `ifdef FPGA_CHARLIE
