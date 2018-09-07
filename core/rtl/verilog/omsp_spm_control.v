@@ -35,7 +35,8 @@ module omsp_spm_control(
   output reg              [15:0] spm_current_id,
   output reg              [15:0] spm_prev_id,
   output reg              [15:0] requested_data,
-  output reg     [0:`SECURITY-1] key_out
+  output reg     [0:`SECURITY-1] key_out,
+  output wire                    exec_sm
 );
 
 parameter KEY_IDX_SIZE = -1;
@@ -57,6 +58,8 @@ wire [0:`NB_SPMS-1] spms_data_selected;
 wire [0:`NB_SPMS-1] spms_key_selected;
 
 reg [15:0] next_id;
+
+assign exec_sm = |spms_executing;
 
 assign spms_update = (spms_first_disabled |       // update first disabled SPM
                       {`NB_SPMS{~enable_spm}}) &  // or all for a disable request

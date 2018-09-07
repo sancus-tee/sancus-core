@@ -73,6 +73,7 @@ module  omsp_frontend (
     nmi_acc,                       // Non-Maskable interrupt request accepted
     pc,                            // Program counter
     pc_nxt,                        // Next PC value (for CALL & IRQ)
+    sm_irq,
     spm_command,
     current_inst_pc,
     prev_inst_pc,
@@ -100,6 +101,7 @@ module  omsp_frontend (
     wkup,                          // System Wake-up (asynchronous)
     spm_busy,
     pmem_writing,
+    exec_sm,
     sm_violation
 );
 
@@ -107,7 +109,7 @@ module  omsp_frontend (
 //=========
 output              dbg_halt_st;   // Halt/Run status from CPU
 output              decode_noirq;  // Frontend decode instruction
-output        [3:0] e_state;       // Execution state
+output        [4:0] e_state;       // Execution state
 output              exec_done;     // Execution completed
 output        [7:0] inst_ad;       // Decoded Inst: destination addressing mode
 output        [7:0] inst_as;       // Decoded Inst: source addressing mode
@@ -130,6 +132,7 @@ output              mclk_wkup;     // Main System Clock wake-up (asynchronous)
 output              nmi_acc;       // Non-Maskable interrupt request accepted
 output       [15:0] pc;            // Program counter
 output       [15:0] pc_nxt;        // Next PC value (for CALL & IRQ)
+output              sm_irq;
 output        [7:0] spm_command;
 output       [15:0] current_inst_pc;
 output       [15:0] prev_inst_pc;
@@ -158,6 +161,7 @@ input               wdt_wkup;      // Watchdog Wakeup
 input               wkup;          // System Wake-up (asynchronous)
 input               spm_busy;
 input               pmem_writing;
+input               exec_sm;
 input               sm_violation;
 
 
@@ -219,6 +223,10 @@ parameter E_JUMP      = `E_JUMP;
 parameter E_IDLE      = `E_IDLE;
 parameter E_SPM       = `E_SPM;
 parameter E_DST_WR2   = `E_DST_WR2;
+parameter E_IRQ_EXT_0 = `E_IRQ_EXT_0;
+parameter E_IRQ_EXT_1 = `E_IRQ_EXT_1;
+parameter E_IRQ_SP_RD = `E_IRQ_SP_RD;
+parameter E_IRQ_SP_WR = `E_IRQ_SP_WR;
 
 
 //=============================================================================
@@ -278,8 +286,10 @@ always @(posedge mclk or posedge puc_rst)
   if (puc_rst)  dbg_halt_st <= 1'b0;
   else          dbg_halt_st <= cpu_halt_cmd & (i_state_nxt==I_IDLE);
 
-// keep track of the PC of the current andd previous instructions for the SM
-// logic.
+// keep track of the PC of the current and previous instructions for the SM
+// logic; do not update the current_inst_pc when handling an interrupt to
+// ensure the IRQ logic executes with the memory access rights of the
+// interrupted instruction
 reg [15:0] current_inst_pc;
 reg [15:0] prev_inst_pc;
 always @(posedge mclk or posedge puc_rst)
@@ -288,7 +298,7 @@ always @(posedge mclk or posedge puc_rst)
     current_inst_pc <= 0;
     prev_inst_pc <= 0;
   end
-  else if (decode)
+  else if (decode & ~irq_detect)
   begin
     current_inst_pc <= pc;
     prev_inst_pc <= current_inst_pc;
@@ -309,13 +319,25 @@ always @(posedge mclk or posedge puc_rst)
   if (puc_rst)                  inst_irq_rst <= 1'b1;
   else if (exec_done)           inst_irq_rst <= 1'b0;
 
-//  Detect other interrupts
-reg sm_irq;
-always @(posedge mclk or posedge puc_rst)
-  if (puc_rst) sm_irq <= 1'b0;
-  else         sm_irq <= sm_violation;
 
-assign  irq_detect = (sm_irq | nmi_pnd | ((|irq | wdt_irq) & gie)) & ~cpu_halt_cmd & ~dbg_halt_st & (exec_done | (i_state==I_IDLE));
+
+// Buffer SM violation IRQ in a register to make sure the interrupt is handled
+// after the offending instruction has completed (eg. mov &illegal, &valid)
+reg sm_irq_reg;
+always @(posedge mclk or posedge puc_rst)
+  if (puc_rst | exec_done)  sm_irq_reg <= 1'b0;
+  else                      sm_irq_reg <= sm_violation;
+
+// Only treat violation as interrupt request when not caused by hw IRQ logic
+// NOTE: clocked register is only updated one cycle after violation
+assign  sm_irq      = (sm_irq_reg | sm_violation);
+wire    do_sm_irq   = sm_irq & ~inst_so[`IRQ];
+
+//  Detect other interrupts
+wire    irq_pnd     = (do_sm_irq | nmi_pnd | ((|irq | wdt_irq) & gie));
+assign  irq_detect  = irq_pnd
+                      & ~cpu_halt_cmd & ~dbg_halt_st
+                      & (exec_done | (i_state==I_IDLE));
 
 `ifdef CLOCK_GATING
 wire       mclk_irq_num;
@@ -531,6 +553,7 @@ wire       mclk_decode = mclk;
 // 3'b001: Single-operand arithmetic
 // 3'b010: Conditional jump
 // 3'b100: Two-operand arithmetic
+// 3'b000: During IRQ logic
 
 reg  [2:0] inst_type;
 assign     inst_type_nxt = {(ir[15:14]!=2'b00),
@@ -572,11 +595,17 @@ always @(posedge mclk_decode or posedge puc_rst)
 `endif
 
 // SPM command decoding
-// 8'b00000001: disable SPM
-// 8'b00000010: enable SPM
-// 8'b00000100: verify HMAC certificate
-// 8'b00001000: write HMAC certificate to memory
-// 8'b00010000: create HMAC signature for SPM output
+//----------------------------------------
+// Instructions are encoded in a one hot fashion as following:
+//
+// 10'b0000000001: SM_DISABLE
+// 10'b0000000010: SM_ENABLE
+// 10'b0000000100: SM_VERIFY_ADDR
+// 10'b0000001000: SM_VERIFY_PREV
+// 10'b0000010000: SM_AE_WRAP
+// 10'b0000100000: SM_AE_UNWRAP
+// 10'b0001000000: SM_ID
+// 10'b0010000000: SM_PREV_ID
 reg  [7:0] spm_command;
 wire [7:0] spm_command_nxt = one_hot8(ir[2:0]) & {8{inst_so_nxt[`SANCUS]}};
 
@@ -677,10 +706,21 @@ always @(posedge mclk_decode or posedge puc_rst)
   else if (decode) inst_src_bin <= ir[11:8];
 `endif
 
-wire  [15:0] inst_src = inst_type[`INST_TO] ? one_hot16(inst_src_bin)  :
-                        inst_so[`RETI]      ? 16'h0002                 :
-                        inst_so[`IRQ]       ? 16'h0001                 :
-                        inst_type[`INST_SO] ? one_hot16(inst_dest_bin) : 16'h0000;
+// IRQ logic source register select
+reg  [3:0] inst_src_irq_bin;
+wire [3:0] inst_src_irq_nxt = (e_state == E_IRQ_0)      ? 4'h2  :
+                              (e_state == E_IRQ_2)      ? 4'hf  : inst_src_irq_bin;
+
+always @(posedge mclk)
+  if (e_state == E_IRQ_EXT_0)
+    inst_src_irq_bin <= inst_src[4] ? 4'h1 : inst_src_irq_bin - 4'h1;
+  else
+    inst_src_irq_bin <= inst_src_irq_nxt;
+
+wire  [15:0] inst_src = inst_type[`INST_TO] ? one_hot16(inst_src_bin)       :
+                        inst_so[`RETI]      ? 16'h0002                      :
+                        inst_so[`IRQ]       ? one_hot16(inst_src_irq_bin)   :
+                        inst_type[`INST_SO] ? one_hot16(inst_dest_bin)      : 16'h0000;
 
 
 //
@@ -840,7 +880,7 @@ always @(posedge mclk_decode or posedge puc_rst)
 //=============================================================================
 
 // State machine registers
-reg  [3:0] e_state;
+reg  [4:0] e_state;
 
 
 // State machine control signals
@@ -897,37 +937,62 @@ wire [3:0] e_first_state = ~dbg_halt_st  & inst_so_nxt[`IRQ] ? E_IRQ_0  :
 // States Transitions
 always @(*)
     case(e_state)
-      E_IDLE   : e_state_nxt =  e_first_state;
-      E_IRQ_0  : e_state_nxt =  E_IRQ_1;
-      E_IRQ_1  : e_state_nxt =  E_IRQ_2;
-      E_IRQ_2  : e_state_nxt =  E_IRQ_3;
-      E_IRQ_3  : e_state_nxt =  E_IRQ_4;
-      E_IRQ_4  : e_state_nxt =  E_EXEC;
+      E_IDLE     : e_state_nxt =  e_first_state;
 
-      E_SRC_AD : e_state_nxt =  inst_sext_rdy     ? E_SRC_RD : E_SRC_AD;
+      E_IRQ_0    : e_state_nxt =  E_IRQ_1;
+      E_IRQ_1    : e_state_nxt =  E_IRQ_2;
+      E_IRQ_2    : e_state_nxt =  E_IRQ_3;
+      E_IRQ_3    : e_state_nxt =  E_IRQ_4;
+      E_IRQ_4    : e_state_nxt =  E_EXEC;
 
-      E_SRC_RD : e_state_nxt =  dst_acalc         ? E_DST_AD : 
-                                 dst_rd           ? E_DST_RD : E_EXEC;
+      /* IRQ_0-3: push SR/PC */
+      E_IRQ_0    : e_state_nxt =  E_IRQ_1;
+      E_IRQ_1    : e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_2;
+      E_IRQ_2    : e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_3;
+      E_IRQ_3    : e_state_nxt =  (sm_irq | inst_irq_rst)
+      `ifndef UNPROTECTED_IRQ_REG_PUSH
+                                  | ~exec_sm
+      `endif
+                                                    ? E_IRQ_4     : E_IRQ_EXT_0;
 
-      E_DST_AD : e_state_nxt =  (inst_dext_rdy |
-                                 exec_dext_rdy)   ? E_DST_RD : E_DST_AD;
+      /* IRQ_EXT: push GP registers */
+      E_IRQ_EXT_0: e_state_nxt =  sm_irq            ? E_IRQ_4     :
+                                  inst_src[1]       ? E_IRQ_SP_RD : E_IRQ_EXT_1;
+      E_IRQ_EXT_1: e_state_nxt =  sm_irq |
+                                  (inst_src[1] &
+                                  ~exec_sm)         ? E_IRQ_4     : E_IRQ_EXT_0;
 
-      E_DST_RD : e_state_nxt =  E_EXEC;
+      /* IRQ_SP: store SP in SM secret data */
+      E_IRQ_SP_RD: e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_SP_WR;
+      E_IRQ_SP_WR: e_state_nxt =  E_IRQ_4;
 
-      E_EXEC   : e_state_nxt =  exec_dst_wr       ? E_DST_WR :
-                                exec_jmp          ? E_JUMP   :
-                                exec_src_wr       ? E_SRC_WR :
-                                exec_spm          ? E_SPM    : e_first_state;
+      /* IRQ_4: vector to ISR */
+      E_IRQ_4    : e_state_nxt =  E_EXEC;
 
-      E_SPM    : e_state_nxt =  spm_busy          ? E_SPM    : e_first_state;
+      E_SRC_AD   : e_state_nxt =  inst_sext_rdy     ? E_SRC_RD    : E_SRC_AD;
 
-      E_JUMP   : e_state_nxt =  e_first_state;
-      E_DST_WR : e_state_nxt =  exec_jmp          ? E_JUMP   :
-                                pmem_writing      ? E_DST_WR2: e_first_state;
-      E_DST_WR2: e_state_nxt =  e_first_state;
-      E_SRC_WR : e_state_nxt =  e_first_state;
+      E_SRC_RD   : e_state_nxt =  dst_acalc         ? E_DST_AD    : 
+                                  dst_rd            ? E_DST_RD    : E_EXEC;
+
+      E_DST_AD   : e_state_nxt =  (inst_dext_rdy |
+                                   exec_dext_rdy)   ? E_DST_RD    : E_DST_AD;
+
+      E_DST_RD   : e_state_nxt =  E_EXEC;
+
+      E_EXEC     : e_state_nxt =  exec_dst_wr       ? E_DST_WR    :
+                                  exec_jmp          ? E_JUMP      :
+                                  exec_src_wr       ? E_SRC_WR    :
+                                  exec_spm          ? E_SPM       : e_first_state;
+
+      E_SPM      : e_state_nxt =  spm_busy          ? E_SPM       : e_first_state;
+
+      E_JUMP     : e_state_nxt =  e_first_state;
+      E_DST_WR   : e_state_nxt =  exec_jmp          ? E_JUMP      :
+                                  pmem_writing      ? E_DST_WR2   : e_first_state;
+      E_DST_WR2  : e_state_nxt =  e_first_state;
+      E_SRC_WR   : e_state_nxt =  e_first_state;
     // pragma coverage off
-      default  : e_state_nxt =  E_IRQ_0;
+      default    : e_state_nxt =  E_IRQ_0;
     // pragma coverage on
     endcase
 
