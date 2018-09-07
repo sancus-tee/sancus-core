@@ -65,6 +65,7 @@ module  omsp_register_file (
     r13,
     r14,
     r15,
+    r1,
 
 // INPUTs
     alu_stat,                     // ALU Status {V,N,Z,C}
@@ -83,7 +84,8 @@ module  omsp_register_file (
     reg_sr_wr,                    // Status register update for RETI instruction
     reg_sr_clr,                   // Status register clear for interrupts
     reg_incr,                     // Increment source register
-    scan_enable                   // Scan enable (active during scan shifting)
+    scan_enable,                  // Scan enable (active during scan shifting)
+    irq_reg_clr
 );
 
 // OUTPUTs
@@ -105,6 +107,7 @@ output       [15:0] r12;
 output       [15:0] r13;
 output       [15:0] r14;
 output       [15:0] r15;
+output       [15:0] r1;
 
 // INPUTs
 //=========
@@ -125,6 +128,7 @@ input               reg_sr_wr;    // Status register update for RETI instruction
 input               reg_sr_clr;   // Status register clear for interrupts
 input               reg_incr;     // Increment source register
 input               scan_enable;  // Scan enable (active during scan shifting)
+input               irq_reg_clr;
 
 //=============================================================================
 // 1)  AUTOINCREMENT UNIT
@@ -161,9 +165,11 @@ wire        pc_sw_wr = (inst_dest[0] & reg_dest_wr) | reg_pc_call;
 reg [15:0] r1;
 wire       r1_wr  = inst_dest[1] & reg_dest_wr;
 wire       r1_inc = inst_src_in[1]  & reg_incr;
+wire       r1_upd = (r1_wr | reg_sp_wr | r1_inc);
+wire       r1_clr = irq_reg_clr | (r1_nxt == 16'h0);
 
 `ifdef CLOCK_GATING
-wire       r1_en  = r1_wr | reg_sp_wr | r1_inc;
+wire       r1_en  = r1_upd | irq_reg_clr;
 wire       mclk_r1;
 omsp_clock_gate clock_gate_r1 (.gclk(mclk_r1),
                                .clk (mclk), .enable(r1_en), .scan_enable(scan_enable));
@@ -171,16 +177,14 @@ omsp_clock_gate clock_gate_r1 (.gclk(mclk_r1),
 wire       mclk_r1 = mclk;
 `endif
 
-always @(posedge mclk_r1 or posedge puc_rst)
-  if (puc_rst)        r1 <= 16'h0000;
-  else if (r1_wr)     r1 <= reg_dest_val_in & 16'hfffe;
-  else if (reg_sp_wr) r1 <= reg_sp_val      & 16'hfffe;
-`ifdef CLOCK_GATING
-  else                r1 <= reg_incr_val    & 16'hfffe;
-`else
-  else if (r1_inc)    r1 <= reg_incr_val    & 16'hfffe;
-`endif
+// 16'hfffe mask to align SP to even addresses
+wire [15:0] r1_nxt = r1_wr          ? reg_dest_val_in & 16'hfffe :
+                     reg_sp_wr      ? reg_sp_val      & 16'hfffe :
+                     r1_inc         ? reg_incr_val    & 16'hfffe : r1;
 
+always @(posedge mclk_r1 or posedge puc_rst)
+  if (puc_rst | irq_reg_clr) r1 <= 16'h0000;
+  else                       r1 <= r1_nxt;
 
 // R2: Status register
 //---------------------
@@ -218,6 +222,7 @@ wire  [7:3] r2_nxt = r2_wr          ? reg_dest_val_in[7:3] : r2[7:3];
 wire        r2_v   = alu_stat_wr[3] ? alu_stat[3]          :
                      r2_wr          ? reg_dest_val_in[8]   : r2[8];              // V
 
+wire        r2_irq = r2_wr          ? reg_dest_val_in[9]  : r2[9];
 
 wire        mclk_r2 = mclk;
 `endif
@@ -249,13 +254,15 @@ wire        mclk_r2 = mclk;
    wire [15:0] scg0_mask   = 16'h0000; //                       - the SCG0 is not supported
    wire [15:0] scg1_mask   = 16'h0080; //                       - the SCG1 mode is emulated
 `endif
+   wire [15:0] irq_mask    = 16'h0200;
    
-   wire [15:0] r2_mask     = cpuoff_mask | oscoff_mask | scg0_mask | scg1_mask | 16'h010f;
+   wire [15:0] r2_mask     = cpuoff_mask | oscoff_mask | scg0_mask | scg1_mask | irq_mask | 16'h010f;
  
 always @(posedge mclk_r2 or posedge puc_rst)
   if (puc_rst)         r2 <= 16'h0000;
-  else if (reg_sr_clr) r2 <= 16'h0000;
-  else                 r2 <= {7'h00, r2_v, r2_nxt, r2_n, r2_z, r2_c} & r2_mask;
+  else if (reg_sr_clr ) r2 <= 16'h0000;
+  else if (irq_reg_clr) r2 <= irq_mask;
+  else                 r2 <= {6'h00, r2_irq, r2_v, r2_nxt, r2_n, r2_z, r2_c} & r2_mask;
 
 assign status = {r2[8], r2[2:0]};
 assign gie    =  r2[3];
@@ -302,7 +309,7 @@ wire       r4_wr  = inst_dest[4] & reg_dest_wr;
 wire       r4_inc = inst_src_in[4]  & reg_incr;
 
 `ifdef CLOCK_GATING
-wire       r4_en  = r4_wr | r4_inc;
+wire       r4_en  = r4_wr | r4_inc | irq_reg_clr;
 wire       mclk_r4;
 omsp_clock_gate clock_gate_r4 (.gclk(mclk_r4),
                                .clk (mclk), .enable(r4_en), .scan_enable(scan_enable));
@@ -311,7 +318,7 @@ wire       mclk_r4 = mclk;
 `endif
 
 always @(posedge mclk_r4 or posedge puc_rst)
-  if (puc_rst)      r4  <= 16'h0000;
+  if (puc_rst | irq_reg_clr)      r4  <= 16'h0000;
   else if (r4_wr)   r4  <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r4  <= reg_incr_val;
@@ -326,7 +333,7 @@ wire       r5_wr  = inst_dest[5] & reg_dest_wr;
 wire       r5_inc = inst_src_in[5]  & reg_incr;
 
 `ifdef CLOCK_GATING
-wire       r5_en  = r5_wr | r5_inc;
+wire       r5_en  = r5_wr | r5_inc | irq_reg_clr;
 wire       mclk_r5;
 omsp_clock_gate clock_gate_r5 (.gclk(mclk_r5),
                                .clk (mclk), .enable(r5_en), .scan_enable(scan_enable));
@@ -335,7 +342,7 @@ wire       mclk_r5 = mclk;
 `endif
 
 always @(posedge mclk_r5 or posedge puc_rst)
-  if (puc_rst)      r5  <= 16'h0000;
+  if (puc_rst | irq_reg_clr)      r5  <= 16'h0000;
   else if (r5_wr)   r5  <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r5  <= reg_incr_val;
@@ -350,7 +357,7 @@ wire       r6_wr  = inst_dest[6] & reg_dest_wr;
 wire       r6_inc = inst_src_in[6]  & reg_incr;
 
 `ifdef CLOCK_GATING
-wire       r6_en  = r6_wr | r6_inc;
+wire       r6_en  = r6_wr | r6_inc | irq_reg_clr;
 wire       mclk_r6;
 omsp_clock_gate clock_gate_r6 (.gclk(mclk_r6),
                                .clk (mclk), .enable(r6_en), .scan_enable(scan_enable));
@@ -359,7 +366,7 @@ wire       mclk_r6 = mclk;
 `endif
 
 always @(posedge mclk_r6 or posedge puc_rst)
-  if (puc_rst)      r6  <= 16'h0000;
+  if (puc_rst | irq_reg_clr)      r6  <= 16'h0000;
   else if (r6_wr)   r6  <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r6  <= reg_incr_val;
@@ -374,7 +381,7 @@ wire       r7_wr  = inst_dest[7] & reg_dest_wr;
 wire       r7_inc = inst_src_in[7]  & reg_incr;
 
 `ifdef CLOCK_GATING
-wire       r7_en  = r7_wr | r7_inc;
+wire       r7_en  = r7_wr | r7_inc | irq_reg_clr;
 wire       mclk_r7;
 omsp_clock_gate clock_gate_r7 (.gclk(mclk_r7),
                                .clk (mclk), .enable(r7_en), .scan_enable(scan_enable));
@@ -383,7 +390,7 @@ wire       mclk_r7 = mclk;
 `endif
 
 always @(posedge mclk_r7 or posedge puc_rst)
-  if (puc_rst)      r7  <= 16'h0000;
+  if (puc_rst | irq_reg_clr)      r7  <= 16'h0000;
   else if (r7_wr)   r7  <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r7  <= reg_incr_val;
@@ -398,7 +405,7 @@ wire       r8_wr  = inst_dest[8] & reg_dest_wr;
 wire       r8_inc = inst_src_in[8]  & reg_incr;
 
 `ifdef CLOCK_GATING
-wire       r8_en  = r8_wr | r8_inc;
+wire       r8_en  = r8_wr | r8_inc | irq_reg_clr;
 wire       mclk_r8;
 omsp_clock_gate clock_gate_r8 (.gclk(mclk_r8),
                                .clk (mclk), .enable(r8_en), .scan_enable(scan_enable));
@@ -407,7 +414,7 @@ wire       mclk_r8 = mclk;
 `endif
 
 always @(posedge mclk_r8 or posedge puc_rst)
-  if (puc_rst)      r8  <= 16'h0000;
+  if (puc_rst | irq_reg_clr)      r8  <= 16'h0000;
   else if (r8_wr)   r8  <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r8  <= reg_incr_val;
@@ -422,7 +429,7 @@ wire       r9_wr  = inst_dest[9] & reg_dest_wr;
 wire       r9_inc = inst_src_in[9]  & reg_incr;
 
 `ifdef CLOCK_GATING
-wire       r9_en  = r9_wr | r9_inc;
+wire       r9_en  = r9_wr | r9_inc | irq_reg_clr;
 wire       mclk_r9;
 omsp_clock_gate clock_gate_r9 (.gclk(mclk_r9),
                                .clk (mclk), .enable(r9_en), .scan_enable(scan_enable));
@@ -431,7 +438,7 @@ wire       mclk_r9 = mclk;
 `endif
 
 always @(posedge mclk_r9 or posedge puc_rst)
-  if (puc_rst)      r9  <= 16'h0000;
+  if (puc_rst | irq_reg_clr)      r9  <= 16'h0000;
   else if (r9_wr)   r9  <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r9  <= reg_incr_val;
@@ -446,7 +453,7 @@ wire       r10_wr  = inst_dest[10] & reg_dest_wr;
 wire       r10_inc = inst_src_in[10]  & reg_incr;
 
 `ifdef CLOCK_GATING
-wire       r10_en  = r10_wr | r10_inc;
+wire       r10_en  = r10_wr | r10_inc | irq_reg_clr;
 wire       mclk_r10;
 omsp_clock_gate clock_gate_r10 (.gclk(mclk_r10),
                                 .clk (mclk), .enable(r10_en), .scan_enable(scan_enable));
@@ -455,7 +462,7 @@ wire       mclk_r10 = mclk;
 `endif
 
 always @(posedge mclk_r10 or posedge puc_rst)
-  if (puc_rst)      r10 <= 16'h0000;
+  if (puc_rst | irq_reg_clr)      r10 <= 16'h0000;
   else if (r10_wr)  r10 <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r10 <= reg_incr_val;
@@ -470,7 +477,7 @@ wire       r11_wr  = inst_dest[11] & reg_dest_wr;
 wire       r11_inc = inst_src_in[11]  & reg_incr;
 
 `ifdef CLOCK_GATING
-wire       r11_en  = r11_wr | r11_inc;
+wire       r11_en  = r11_wr | r11_inc | irq_reg_clr;
 wire       mclk_r11;
 omsp_clock_gate clock_gate_r11 (.gclk(mclk_r11),
                                 .clk (mclk), .enable(r11_en), .scan_enable(scan_enable));
@@ -479,7 +486,7 @@ wire       mclk_r11 = mclk;
 `endif
 
 always @(posedge mclk_r11 or posedge puc_rst)
-  if (puc_rst)      r11 <= 16'h0000;
+  if (puc_rst | irq_reg_clr)      r11 <= 16'h0000;
   else if (r11_wr)  r11 <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r11 <= reg_incr_val;
@@ -494,7 +501,7 @@ wire       r12_wr  = inst_dest[12] & reg_dest_wr;
 wire       r12_inc = inst_src_in[12]  & reg_incr;
 
 `ifdef CLOCK_GATING
-wire       r12_en  = r12_wr | r12_inc;
+wire       r12_en  = r12_wr | r12_inc | irq_reg_clr;
 wire       mclk_r12;
 omsp_clock_gate clock_gate_r12 (.gclk(mclk_r12),
                                 .clk (mclk), .enable(r12_en), .scan_enable(scan_enable));
@@ -503,7 +510,7 @@ wire       mclk_r12 = mclk;
 `endif
 
 always @(posedge mclk_r12 or posedge puc_rst)
-  if (puc_rst)      r12 <= 16'h0000;
+  if (puc_rst | irq_reg_clr)      r12 <= 16'h0000;
   else if (r12_wr)  r12 <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r12 <= reg_incr_val;
@@ -518,7 +525,7 @@ wire       r13_wr  = inst_dest[13] & reg_dest_wr;
 wire       r13_inc = inst_src_in[13]  & reg_incr;
 
 `ifdef CLOCK_GATING
-wire       r13_en  = r13_wr | r13_inc;
+wire       r13_en  = r13_wr | r13_inc | irq_reg_clr;
 wire       mclk_r13;
 omsp_clock_gate clock_gate_r13 (.gclk(mclk_r13),
                                 .clk (mclk), .enable(r13_en), .scan_enable(scan_enable));
@@ -527,7 +534,7 @@ wire       mclk_r13 = mclk;
 `endif
 
 always @(posedge mclk_r13 or posedge puc_rst)
-  if (puc_rst)      r13 <= 16'h0000;
+  if (puc_rst | irq_reg_clr)      r13 <= 16'h0000;
   else if (r13_wr)  r13 <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r13 <= reg_incr_val;
@@ -542,7 +549,7 @@ wire       r14_wr  = inst_dest[14] & reg_dest_wr;
 wire       r14_inc = inst_src_in[14]  & reg_incr;
 
 `ifdef CLOCK_GATING
-wire       r14_en  = r14_wr | r14_inc;
+wire       r14_en  = r14_wr | r14_inc | irq_reg_clr;
 wire       mclk_r14;
 omsp_clock_gate clock_gate_r14 (.gclk(mclk_r14),
                                 .clk (mclk), .enable(r14_en), .scan_enable(scan_enable));
@@ -551,7 +558,7 @@ wire       mclk_r14 = mclk;
 `endif
 
 always @(posedge mclk_r14 or posedge puc_rst)
-  if (puc_rst)      r14 <= 16'h0000;
+  if (puc_rst | irq_reg_clr)   r14 <= 16'h0000;
   else if (r14_wr)  r14 <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r14 <= reg_incr_val;
@@ -562,11 +569,11 @@ always @(posedge mclk_r14 or posedge puc_rst)
 // R15
 //------------
 reg [15:0] r15;
-wire       r15_wr  = inst_dest[15] & reg_dest_wr;
+wire       r15_wr  = (inst_dest[15] & reg_dest_wr) | irq_reg_clr;
 wire       r15_inc = inst_src_in[15]  & reg_incr;
 
 `ifdef CLOCK_GATING
-wire       r15_en  = r15_wr | r15_inc;
+wire       r15_en  = r15_wr | r15_inc | irq_reg_clr;
 wire       mclk_r15;
 omsp_clock_gate clock_gate_r15 (.gclk(mclk_r15),
                                 .clk (mclk), .enable(r15_en), .scan_enable(scan_enable));
@@ -577,10 +584,10 @@ wire       mclk_r15 = mclk;
 always @(posedge mclk_r15 or posedge puc_rst)
   if (puc_rst)      r15 <= 16'h0000;
   else if (r15_wr)  r15 <= reg_dest_val_in;
- `ifdef CLOCK_GATING
+`ifdef CLOCK_GATING
   else              r15 <= reg_incr_val;
 `else
- else if (r15_inc)  r15 <= reg_incr_val;
+  else if (r15_inc)  r15 <= reg_incr_val;
 `endif
 
 

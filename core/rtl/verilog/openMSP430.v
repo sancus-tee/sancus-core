@@ -223,8 +223,8 @@ wire         [15:0] per_dout_clk;
 wire          [7:0] spm_command;
 wire         [15:0] current_inst_pc;
 wire         [15:0] prev_inst_pc;
-wire                handling_irq;
 wire          [3:0] irq_num;
+wire                irq_detect;
 
 wire                spm_busy;
 wire                spm_violation_eu;
@@ -324,8 +324,8 @@ omsp_frontend frontend_0 (
     .spm_command  (spm_command),
     .current_inst_pc (current_inst_pc),
     .prev_inst_pc (prev_inst_pc),
-    .handling_irq (handling_irq),
     .irq_num      (irq_num),
+    .irq_detect   (irq_detect),
 			     
 // INPUTs
     .cpu_en_s     (cpu_en_s),      // Enable CPU code execution (synchronous)
@@ -371,7 +371,7 @@ omsp_execution_unit execution_unit_0 (
     .pc_sw_wr     (pc_sw_wr),      // Program counter software write
     .scg0         (scg0),          // System clock generator 1. Turns off the DCO
     .scg1         (scg1),          // System clock generator 1. Turns off the SMCLK
-    .spm_violation(spm_violation_eu),
+    .violation    (spm_violation_eu),
     .sm_busy      (spm_busy),
     .exec_sm      (exec_sm_eu),
 
@@ -404,8 +404,8 @@ omsp_execution_unit execution_unit_0 (
     .sm_command   (spm_command),
     .current_inst_pc (current_inst_pc),
     .prev_inst_pc (prev_inst_pc),
-    .handling_irq (handling_irq),
-    .irq_num      (irq_num)
+    .irq_num      (irq_num),
+    .irq_detect   (irq_detect)
 );
 
 

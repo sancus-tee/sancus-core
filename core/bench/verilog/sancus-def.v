@@ -31,8 +31,6 @@ wire [15:0] sm_1_id             = dut.execution_unit_0.spm_control_0.omsp_spms[1
 wire        sm_0_executing      = dut.execution_unit_0.spm_control_0.omsp_spms[0].executing;
 wire        sm_1_executing      = dut.execution_unit_0.spm_control_0.omsp_spms[1].executing;
 
-wire [63:0] cur_tsc             = tsc_0.tsc;
-
 //wire [15:0] vbar_reg            = dut.pic_0.ivt_base;
 //
 //`ifdef ATOMICITY_MONITOR

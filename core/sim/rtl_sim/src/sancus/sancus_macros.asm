@@ -36,7 +36,8 @@
 .endm
 
 ; TODO should take continuation argument
-.macro sancus_disable
+.macro sancus_disable cont:req
+    mov \cont, r15
     .word 0x1380
 .endm
 

@@ -43,6 +43,8 @@
 `include "openMSP430_defines.v"
 `endif
 
+`define __SANCUS_SIM
+
 module  tb_openMSP430;
 
 //
@@ -138,6 +140,7 @@ wire               ta_out2_en;
 
 // Time Stamp Counter
 wire        [15:0] per_dout_tsc;
+wire        [63:0] cur_tsc;
 
 // LED digits
 wire        [15:0] per_dout_led;
@@ -585,6 +588,8 @@ omsp_tsc tsc_0(
     .per_we   (per_we),
     .puc_rst  (puc_rst)
 );
+
+assign cur_tsc = tsc_0.tsc;
 
 //
 // LED Digits

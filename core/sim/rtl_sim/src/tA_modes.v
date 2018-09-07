@@ -219,8 +219,9 @@ initial
       test_step = 14;
 
       @(mem200===16'h0002);
-      if (mem202 !== 16'h0008) tb_error("====== TIMER_A UP-DOWN MODE: TAIFG LATENCY ERROR =====");
-      if (mem204 !== 16'h0028) tb_error("====== TIMER_A UP-DOWN MODE: TACCR0 LATENCY ERROR =====");
+      // NOTE: times adjusted off-by-one due to E_IRQ_PRE cycle
+      if (mem202 !== 16'h0009) tb_error("====== TIMER_A UP-DOWN MODE: TAIFG LATENCY ERROR =====");
+      if (mem204 !== 16'h0027) tb_error("====== TIMER_A UP-DOWN MODE: TACCR0 LATENCY ERROR =====");
       test_step = 15;
 
 `endif

@@ -31,11 +31,7 @@ initial
       $display(" ===============================================");
 
 `ifndef UNPROTECTED_IRQ_REG_PUSH
-      $display(" ===============================================");
-      $display("|               SIMULATION SKIPPED              |");
-      $display("|  (Requires unprotected IRQ register pushing)  |");
-      $display(" ===============================================");
-      $finish;
+`define UNPROTECTED_IRQ_REG_PUSH
 `endif
 
       repeat(5) @(posedge mclk);

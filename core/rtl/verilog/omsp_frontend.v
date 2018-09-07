@@ -77,8 +77,8 @@ module  omsp_frontend (
     spm_command,
     current_inst_pc,
     prev_inst_pc,
-    handling_irq,
     irq_num,
+    irq_detect,
 
 // INPUTs
     cpu_en_s,                      // Enable CPU code execution (synchronous)
@@ -136,8 +136,8 @@ output              sm_irq;
 output        [7:0] spm_command;
 output       [15:0] current_inst_pc;
 output       [15:0] prev_inst_pc;
-output              handling_irq;
 output        [3:0] irq_num;
+output              irq_detect;
 
 // INPUTs
 //=========
@@ -223,6 +223,7 @@ parameter E_JUMP      = `E_JUMP;
 parameter E_IDLE      = `E_IDLE;
 parameter E_SPM       = `E_SPM;
 parameter E_DST_WR2   = `E_DST_WR2;
+parameter E_IRQ_PRE   = `E_IRQ_PRE;
 parameter E_IRQ_EXT_0 = `E_IRQ_EXT_0;
 parameter E_IRQ_EXT_1 = `E_IRQ_EXT_1;
 parameter E_IRQ_SP_RD = `E_IRQ_SP_RD;
@@ -243,7 +244,7 @@ wire       irq_detect;
 wire [2:0] inst_type_nxt;
 wire       is_const;
 reg [15:0] sconst_nxt;
-reg  [3:0] e_state_nxt;
+reg  [4:0] e_state_nxt;
            
 // CPU on/off through the debug interface or cpu_en port
 wire   cpu_halt_cmd = dbg_halt_cmd | ~cpu_en_s;
@@ -377,15 +378,6 @@ wire [15:0] irq_addr    = {11'h7ff, irq_num, 1'b0};
 wire [15:0] irq_acc_all = one_hot16(irq_num) & {16{(i_state==I_IRQ_FETCH)}};
 wire [13:0] irq_acc     = irq_acc_all[13:0];
 wire        nmi_acc     = irq_acc_all[14];
-
-// keep track of if we are currently handling an IRQ (with handling we mean the
-// handling by hardware, *not* running the software ISR)
-reg handling_irq;
-always @(posedge mclk or posedge puc_rst)
-  if (puc_rst)
-    handling_irq <= 1'b1;
-  else if (decode)
-    handling_irq <= irq_detect;
 
 //
 // 4.2) SYSTEM WAKEUP
@@ -922,7 +914,10 @@ always @(posedge mclk or posedge puc_rst)
 wire exec_spm = |spm_command;
 
 // Execution first state
-wire [3:0] e_first_state = ~dbg_halt_st  & inst_so_nxt[`IRQ] ? E_IRQ_0  :
+// NOTE: added an E_IRQ_PRE cycle to make sure the execution unit IRQ logic
+//       does not trigger a memory violation before the front-end (IRQ_DONE) has
+//       fetched the first instruction of the ISR
+wire [4:0] e_first_state = ~dbg_halt_st  & inst_so_nxt[`IRQ] ? E_IRQ_PRE:
                             cpu_halt_cmd | (i_state==I_IDLE) ? E_IDLE   :
                             cpuoff                           ? E_IDLE   :
                             src_acalc_pre                    ? E_SRC_AD :
@@ -939,13 +934,8 @@ always @(*)
     case(e_state)
       E_IDLE     : e_state_nxt =  e_first_state;
 
-      E_IRQ_0    : e_state_nxt =  E_IRQ_1;
-      E_IRQ_1    : e_state_nxt =  E_IRQ_2;
-      E_IRQ_2    : e_state_nxt =  E_IRQ_3;
-      E_IRQ_3    : e_state_nxt =  E_IRQ_4;
-      E_IRQ_4    : e_state_nxt =  E_EXEC;
-
       /* IRQ_0-3: push SR/PC */
+      E_IRQ_PRE  : e_state_nxt =  E_IRQ_0;
       E_IRQ_0    : e_state_nxt =  E_IRQ_1;
       E_IRQ_1    : e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_2;
       E_IRQ_2    : e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_3;
@@ -992,13 +982,13 @@ always @(*)
       E_DST_WR2  : e_state_nxt =  e_first_state;
       E_SRC_WR   : e_state_nxt =  e_first_state;
     // pragma coverage off
-      default    : e_state_nxt =  E_IRQ_0;
+      default    : e_state_nxt =  E_IRQ_PRE;
     // pragma coverage on
     endcase
 
 // State machine
 always @(posedge mclk or posedge puc_rst)
-  if (puc_rst) e_state  <= E_IRQ_1;
+  if (puc_rst) e_state  <= E_IRQ_PRE;
   else         e_state  <= e_state_nxt;
 
 
