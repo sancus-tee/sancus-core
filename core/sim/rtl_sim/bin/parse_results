@@ -132,5 +132,3 @@ echo    ""
 echo    "      Make sure passed+skipped == total"
 echo    ""
 echo    ""
-
-exit `expr $failed_nr + $aborded_nr`

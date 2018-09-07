@@ -1,0 +1,117 @@
+/*===========================================================================*/
+/*                 SANCUS MODULE INTERRUPT LOGIC                             */
+/*---------------------------------------------------------------------------*/
+/* Test interrupting/resuming a protected and unprotected Sancus module.     */
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+/*===========================================================================*/
+
+.include "pmem_defs.asm"
+.include "sancus_macros.asm"
+
+.set unprotected_stack_base, DMEM_20F
+.set stack_base, DMEM_260
+.set reg_offset, 0x1234
+.set clobber_val, 0xf00d
+.set tst_val, 0xbabe
+.set tst_addr, DMEM_200
+.set sm_secret_start, DMEM_262
+.set sm_secret_end, DMEM_26E
+.set sm_sp_save_loc,(sm_secret_end - 2)
+.set sm_sp_save, (sm_secret_end - 4)
+.set do_exit, sm_secret_end ; end boundary is exclusive
+
+.global main
+main:
+    disable_wdt
+    eint
+    clr r4
+    clr &do_exit
+    clr &tst_addr
+    
+    ; enable sancus module and jump to its entry point
+    sancus_enable #1234, #sm_public_start, #sm_public_end, #sm_secret_start, #sm_secret_end
+    br #sm_public_start
+    
+    /* ----------------------         END OF TEST        --------------- */
+end_of_test:
+	mov #0x2000, r15
+	clr r15
+	br #0xffff
+
+
+    /* ----------------------         SANCUS MODULE      --------------- */
+sm_public_start:
+    tst &sm_sp_save_loc
+    jnz 1f
+    mov #sm_sp_save, &sm_sp_save_loc
+1:  cmp #0xffff, r4
+    jne init_regs
+    ; disable SM to redo the test for an unprotected interrupt
+    sancus_disable
+    mov &sm_sp_save, r1
+    clr &sm_sp_save
+    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15    
+    reti
+
+init_regs:
+    ; initialize registers with known values
+    clr &sm_sp_save
+   	mov #stack_base, r1
+    mov #reg_offset+0x4, r4
+    mov #reg_offset+0x5, r5
+    mov #reg_offset+0x6, r6
+    mov #reg_offset+0x7, r7
+    mov #reg_offset+0x8, r8
+    mov #reg_offset+0x9, r9
+    mov #reg_offset+0xa, r10
+    mov #reg_offset+0xb, r11
+    mov #reg_offset+0xc, r12
+    mov #reg_offset+0xd, r13
+    mov #reg_offset+0xe, r14
+    mov #reg_offset+0xf, r15
+ 
+    ; busy waiting for the interrupt
+loop:
+    tst &do_exit
+    jnz end_of_test
+    nop
+    jmp loop
+
+sm_public_end:
+
+    /* ----------------------      INTERRUPT ROUTINES    --------------- */
+
+IRQ_VECTOR:
+    ; dummy instruction with two extension words for testing purposes
+    mov #tst_val, &tst_addr
+    clr &tst_addr
+    repeat_to mov, #clobber_val, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14
+    tst r1  ; SM interrupted ?
+    jz 1f
+    mov #1, &do_exit
+    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15    
+    reti
+1:  mov #0xffff, r4
+    mov #unprotected_stack_base, r1
+    do_reti r15
+
+    /* ----------------------         INTERRUPT VECTORS  --------------- */
+
+.section .vectors, "a"
+.word end_of_test  ; Interrupt  0 (lowest priority)    <unused>
+.word end_of_test  ; Interrupt  1                      <unused>
+.word end_of_test  ; Interrupt  2                      <unused>
+.word end_of_test  ; Interrupt  3                      <unused>
+.word end_of_test  ; Interrupt  4                      <unused>
+.word end_of_test  ; Interrupt  5                      <unused>
+.word end_of_test  ; Interrupt  6                      <unused>
+.word end_of_test  ; Interrupt  7                      <unused>
+.word end_of_test  ; Interrupt  8                      <unused>
+.word IRQ_VECTOR   ; Interrupt  9                      TEST IRQ
+.word end_of_test  ; Interrupt 10                      Watchdog timer
+.word end_of_test  ; Interrupt 11                      <unused>
+.word end_of_test  ; Interrupt 12                      <unused>
+.word end_of_test  ; Interrupt 13                      SM_IRQ
+.word end_of_test  ; Interrupt 14                      NMI
+.word main         ; Interrupt 15 (highest priority)   RESET

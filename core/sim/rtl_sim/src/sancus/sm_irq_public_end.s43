@@ -1,0 +1,95 @@
+/*===========================================================================*/
+/*                 SANCUS MODULE INTERRUPT LAST INSTRUCTION                  */
+/*---------------------------------------------------------------------------*/
+/* Edge case test when interrupting the last instruction of an SM's code     */
+/* section; subject of memory access control should be the interrupted SM.   */
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+/*===========================================================================*/
+
+.include "pmem_defs.asm"
+.include "sancus_macros.asm"
+
+.set unprotected_stack_base, DMEM_20F
+.set stack_base, DMEM_260
+.set bar_val, 0xbabe
+
+.set foo_secret_start, DMEM_262
+.set foo_secret_end, DMEM_268
+.set foo_sp_save_loc, (foo_secret_end - 2)
+.set foo_sp_save, (foo_secret_end - 4)
+.set bar_secret_start, foo_secret_end
+.set bar_secret_end, DMEM_26E
+.set bar_sp_save_loc, (bar_secret_end - 2)
+.set bar_sp_save, (bar_secret_end - 4)
+
+.global main
+
+main:
+    disable_wdt
+    eint
+    mov #stack_base, r1
+    mov #0x1000, r15
+    clr r4
+    
+    sancus_enable #1234, #foo_public_start, #foo_public_end, #foo_secret_start, #foo_secret_end
+    sancus_enable #1234, #bar_public_start, #bar_public_end, #bar_secret_start, #bar_secret_end
+    br #foo_public_start
+    
+    /* ----------------------         END OF TEST        --------------- */
+end_of_test:
+	mov #0x2000, r15
+	br #0xffff
+
+    /* ----------------------         SANCUS MODULE      --------------- */
+foo_public_start:
+    mov #foo_sp_save, &foo_sp_save_loc
+    cmp #0xffff, r4
+    jne 1f
+    ; restore reti state
+    mov &foo_sp_save, r1
+    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15
+    ; continue at bar entry point
+    reti
+
+1:  mov #0x3000, r15
+    br #bar_public_start
+    ; INTERRUPT should occur here with context SM foo
+foo_public_end:
+
+some_func:
+    nop
+    nop
+    nop
+
+bar_public_start:
+    mov #0x4000, r15
+    br #end_of_test
+bar_public_end:
+
+    /* ----------------------      INTERRUPT ROUTINES    --------------- */
+
+IRQ_VECTOR:
+    mov #0xffff, r4
+    mov #unprotected_stack_base, r1
+    do_reti r15
+
+    /* ----------------------         INTERRUPT VECTORS  --------------- */
+
+.section .vectors, "a"
+.word end_of_test  ; Interrupt  0 (lowest priority)    <unused>
+.word end_of_test  ; Interrupt  1                      <unused>
+.word end_of_test  ; Interrupt  2                      <unused>
+.word end_of_test  ; Interrupt  3                      <unused>
+.word end_of_test  ; Interrupt  4                      <unused>
+.word end_of_test  ; Interrupt  5                      <unused>
+.word end_of_test  ; Interrupt  6                      <unused>
+.word end_of_test  ; Interrupt  7                      <unused>
+.word end_of_test  ; Interrupt  8                      <unused>
+.word IRQ_VECTOR   ; Interrupt  9                      TEST IRQ
+.word end_of_test  ; Interrupt 10                      Watchdog timer
+.word end_of_test  ; Interrupt 11                      <unused>
+.word end_of_test  ; Interrupt 12                      <unused>
+.word end_of_test  ; Interrupt 13                      SM_IRQ
+.word end_of_test  ; Interrupt 14                      NMI
+.word main         ; Interrupt 15 (highest priority)   RESET

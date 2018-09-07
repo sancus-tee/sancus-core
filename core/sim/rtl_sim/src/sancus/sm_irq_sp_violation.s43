@@ -1,0 +1,130 @@
+/*===========================================================================*/
+/*                 SM IRQ SP VIOLATION                                       */
+/*---------------------------------------------------------------------------*/
+/* Force stack overrun violations for all 14 pushes by IRQ logic via         */
+/* incremental sp guard addresses.                                           */
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+/*===========================================================================*/
+
+.include "pmem_defs.asm"
+.include "sancus_macros.asm"
+
+.set stack_base, DMEM_260
+.set reg_offset, 0x1234
+.set clobber_val, 0xf00d
+.set tst_val, 0xbabe
+.set tst_addr, DMEM_200
+.set reti_addr, DMEM_202
+
+.set sm_secret_start, DMEM_262
+.set sm_secret_end, DMEM_26E
+.set sm_sp_save_loc, (sm_secret_end - 2)
+.set sm_sp_save, (sm_secret_end - 4)
+.set sm_cntr, (sm_secret_end - 6)
+
+.macro init_stack
+    sancus_stack_guard #0
+    mov #stack_base, r1
+    repeat clr, &0x260, &0x25e, &0x25c, &0x25a, &0x258, &0x256, &0x254, &0x252
+    repeat clr, &0x250, &0x24e, &0x24c, &0x24a, &0x248, &0x246, &0x244, &0x242
+    eint
+.endm
+
+.global main
+
+main:
+    disable_wdt
+    clr &sm_cntr
+    clr &tst_addr
+    init_stack
+    
+    sancus_enable #1234, #sm_public_start, #sm_public_end, #sm_secret_start, #sm_secret_end
+    br #sm_public_start
+
+    /* ----------------------         END OF TEST        --------------- */
+end_of_test:
+	mov #0x2000, r15
+	br #0xffff
+
+    /* ----------------------         SANCUS MODULE      --------------- */
+sm_public_start:
+    tst &sm_sp_save_loc
+    jnz 1f
+    mov #sm_sp_save, &sm_sp_save_loc
+1:  mov #stack_base, r15
+    mov &sm_cntr, r14
+    sub r14, r15
+    add #2, r14
+    cmp #32, r14                ; 14 2-byte pushes by HW IRQ logic
+    jl 1f
+    ; redo the tests for an unprotected SM, or exit
+    mov #sm_public_start, r15
+    sancus_get_id
+    tst r15
+    jnz 2f
+    jmp end_of_test
+2:  sancus_disable
+    clr &sm_cntr
+    jmp sm_public_start
+1:  mov r14, &sm_cntr
+    sancus_stack_guard r15
+    
+    ; initialize registers with known values
+    clr &sm_sp_save
+    mov #reg_offset+0x4, r4
+    mov #reg_offset+0x5, r5
+    mov #reg_offset+0x6, r6
+    mov #reg_offset+0x7, r7
+    mov #reg_offset+0x8, r8
+    mov #reg_offset+0x9, r9
+    mov #reg_offset+0xa, r10
+    mov #reg_offset+0xb, r11
+    mov #reg_offset+0xc, r12
+    mov #reg_offset+0xd, r13
+    mov #reg_offset+0xe, r14
+    mov #reg_offset+0xf, r15
+    
+    ; wait for the interrupt
+loop:
+    nop
+    jmp loop
+
+sm_public_end:
+
+    /* ----------------------      INTERRUPT ROUTINES    --------------- */
+
+IRQ_VECTOR:
+    ; dummy instruction with two extension words for testing purposes
+    mov #tst_val, &tst_addr
+    clr &tst_addr
+    ; unprotected reti address ?
+    tst r1
+    jnz 1f
+    mov r15, &reti_addr
+    jmp 2f
+1:  mov #sm_public_start, &reti_addr  
+2:  ; re-initialize stack
+    init_stack
+    repeat_to mov, #clobber_val, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15
+    br &reti_addr
+
+    /* ----------------------         INTERRUPT VECTORS  --------------- */
+
+.section .vectors, "a"
+.word end_of_test  ; Interrupt  0 (lowest priority)    <unused>
+.word end_of_test  ; Interrupt  1                      <unused>
+.word end_of_test  ; Interrupt  2                      <unused>
+.word end_of_test  ; Interrupt  3                      <unused>
+.word end_of_test  ; Interrupt  4                      <unused>
+.word end_of_test  ; Interrupt  5                      <unused>
+.word end_of_test  ; Interrupt  6                      <unused>
+.word end_of_test  ; Interrupt  7                      <unused>
+.word end_of_test  ; Interrupt  8                      <unused>
+.word IRQ_VECTOR   ; Interrupt  9                      TEST IRQ
+.word end_of_test  ; Interrupt 10                      Watchdog timer
+.word end_of_test  ; Interrupt 11                      <unused>
+.word end_of_test  ; Interrupt 12                      <unused>
+.word end_of_test  ; Interrupt 13                      SM_IRQ
+.word end_of_test  ; Interrupt 14                      NMI
+.word main         ; Interrupt 15 (highest priority)   RESET

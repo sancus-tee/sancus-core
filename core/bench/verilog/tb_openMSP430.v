@@ -210,6 +210,10 @@ reg                stimulus_done;
 // CPU & Memory registers
 `include "registers.v"
 
+// Sancus-specific register/wire definitions
+`include "sancus-def.v"
+`include "irq_macros.v"
+
 // Debug interface tasks
 `include "dbg_uart_tasks.v"
 
@@ -572,7 +576,7 @@ template_periph_16b #(.BASE_ADDR((15'd`PER_SIZE-15'h0070) & 15'h7ff8)) template_
 //
 // Time Stamp Counter
 //----------------------------------
-omsp_tsc tsc(
+omsp_tsc tsc_0(
     .per_dout (per_dout_tsc),
     .mclk     (mclk),
     .per_addr (per_addr),

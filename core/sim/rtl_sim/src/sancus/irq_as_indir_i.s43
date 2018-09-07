@@ -1,0 +1,81 @@
+/*===========================================================================*/
+/*                 REGISTER INDIRECT AUTOINCREMENT IRQ                       */
+/*---------------------------------------------------------------------------*/
+/* Test scenario to ensure the IRQ logic does not increment any registers    */
+/* when interrupting _before_ an instruction with register-indirect          */
+/* autoincrement addressing mode.                                            */
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+/*===========================================================================*/
+.include "pmem_defs.asm"
+.include "sancus_macros.asm"
+
+.set stack_base, DMEM_260
+.set tst_val, 0xbabe
+.set tst_addr, DMEM_200
+
+.global main
+
+main:
+    disable_wdt
+    eint
+	repeat clr, r15, r14, r13, r12, r11, r10, r9, r8, r7, r6, r5, r4, &tst_addr
+
+	mov #stack_base, r1
+
+loop:
+    ; check whether the interrupt occured
+    cmp #0x1000, r15    
+    jeq end_of_test
+    
+    ; push some test values on the stack
+    push #0x1
+    push #0x2
+    push #0x3
+
+    ; pop is emulated using register-indirect auto-increment: mov @sp+, dest
+    pop r14
+    pop r14
+    ; INTERRUPT is handled here with inst_as_nxt[`INDIR_I] being set
+    pop r14
+
+    jmp loop
+    
+        /* ----------------------         END OF TEST        --------------- */
+end_of_test:
+	mov #0x2000, r15
+	clr r15
+	br #0xffff
+
+        /* ----------------------      INTERRUPT ROUTINES    --------------- */
+
+IRQ_VECTOR:
+    ; dummy instruction with two extension words for testing purposes
+    mov #tst_val, &tst_addr
+    clr &tst_addr
+    ; clobber registers
+    repeat_to mov, #-1, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15
+    ; restore registers pushed by hw irq logic
+    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15
+    mov #0x1000, r15
+    reti
+    
+        /* ----------------------         INTERRUPT VECTORS  --------------- */
+
+.section .vectors, "a"
+.word end_of_test  ; Interrupt  0 (lowest priority)    <unused>
+.word end_of_test  ; Interrupt  1                      <unused>
+.word end_of_test  ; Interrupt  2                      <unused>
+.word end_of_test  ; Interrupt  3                      <unused>
+.word end_of_test  ; Interrupt  4                      <unused>
+.word end_of_test  ; Interrupt  5                      <unused>
+.word end_of_test  ; Interrupt  6                      <unused>
+.word end_of_test  ; Interrupt  7                      <unused>
+.word end_of_test  ; Interrupt  8                      <unused>
+.word IRQ_VECTOR   ; Interrupt  9                      TEST IRQ
+.word end_of_test  ; Interrupt 10                      Watchdog timer
+.word end_of_test  ; Interrupt 11                      <unused>
+.word end_of_test  ; Interrupt 12                      <unused>
+.word end_of_test  ; Interrupt 13                      SM_IRQ
+.word end_of_test  ; Interrupt 14                      NMI
+.word main         ; Interrupt 15 (highest priority)   RESET
