@@ -163,6 +163,30 @@ wire         [15:0] mdb_in_bw;
 wire         [15:0] mdb_in_val;
 wire          [3:0] status;
 
+//wires for sm instructions
+wire [15:0] r9;
+wire [15:0] r10;
+wire [15:0] r11;
+wire [15:0] r12;
+wire [15:0] r13;
+wire [15:0] r14;
+wire [15:0] r15;
+wire [15:0] sm_current_id;
+wire [15:0] sm_prev_id;
+wire        sm_violation;
+
+wire do_sm_inst     = (e_state == `E_EXEC) & inst_so[`SANCUS];
+wire sm_disable     = sm_command[`SM_DISABLE];
+wire sm_enable      = sm_command[`SM_ENABLE];
+wire sm_verify_addr = sm_command[`SM_VERIFY_ADDR];
+wire sm_verify_prev = sm_command[`SM_VERIFY_PREV];
+wire sm_ae_wrap     = sm_command[`SM_AE_WRAP];
+wire sm_ae_unwrap   = sm_command[`SM_AE_UNWRAP];
+wire sm_id          = sm_command[`SM_ID];
+wire sm_id_prev     = sm_command[`SM_PREV_ID];
+wire sm_update      = (do_sm_inst & sm_enable) | (sm_disable & ~sm_busy);
+wire sm_verify      = sm_verify_addr | sm_verify_prev;
+
 
 //=============================================================================
 // 2)  REGISTER FILE
@@ -193,27 +217,6 @@ assign dbg_reg_din = reg_dest;
 
 wire [15:0] dest_reg     = crypto_reg_write ? crypto_dest_reg     : inst_dest;
 wire [15:0] reg_dest_val = crypto_reg_write ? crypto_reg_data_out : alu_out;
-
-//wires for sm instructions
-wire [15:0] r9;
-wire [15:0] r10;
-wire [15:0] r11;
-wire [15:0] r12;
-wire [15:0] r13;
-wire [15:0] r14;
-wire [15:0] r15;
-
-wire do_sm_inst     = (e_state == `E_EXEC) & inst_so[`SANCUS];
-wire sm_disable     = sm_command[`SM_DISABLE];
-wire sm_enable      = sm_command[`SM_ENABLE];
-wire sm_verify_addr = sm_command[`SM_VERIFY_ADDR];
-wire sm_verify_prev = sm_command[`SM_VERIFY_PREV];
-wire sm_ae_wrap     = sm_command[`SM_AE_WRAP];
-wire sm_ae_unwrap   = sm_command[`SM_AE_UNWRAP];
-wire sm_id          = sm_command[`SM_ID];
-wire sm_id_prev     = sm_command[`SM_PREV_ID];
-wire sm_update      = (do_sm_inst & sm_enable) | (sm_disable & ~sm_busy);
-wire sm_verify      = sm_verify_addr | sm_verify_prev;
 
 omsp_register_file register_file_0 (
 
@@ -462,8 +465,10 @@ always @(posedge mclk_mdb_in_buf or posedge puc_rst)
 
 assign mdb_in_val = mdb_in_buf_valid ? mdb_in_buf : mdb_in_bw;
 
-//SPM
-wire sm_busy = crypto_busy;
+
+//=============================================================================
+// 7)   SANCUS MODULE CONTROL
+//=============================================================================
 
 wire        sm_data_select_valid;
 wire        sm_key_select_valid;
@@ -473,30 +478,12 @@ wire [15:0] sm_requested_data;
 wire [15:0] sm_data_select;
 wire        sm_data_select_type;
 wire [15:0] sm_key_select;
-wire [15:0] sm_current_id;
-wire [15:0] sm_prev_id;
-wire        sm_violation;
-
-wire [0:`SECURITY-1] sm_key;
-
-// crypto unit wires
-wire [15:0] crypto_mab;
-wire        crypto_mb_en;
-wire  [1:0] crypto_mb_wr;
-wire [15:0] crypto_data_out;
-wire        crypto_busy;
-wire        crypto_reg_write;
-wire [15:0] crypto_dest_reg;
-wire [15:0] crypto_reg_data_out;
-
-wire crypto_start = do_sm_inst & (sm_disable     | sm_enable      |
-                                  sm_verify_addr | sm_verify_prev |
-                                  sm_ae_wrap     | sm_ae_unwrap   |
-                                  sm_id          | sm_id_prev);
+wire        exec_sm;
 
 // use parameter instead of localparam to work around a bug in XST
 parameter KEY_IDX_SIZE = $clog2(`SECURITY / 16 + 1);
 wire [KEY_IDX_SIZE-1:0] sm_key_idx;
+wire [0:`SECURITY-1] sm_key;
 
 omsp_spm_control #(
   .KEY_IDX_SIZE           (KEY_IDX_SIZE)
@@ -535,6 +522,28 @@ omsp_spm_control #(
   .key_out                (sm_key),
   .exec_sm                (exec_sm)
 );
+
+
+//=============================================================================
+// 8)   CRYPTO CONTROL
+//=============================================================================
+
+// crypto unit wires
+wire [15:0] crypto_mab;
+wire        crypto_mb_en;
+wire  [1:0] crypto_mb_wr;
+wire [15:0] crypto_data_out;
+wire        crypto_busy;
+wire        crypto_reg_write;
+wire [15:0] crypto_dest_reg;
+wire [15:0] crypto_reg_data_out;
+
+wire crypto_start = do_sm_inst & (sm_disable     | sm_enable      |
+                                  sm_verify_addr | sm_verify_prev |
+                                  sm_ae_wrap     | sm_ae_unwrap   |
+                                  sm_id          | sm_id_prev);
+
+wire sm_busy = crypto_busy;
 
 crypto_control #(
   .KEY_IDX_SIZE           (KEY_IDX_SIZE)
