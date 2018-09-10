@@ -165,6 +165,7 @@ omsp_spm #(
   .write_key            (write_key),
   .key_in               (key_in),
   .key_idx              (key_idx),
+  .handling_irq         (handling_irq),
   .enabled              (spms_enabled),
   .executing            (spms_executing),
   .violation            (spms_violation),

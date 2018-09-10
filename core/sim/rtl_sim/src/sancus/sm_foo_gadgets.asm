@@ -48,8 +48,7 @@ foo_gadget_wrap:
     sancus_wrap
     br #end_of_test
 foo_gadget_disable:
-    sancus_disable
-    br #end_of_test
+    sancus_disable #end_of_test
 foo_public_end:
 
     /* ----------------------         END OF TEST        --------------- */

@@ -46,6 +46,15 @@ initial
       $display(" ===============================================");
       $display("|                 START SIMULATION              |");
       $display(" ===============================================");
+
+`ifdef RESET_ON_VIOLATION
+      $display(" ===============================================");
+      $display("|               SIMULATION SKIPPED              |");
+      $display("|     (Incompatible with RESET_ON_VIOLATION)    |");
+      $display(" ===============================================");
+      $finish;
+`endif
+
       repeat(5) @(posedge mclk);
       stimulus_done = 0;
       saved_pc <= 0;

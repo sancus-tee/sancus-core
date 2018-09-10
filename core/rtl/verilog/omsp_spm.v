@@ -29,6 +29,7 @@ module omsp_spm(
   input  wire                    write_key,
   input  wire             [15:0] key_in,
   input  wire [KEY_IDX_SIZE-1:0] key_idx,
+  input  wire                    handling_irq,
   output reg                     enabled,
   output wire                    executing,
   output wire                    violation,
@@ -139,7 +140,11 @@ begin
   if (violation)
   begin
     if (mem_violation)
-      $display("mem violation @%h, from %h", eu_mab, pc);
+    begin
+      $write("mem violation @0x%h, from ", eu_mab);
+      if (handling_irq) $display("IRQ");
+      else              $display("0x%h", pc);
+    end
     else if (exec_violation)
       $display("exec violation %h -> %h", prev_pc, pc);
     else if (create_violation)
