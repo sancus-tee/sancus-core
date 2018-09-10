@@ -28,11 +28,19 @@ main:
     clr r4
     clr &do_exit
     clr &tst_addr
-    
-    ; enable sancus module and jump to its entry point
-    sancus_enable #1234, #sm_public_start, #sm_public_end, #sm_secret_start, #sm_secret_end
+
+    ; we first perform the test on an _unprotected_ sancus module
     br #sm_public_start
     
+cont_test:
+    cmp #2, &do_exit
+    jeq end_of_test
+
+    ; enable sancus module and jump to its entry point
+    sancus_enable #1234, #sm_public_start, #sm_public_end, #sm_secret_start, #sm_secret_end
+    clr &do_exit
+    br #sm_public_start
+
     /* ----------------------         END OF TEST        --------------- */
 end_of_test:
 	mov #0x2000, r15
@@ -42,13 +50,11 @@ end_of_test:
 
     /* ----------------------         SANCUS MODULE      --------------- */
 sm_public_start:
-    tst &sm_sp_save_loc
-    jnz 1f
     mov #sm_sp_save, &sm_sp_save_loc
-1:  cmp #0xffff, r4
+    cmp #0xffff, r4
     jne init_regs
-    ; disable SM to redo the test for an unprotected interrupt
-    sancus_disable #sm_public_end
+
+    ; restore interrupted execution context
     mov &sm_sp_save, r1
     clr &sm_sp_save
     repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15    
@@ -74,15 +80,11 @@ init_regs:
     ; busy waiting for the interrupt
 loop:
     tst &do_exit
-    jnz end_of_test
+    jnz cont_test
     nop
     jmp loop
 
 sm_public_end:
-
-    nop
-    nop
-    jmp sm_public_end
 
     /* ----------------------      INTERRUPT ROUTINES    --------------- */
 
@@ -91,14 +93,17 @@ IRQ_VECTOR:
     mov #tst_val, &tst_addr
     clr &tst_addr
     repeat_to mov, #clobber_val, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14
+
     tst r1  ; SM interrupted ?
-    jz 1f
-    mov #1, &do_exit
-    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15    
-    reti
-1:  mov #0xffff, r4
+    jnz 1f
+    mov #0xffff, r4
+    mov #2, &do_exit
     mov #unprotected_stack_base, r1
     do_reti r15
+
+1:  mov #1, &do_exit
+    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15    
+    reti
 
     /* ----------------------         INTERRUPT VECTORS  --------------- */
 

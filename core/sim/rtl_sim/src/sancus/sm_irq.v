@@ -40,8 +40,39 @@ initial
       saved_sr <= 0;
       tsc_val1 <= 0;
       tsc_val2 <= 0;
+
+      /* ----------------------  UNPROTECTED SM INTERRUPT --------------- */
+      @(r15);
+      `CHK_INIT_REGS("init", `STACK_BASE)
+      if (`SM_SP_ADDR !== `SM_SP_SAVE_LOC)  tb_error("====== INIT SM IRQ SP SAVE LOCATION ======");
+      if (sm_0_enabled)                    tb_error("====== SM ENABLED ======");
+
+      $display("\n--- UNPROTECTED INTERRUPT ---");
+      repeat(5) @(posedge mclk);
+      $display("sending interrupt...");
+      irq[9] <= 1;
+     
+      $display("waiting for handling IRQ...");
+      @(posedge handling_irq);
+      tsc_val1 <= cur_tsc;
+      irq[9] <= 0;
+      saved_pc <= r0-2;
+      saved_sr <= r2;
+      `CHK_INIT_REGS("before unprotected irq", `STACK_BASE)
+      if (`SM_SP_SAVE!==16'h0)      tb_error("====== SP_SAVE before unprotected irq != 0x0 ======");
       
-      /* ----------------------  INITIALIZATION --------------- */
+      @(negedge handling_irq);
+      tsc_val2 <= cur_tsc;
+      repeat(2) @(posedge mclk);
+      $display("IRQ logic done: %d cycles", tsc_val2 - tsc_val1);
+      if (r2!==`IRQ_UNPR_STATUS)    tb_error("====== UNPROTECTED IRQ SR ======");
+      `CHK_IRQ_STACK("after unprotected irq", saved_pc, saved_sr)
+      if (`SM_SP_SAVE!==16'h0)      tb_error("====== UNPROTECTED IRQ SP WRITE ======");
+      @(`TST_MEM);
+      if(`TST_MEM!==`TST_VAL)       tb_error("====== ISR INSTR TWO EXT WORDS ======");
+
+      /* ----------------------  SM INITIALIZATION --------------- */
+      $display("\n--- SM INIT ---");
       @(posedge crypto_start);
       tsc_val1 <= cur_tsc;
       @(posedge exec_done);
@@ -80,37 +111,6 @@ initial
       @(`TST_MEM);
       if(`TST_MEM!==`TST_VAL)       tb_error("====== ISR INSTR TWO EXT WORDS ======");
 
-      /* ----------------------  UNPROTECTED SM INTERRUPT --------------- */
-      $display("\n--- UNPROTECTED INTERRUPT ---");
-      $display("waiting for SM re-entry and disable...");
-      @(sm_0_enabled==0);
-      @(r1);
-      if (r1!==`STACK_IRQ)          tb_error("====== SM SP RESTORE VALUE ======");
-      @(r15);
-      `CHK_INIT_REGS("SM pop", `STACK_RETI)
-      
-      repeat(5) @(posedge mclk);
-      $display("sending interrupt...");
-      irq[9] <= 1;
-      
-      $display("waiting for handling IRQ...");
-      @(posedge handling_irq);
-      tsc_val1 <= cur_tsc;
-      irq[9] <= 0;
-      saved_pc <= r0-2;
-      saved_sr <= r2;
-      `CHK_INIT_REGS("before unprotected irq", `STACK_BASE)
-      if (`SM_SP_SAVE!==16'h0)      tb_error("====== SP_SAVE before unprotected irq != 0x0 ======");
-      
-      @(negedge handling_irq);
-      tsc_val2 <= cur_tsc;
-      repeat(2) @(posedge mclk);
-      $display("IRQ logic done: %d cycles", tsc_val2 - tsc_val1);
-      if (r2!==`IRQ_UNPR_STATUS)    tb_error("====== UNPROTECTED IRQ SR ======");
-      `CHK_IRQ_STACK("after unprotected irq", saved_pc, saved_sr)
-      if (`SM_SP_SAVE!==16'h0)      tb_error("====== UNPROTECTED IRQ SP WRITE ======");
-      @(`TST_MEM);
-      if(`TST_MEM!==`TST_VAL)       tb_error("====== ISR INSTR TWO EXT WORDS ======");
 
       /* ----------------------  END OF TEST --------------- */
       @(r15==16'h2000);
