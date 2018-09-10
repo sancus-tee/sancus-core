@@ -1,5 +1,5 @@
 /*===========================================================================*/
-/*                 SM IRQ SP VIOLATION                                       */
+/*                 SM IRQ MEM VIOLATION                                      */
 /*---------------------------------------------------------------------------*/
 /* Force memory access violations for all 14 pushes by IRQ logic via         */
 /* incremental bar secret section alignment vs sp.                           */
@@ -39,6 +39,11 @@ main:
     clr &tst_addr
     init_stack
     
+    ; we first perform the test on an _unprotected_ sancus module
+    br #foo_public_start
+
+cont_test:
+    clr &foo_cntr
     sancus_enable #1234, #foo_public_start, #foo_public_end, #foo_secret_start, #foo_secret_end
     br #foo_public_start
 
@@ -59,17 +64,19 @@ foo_public_start:
     add #2, r14
     cmp #32, r14                ; 14 2-byte pushes by HW IRQ logic
     jl 1f
-    ; redo the tests for an unprotected SM, or exit
+
+    ; redo the tests for an protected SM, or exit
     mov #foo_public_start, r15
     sancus_get_id
     tst r15
-    jnz 2f
+    jz  cont_test
     jmp end_of_test
-2:  sancus_disable
-    clr &foo_cntr
-    jmp foo_public_start
+
 1:  mov r14, &foo_cntr
     ; wrap bar secret section around non-stack memory
+    ; NOTE: text section cleared on sancus_disable; explicitly initialize again
+    mov &bar_start, &bar_public_start
+    mov &bar_start+2, &bar_public_start+2
     sancus_enable #1234, #bar_public_start, #bar_public_end, #bar_secret_start, r15
     
     ; initialize registers with known values
@@ -94,9 +101,12 @@ loop:
 
 foo_public_end:
 
+bar_start:
+    sancus_disable r4
+bar_end:
+
 bar_public_start:
-    sancus_disable
-    br r4
+    sancus_disable r4
 bar_public_end:
 
     /* ----------------------      INTERRUPT ROUTINES    --------------- */

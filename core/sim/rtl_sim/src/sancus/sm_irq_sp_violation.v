@@ -85,31 +85,15 @@ initial
       $display(" ===============================================");
       $display("|                 START SIMULATION              |");
       $display(" ===============================================");
+
+`ifndef UNPROTECTED_IRQ_REG_PUSH
+`define UNPROTECTED_IRQ_REG_PUSH
+`endif
+
       repeat(5) @(posedge mclk);
       stimulus_done = 0;
       saved_pc <= 0;
       saved_sr <= 0;
-
-      /* ----------------------  PROTECTED SM INTERRUPT --------------- */
-      $display("waiting for SM switch...");
-      @(sm_current_id==`SM_ID);
-      
-      $display("\n--- SM INTERRUPT ---");
-      `CHK_INT("PC VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0)
-      `CHK_INT("SR VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0)
-      `CHK_INT("R15 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0)
-      `CHK_INT("R14 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,`R15_VAL)
-      `CHK_INT("R13 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,`R14_VAL,`R15_VAL)
-      `CHK_INT("R12 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,`R13_VAL,`R14_VAL,`R15_VAL)
-      `CHK_INT("R11 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
-      `CHK_INT("R10 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,`R11_VAL,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
-      `CHK_INT("R9 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,`R10_VAL,`R11_VAL,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
-      `CHK_INT("R8 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,16'h0,16'h0,`R9_VAL,`R10_VAL,`R11_VAL,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
-      `CHK_INT("R7 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,16'h0,`R8_VAL,`R9_VAL,`R10_VAL,`R11_VAL,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
-      `CHK_INT("R6 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,`R7_VAL,`R8_VAL,`R9_VAL,`R10_VAL,`R11_VAL,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
-      `CHK_INT("R5 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,`R6_VAL,`R7_VAL,`R8_VAL,`R9_VAL,`R10_VAL,`R11_VAL,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
-      `CHK_INT("R4 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,`R5_VAL,`R6_VAL,`R7_VAL,`R8_VAL,`R9_VAL,`R10_VAL,`R11_VAL,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
-      `CHK_INT("NO VIOLATION", `TRUE,`IRQ_SM_STATUS,`STACK_IRQ_INTERRUPTED,saved_pc,saved_sr,`R4_VAL,`R5_VAL,`R6_VAL,`R7_VAL,`R8_VAL,`R9_VAL,`R10_VAL,`R11_VAL,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
 
       /* ----------------------  UNPROTECTED SM INTERRUPT --------------- */
       // sp value after violation in IRQ logic is undefined; does not matter (?)
@@ -129,6 +113,27 @@ initial
       `CHK_INT("R5 VIOLATION", `FALSE,`IRQ_UNPR_STATUS,r1,saved_pc,saved_sr,16'h0,16'h0,`R6_VAL,`R7_VAL,`R8_VAL,`R9_VAL,`R10_VAL,`R11_VAL,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
       `CHK_INT("R4 VIOLATION", `FALSE,`IRQ_UNPR_STATUS,r1,saved_pc,saved_sr,16'h0,`R5_VAL,`R6_VAL,`R7_VAL,`R8_VAL,`R9_VAL,`R10_VAL,`R11_VAL,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
       `CHK_INT("NO VIOLATION", `FALSE,`IRQ_UNPR_STATUS,`STACK_IRQ,saved_pc,saved_sr,`R4_VAL,`R5_VAL,`R6_VAL,`R7_VAL,`R8_VAL,`R9_VAL,`R10_VAL,`R11_VAL,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
+
+      /* ----------------------  PROTECTED SM INTERRUPT --------------- */
+      $display("\n--- SM INTERRUPT ---");
+      $display("waiting for SM switch...");
+      @(sm_0_executing);
+      
+      `CHK_INT("PC VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0)
+      `CHK_INT("SR VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0)
+      `CHK_INT("R15 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0)
+      `CHK_INT("R14 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,`R15_VAL)
+      `CHK_INT("R13 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,`R14_VAL,`R15_VAL)
+      `CHK_INT("R12 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,`R13_VAL,`R14_VAL,`R15_VAL)
+      `CHK_INT("R11 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
+      `CHK_INT("R10 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,`R11_VAL,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
+      `CHK_INT("R9 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,16'h0,16'h0,16'h0,`R10_VAL,`R11_VAL,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
+      `CHK_INT("R8 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,16'h0,16'h0,`R9_VAL,`R10_VAL,`R11_VAL,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
+      `CHK_INT("R7 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,16'h0,`R8_VAL,`R9_VAL,`R10_VAL,`R11_VAL,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
+      `CHK_INT("R6 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,16'h0,`R7_VAL,`R8_VAL,`R9_VAL,`R10_VAL,`R11_VAL,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
+      `CHK_INT("R5 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,16'h0,`R6_VAL,`R7_VAL,`R8_VAL,`R9_VAL,`R10_VAL,`R11_VAL,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
+      `CHK_INT("R4 VIOLATION", `TRUE,`IRQ_SM_STATUS,16'h0,saved_pc,saved_sr,16'h0,`R5_VAL,`R6_VAL,`R7_VAL,`R8_VAL,`R9_VAL,`R10_VAL,`R11_VAL,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
+      `CHK_INT("NO VIOLATION", `TRUE,`IRQ_SM_STATUS,`STACK_IRQ_INTERRUPTED,saved_pc,saved_sr,`R4_VAL,`R5_VAL,`R6_VAL,`R7_VAL,`R8_VAL,`R9_VAL,`R10_VAL,`R11_VAL,`R12_VAL,`R13_VAL,`R14_VAL,`R15_VAL)
 
       /* ----------------------  END OF TEST --------------- */
       @(r15==16'h2000);
