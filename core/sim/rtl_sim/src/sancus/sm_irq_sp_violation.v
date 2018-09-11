@@ -86,6 +86,14 @@ initial
       $display("|                 START SIMULATION              |");
       $display(" ===============================================");
 
+`ifdef RESET_ON_VIOLATION
+      $display(" ===============================================");
+      $display("|               SIMULATION SKIPPED              |");
+      $display("|     (Incompatible with RESET_ON_VIOLATION)    |");
+      $display(" ===============================================");
+      $finish;
+`endif
+
 `ifndef UNPROTECTED_IRQ_REG_PUSH
 `define UNPROTECTED_IRQ_REG_PUSH
 `endif

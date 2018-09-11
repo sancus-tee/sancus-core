@@ -29,3 +29,4 @@ stdbuf -oL ../bin/msp430sim sancus/sm_mem_violation        | tee ./log/sancus-sm
 
 # Report regression results
 ../bin/parse_results
+exit $?
