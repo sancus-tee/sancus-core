@@ -222,8 +222,6 @@ wire  [7:3] r2_nxt = r2_wr          ? reg_dest_val_in[7:3] : r2[7:3];
 wire        r2_v   = alu_stat_wr[3] ? alu_stat[3]          :
                      r2_wr          ? reg_dest_val_in[8]   : r2[8];              // V
 
-wire        r2_irq = r2_wr          ? reg_dest_val_in[9]  : r2[9];
-
 wire        mclk_r2 = mclk;
 `endif
 
@@ -254,15 +252,13 @@ wire        mclk_r2 = mclk;
    wire [15:0] scg0_mask   = 16'h0000; //                       - the SCG0 is not supported
    wire [15:0] scg1_mask   = 16'h0080; //                       - the SCG1 mode is emulated
 `endif
-   wire [15:0] irq_mask    = 16'h0200;
    
    wire [15:0] r2_mask     = cpuoff_mask | oscoff_mask | scg0_mask | scg1_mask | irq_mask | 16'h010f;
  
 always @(posedge mclk_r2 or posedge puc_rst)
-  if (puc_rst)         r2 <= 16'h0000;
-  else if (reg_sr_clr ) r2 <= 16'h0000;
-  else if (irq_reg_clr) r2 <= irq_mask;
-  else                 r2 <= {6'h00, r2_irq, r2_v, r2_nxt, r2_n, r2_z, r2_c} & r2_mask;
+  if (puc_rst | irq_reg_clr) r2 <= 16'h0000;
+  else if (reg_sr_clr )      r2 <= 16'h0000;
+  else                       r2 <= {7'h00, r2_v, r2_nxt, r2_n, r2_z, r2_c} & r2_mask;
 
 assign status = {r2[8], r2[2:0]};
 assign gie    =  r2[3];
