@@ -36,7 +36,8 @@ module omsp_spm_control(
   output reg              [15:0] spm_prev_id,
   output reg              [15:0] requested_data,
   output reg     [0:`SECURITY-1] key_out,
-  output wire                    exec_sm
+  output wire                    exec_sm,
+  output wire                    enter_sm
 );
 
 parameter KEY_IDX_SIZE = -1;
@@ -130,6 +131,8 @@ always @(posedge mclk or posedge puc_rst)
     prev_cycle_spm_id <= 16'h0;
   else
     prev_cycle_spm_id <= spm_current_id;
+
+assign enter_sm = (prev_cycle_spm_id != spm_current_id);
 
 always @(posedge mclk or posedge puc_rst)
   if (puc_rst)

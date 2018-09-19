@@ -161,6 +161,7 @@ wire         [15:0] reg_src;
 wire         [15:0] mdb_in_bw;
 wire         [15:0] mdb_in_val;
 wire          [3:0] status;
+wire                r2_gie;
 
 //wires for sm instructions
 wire         [15:0] r9;
@@ -176,6 +177,7 @@ wire                sp_overflow;
 wire         [15:0] sm_current_id;
 wire         [15:0] sm_prev_id;
 wire                violation;
+wire                enter_sm;
 
 wire do_sm_inst     = (e_state == `E_EXEC) & inst_so[`SANCUS];
 wire sm_disable     = sm_command[`SM_DISABLE];
@@ -209,6 +211,9 @@ always @(posedge mclk or posedge puc_rst)
     if (puc_rst)            sm_reti_id <= 16'h0;
     else if (irq_detect)    sm_reti_id <= sm_current_id;
 
+// clear interrupts one cycle after entering an SM (to allow it to dint before
+// restoring its internal call stack and eint)
+assign gie = r2_gie & ~enter_sm;
 
 //=============================================================================
 // 2)  REGISTER FILE
@@ -253,7 +258,7 @@ omsp_register_file register_file_0 (
 
 // OUTPUTs
     .cpuoff             (cpuoff),       // Turns off the CPU
-    .gie                (gie),          // General interrupt enable
+    .gie                (r2_gie),       // General interrupt enable
     .oscoff             (oscoff),       // Turns off LFXT1 clock input
     .pc_sw              (pc_sw),        // Program counter software value
     .pc_sw_wr           (pc_sw_wr),     // Program counter software write
@@ -582,7 +587,8 @@ omsp_spm_control #(
   .spm_prev_id            (sm_prev_id),
   .requested_data         (sm_requested_data),
   .key_out                (sm_key),
-  .exec_sm                (exec_sm)
+  .exec_sm                (exec_sm),
+  .enter_sm               (enter_sm)
 );
 
 
