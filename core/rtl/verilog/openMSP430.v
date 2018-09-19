@@ -220,7 +220,7 @@ wire         [15:0] per_dout_wdog;
 wire         [15:0] per_dout_mpy;
 wire         [15:0] per_dout_clk;
 
-wire          [7:0] spm_command;
+wire          [8:0] spm_command;
 wire         [15:0] current_inst_pc;
 wire         [15:0] prev_inst_pc;
 wire          [3:0] irq_num;

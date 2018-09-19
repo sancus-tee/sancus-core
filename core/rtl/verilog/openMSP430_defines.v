@@ -632,6 +632,7 @@
 `define SM_AE_UNWRAP    5
 `define SM_ID           6
 `define SM_PREV_ID      7
+`define SM_STACK_GUARD  8
 
 // SPM data select types
 `define SM_SELECT_BY_ADDR 1'b0

@@ -140,7 +140,7 @@ input        [15:0] pc;            // Program counter
 input        [15:0] pc_nxt;        // Next PC value (for CALL & IRQ)
 input               puc_rst;       // Main system reset
 input               scan_enable;   // Scan enable (active during scan shifting)
-input         [7:0] sm_command;
+input         [8:0] sm_command;
 input        [15:0] current_inst_pc;
 input        [15:0] prev_inst_pc;
 input         [3:0] irq_num;
@@ -172,6 +172,7 @@ wire         [15:0] r14;
 wire         [15:0] r15;
 wire         [15:0] r1;
 wire                sm_violation;
+wire                sp_overflow;
 wire         [15:0] sm_current_id;
 wire         [15:0] sm_prev_id;
 wire                violation;
@@ -185,6 +186,7 @@ wire sm_ae_wrap     = sm_command[`SM_AE_WRAP];
 wire sm_ae_unwrap   = sm_command[`SM_AE_UNWRAP];
 wire sm_id          = sm_command[`SM_ID];
 wire sm_id_prev     = sm_command[`SM_PREV_ID];
+wire sm_stack_guard = sm_command[`SM_STACK_GUARD];
 wire sm_update      = (do_sm_inst & sm_enable) | (sm_disable & ~sm_busy);
 wire sm_verify      = sm_verify_addr | sm_verify_prev;
 
@@ -193,7 +195,7 @@ wire sm_verify      = sm_verify_addr | sm_verify_prev;
 // 1)   INTERRUPT LOGIC
 //=============================================================================
 
-assign violation = sm_violation; //(sm_violation | sp_overflow);
+assign violation = (sm_violation | sp_overflow);
 
 // Keep track of if we are currently handling an IRQ (with handling we mean the
 // handling by hardware, *not* running the software ISR)
@@ -268,6 +270,7 @@ omsp_register_file register_file_0 (
     .r14                (r14),
     .r15                (r15),
     .r1                 (r1),
+    .sp_overflow        (sp_overflow),
 
 // INPUTs
     .alu_stat     (alu_stat),     // ALU Status {V,N,Z,C}
@@ -288,7 +291,9 @@ omsp_register_file register_file_0 (
     .reg_incr     (reg_incr),     // Increment source register
     .scan_enable  (scan_enable),  // Scan enable (active during scan shifting)
     //TODO this should be a bitmask to support not clearing registers on syscall/unprotected irq
-    .irq_reg_clr  (irq_reg_clr)
+    .irq_reg_clr  (irq_reg_clr),
+    .reg_sg_wr    (sm_stack_guard),
+    .handling_irq (handling_irq)
 );
 
 

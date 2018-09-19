@@ -20,8 +20,8 @@ stdbuf -oL ../bin/msp430sim sancus/sm_irq_public_end       | tee ./log/sancus-sm
 stdbuf -oL ../bin/msp430sim sancus/sm_irq_exec_violation   | tee ./log/sancus-sm_irq_exec_violation.log
 stdbuf -oL ../bin/msp430sim sancus/sm_irq_mem_violation    | tee ./log/sancus-sm_irq_mem_violation.log
 
-#stdbuf -oL ../bin/msp430sim sancus/sm_irq_sp_violation     | tee ./log/sancus-sm_irq_sp_violation.log
-#stdbuf -oL ../bin/msp430sim sancus/stack_guard             | tee ./log/sancus-stack_guard.log
+stdbuf -oL ../bin/msp430sim sancus/sm_irq_sp_violation     | tee ./log/sancus-sm_irq_sp_violation.log
+stdbuf -oL ../bin/msp430sim sancus/stack_guard             | tee ./log/sancus-stack_guard.log
 
 stdbuf -oL ../bin/msp430sim sancus/irq_as_indir_i          | tee ./log/sancus-irq_as_indir_i.log
 stdbuf -oL ../bin/msp430sim sancus/sm_illegal_entry        | tee ./log/sancus-sm_illegal_entry.log

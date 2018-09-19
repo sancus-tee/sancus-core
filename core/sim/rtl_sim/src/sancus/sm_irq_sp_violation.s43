@@ -38,7 +38,12 @@ main:
     clr &sm_cntr
     clr &tst_addr
     init_stack
-    
+
+    ; we first perform the test on an _unprotected_ sancus module
+    br #sm_public_start
+
+cont_test:
+    clr &sm_cntr
     sancus_enable #1234, #sm_public_start, #sm_public_end, #sm_secret_start, #sm_secret_end
     br #sm_public_start
 
@@ -58,15 +63,14 @@ sm_public_start:
     add #2, r14
     cmp #32, r14                ; 14 2-byte pushes by HW IRQ logic
     jl 1f
-    ; redo the tests for an unprotected SM, or exit
+
+     ; redo the tests for an protected SM, or exit
     mov #sm_public_start, r15
     sancus_get_id
     tst r15
-    jnz 2f
+    jz  cont_test
     jmp end_of_test
-2:  sancus_disable
-    clr &sm_cntr
-    jmp sm_public_start
+
 1:  mov r14, &sm_cntr
     sancus_stack_guard r15
     

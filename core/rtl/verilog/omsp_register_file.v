@@ -66,7 +66,8 @@ module  omsp_register_file (
     r14,
     r15,
     r1,
-
+    sp_overflow,
+ 
 // INPUTs
     alu_stat,                     // ALU Status {V,N,Z,C}
     alu_stat_wr,                  // ALU Status write {V,N,Z,C}
@@ -85,7 +86,9 @@ module  omsp_register_file (
     reg_sr_clr,                   // Status register clear for interrupts
     reg_incr,                     // Increment source register
     scan_enable,                  // Scan enable (active during scan shifting)
-    irq_reg_clr
+    irq_reg_clr,
+    reg_sg_wr,
+    handling_irq
 );
 
 // OUTPUTs
@@ -108,6 +111,7 @@ output       [15:0] r13;
 output       [15:0] r14;
 output       [15:0] r15;
 output       [15:0] r1;
+output              sp_overflow;
 
 // INPUTs
 //=========
@@ -129,6 +133,8 @@ input               reg_sr_clr;   // Status register clear for interrupts
 input               reg_incr;     // Increment source register
 input               scan_enable;  // Scan enable (active during scan shifting)
 input               irq_reg_clr;
+input               reg_sg_wr;
+input               handling_irq;
 
 //=============================================================================
 // 1)  AUTOINCREMENT UNIT
@@ -185,6 +191,31 @@ wire [15:0] r1_nxt = r1_wr          ? reg_dest_val_in & 16'hfffe :
 always @(posedge mclk_r1 or posedge puc_rst)
   if (puc_rst | irq_reg_clr) r1 <= 16'h0000;
   else                       r1 <= r1_nxt;
+
+// Stack guard
+//-------------------
+// sp should not overflow the guard address (i.e. lowest stack address)
+// NOTE: only check on r1_upd to allow IRQ logic to do a valid pc fetch
+// NOTE: exec unit buffers violation signal for the remainder of the offending
+//       instruction to ensure subsequent memory writes are masked in the memory
+//       backbone (eg push updates sp before writing to memory)
+// NOTE: stack guard is automatically cleared on r1_clr for full abstraction
+reg [15:0] stack_guard;
+assign sp_overflow = r1_upd & ~r1_clr & (r1_nxt < stack_guard);
+
+always @(posedge mclk or posedge puc_rst)
+  if (puc_rst | irq_reg_clr | r1_clr)   stack_guard <= 16'h0;
+  else if (reg_sg_wr)                   stack_guard <= r15;
+
+always @(posedge mclk)
+begin
+  if (sp_overflow)
+  begin
+    $write("SM stack overflow detected: 0x%h <= 0x%h (from ", r1, stack_guard);
+    if (handling_irq)   $display("IRQ)");
+    else                $display("0x%h)", pc);
+  end
+end
 
 // R2: Status register
 //---------------------
@@ -253,7 +284,7 @@ wire        mclk_r2 = mclk;
    wire [15:0] scg1_mask   = 16'h0080; //                       - the SCG1 mode is emulated
 `endif
    
-   wire [15:0] r2_mask     = cpuoff_mask | oscoff_mask | scg0_mask | scg1_mask | irq_mask | 16'h010f;
+   wire [15:0] r2_mask     = cpuoff_mask | oscoff_mask | scg0_mask | scg1_mask | 16'h010f;
  
 always @(posedge mclk_r2 or posedge puc_rst)
   if (puc_rst | irq_reg_clr) r2 <= 16'h0000;

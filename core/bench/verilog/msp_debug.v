@@ -453,6 +453,8 @@ always @(inst_type or inst_name or inst_bw or inst_as or inst_ad)
        inst_full = "SM_ID";
      if (opcode==16'h1387)
        inst_full = "SM_CALLER_ID";
+     if (opcode==16'h1388)
+       inst_full = "SM_STACK_GUARD";
   end
    
 
