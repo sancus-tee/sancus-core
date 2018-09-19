@@ -632,10 +632,15 @@
 `define SM_AE_UNWRAP    5
 `define SM_ID           6
 `define SM_PREV_ID      7
+`define SM_STACK_GUARD  8
 
 // SPM data select types
 `define SM_SELECT_BY_ADDR 1'b0
 `define SM_SELECT_BY_ID   1'b1
+
+// enable/disable general purpose register pushing when interrupting the
+// unprotected domain
+//`define UNPROTECTED_IRQ_REG_PUSH
 
 // Conditional jump
 `define JNE    0
@@ -681,22 +686,27 @@
 
 // Execution state machine
 // (swapped E_IRQ_0 and E_IRQ_2 values to suppress glitch generation warning from lint tool)
-`define E_IRQ_0     4'h2
-`define E_IRQ_1     4'h1
-`define E_IRQ_2     4'h0
-`define E_IRQ_3     4'h3
-`define E_IRQ_4     4'h4
-`define E_SRC_AD    4'h5
-`define E_SRC_RD    4'h6
-`define E_SRC_WR    4'h7
-`define E_DST_AD    4'h8
-`define E_DST_RD    4'h9
-`define E_DST_WR    4'hA
-`define E_EXEC      4'hB
-`define E_JUMP      4'hC
-`define E_IDLE      4'hD
-`define E_SPM       4'hE
-`define E_DST_WR2   4'hF
+`define E_IRQ_0     5'h02
+`define E_IRQ_1     5'h01
+`define E_IRQ_2     5'h00
+`define E_IRQ_3     5'h03
+`define E_IRQ_4     5'h04
+`define E_SRC_AD    5'h05
+`define E_SRC_RD    5'h06
+`define E_SRC_WR    5'h07
+`define E_DST_AD    5'h08
+`define E_DST_RD    5'h09
+`define E_DST_WR    5'h0A
+`define E_EXEC      5'h0B
+`define E_JUMP      5'h0C
+`define E_IDLE      5'h0D
+`define E_SPM       5'h0E
+`define E_DST_WR2   5'h0F
+`define E_IRQ_PRE   5'h10
+`define E_IRQ_EXT_0 5'h11
+`define E_IRQ_EXT_1 5'h12
+`define E_IRQ_SP_RD 5'h13
+`define E_IRQ_SP_WR 5'h14
 
 // ALU control signals
 `define ALU_SRC_INV   0

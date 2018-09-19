@@ -113,7 +113,7 @@ endfunction
 //=============================================================================
 
 wire  [2:0] i_state_bin = tb_openMSP430.dut.frontend_0.i_state;
-wire  [3:0] e_state_bin = tb_openMSP430.dut.frontend_0.e_state;
+wire  [4:0] e_state_bin = tb_openMSP430.dut.frontend_0.e_state;
 
 wire        decode      = tb_openMSP430.dut.frontend_0.decode;
 wire [15:0] ir          = tb_openMSP430.dut.frontend_0.ir;
@@ -149,21 +149,27 @@ reg [8*32-1:0] e_state;
 
 always @(e_state_bin)
     case(e_state_bin)
-      4'h2    : e_state =  "IRQ_0";
-      4'h1    : e_state =  "IRQ_1";
-      4'h0    : e_state =  "IRQ_2";
-      4'h3    : e_state =  "IRQ_3";
-      4'h4    : e_state =  "IRQ_4";
-      4'h5    : e_state =  "SRC_AD";
-      4'h6    : e_state =  "SRC_RD";
-      4'h7    : e_state =  "SRC_WR";
-      4'h8    : e_state =  "DST_AD";
-      4'h9    : e_state =  "DST_RD";
-      4'hA    : e_state =  "DST_WR";
-      4'hB    : e_state =  "EXEC";
-      4'hC    : e_state =  "JUMP";
-      4'hD    : e_state =  "IDLE";
-      4'hE    : e_state =  "SPM";
+      5'h2    : e_state =  "IRQ_0";
+      5'h1    : e_state =  "IRQ_1";
+      5'h0    : e_state =  "IRQ_2";
+      5'h3    : e_state =  "IRQ_3";
+      5'h4    : e_state =  "IRQ_4";
+      5'h5    : e_state =  "SRC_AD";
+      5'h6    : e_state =  "SRC_RD";
+      5'h7    : e_state =  "SRC_WR";
+      5'h8    : e_state =  "DST_AD";
+      5'h9    : e_state =  "DST_RD";
+      5'hA    : e_state =  "DST_WR";
+      5'hB    : e_state =  "EXEC";
+      5'hC    : e_state =  "JUMP";
+      5'hD    : e_state =  "IDLE";
+      5'hE    : e_state =  "SPM";
+      5'hF    : e_state =  "DST_WR2";
+      5'h10   : e_state =  "IRQ_PRE";
+      5'h11   : e_state =  "IRQ_EXT_0";
+      5'h12   : e_state =  "IRQ_EXT_1";
+      5'h13   : e_state =  "IRQ_SP_RD";
+      5'h14   : e_state =  "IRQ_SP_WR";
       default : e_state =  "xxxx";
     endcase
 
@@ -445,6 +451,10 @@ always @(inst_type or inst_name or inst_bw or inst_as or inst_ad)
        inst_full = "SM_AE_UNWRAP";
      if (opcode==16'h1386)
        inst_full = "SM_ID";
+     if (opcode==16'h1387)
+       inst_full = "SM_CALLER_ID";
+     if (opcode==16'h1388)
+       inst_full = "SM_STACK_GUARD";
   end
    
 

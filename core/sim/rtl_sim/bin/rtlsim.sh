@@ -73,13 +73,13 @@ fi
 if [ "${OMSP_SIMULATOR:-iverilog}" = iverilog ]; then
 
     rm -rf simv
-    
+    IVERILOG_CMD="iverilog -Wall -Wno-timescale -Winfloop -o simv -c $3"
     NODUMP=${OMSP_NODUMP-0}
     if [ $NODUMP -eq 1 ]
       then
-        iverilog -o simv -c $3 -D NODUMP
+        $IVERILOG_CMD -D NODUMP
       else
-        iverilog -o simv -c $3
+        $IVERILOG_CMD
     fi
     
 if [ `uname -o` = "Cygwin" ]

@@ -83,7 +83,8 @@ initial
       repeat (2) @(posedge mclk);
       p1_din[0] = 1'b0;
       smclk_cnt = 0;
-      repeat (84) @(posedge mclk);
+      // NOTE: times adjusted off-by-one due to E_IRQ_PRE cycle
+      repeat (86) @(posedge mclk);
       if (smclk_cnt !== 16'h000a) tb_error("====== SCG1 TEST 3: SMCLK IS NOT RUNNING DURING IRQ =====");
 
       @(r15==16'h1004);

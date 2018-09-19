@@ -1,0 +1,149 @@
+/*===========================================================================*/
+/*                 SANCUS MODULE MEMORY VIOLATION                            */
+/*---------------------------------------------------------------------------*/
+/* Test the violation IRQ by accessing secret SM memory from outside.        */
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+/*===========================================================================*/
+
+.include "pmem_defs.asm"
+.include "sancus_macros.asm"
+
+.set unprotected_stack_base, DMEM_20F
+.set stack_base, DMEM_260
+.set reg_offset, 0x1234
+.set bar_clobber_val, 0xf00d
+
+.set foo_secret_start, DMEM_262
+.set foo_secret_end, DMEM_268
+.set foo_sp_save_loc, (foo_secret_end - 2)
+.set foo_sp_save, (foo_secret_end - 4)
+.set bar_secret_start, foo_secret_end
+.set bar_secret_end, DMEM_26E
+.set bar_sp_save_loc, (bar_secret_end - 2)
+
+.global main
+main:
+    disable_wdt
+    eint
+    clr &foo_sp_save_loc
+    clr &bar_sp_save_loc
+    clr r4
+
+    sancus_enable #1234, #foo_text_start, #foo_text_end, #foo_secret_start, #foo_secret_end
+    sancus_enable #1234, #bar_text_start, #bar_text_end, #bar_secret_start, #bar_secret_end
+    call #bar_text_start
+
+    ; should not come here
+    br #0xffff
+    
+    /* ----------------------         END OF TEST        --------------- */
+end_of_test:
+	mov #0x2000, r15
+fail_test:
+	br #0xffff
+
+    /* ----------------------         SANCUS MODULE      --------------- */
+
+foo_text_start:
+    nop
+    mov #foo_sp_save, &foo_sp_save_loc
+    cmp #0xffff, r4
+    jne init_regs
+
+    ; return from interrupt
+    mov &foo_sp_save, r1
+    clr &foo_sp_save
+    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15
+    reti
+
+init_regs:
+    ; initialize registers with known values
+   	mov #stack_base, r1
+    mov #reg_offset+0x4, r4
+    mov #reg_offset+0x5, r5
+    mov #reg_offset+0x6, r6
+    mov #reg_offset+0x7, r7
+    mov #reg_offset+0x8, r8
+    mov #reg_offset+0x9, r9
+    mov #reg_offset+0xa, r10
+    mov #reg_offset+0xb, r11
+    mov #reg_offset+0xc, r12
+    mov #reg_offset+0xd, r13
+    mov #reg_offset+0xe, r14
+    mov #reg_offset+0xf, r15
+
+.macro assert_violation_flag
+    ; test violation status flag
+    bit #sr_violation_flag, r2
+    jz fail_test
+    bic #sr_violation_flag, r2
+.endm
+
+    ; === SECRET MEMORY WRITE VIOLATION === 
+    clr &bar_secret_start
+    ;assert_violation_flag
+
+    ; === SECRET MEMORY READ VIOLATION === 
+    ;mov &bar_secret_start, r15
+    mov #bar_secret_start, r15
+    mov @r15, r15
+    mov #reg_offset+0xf, r15
+    
+    ; === TEXT WRITE VIOLATION === 
+    clr &foo_text_value
+    mov &foo_text_value, r15
+    mov #reg_offset+0xf, r15
+
+    ; === ENTRY POINT WRITE VIOLATION === 
+    clr &foo_text_start
+    mov &foo_text_start, r15
+    mov #reg_offset+0xf, r15
+    
+    ; === TEXT READ VIOLATION ===
+    mov &bar_text_value, r15
+    mov #reg_offset+0xf, r15
+    
+    ; === TEXT ENTRY READ VIOLATION ===
+    mov &bar_text_start, r15
+    
+    br #end_of_test
+foo_text_value:
+    .word 0xcafe
+foo_text_end:
+
+bar_text_start:
+    nop
+    mov #bar_clobber_val, &bar_secret_start
+    br #foo_text_start
+bar_text_value:
+    .word 0xbeef
+bar_text_end:
+
+
+    /* ----------------------      INTERRUPT ROUTINES    --------------- */
+
+IRQ_VECTOR:
+    mov #0xffff, r4
+    mov #unprotected_stack_base, r1
+    do_reti r15
+
+    /* ----------------------         INTERRUPT VECTORS  --------------- */
+
+.section .vectors, "a"
+.word end_of_test  ; Interrupt  0 (lowest priority)    <unused>
+.word end_of_test  ; Interrupt  1                      <unused>
+.word end_of_test  ; Interrupt  2                      <unused>
+.word end_of_test  ; Interrupt  3                      <unused>
+.word end_of_test  ; Interrupt  4                      <unused>
+.word end_of_test  ; Interrupt  5                      <unused>
+.word end_of_test  ; Interrupt  6                      <unused>
+.word end_of_test  ; Interrupt  7                      <unused>
+.word end_of_test  ; Interrupt  8                      <unused>
+.word end_of_test  ; Interrupt  9                      TEST IRQ
+.word end_of_test  ; Interrupt 10                      Watchdog timer
+.word end_of_test  ; Interrupt 11                      <unused>
+.word end_of_test  ; Interrupt 12                      <unused>
+.word IRQ_VECTOR   ; Interrupt 13                      SM_IRQ
+.word end_of_test  ; Interrupt 14                      NMI
+.word main         ; Interrupt 15 (highest priority)   RESET

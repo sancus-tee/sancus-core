@@ -1,0 +1,47 @@
+/*===========================================================================*/
+/*                 SANCUS MODULE ILLEGAL ISR ENTRY                           */
+/*---------------------------------------------------------------------------*/
+/* Vector to a non-entry SM address when responding to an interrupt, to      */
+/* attempt reading/writing private memory before branching to violation ISR. */
+/*                                                                           */
+/* The instruction is still executed, but should be harmless (cf.            */
+/* sm_illegal_entry test)                                                    */
+/*---------------------------------------------------------------------------*/
+/*===========================================================================*/
+
+.include "pmem_defs.asm"
+.include "sancus_macros.asm"
+.include "sm_foo_gadgets.asm"
+
+.set irq9_vector, 0xfff2
+
+.macro wait_for_interrupt isr:req
+    mov \isr, &irq9_vector
+    mov #1, r5
+    jmp -2
+.endm
+
+.global main
+main:
+    br #do_main
+
+abuse_rd_gadget:
+    prepare_rd_gadget
+    wait_for_interrupt #foo_gadget_rd
+
+abuse_wr_gadget:
+    prepare_wr_gadget
+    ; do not use a foo-private stack pointer here to ensure the IRQ_9 logic
+    ; completes and successfully vectors to #foo_gadget_wr
+    wait_for_interrupt #foo_gadget_wr
+
+abuse_wrap_gadget:
+    prepare_wrap_gadget
+    wait_for_interrupt #foo_gadget_wrap
+
+abuse_disable_gadget:
+    prepare_disable_gadget
+    wait_for_interrupt #foo_gadget_disable
+
+.section .vectors, "a"
+init_ivt

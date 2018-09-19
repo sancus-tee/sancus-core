@@ -1,0 +1,86 @@
+/*===========================================================================*/
+/*                 SANCUS MODULE EINT ENTRY                                  */
+/*---------------------------------------------------------------------------*/
+/* Test entering a Sancus module with interrupts enabled (SM should be able  */
+/* to restore its internal private call stack before handling interrupts).   */
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+/*===========================================================================*/
+
+.include "pmem_defs.asm"
+.include "sancus_macros.asm"
+
+.set unprotected_stack_base, DMEM_20F
+.set stack_base, DMEM_260
+.set tst_val, 0xbabe
+.set tst_addr, DMEM_200
+.set sm_secret_start, DMEM_262
+.set sm_secret_end, DMEM_26E
+.set sm_sp_save_loc,(sm_secret_end - 2)
+.set sm_sp_save, (sm_secret_end - 4)
+
+.global main
+main:
+    disable_wdt
+    eint
+
+    ; enable sancus module and jump to its entry point
+    sancus_enable #1234, #sm_public_start, #sm_public_end, #sm_secret_start, #sm_secret_end
+
+    ; prepare for attacker in-SM write attempt via IRQ logic
+    mov #tst_val, r15
+    clr &tst_addr
+    mov #sm_secret_start+6, r1
+
+    br #sm_public_start
+
+    /* ----------------------         END OF TEST        --------------- */
+end_of_test:
+	mov #0x2000, r15
+	clr r15
+	br #0xffff
+
+    /* ----------------------         SANCUS MODULE      --------------- */
+    ; IRQs should only be served _after_ an SM has explicly enabled interrupts
+    ; (to indicate it has restored its internal call stack)
+sm_public_start:
+    dint
+   	mov #stack_base, r1
+    mov #sm_sp_save, &sm_sp_save_loc
+    mov #tst_val, &tst_addr
+    nop
+    nop
+    nop
+    eint
+
+    ; busy waiting for the interrupt
+loop:
+    nop
+    jmp loop
+
+sm_public_end:
+
+    /* ----------------------      INTERRUPT ROUTINES    --------------- */
+
+IRQ_VECTOR:
+    br #end_of_test
+    
+    /* ----------------------         INTERRUPT VECTORS  --------------- */
+
+.section .vectors, "a"
+.word end_of_test  ; Interrupt  0 (lowest priority)    <unused>
+.word end_of_test  ; Interrupt  1                      <unused>
+.word end_of_test  ; Interrupt  2                      <unused>
+.word end_of_test  ; Interrupt  3                      <unused>
+.word end_of_test  ; Interrupt  4                      <unused>
+.word end_of_test  ; Interrupt  5                      <unused>
+.word end_of_test  ; Interrupt  6                      <unused>
+.word end_of_test  ; Interrupt  7                      <unused>
+.word end_of_test  ; Interrupt  8                      <unused>
+.word IRQ_VECTOR   ; Interrupt  9                      TEST IRQ
+.word end_of_test  ; Interrupt 10                      Watchdog timer
+.word end_of_test  ; Interrupt 11                      <unused>
+.word end_of_test  ; Interrupt 12                      <unused>
+.word end_of_test  ; Interrupt 13                      SM_IRQ
+.word end_of_test  ; Interrupt 14                      NMI
+.word main         ; Interrupt 15 (highest priority)   RESET

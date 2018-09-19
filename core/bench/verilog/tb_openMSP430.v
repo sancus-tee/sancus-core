@@ -43,6 +43,8 @@
 `include "openMSP430_defines.v"
 `endif
 
+`define __SANCUS_SIM
+
 module  tb_openMSP430;
 
 //
@@ -138,6 +140,7 @@ wire               ta_out2_en;
 
 // Time Stamp Counter
 wire        [15:0] per_dout_tsc;
+wire        [63:0] cur_tsc;
 
 // LED digits
 wire        [15:0] per_dout_led;
@@ -209,6 +212,10 @@ reg                stimulus_done;
 
 // CPU & Memory registers
 `include "registers.v"
+
+// Sancus-specific register/wire definitions
+`include "sancus-def.v"
+`include "irq_macros.v"
 
 // Debug interface tasks
 `include "dbg_uart_tasks.v"
@@ -572,7 +579,7 @@ template_periph_16b #(.BASE_ADDR((15'd`PER_SIZE-15'h0070) & 15'h7ff8)) template_
 //
 // Time Stamp Counter
 //----------------------------------
-omsp_tsc tsc(
+omsp_tsc tsc_0(
     .per_dout (per_dout_tsc),
     .mclk     (mclk),
     .per_addr (per_addr),
@@ -581,6 +588,8 @@ omsp_tsc tsc(
     .per_we   (per_we),
     .puc_rst  (puc_rst)
 );
+
+assign cur_tsc = tsc_0.tsc;
 
 //
 // LED Digits

@@ -62,8 +62,9 @@ fi
 #                     Check if the required files exist                       #
 ###############################################################################
 softdir=../src-c/$1;
-elffile=../src-c/$1/$1.elf;
-verfile=../src-c/$1/$1.v;
+name=$(basename $softdir)
+elffile=../src-c/$1/$name.elf;
+verfile=../src-c/$1/$name.v;
 incfile=../../../rtl/verilog/openMSP430_defines.v;
 submitfile=../src/submit.f;
 if [ $OMSP_SIMULATOR == "isim" ]; then
@@ -107,9 +108,11 @@ echo " ======================================================="
 # and prepare it for MSPGCC preprocessing
 cp  $incfile  ./pmem.h
 sed -i 's/`ifdef/#ifdef/g'   ./pmem.h 
+sed -i 's/`ifndef/#ifndef/g' ./pmem.h 
 sed -i 's/`else/#else/g'     ./pmem.h 
 sed -i 's/`endif/#endif/g'   ./pmem.h 
-sed -i 's/`define/#define/g' ./pmem.h 
+sed -i 's/`define/#define/g' ./pmem.h
+sed -i 's/`include/\/\/include/g' ./pmem.h 
 sed -i 's/`//g'              ./pmem.h 
 sed -i "s/'//g"              ./pmem.h
 
@@ -125,7 +128,7 @@ echo "Compile, link & generate IHEX file (Program Memory: $pmemsize B, Data Memo
 cd $softdir
 make clean
 make
-cd ../../run/
+cd -
 
 # Create links
 if [ `uname -o` = "Cygwin" ]

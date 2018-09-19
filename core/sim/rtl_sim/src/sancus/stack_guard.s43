@@ -1,0 +1,227 @@
+/*===========================================================================*/
+/*                 STACK OVERRUN GUARD ADDRESS                               */
+/*---------------------------------------------------------------------------*/
+/* Test stack overrun detection for push/call instructions in all possible   */
+/* addressing modes.                                                         */
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+/*===========================================================================*/
+
+.include "pmem_defs.asm"
+.include "sancus_macros.asm"
+
+.set stack_base, DMEM_260
+.set stack_size, 6
+.set stack_top, (stack_base-stack_size)
+.set canary_a, 0xbeef
+.set canary_b, 0xc0de
+.set tst_val, 0xbabe
+.set tst_addr, DMEM_200
+.set reti_addr, DMEM_202
+
+.global main
+main:
+    disable_wdt
+	dint
+
+    /* -------------- INITIALIZE ------------------- */
+
+    ; Initialize stack and guard size of 6 bytes (3 words)
+	mov #stack_base, r1
+    sancus_stack_guard #(stack_base-stack_size)
+    clr &tst_addr
+    clr &reti_addr
+    ; initialize canary value
+    mov #canary_a, &(stack_base-stack_size-2)
+    mov #canary_b, &(stack_base-stack_size-4)
+    mov #0x1000, r15
+
+    ; push some values to the stack
+    push #0x0121
+    mov #0x2000, r15
+    
+    push #0x0122
+    mov #0x3000, r15
+    
+    push #0x0123
+    mov #0x4000, r15
+    
+    ; trigger a series of stack overflows for different addressing modes
+
+    /* -------------- PUSH OVERRUN IN WORD MODE ------------------- */
+
+    ; Addressing mode: Rn
+    mov #1f, &reti_addr
+    mov #0xdead, r4
+    push r4
+
+1:  ; Addressing mode: @Rn
+    mov #2f, &reti_addr
+    mov #0xdead, &DMEM_220
+    mov #DMEM_220, r4
+    push @r4
+
+2:  ; Addressing mode: @Rn+
+    mov #3f, &reti_addr
+    mov #DMEM_220, r4
+    push @r4+
+    
+3:  ; Addressing mode: X(Rn)
+    mov #4f, &reti_addr
+    mov #DMEM_220+2, r4
+    push -2(r4)
+    
+4:  ; Addressing mode: cst
+    mov #5f, &reti_addr
+    push #1
+    
+5:  ; Addressing mode: #N
+    mov #6f, &reti_addr
+    push #0xdead
+    
+6:  ; Addressing mode: &EDE
+    mov #7f, &reti_addr
+    push &DMEM_220
+
+    /* -------------- PUSH OVERRUN IN BYTE MODE ------------------- */
+
+7:  ; Addressing mode: Rn
+    mov #8f, &reti_addr
+    mov #0xdead, r4
+    push.b r4
+
+8:  ; Addressing mode: @Rn
+    mov #9f, &reti_addr
+    mov #0xdead, &DMEM_220
+    mov &DMEM_220, r4
+    push.b @r4
+    
+9:  ; Addressing mode: @Rn+
+    mov #10f, &reti_addr
+    mov &DMEM_220, r4
+    push.b @r4+
+    
+10:  ; Addressing mode: X(Rn)
+    mov #11f, &reti_addr
+    mov &DMEM_220+2, r4
+    push.b -2(r4)
+    
+11:  ; Addressing mode: cst
+    mov #12f, &reti_addr
+    push.b #1
+    
+12:  ; Addressing mode: #N
+    mov #13f, &reti_addr
+    push.b #0xdead
+    
+13:  ; Addressing mode: &EDE
+    mov #14f, &reti_addr
+    push.b &DMEM_220
+
+    /* -------------- MOV R1 OVERRUN ------------------- */
+
+    ; Addressing mode: Rn
+14: mov #15f, &reti_addr
+    mov #DMEM_24F, r4
+    mov r4, r1
+
+15:  ; Addressing mode: @Rn
+    mov #16f, &reti_addr
+    mov #DMEM_24F, &DMEM_220
+    mov #DMEM_220, r4
+    mov @r4, r1
+    
+16:  ; Addressing mode: @Rn+
+    mov #17f, &reti_addr
+    mov #DMEM_220, r4
+    mov @r4+, r1
+    
+17:  ; Addressing mode: X(Rn)
+    mov #18f, &reti_addr
+    mov #DMEM_220+2, r4
+    mov -2(r4), r1
+    
+18:  ; Addressing mode: #N
+    mov #19f, &reti_addr
+    mov #DMEM_24F, r1
+    
+19:  ; Addressing mode: &EDE
+    mov #20f, &reti_addr
+    mov &DMEM_220, r1
+
+    /* -------------- CALL OVERRUN ------------------- */
+    
+    ; Addressing mode: Rn
+20: mov #21f, &reti_addr
+    mov #my_func, r4
+    call r4
+
+21:  ; Addressing mode: @Rn
+    mov #22f, &reti_addr
+    mov #my_func, &DMEM_220
+    mov #DMEM_220, r4
+    call @r4
+    
+22:  ; Addressing mode: @Rn+
+    mov #23f, &reti_addr
+    mov #DMEM_220, r4
+    call @r4+
+    
+23:  ; Addressing mode: X(Rn)
+    mov #24f, &reti_addr
+    mov #DMEM_220+2, r4
+    call -2(r4)
+    
+24:  ; Addressing mode: #N
+    mov #25f, &reti_addr
+    call #my_func
+    
+25:  ; Addressing mode: &EDE
+    mov #26f, &reti_addr
+    call &DMEM_220
+
+    /* -------------- STACK POINTER CLEAR ------------------- */
+
+26: clr r1
+
+    /* ----------------------         END OF TEST        --------------- */
+end_of_test:
+	br #0xffff
+
+my_func:
+    ; should not come here
+    br end_of_test
+
+
+        /* ----------------------      INTERRUPT ROUTINES    --------------- */
+
+SM_IRQ_VECTOR:
+    ; dummy instruction with two extension words for testing purposes
+    mov #tst_val, &tst_addr
+    clr &tst_addr
+    mov #stack_top, r1
+    sancus_stack_guard #(stack_base-stack_size)
+    mov #0x5000, r15
+    clr r15
+    br &reti_addr
+
+    
+        /* ----------------------         INTERRUPT VECTORS  --------------- */
+
+.section .vectors, "a"
+.word end_of_test  ; Interrupt  0 (lowest priority)    <unused>
+.word end_of_test  ; Interrupt  1                      <unused>
+.word end_of_test  ; Interrupt  2                      <unused>
+.word end_of_test  ; Interrupt  3                      <unused>
+.word end_of_test  ; Interrupt  4                      <unused>
+.word end_of_test  ; Interrupt  5                      <unused>
+.word end_of_test  ; Interrupt  6                      <unused>
+.word end_of_test  ; Interrupt  7                      <unused>
+.word end_of_test  ; Interrupt  8                      <unused>
+.word end_of_test  ; Interrupt  9                      <unused>
+.word end_of_test  ; Interrupt 10                      <unused>
+.word end_of_test  ; Interrupt 11                      <unused>
+.word end_of_test  ; Interrupt 12                      <unused>
+.word SM_IRQ_VECTOR; Interrupt 13                      SM_IRQ
+.word end_of_test  ; Interrupt 14                      NMI
+.word main         ; Interrupt 15 (highest priority)   RESET

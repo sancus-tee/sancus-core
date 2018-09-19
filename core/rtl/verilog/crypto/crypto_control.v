@@ -120,6 +120,7 @@ localparam [STATE_SIZE-1:0] IDLE              =  0,
                             CLEAR_DATA        = 60,
                             FAIL              = 49,
                             SUCCESS           = 50,
+                            WAIT              = 61,
                             INTERNAL_ERROR    = {STATE_SIZE{1'bx}};
 
 reg [STATE_SIZE-1:0] state, next_state;
@@ -205,7 +206,8 @@ always @(*)
         CLEAR_DATA_INIT2:  next_state =               CLEAR_DATA;
         CLEAR_DATA:        next_state = mem_done    ? SUCCESS           : CLEAR_DATA;
         FAIL:              next_state =               IDLE;
-        SUCCESS:           next_state =               IDLE;
+        SUCCESS:           next_state = cmd_disable ? WAIT              : IDLE;
+        WAIT:              next_state =               IDLE;
 
         default:           next_state =               INTERNAL_ERROR;
     endcase

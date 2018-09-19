@@ -1,0 +1,43 @@
+/*===========================================================================*/
+/*                 SANCUS MODULE ILLEGAL ENTRY                               */
+/*---------------------------------------------------------------------------*/
+/* Branch to a non-entry SM address to attempt reading/writing private       */
+/* memory before vectoring to violation ISR.                                 */
+/*                                                                           */
+/* The instruction is still executed, but should be harmless:                */
+/*  => r/w memory accesses by execution unit (including crypto unit) are     */
+/*     masked in the memory backbone;                                        */
+/*  => IRQ logic should not touch private memory of the victim SM;           */
+/*  => other program-counter-based instructions (e.g. sancus_disable) should */
+/*     _not_ be executed.                                                    */
+/*---------------------------------------------------------------------------*/
+/*===========================================================================*/
+
+.include "pmem_defs.asm"
+.include "sancus_macros.asm"
+.include "sm_foo_gadgets.asm"
+
+.global main
+main:
+    br #do_main
+
+abuse_rd_gadget:
+    prepare_rd_gadget
+    br #foo_gadget_rd
+
+abuse_wr_gadget:
+    prepare_wr_gadget
+    ; attempt to let the violation IRQ logic write to the victim SM's stack
+    mov #foo_stack_base, r1
+    br #foo_gadget_wr
+
+abuse_wrap_gadget:
+    prepare_wrap_gadget
+    br #foo_gadget_wrap
+
+abuse_disable_gadget:
+    prepare_disable_gadget
+    br #foo_gadget_disable
+
+.section .vectors, "a"
+init_ivt

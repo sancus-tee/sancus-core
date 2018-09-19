@@ -67,7 +67,12 @@ input               rst_a;        // Asynchronous reset
 
 reg    [1:0] data_sync;
 
+// NOTE: the rst_a signal seems to glitch sometimes in iverilog (??)
+`ifdef __SANCUS_SIM
+always @(posedge clk)
+`else
 always @(posedge clk or posedge rst_a)
+`endif
   if (rst_a) data_sync <=  2'b11;
   else       data_sync <=  {data_sync[0], 1'b0};
 

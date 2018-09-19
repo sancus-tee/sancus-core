@@ -157,7 +157,7 @@ wire          [8:0] inst_so;
 wire         [15:0] inst_src;
 wire          [2:0] inst_type;
 wire          [7:0] inst_jmp;
-wire          [3:0] e_state;
+wire          [4:0] e_state;
 wire                exec_done;
 wire                decode_noirq;
 wire                cpu_en_s;
@@ -220,28 +220,25 @@ wire         [15:0] per_dout_wdog;
 wire         [15:0] per_dout_mpy;
 wire         [15:0] per_dout_clk;
 
-wire          [7:0] spm_command;
+wire          [8:0] spm_command;
 wire         [15:0] current_inst_pc;
 wire         [15:0] prev_inst_pc;
-wire                handling_irq;
 wire          [3:0] irq_num;
+wire                irq_detect;
 
 wire                spm_busy;
 wire                spm_violation_eu;
+wire                exec_sm_eu;
 wire                pmem_writing;
+wire                sm_irq;
 
 `ifdef RESET_ON_VIOLATION
-reg spm_violation;
-always @(posedge mclk or posedge puc_rst)
-    if (puc_rst)
-        spm_violation <= 1'b0;
-    else
-        spm_violation <= spm_violation_eu;
-
-wire do_reset_n = reset_n & ~spm_violation;
+wire do_reset_n = reset_n & ~sm_irq;
 `else
 wire do_reset_n = reset_n;
 `endif
+
+assign spm_violation = sm_irq;
 
 //=============================================================================
 // 2)  GLOBAL CLOCK & RESET MANAGEMENT
@@ -323,11 +320,12 @@ omsp_frontend frontend_0 (
     .nmi_acc      (nmi_acc),       // Non-Maskable interrupt request accepted
     .pc           (pc),            // Program counter
     .pc_nxt       (pc_nxt),        // Next PC value (for CALL & IRQ)
+    .sm_irq       (sm_irq),
     .spm_command  (spm_command),
     .current_inst_pc (current_inst_pc),
     .prev_inst_pc (prev_inst_pc),
-    .handling_irq (handling_irq),
     .irq_num      (irq_num),
+    .irq_detect   (irq_detect),
 			     
 // INPUTs
     .cpu_en_s     (cpu_en_s),      // Enable CPU code execution (synchronous)
@@ -350,6 +348,7 @@ omsp_frontend frontend_0 (
     .wkup         (wkup),          // System Wake-up (asynchronous)
     .spm_busy     (spm_busy),
     .pmem_writing (pmem_writing),
+    .exec_sm      (exec_sm_eu),
     .sm_violation (spm_violation_eu)
 );
 
@@ -372,8 +371,9 @@ omsp_execution_unit execution_unit_0 (
     .pc_sw_wr     (pc_sw_wr),      // Program counter software write
     .scg0         (scg0),          // System clock generator 1. Turns off the DCO
     .scg1         (scg1),          // System clock generator 1. Turns off the SMCLK
-    .spm_violation(spm_violation_eu),
+    .violation    (spm_violation_eu),
     .sm_busy      (spm_busy),
+    .exec_sm      (exec_sm_eu),
 
 // INPUTs
     .dbg_halt_st  (dbg_halt_st),   // Halt/Run status from CPU
@@ -404,8 +404,8 @@ omsp_execution_unit execution_unit_0 (
     .sm_command   (spm_command),
     .current_inst_pc (current_inst_pc),
     .prev_inst_pc (prev_inst_pc),
-    .handling_irq (handling_irq),
-    .irq_num      (irq_num)
+    .irq_num      (irq_num),
+    .irq_detect   (irq_detect)
 );
 
 
@@ -452,7 +452,8 @@ omsp_mem_backbone mem_backbone_0 (
     .pmem_dout    (pmem_dout),     // Program Memory data output
     .puc_rst      (puc_rst),       // Main system reset
     .scan_enable  (scan_enable),   // Scan enable (active during scan shifting)
-    .sm_violation (spm_violation_eu)
+    // violation signal is buffered in front-end for remainder of instruction
+    .sm_violation (sm_irq)
 );
 
 //=============================================================================

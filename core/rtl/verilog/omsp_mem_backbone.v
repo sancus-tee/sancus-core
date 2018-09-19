@@ -159,22 +159,28 @@ wire        [15:0] dmem_din      = ~dbg_dmem_cen ? dbg_mem_dout : eu_mdb_out;
 parameter          PMEM_OFFSET   = (16'hFFFF-`PMEM_SIZE+1);
 
 // Execution unit access
-wire               eu_pmem_cen   = ~(eu_mb_en & (eu_mab>=(PMEM_OFFSET>>1)));
+// NOTE: pmem requests from the execution are masked on violation (e.g. no
+// writes to SM public section)
+wire               eu_pmem_cen   = ~(eu_mb_en & (eu_mab>=(PMEM_OFFSET>>1))) | sm_violation;
 wire        [15:0] eu_pmem_addr  = eu_mab-(PMEM_OFFSET>>1);
 
 // Front-end access
+// NOTE: do not mask __front-end__ program memory accesses on sm_violation,
+// to allow frontendto fetch valid ISR instruction from since pmem 
+// TODO prevent jumping to non SM-entry point ISR (?)
 wire               fe_pmem_cen   = ~(fe_mb_en & (fe_mab>=(PMEM_OFFSET>>1)));
 wire        [15:0] fe_pmem_addr  = fe_mab-(PMEM_OFFSET>>1);
 
 // Debug interface access
-wire               dbg_pmem_cen  = ~(dbg_mem_en & (dbg_mem_addr[15:1]>=(PMEM_OFFSET>>1)));
+// NOTE: debug pmem accesses are masked on violation
+wire               dbg_pmem_cen  = ~(dbg_mem_en & (dbg_mem_addr[15:1]>=(PMEM_OFFSET>>1))) | sm_violation;
 wire        [15:0] dbg_pmem_addr = {1'b0, dbg_mem_addr[15:1]}-(PMEM_OFFSET>>1);
 
    
 // ROM Interface (Execution unit has priority)
 wire [`PMEM_MSB:0] pmem_addr     = ~dbg_pmem_cen ? dbg_pmem_addr[`PMEM_MSB:0] :
                                    ~eu_pmem_cen  ? eu_pmem_addr[`PMEM_MSB:0]  : fe_pmem_addr[`PMEM_MSB:0];
-wire               pmem_cen      =  (fe_pmem_cen & eu_pmem_cen & dbg_pmem_cen) | sm_violation;
+wire               pmem_cen      =  (fe_pmem_cen & eu_pmem_cen & dbg_pmem_cen);
 wire         [1:0] pmem_wen      = ~(dbg_mem_wr | (~eu_pmem_cen ? eu_mb_wr : 2'b00));
 wire        [15:0] pmem_din      =  ~dbg_pmem_cen ? dbg_mem_dout : eu_mdb_out;
 
