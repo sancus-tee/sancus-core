@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.66 (w)1999-2015 BSI
-[*] Fri Sep  7 18:13:43 2018
+[*] Wed Sep 19 21:46:53 2018
 [*]
 [dumpfile] "/media/DATA/Documents/sancus/github/sancus-core/core/sim/rtl_sim/run/tb_openMSP430.vcd"
-[dumpfile_mtime] "Fri Sep  7 18:09:19 2018"
-[dumpfile_size] 22340771
-[savefile] "/media/DATA/Documents/sancus/github/sancus-core/core/sim/rtl_sim/run/waveform.gtkw"
-[timestart] 392559500
+[dumpfile_mtime] "Wed Sep 19 21:45:14 2018"
+[dumpfile_size] 8344417
+[savefile] "/media/DATA/Documents/sancus/github/sancus-core/core/sim/rtl_sim/run/waveform_view.gtkw"
+[timestart] 170382900
 [size] 1680 1026
-[pos] -1 -1
-*-16.000000 392724900 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[pos] 1919 -26
+*-17.000000 170875000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_openMSP430.
 [treeopen] tb_openMSP430.dut.
 [treeopen] tb_openMSP430.dut.dbg_0.
@@ -18,13 +18,14 @@
 [sst_width] 196
 [signals_width] 158
 [sst_expanded] 1
-[sst_vpaned_height] 305
+[sst_vpaned_height] 313
 @28
 tb_openMSP430.dut.mclk
+@821
+tb_openMSP430.msp_debug_0.inst_full[255:0]
 @820
 tb_openMSP430.msp_debug_0.i_state[255:0]
 tb_openMSP430.msp_debug_0.e_state[255:0]
-tb_openMSP430.msp_debug_0.inst_full[255:0]
 @22
 tb_openMSP430.msp_debug_0.inst_pc[15:0]
 @200
@@ -47,7 +48,7 @@ tb_openMSP430.dut.execution_unit_0.mdb_out[15:0]
 tb_openMSP430.dut.execution_unit_0.mb_wr[1:0]
 tb_openMSP430.dut.execution_unit_0.irq_mb_wr
 tb_openMSP430.dut.execution_unit_0.irq_sp_mb_wr
-@23
+@22
 tb_openMSP430.dut.execution_unit_0.register_file_0.r1[15:0]
 @200
 -
