@@ -1,5 +1,6 @@
 // for simulator testing purposes only
 
+wire        cpuoff              = dut.frontend_0.cpuoff;
 wire        exec_done           = dut.frontend_0.exec_done;
 wire [15:0] pc_nxt              = dut.frontend_0.pc_nxt;
 wire [15:0] current_inst_pc     = dut.frontend_0.current_inst_pc;

@@ -202,7 +202,6 @@ wire    [8*32-1:0] inst_short;
 
 // Testbench variables
 integer            error;
-reg                violation;
 reg                stimulus_done;
 
 
@@ -282,7 +281,6 @@ initial
 initial
   begin
      error            = 0;
-     violation         = 0;
      stimulus_done    = 1;
      irq              = 14'h0000;
      nmi              = 1'b0;
@@ -761,23 +759,17 @@ initial // Timeout
 
 initial // Normal end of test
   begin
-     // finish on stimulus/CPU halt or violation
+     // finish on stimulus/CPU halt
     `ifdef NO_STIMULUS
-        @(posedge r2[4] | sm_violation);
-        violation <= sm_violation;
-        repeat(10) @(posedge mclk);
+         @(posedge cpuoff);
+         repeat(5) @(posedge mclk);
     `else
          @(negedge stimulus_done);
          wait(inst_pc=='hffff);
     `endif
 
      $display(" ===============================================");
-     if (violation)
-       begin
-      $display("|               SIMULATION FAILED               |");
-      $display("|          (Sancus violation detected)          |");
-       end
-     else if (error!=0)
+     if (error!=0)
        begin
 	  $display("|               SIMULATION FAILED               |");
 	  $display("|     (some verilog stimulus checks failed)     |");
