@@ -545,6 +545,7 @@ wire [15:0] sm_requested_data;
 wire [15:0] sm_data_select;
 wire        sm_data_select_type;
 wire [15:0] sm_key_select;
+wire [15:0] crypto_data_out;
 wire        exec_sm;
 
 // use parameter instead of localparam to work around a bug in XST
@@ -600,7 +601,6 @@ omsp_spm_control #(
 wire [15:0] crypto_mab;
 wire        crypto_mb_en;
 wire  [1:0] crypto_mb_wr;
-wire [15:0] crypto_data_out;
 wire        crypto_busy;
 wire        crypto_reg_write;
 wire [15:0] crypto_dest_reg;
