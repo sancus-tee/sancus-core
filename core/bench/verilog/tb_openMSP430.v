@@ -761,8 +761,8 @@ initial // Normal end of test
   begin
      // finish on stimulus/CPU halt
     `ifdef NO_STIMULUS
-         @(posedge cpuoff);
-         repeat(5) @(posedge mclk);
+         @(negedge inst_irq_rst);
+         while(~cpuoff) @(posedge mclk);
     `else
          @(negedge stimulus_done);
          wait(inst_pc=='hffff);
