@@ -22,9 +22,9 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 #------------------------------------------------------------------------------
-# 
+#
 # File Name: asm2ihex.sh
-# 
+#
 # Author(s):
 #             - Olivier Girard,    olgirard@gmail.com
 #
@@ -45,6 +45,14 @@ if [ $# -ne $EXPECTED_ARGS ]; then
   exit 1
 fi
 
+# MSPGCC version prefix
+if [ -z "$MSPGCC_PFX" ]; then
+    if command -v msp430-gcc >/dev/null; then
+	MSPGCC_PFX=msp430
+    else
+	MSPGCC_PFX=msp430-elf
+    fi
+fi
 
 ###############################################################################
 #               Check if definition & assembler files exist                   #
@@ -76,20 +84,35 @@ STACK_INIT=$((PER_SIZE+0x0080))
 
 cp  $3  ./pmem.x
 cp  $4  ./pmem_defs.asm
-sed -i "s/PMEM_BASE/$PMEM_BASE/g"    pmem.x
-sed -i "s/PMEM_SIZE/$PMEM_SIZE/g"    pmem.x
-sed -i "s/DMEM_SIZE/$DMEM_SIZE/g"    pmem.x
-sed -i "s/PER_SIZE/$PER_SIZE/g"      pmem.x
-sed -i "s/STACK_INIT/$STACK_INIT/g"  pmem.x
+sed -ie "s/PMEM_BASE/$PMEM_BASE/g"         pmem.x
+sed -ie "s/PMEM_SIZE/$PMEM_SIZE/g"         pmem.x
+sed -ie "s/DMEM_SIZE/$DMEM_SIZE/g"         pmem.x
+sed -ie "s/PER_SIZE/$PER_SIZE/g"           pmem.x
+sed -ie "s/STACK_INIT/$STACK_INIT/g"       pmem.x
 
-sed -i "s/PER_SIZE/$PER_SIZE/g"      pmem_defs.asm
-sed -i "s/PMEM_SIZE/$PMEM_SIZE/g"    pmem_defs.asm
+sed -ie "s/PMEM_SIZE/$PMEM_SIZE/g"         pmem_defs.asm
+sed -ie "s/PER_SIZE_HEX/$PER_SIZE/g"       pmem_defs.asm
+if [ $MSPGCC_PFX == "msp430-elf" ]; then
+    sed -ie "s/PER_SIZE/.data/g"           pmem_defs.asm
+    sed -ie "s/PMEM_BASE_VAL/.text/g"      pmem_defs.asm
+    sed -ie "s/PMEM_EDE_SIZE/0/g"          pmem_defs.asm
+else
+    sed -ie "s/PER_SIZE/$PER_SIZE/g"       pmem_defs.asm
+    sed -ie "s/PMEM_BASE_VAL/$PMEM_BASE/g" pmem_defs.asm
+    sed -ie "s/PMEM_EDE_SIZE/$PMEM_SIZE/g" pmem_defs.asm
+fi
 
 
 ###############################################################################
 #                  Compile, link & generate IHEX file                         #
 ###############################################################################
-msp430-as      -I ../src/sancus -alsm $2 -o $1.o > $1.l43
-msp430-objdump -xdsStr       $1.o              >> $1.l43
-msp430-ld      -T ./pmem.x   $1.o   -o $1.elf
-msp430-objcopy -O ihex       $1.elf    $1.ihex
+echo ""
+echo "\$ $MSPGCC_PFX-as      -alsm $2 -o $1.o > $1.l43"
+$MSPGCC_PFX-as      -alsm         $2     -o $1.o     > $1.l43
+echo "\$ $MSPGCC_PFX-objdump -xdsStr $1.o >> $1.l43"
+$MSPGCC_PFX-objdump -xdsStr       $1.o              >> $1.l43
+echo "\$ $MSPGCC_PFX-ld      -T ./pmem.x $1.o -o $1.elf"
+$MSPGCC_PFX-ld      -T ./pmem.x   $1.o   -o $1.elf
+echo "\$ $MSPGCC_PFX-objcopy -O ihex $1.elf $1.ihex"
+$MSPGCC_PFX-objcopy -O ihex       $1.elf    $1.ihex
+echo ""
