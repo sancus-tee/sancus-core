@@ -753,6 +753,11 @@
 
 // Basic clock module: BCSCTL1 Control Register
 `define DIVAx       5:4
+`define DMA_CPUOFF  0
+`define DMA_OSCOFF  1
+`define DMA_SCG0    2
+`define DMA_SCG1    3
+
 
 // Basic clock module: BCSCTL2 Control Register
 `define SELMx       7

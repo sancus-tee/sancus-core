@@ -68,7 +68,9 @@ module  omsp_frontend (
     irq_acc,                       // Interrupt request accepted (one-hot signal)
     mab,                           // Frontend Memory address bus
     mb_en,                         // Frontend Memory bus enable
-    mclk_enable,                   // Main System Clock enable
+    mclk_dma_enable,                   // DMA Sub-System Clock enable
+    mclk_dma_wkup,                     // DMA Sub-System Clock wake-up (asynchronous)
+   mclk_enable,                   // Main System Clock enable
     mclk_wkup,                     // Main System Clock wake-up (asynchronous)
     nmi_acc,                       // Non-Maskable interrupt request accepted
     pc,                            // Program counter
@@ -85,6 +87,7 @@ module  omsp_frontend (
     cpuoff,                        // Turns off the CPU
     dbg_halt_cmd,                  // Halt CPU command
     dbg_reg_sel,                   // Debug selected register for rd/wr access
+    dma_en,                            // Direct Memory Access enable (high active)
     fe_pmem_wait,                  // Frontend wait for Instruction fetch
     gie,                           // General interrupt enable
     irq,                           // Maskable interrupts
@@ -127,6 +130,8 @@ output        [2:0] inst_type;     // Decoded Instruction type
 output       [13:0] irq_acc;       // Interrupt request accepted (one-hot signal)
 output       [15:0] mab;           // Frontend Memory address bus
 output              mb_en;         // Frontend Memory bus enable
+output               mclk_dma_enable;  // DMA Sub-System Clock enable
+output               mclk_dma_wkup;    // DMA Sub-System Clock wake-up (asynchronous)
 output              mclk_enable;   // Main System Clock enable
 output              mclk_wkup;     // Main System Clock wake-up (asynchronous)
 output              nmi_acc;       // Non-Maskable interrupt request accepted
@@ -399,11 +404,23 @@ omsp_and_gate and_mirq_wkup (.y(mirq_wkup), .a(wkup | wdt_wkup), .b(gie));
 // Combined asynchronous wakeup detection from nmi & irq (masked if the cpu is disabled)
 omsp_and_gate and_mclk_wkup (.y(mclk_wkup), .a(nmi_wkup | mirq_wkup), .b(cpu_en_s));
 
+// Wakeup condition from DMA interface
+  `ifdef DMA_IF_EN
+wire mclk_dma_enable = dma_en & cpu_en_s;
+omsp_and_gate and_mclk_dma_wkup (.y(mclk_dma_wkup), .a(dma_wkup),             .b(cpu_en_s));
+  `else
+assign  mclk_dma_wkup   = 1'b0;
+assign  mclk_dma_enable = 1'b0;
+wire    UNUSED_dma_en   = dma_en;
+wire    UNUSED_dma_wkup = dma_wkup;
+  `endif
 `else
 
 // In the CPUOFF feature is disabled, the wake-up and enable signals are always 1
-assign  mclk_wkup   = 1'b1;
-assign  mclk_enable = 1'b1;
+assign  mclk_dma_wkup   = 1'b1;
+assign  mclk_dma_enable = 1'b1;
+assign  mclk_wkup       = 1'b1;
+assign  mclk_enable     = 1'b1;
 `endif
 
 //=============================================================================

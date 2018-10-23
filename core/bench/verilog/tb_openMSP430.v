@@ -72,6 +72,17 @@ wire        [15:0] per_dout;
 wire         [1:0] per_we;
 wire               per_en;
 
+// Direct Memory Access interface
+wire        [15:0] dma_dout;
+wire               dma_ready;
+wire               dma_resp;
+reg         [15:1] dma_addr;
+reg         [15:0] dma_din;
+reg                dma_en;
+reg                dma_priority;
+reg          [1:0] dma_we;
+reg                dma_wkup;
+
 // Digital I/O
 wire               irq_port1;
 wire               irq_port2;
@@ -218,6 +229,9 @@ reg                stimulus_done;
 
 // Debug interface tasks
 `include "dbg_uart_tasks.v"
+
+// Direct Memory Access interface tasks
+`include "dma_tasks.v"
 
 // Simple uart tasks
 //`include "uart_tasks.v"
@@ -370,7 +384,10 @@ openMSP430 dut (
     .irq_acc      (irq_acc),           // Interrupt request accepted (one-hot signal)
     .lfxt_enable  (lfxt_enable),       // ASIC ONLY: Low frequency oscillator enable
     .lfxt_wkup    (lfxt_wkup),         // ASIC ONLY: Low frequency oscillator wake-up (asynchronous)
-    .mclk         (mclk),              // Main system clock
+    .mclk              (mclk),                 // Main system clock
+    .dma_dout          (dma_dout),             // Direct Memory Access data output
+    .dma_ready         (dma_ready),            // Direct Memory Access is complete
+    .dma_resp          (dma_resp),             // Direct Memory Access response (0:Okay / 1:Error)
     .per_addr     (per_addr),          // Peripheral address
     .per_din      (per_din),           // Peripheral data input
     .per_we       (per_we),            // Peripheral write enable (high active)
@@ -392,6 +409,12 @@ openMSP430 dut (
     .dmem_dout    (dmem_dout),         // Data Memory data output
     .irq          (irq_in),            // Maskable interrupts
     .lfxt_clk     (lfxt_clk),          // Low frequency oscillator (typ 32kHz)
+    .dma_addr          (dma_addr),             // Direct Memory Access address
+    .dma_din           (dma_din),              // Direct Memory Access data input
+    .dma_en            (dma_en),               // Direct Memory Access enable (high active)
+    .dma_priority      (dma_priority),         // Direct Memory Access priority (0:low / 1:high)
+    .dma_we            (dma_we),               // Direct Memory Access write byte enable (high active)
+    .dma_wkup          (dma_wkup),             // ASIC ONLY: DMA Sub-System Wake-up (asynchronous and non-glitchy)
     .nmi          (nmi),               // Non-maskable interrupt (asynchronous)
     .per_dout     (per_dout),          // Peripheral data output
     .pmem_dout    (pmem_dout),         // Program Memory data output
@@ -797,6 +820,34 @@ initial // Normal end of test
       begin
 	 $display("ERROR: %s %t", error_string, $time);
 	 error = error+1;
+      end
+   endtask
+
+   task tb_extra_report;
+      begin
+         $display("DMA REPORT: Total Accesses: %-d Total RD: %-d Total WR: %-d", dma_cnt_rd+dma_cnt_wr,     dma_cnt_rd,   dma_cnt_wr);
+         $display("            Total Errors:   %-d Error RD: %-d Error WR: %-d", dma_rd_error+dma_wr_error, dma_rd_error, dma_wr_error);
+         if (!((`PMEM_SIZE>=4092) && (`DMEM_SIZE>=1024)))
+           begin
+	      $display("");
+              $display("Note: DMA if verification disabled (PMEM must be 4kB or bigger, DMEM must be 1kB or bigger)");
+           end
+         $display("");
+         $display("SIMULATION SEED: %d", `SEED);
+         $display("");
+      end
+   endtask
+
+   task tb_skip_finish;
+      input [65*8-1:0] skip_string;
+      begin
+         $display(" ===============================================");
+         $display("|               SIMULATION SKIPPED              |");
+         $display("%s", skip_string);
+         $display(" ===============================================");
+         $display("");
+         tb_extra_report;
+         $finish;
       end
    endtask
 
