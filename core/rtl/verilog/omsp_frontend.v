@@ -48,7 +48,7 @@
 module  omsp_frontend (
 
 // OUTPUTs
-    dbg_halt_st,                   // Halt/Run status from CPU
+    cpu_halt_st,                   // Halt/Run status from CPU
     decode_noirq,                  // Frontend decode instruction
     e_state,                       // Execution state
     exec_done,                     // Execution completed
@@ -85,7 +85,7 @@ module  omsp_frontend (
 // INPUTs
     cpu_en_s,                      // Enable CPU code execution (synchronous)
     cpuoff,                        // Turns off the CPU
-    dbg_halt_cmd,                  // Halt CPU command
+    cpu_halt_cmd,                  // Halt CPU command
     dbg_reg_sel,                   // Debug selected register for rd/wr access
     dma_en,                            // Direct Memory Access enable (high active)
     dma_wkup,
@@ -111,7 +111,7 @@ module  omsp_frontend (
 
 // OUTPUTs
 //=========
-output              dbg_halt_st;   // Halt/Run status from CPU
+output              cpu_halt_st;   // Halt/Run status from CPU
 output              decode_noirq;  // Frontend decode instruction
 output        [4:0] e_state;       // Execution state
 output              exec_done;     // Execution completed
@@ -149,7 +149,7 @@ output              irq_detect;
 //=========
 input               cpu_en_s;      // Enable CPU code execution (synchronous)
 input               cpuoff;        // Turns off the CPU
-input               dbg_halt_cmd;  // Halt CPU command
+input               cpu_halt_cmd;  // Halt CPU command
 input         [3:0] dbg_reg_sel;   // Debug selected register for rd/wr access
 input               dma_en;           // Direct Memory Access enable (high active)
 input               dma_wkup;         // DMA Sub-System Wake-up (asynchronous and non-glitchy)
@@ -255,19 +255,19 @@ reg [15:0] sconst_nxt;
 reg  [4:0] e_state_nxt;
            
 // CPU on/off through the debug interface or cpu_en port
-wire   cpu_halt_cmd = dbg_halt_cmd | ~cpu_en_s;
+wire   cpu_halt_req = cpu_halt_cmd | ~cpu_en_s;
    
 // States Transitions
 always @(i_state    or inst_sz  or inst_sz_nxt  or pc_sw_wr or exec_done or
-         irq_detect or cpuoff   or cpu_halt_cmd or e_state)
+         irq_detect or cpuoff   or cpu_halt_req or e_state)
     case(i_state)
-      I_IDLE     : i_state_nxt = (irq_detect & ~cpu_halt_cmd) ? I_IRQ_FETCH :
-                                 (~cpuoff    & ~cpu_halt_cmd) ? I_DEC       : I_IDLE;
+      I_IDLE     : i_state_nxt = (irq_detect & ~cpu_halt_req) ? I_IRQ_FETCH :
+                                 (~cpuoff    & ~cpu_halt_req) ? I_DEC       : I_IDLE;
       I_IRQ_FETCH: i_state_nxt =  I_IRQ_DONE;
       I_IRQ_DONE : i_state_nxt =  I_DEC;
       I_DEC      : i_state_nxt =  irq_detect                  ? I_IRQ_FETCH :
-                          (cpuoff | cpu_halt_cmd) & exec_done ? I_IDLE      :
-                            cpu_halt_cmd & (e_state==E_IDLE)  ? I_IDLE      :
+                          (cpuoff | cpu_halt_req) & exec_done ? I_IDLE      :
+                            cpu_halt_req & (e_state==E_IDLE)  ? I_IDLE      :
                                   pc_sw_wr                    ? I_DEC       :
                              ~exec_done & ~(e_state==E_IDLE)  ? I_DEC       :        // Wait in decode state
                                   (inst_sz_nxt!=2'b00)        ? I_EXT1      : I_DEC; // until execution is completed
@@ -290,10 +290,10 @@ wire   decode       =  decode_noirq | irq_detect;
 wire   fetch        = ~((i_state==I_DEC) & ~(exec_done | (e_state==E_IDLE))) & ~(e_state_nxt==E_IDLE);
 
 // Debug interface cpu status
-reg    dbg_halt_st;
+reg    cpu_halt_st;
 always @(posedge mclk or posedge puc_rst)
-  if (puc_rst)  dbg_halt_st <= 1'b0;
-  else          dbg_halt_st <= cpu_halt_cmd & (i_state_nxt==I_IDLE);
+  if (puc_rst)  cpu_halt_st <= 1'b0;
+  else          cpu_halt_st <= cpu_halt_req & (i_state_nxt==I_IDLE);
 
 // keep track of the PC of the current and previous instructions for the SM
 // logic; do not update the current_inst_pc when handling an interrupt to
@@ -343,7 +343,7 @@ wire    do_sm_irq   = sm_irq & ~inst_so[`IRQ];
 //  Detect other interrupts
 wire    irq_pnd     = (do_sm_irq | nmi_pnd | ((|irq | wdt_irq) & gie));
 assign  irq_detect  = irq_pnd
-                      & ~cpu_halt_cmd & ~dbg_halt_st
+                      & ~cpu_halt_req & ~cpu_halt_st
                       & (exec_done | (i_state==I_IDLE));
 
 `ifdef CLOCK_GATING
@@ -467,7 +467,7 @@ always @(posedge mclk or posedge puc_rst)
    
 // Memory interface
 wire [15:0] mab      = pc_nxt;
-wire        mb_en    = fetch | pc_sw_wr | (i_state==I_IRQ_FETCH) | pmem_busy | (dbg_halt_st & ~cpu_halt_cmd);
+wire        mb_en    = fetch | pc_sw_wr | (i_state==I_IRQ_FETCH) | pmem_busy | (cpu_halt_st & ~cpu_halt_req);
 
 
 //
@@ -700,7 +700,7 @@ always @(posedge mclk_decode or posedge puc_rst)
   else if (decode) inst_dest_bin <= ir[3:0];
 `endif
 
-wire  [15:0] inst_dest = dbg_halt_st          ? one_hot16(dbg_reg_sel) :
+wire  [15:0] inst_dest = cpu_halt_st          ? one_hot16(dbg_reg_sel) :
                          inst_type[`INST_JMP] ? 16'h0001               :
                          inst_so[`IRQ]  |
                          inst_so[`PUSH] |
@@ -874,7 +874,7 @@ always @(posedge mclk_decode or posedge puc_rst)
 reg       inst_bw;
 always @(posedge mclk or posedge puc_rst)
   if (puc_rst)     inst_bw     <= 1'b0;
-  else if (decode) inst_bw     <= ir[6] & ~inst_type_nxt[`INST_JMP] & ~irq_detect & ~cpu_halt_cmd;
+  else if (decode) inst_bw     <= ir[6] & ~inst_type_nxt[`INST_JMP] & ~irq_detect & ~cpu_halt_req;
 
 // Extended instruction size
 assign    inst_sz_nxt = {1'b0,  (inst_as_nxt[`IDX] | inst_as_nxt[`SYMB] | inst_as_nxt[`ABS] | inst_as_nxt[`IMM])} +
@@ -937,8 +937,8 @@ wire exec_spm = |spm_command;
 // NOTE: added an E_IRQ_PRE cycle to make sure the execution unit IRQ logic
 //       does not trigger a memory violation before the front-end (IRQ_DONE) has
 //       fetched the first instruction of the ISR
-wire [4:0] e_first_state = ~dbg_halt_st  & inst_so_nxt[`IRQ] ? E_IRQ_PRE:
-                            cpu_halt_cmd | (i_state==I_IDLE) ? E_IDLE   :
+wire [4:0] e_first_state = ~cpu_halt_st  & inst_so_nxt[`IRQ] ? E_IRQ_PRE:
+                            cpu_halt_req | (i_state==I_IDLE) ? E_IDLE   :
                             cpuoff                           ? E_IDLE   :
                             src_acalc_pre                    ? E_SRC_AD :
                             src_rd_pre                       ? E_SRC_RD :
@@ -1015,11 +1015,11 @@ always @(posedge mclk or posedge puc_rst)
 // Frontend State machine control signals
 //----------------------------------------
 
-wire exec_done = exec_jmp        ? (e_state==E_JUMP)                   :
-                 exec_dst_wr     ? (e_state==E_DST_WR & ~pmem_writing) :
-                 exec_src_wr     ? (e_state==E_SRC_WR)                 :
-                 exec_spm        ? (e_state_nxt!=E_SPM)                :
-                                   (e_state==E_EXEC | e_state==E_DST_WR2);
+wire exec_done = exec_jmp      ? (e_state==E_JUMP)                   :
+                 exec_dst_wr   ? (e_state==E_DST_WR & ~pmem_writing) :
+                 exec_src_wr   ? (e_state==E_SRC_WR)                 :
+                 exec_spm      ? (e_state_nxt!=E_SPM)                :
+                               (e_state==E_EXEC | e_state==E_DST_WR2);
 
 
 //=============================================================================
