@@ -359,8 +359,8 @@ omsp_frontend frontend_0 (
 			     
 // INPUTs
     .cpu_en_s     (cpu_en_s),      // Enable CPU code execution (synchronous)
-    .dbg_halt_cmd (dbg_halt_cmd),  // Halt CPU	
     .cpuoff       (cpuoff),        // Turns off the CPU
+    .dbg_halt_cmd (dbg_halt_cmd),  // Halt CPU	
     .dbg_reg_sel  (dbg_mem_addr[3:0]), // Debug selected register for rd/wr access
     .dma_en       (dma_en),             // Direct Memory Access enable (high active)
     .dma_wkup     (dma_wkup),           // DMA Sub-System Wake-up (asynchronous and non-glitchy)	
@@ -448,7 +448,7 @@ omsp_execution_unit execution_unit_0 (
 omsp_mem_backbone mem_backbone_0 (
 
 // OUTPUTs
-	.cpu_halt_cmd (dbg_halt_cmd),           // Halt CPU command
+	.cpu_halt_cmd (dbg_halt_cmd),  // Halt CPU command
     .dbg_mem_din  (dbg_mem_din),   // Debug unit Memory data input
     .dmem_addr    (dmem_addr),     // Data Memory address
     .dmem_cen     (dmem_cen),      // Data Memory chip enable (low active)
@@ -457,9 +457,9 @@ omsp_mem_backbone mem_backbone_0 (
     .eu_mdb_in    (eu_mdb_in),     // Execution Unit Memory data bus input
     .fe_mdb_in    (fe_mdb_in),     // Frontend Memory data bus input
     .fe_pmem_wait (fe_pmem_wait),  // Frontend wait for Instruction fetch
-    .dma_dout     (dma_dout),		// Direct Memory Access data output
-    .dma_ready    (dma_ready), 	    // Direct Memory Access is complete
-    .dma_resp	  (dma_resp),		// Direct Memory Access response (0:Okay / 1:Error)
+    .dma_dout     (dma_dout),	   // Direct Memory Access data output
+    .dma_ready    (dma_ready), 	   // Direct Memory Access is complete
+    .dma_resp	  (dma_resp),	   // Direct Memory Access response (0:Okay / 1:Error)
     .per_addr     (per_addr),      // Peripheral address
     .per_din      (per_din),       // Peripheral data input
     .per_we       (per_we),        // Peripheral write enable (high active)

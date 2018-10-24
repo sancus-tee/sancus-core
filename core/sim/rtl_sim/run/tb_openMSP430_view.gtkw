@@ -1,88 +1,43 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Wed Oct 24 12:08:02 2018
+[*] Wed Oct 24 14:13:40 2018
 [*]
-[dumpfile] "/home/sergio/openmsp430_ORIGINAL/sim/rtl_sim/run/tb_openMSP430.vcd"
-[dumpfile_mtime] "Wed Oct 24 11:48:42 2018"
-[dumpfile_size] 2084249
-[savefile] "/home/sergio/openmsp430_ORIGINAL/sim/rtl_sim/run/tb_openMSP430_view.gtkw"
-[timestart] 2673000
-[size] 1024 518
-[pos] 222 141
-*-18.000000 2900000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[dumpfile] "/home/sergio/sancus-core/core/sim/rtl_sim/run/tb_openMSP430.vcd"
+[dumpfile_mtime] "Wed Oct 24 13:59:05 2018"
+[dumpfile_size] 1414095
+[savefile] "/home/sergio/sancus-core/core/sim/rtl_sim/run/tb_openMSP430_view.gtkw"
+[timestart] 0
+[size] 1024 521
+[pos] 0 122
+*-17.000000 49800 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_openMSP430.
 [treeopen] tb_openMSP430.dma_write_16b.
+[treeopen] tb_openMSP430.dut.
 [treeopen] tb_openMSP430.dut.dbg_0.
-[treeopen] tb_openMSP430.dut.execution_unit_0.
 [sst_width] 233
 [signals_width] 226
 [sst_expanded] 1
-[sst_vpaned_height] 115
+[sst_vpaned_height] 116
+@820
+tb_openMSP430.msp_debug_0.inst_type[255:0]
 @28
-tb_openMSP430.dut.dma_en
-@22
-tb_openMSP430.dut.dma_dout[15:0]
-tb_openMSP430.dut.dma_din[15:0]
-tb_openMSP430.dut.dma_addr[15:1]
-@28
-tb_openMSP430.dut.dma_ready
-tb_openMSP430.dut.dma_resp
-tb_openMSP430.dut.dma_we[1:0]
-tb_openMSP430.stimulus_done
-@200
--
-@28
-tb_openMSP430.dut.mem_backbone_0.mclk
 tb_openMSP430.dma_verif_on
-@22
-tb_openMSP430.dma_rand_addr[6:0]
-tb_openMSP430.dma_rand_addr_full[15:0]
-@200
--Register file
-@28
-tb_openMSP430.dut.mem_backbone_0.mclk
-@22
-tb_openMSP430.dut.execution_unit_0.register_file_0.reg_dest_val_in[15:0]
-@28
-tb_openMSP430.dut.execution_unit_0.register_file_0.r10_wr
-@22
-tb_openMSP430.dut.execution_unit_0.register_file_0.r10[15:0]
-tb_openMSP430.dut.execution_unit_0.register_file_0.reg_incr_val[15:0]
-tb_openMSP430.dut.execution_unit_0.register_file_0.inst_src_in[15:0]
-tb_openMSP430.dut.execution_unit_0.register_file_0.inst_src[15:0]
-@28
-tb_openMSP430.dut.execution_unit_0.register_file_0.reg_incr
-tb_openMSP430.dut.execution_unit_0.register_file_0.r1_inc
-tb_openMSP430.dut.execution_unit_0.register_file_0.r4_inc
-tb_openMSP430.dut.execution_unit_0.register_file_0.r5_inc
-tb_openMSP430.dut.execution_unit_0.register_file_0.r6_inc
-tb_openMSP430.dut.execution_unit_0.register_file_0.r7_inc
-tb_openMSP430.dut.execution_unit_0.register_file_0.r8_inc
-tb_openMSP430.dut.execution_unit_0.register_file_0.r9_inc
-tb_openMSP430.dut.execution_unit_0.register_file_0.r10_inc
-tb_openMSP430.dut.execution_unit_0.register_file_0.r11_inc
-tb_openMSP430.dut.execution_unit_0.register_file_0.r12_inc
-tb_openMSP430.dut.execution_unit_0.register_file_0.r13_inc
-tb_openMSP430.dut.execution_unit_0.register_file_0.r14_inc
-tb_openMSP430.dut.execution_unit_0.register_file_0.r15_inc
-@200
--
-@28
 tb_openMSP430.dut.mem_backbone_0.mclk
 @22
 tb_openMSP430.dma_rand_data
 @28
-tb_openMSP430.dma_rand_rdwr
 +{tb_openMSP430.PMEM_or_DMEM} tb_openMSP430.dma_rand_if
 @22
 tb_openMSP430.dma_rand_addr[6:0]
 tb_openMSP430.dma_rand_addr_full[15:0]
+@28
+tb_openMSP430.dma_rand_rdwr
 @200
 -DMA READ 16
 @22
 tb_openMSP430.dma_read_16b.addr[15:0]
 tb_openMSP430.dma_read_16b.data[15:0]
-@28
+@29
 tb_openMSP430.dma_read_16b.resp
 @200
 -DMA WRITE 16
@@ -92,6 +47,26 @@ tb_openMSP430.dma_write_16b.data[15:0]
 @28
 tb_openMSP430.dma_write_16b.resp
 @200
--
+-MSP DEBUG
+@28
+tb_openMSP430.msp_debug_0.decode
+@200
+-FRONTEND
+@28
+tb_openMSP430.dut.frontend_0.dbg_halt_cmd
+tb_openMSP430.dut.frontend_0.cpu_halt_cmd
+@22
+tb_openMSP430.dut.e_state[4:0]
+@820
+tb_openMSP430.msp_debug_0.e_state[255:0]
+@28
+tb_openMSP430.dut.frontend_0.i_state[2:0]
+@820
+tb_openMSP430.msp_debug_0.i_state[255:0]
+@200
+-openMSP430
+@28
+tb_openMSP430.dut.dbg_halt_cmd
+tb_openMSP430.dut.dbg_halt_st
 [pattern_trace] 1
 [pattern_trace] 0
