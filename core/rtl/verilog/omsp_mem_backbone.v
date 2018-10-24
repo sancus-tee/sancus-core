@@ -72,7 +72,7 @@ module  omsp_mem_backbone (
 
 // INPUTs
     cpu_halt_st,                    // Halt/Run status from CPU
-    dbg_halt_cmd,	           				// Debug interface Halt CPU command
+    dbg_halt_cmd,	           		// Debug interface Halt CPU command
     dbg_mem_addr,                   // Debug address for rd/wr access
     dbg_mem_dout,                   // Debug unit data output
     dbg_mem_en,                     // Debug unit memory enable
@@ -85,11 +85,11 @@ module  omsp_mem_backbone (
     fe_mab,                         // Frontend Memory address bus
     fe_mb_en,                       // Frontend Memory bus enable
     mclk,                           // Main system clock
-    dma_addr,                           // Direct Memory Access address
-    dma_din,                            // Direct Memory Access data input
-    dma_en,                             // Direct Memory Access enable (high active)
-    dma_priority,                       // Direct Memory Access priority (0:low / 1:high)
-    dma_we,                             // Direct Memory Access write byte enable (high active)
+    dma_addr,                       // Direct Memory Access address
+    dma_din,                        // Direct Memory Access data input
+    dma_en,                         // Direct Memory Access enable (high active)
+    dma_priority,                   // Direct Memory Access priority (0:low / 1:high)
+    dma_we,                         // Direct Memory Access write byte enable (high active)
     per_dout,                       // Peripheral data output
     pmem_dout,                      // Program Memory data output
     puc_rst,                        // Main system reset
