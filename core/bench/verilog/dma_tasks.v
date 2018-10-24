@@ -227,8 +227,8 @@ reg [15:0] dma_rand_addr_full;
 integer    dma_mem_ref_idx;
 reg [15:0] dma_pmem_reference[0:127];
 reg [15:0] dma_dmem_reference[0:127];
-reg	   dma_verif_on;
-reg	   dma_verif_verbose;
+reg	   	   dma_verif_on;
+reg	       dma_verif_verbose;
 
 initial
   begin
@@ -293,13 +293,13 @@ initial
 		    if (dma_rand_if)            // Read from Program Memory
 		      begin
 			 dma_rand_addr_full = 16'hFE00+dma_rand_addr*2;
-			 if (dma_verif_verbose) $display("READ  DMA interface -- address: 0x%h -- expected data: 0x%h", dma_rand_addr_full, dma_pmem_reference[dma_rand_addr]);
+			 if (dma_verif_verbose) $display("READ DMA interface PMEM -- address: 0x%h -- expected data: 0x%h", dma_rand_addr_full, dma_pmem_reference[dma_rand_addr]);
 			 dma_read_16b(dma_rand_addr_full,  dma_pmem_reference[dma_rand_addr], 1'b0);
 		      end
 		    else                        // Read from Data Memory
 		      begin
 			 dma_rand_addr_full = `PER_SIZE+`DMEM_SIZE-256+dma_rand_addr*2;
-			 if (dma_verif_verbose) $display("READ  DMA interface -- address: 0x%h -- expected data: 0x%h", dma_rand_addr_full, dma_dmem_reference[dma_rand_addr]);
+			 if (dma_verif_verbose) $display("READ DMA interface DMEM -- address: 0x%h -- expected data: 0x%h", dma_rand_addr_full, dma_dmem_reference[dma_rand_addr]);
 			 dma_read_16b(dma_rand_addr_full,  dma_dmem_reference[dma_rand_addr], 1'b0);
 		      end
 		 end
@@ -310,26 +310,26 @@ initial
 		    if (dma_rand_if)            // Write to Program memory
 		      begin
 			 dma_rand_addr_full = 16'hFE00+dma_rand_addr*2;
-			 if (dma_verif_verbose) $display("WRITE DMA interface -- address: 0x%h -- data: 0x%h", dma_rand_addr_full, dma_rand_data[15:0]);
+			 if (dma_verif_verbose) $display("WRITE DMA interface PMEM-- address: 0x%h -- data: 0x%h", dma_rand_addr_full, dma_rand_data[15:0]);
 			 dma_write_16b(dma_rand_addr_full, dma_rand_data[15:0], 1'b0);
 			 dma_pmem_reference[dma_rand_addr] = dma_rand_data[15:0];
 			 #1;
 			 if (pmem_0.mem[(`PMEM_SIZE-512)/2+dma_rand_addr] !== dma_rand_data[15:0])
 			   begin
-			      $display("ERROR: DMA interface write -- address: 0x%h -- wrote: 0x%h / expected: 0x%h (%t ns)", dma_rand_addr_full, dma_rand_data[15:0], pmem_0.mem[(`PMEM_SIZE-512)/2+dma_rand_addr], $time);
+			      $display("ERROR: DMA interface write PMEM-- address: 0x%h -- wrote: 0x%h / expected: 0x%h (%t ns)", dma_rand_addr_full, dma_rand_data[15:0], pmem_0.mem[(`PMEM_SIZE-512)/2+dma_rand_addr], $time);
 			      dma_wr_error = dma_wr_error+1;
 			   end
 		      end
 		    else                        // Write to Data Memory
 		      begin
 			 dma_rand_addr_full = `PER_SIZE+`DMEM_SIZE-256+dma_rand_addr*2;
-			 if (dma_verif_verbose) $display("WRITE DMA interface -- address: 0x%h -- data: 0x%h", dma_rand_addr_full, dma_rand_data[15:0]);
+			 if (dma_verif_verbose) $display("WRITE DMA interface DMEM-- address: 0x%h -- data: 0x%h", dma_rand_addr_full, dma_rand_data[15:0]);
 			 dma_write_16b(dma_rand_addr_full, dma_rand_data[15:0], 1'b0);
 			 dma_dmem_reference[dma_rand_addr] = dma_rand_data[15:0];
 			 #1;
 			 if (dmem_0.mem[(`DMEM_SIZE-256)/2+dma_rand_addr] !== dma_rand_data[15:0])
 			   begin
-			      $display("ERROR: DMA interface write -- address: 0x%h -- wrote: 0x%h / expected: 0x%h (%t ns)", dma_rand_addr_full, dma_rand_data[15:0], dmem_0.mem[(`DMEM_SIZE-256)/2+dma_rand_addr], $time);
+			      $display("ERROR: DMA interface write DMEM-- address: 0x%h -- wrote: 0x%h / expected: 0x%h (%t ns)", dma_rand_addr_full, dma_rand_data[15:0], dmem_0.mem[(`DMEM_SIZE-256)/2+dma_rand_addr], $time);
 			      dma_wr_error = dma_wr_error+1;
 			   end
 		      end
