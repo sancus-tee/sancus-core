@@ -457,9 +457,9 @@ omsp_mem_backbone mem_backbone_0 (
     .eu_mdb_in    (eu_mdb_in),     // Execution Unit Memory data bus input
     .fe_mdb_in    (fe_mdb_in),     // Frontend Memory data bus input
     .fe_pmem_wait (fe_pmem_wait),  // Frontend wait for Instruction fetch
-    .dma_dout		(dma_dout),		// Direct Memory Access data output
-    .dma_ready		(dma_ready), 	// Direct Memory Access is complete
-    .dma_resp		(dma_resp),		// Direct Memory Access response (0:Okay / 1:Error)
+    .dma_dout     (dma_dout),		// Direct Memory Access data output
+    .dma_ready    (dma_ready), 	    // Direct Memory Access is complete
+    .dma_resp	  (dma_resp),		// Direct Memory Access response (0:Okay / 1:Error)
     .per_addr     (per_addr),      // Peripheral address
     .per_din      (per_din),       // Peripheral data input
     .per_we       (per_we),        // Peripheral write enable (high active)
@@ -486,9 +486,8 @@ omsp_mem_backbone mem_backbone_0 (
     .mclk         (mclk),          // Main system clock
     .dma_addr	  (dma_addr),      // Direct Memory Access address
     .dma_din	  (dma_din),       // Direct Memory Access data input
-    .dma_en		  (dma_en),        // Direct Memory Access enable (high active)
+    .dma_en       (dma_en),        // Direct Memory Access enable (high active)
     .dma_priority (dma_priority),  // Direct Memory Access priority (0:low / 1:high)
-    .dma_we       (dma_we),        // Direct Memory Access write byte enable (high active)
     .per_dout     (per_dout_or),   // Peripheral data output
     .pmem_dout    (pmem_dout),     // Program Memory data output
     .puc_rst      (puc_rst),       // Main system reset
