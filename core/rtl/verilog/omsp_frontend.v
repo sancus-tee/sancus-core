@@ -70,7 +70,7 @@ module  omsp_frontend (
     mb_en,                         // Frontend Memory bus enable
     mclk_dma_enable,                   // DMA Sub-System Clock enable
     mclk_dma_wkup,                     // DMA Sub-System Clock wake-up (asynchronous)
-   mclk_enable,                   // Main System Clock enable
+    mclk_enable,                   // Main System Clock enable
     mclk_wkup,                     // Main System Clock wake-up (asynchronous)
     nmi_acc,                       // Non-Maskable interrupt request accepted
     pc,                            // Program counter
@@ -88,6 +88,7 @@ module  omsp_frontend (
     dbg_halt_cmd,                  // Halt CPU command
     dbg_reg_sel,                   // Debug selected register for rd/wr access
     dma_en,                            // Direct Memory Access enable (high active)
+    dma_wkup,
     fe_pmem_wait,                  // Frontend wait for Instruction fetch
     gie,                           // General interrupt enable
     irq,                           // Maskable interrupts
@@ -150,6 +151,8 @@ input               cpu_en_s;      // Enable CPU code execution (synchronous)
 input               cpuoff;        // Turns off the CPU
 input               dbg_halt_cmd;  // Halt CPU command
 input         [3:0] dbg_reg_sel;   // Debug selected register for rd/wr access
+input               dma_en;           // Direct Memory Access enable (high active)
+input               dma_wkup;         // DMA Sub-System Wake-up (asynchronous and non-glitchy)
 input               fe_pmem_wait;  // Frontend wait for Instruction fetch
 input               gie;           // General interrupt enable
 input        [13:0] irq;           // Maskable interrupts

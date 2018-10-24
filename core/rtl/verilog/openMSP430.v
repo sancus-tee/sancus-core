@@ -362,12 +362,12 @@ omsp_frontend frontend_0 (
     .dbg_halt_cmd (dbg_halt_cmd),  // Halt CPU	
     .cpuoff       (cpuoff),        // Turns off the CPU
     .dbg_reg_sel  (dbg_mem_addr[3:0]), // Debug selected register for rd/wr access
-    .dma_en            (dma_en),             // Direct Memory Access enable (high active)
-    .dma_wkup          (dma_wkup),           // DMA Sub-System Wake-up (asynchronous and non-glitchy)
-   .fe_pmem_wait (fe_pmem_wait),  // Frontend wait for Instruction fetch
+    .dma_en       (dma_en),             // Direct Memory Access enable (high active)
+    .dma_wkup     (dma_wkup),           // DMA Sub-System Wake-up (asynchronous and non-glitchy)	
+	.fe_pmem_wait (fe_pmem_wait),  // Frontend wait for Instruction fetch
     .gie          (gie),           // General interrupt enable
     .irq          (irq),           // Maskable interrupts
-    .mclk              (cpu_mclk),           // Main system clock
+    .mclk		  (cpu_mclk),      // Main system clock
     .mdb_in       (fe_mdb_in),     // Frontend Memory data bus input
     .nmi_pnd      (nmi_pnd),       // Non-maskable interrupt pending
     .nmi_wkup     (nmi_wkup),      // NMI Wakeup
@@ -448,7 +448,7 @@ omsp_execution_unit execution_unit_0 (
 omsp_mem_backbone mem_backbone_0 (
 
 // OUTPUTs
-	.dbg_halt_cmd (dbg_halt_cmd),           // Halt CPU command
+	.cpu_halt_cmd (dbg_halt_cmd),           // Halt CPU command
     .dbg_mem_din  (dbg_mem_din),   // Debug unit Memory data input
     .dmem_addr    (dmem_addr),     // Data Memory address
     .dmem_cen     (dmem_cen),      // Data Memory chip enable (low active)
@@ -471,8 +471,7 @@ omsp_mem_backbone mem_backbone_0 (
     .pmem_writing (pmem_writing),
 			     
 // INPUTs
-    .dbg_halt_st  (dbg_halt_st),   // Halt/Run status from CPU
-    .dbg_halt_cmd (dbg_halt_cmd),  // Debug interface halt CPU command
+    .cpu_halt_st  (dbg_halt_st),   // Halt/Run status from CPU
     .dbg_mem_addr (dbg_mem_addr),  // Debug address for rd/wr access
     .dbg_mem_dout (dbg_mem_dout),  // Debug unit data output
     .dbg_mem_en   (dbg_mem_en),    // Debug unit memory enable
