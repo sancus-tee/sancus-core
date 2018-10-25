@@ -44,7 +44,7 @@
 `endif
 
 `define __SANCUS_SIM
-`define NO_DMA_VERIF
+//`define NO_DMA_VERIF
 
 module  tb_openMSP430;
 
@@ -741,6 +741,7 @@ msp_debug msp_debug_0 (
 //
 // Generate Waveform
 //----------------------------------------
+integer i;
 initial
   begin
    `ifdef NODUMP
@@ -758,6 +759,8 @@ initial
           `endif
           $dumpfile(`DUMPFILE);
           $dumpvars(0, tb_openMSP430);
+       	  for (i= (`PMEM_SIZE-512)/2; i < (`PMEM_SIZE-512)/2+128; i=i+1)
+          	$dumpvars(0, pmem_0.mem[i]);//show the memory content into the waveform! (Sergio)          	
        `endif
      `endif
    `endif
