@@ -224,7 +224,6 @@ wire                wdtifg_sw_set;
 wire                dbg_clk;
 wire                dbg_rst;
 wire                dbg_en_s;
-wire                dbg_halt_st;
 wire                dbg_halt_cmd;
 wire                dbg_mem_en;
 wire                dbg_reg_wr;
@@ -235,6 +234,9 @@ wire         [15:0] dbg_mem_din;
 wire         [15:0] dbg_reg_din;
 wire          [1:0] dbg_mem_wr;
 
+
+wire                cpu_halt_st;
+wire                cpu_halt_cmd;
 wire                puc_pnd_set;
    
 wire         [15:0] per_dout_or;
@@ -273,8 +275,8 @@ omsp_clock_module clock_module_0 (
     .aclk         (aclk),          // ACLK
     .aclk_en      (aclk_en),       // ACLK enablex
     .cpu_en_s     (cpu_en_s),      // Enable CPU code execution (synchronous)
-    .cpu_mclk          (cpu_mclk),           // Main system CPU only clock
-    .dma_mclk          (dma_mclk),           // Main system DMA and/or CPU clock
+    .cpu_mclk     (cpu_mclk),           // Main system CPU only clock
+    .dma_mclk     (dma_mclk),           // Main system DMA and/or CPU clock
     .dbg_clk      (dbg_clk),       // Debug unit clock
     .dbg_en_s     (dbg_en_s),      // Debug interface enable (synchronous)
     .dbg_rst      (dbg_rst),       // Debug unit reset
@@ -323,7 +325,7 @@ assign mclk = dma_mclk;
 omsp_frontend frontend_0 (
 
 // OUTPUTs
-    .dbg_halt_st  (dbg_halt_st),   // Halt/Run status from CPU
+    .cpu_halt_st  (cpu_halt_st),   // Halt/Run status from CPU
     .decode_noirq (decode_noirq),  // Frontend decode instruction
     .e_state      (e_state),       // Execution state
     .exec_done    (exec_done),     // Execution completed
@@ -359,6 +361,10 @@ omsp_frontend frontend_0 (
 			     
 // INPUTs
     .cpu_en_s     (cpu_en_s),      // Enable CPU code execution (synchronous)
+<<<<<<< HEAD
+=======
+    .cpu_halt_cmd (cpu_halt_cmd),  // Halt CPU	command
+>>>>>>> frontend_mod
     .cpuoff       (cpuoff),        // Turns off the CPU
     .dbg_halt_cmd (dbg_halt_cmd),  // Halt CPU	
     .dbg_reg_sel  (dbg_mem_addr[3:0]), // Debug selected register for rd/wr access
@@ -408,7 +414,7 @@ omsp_execution_unit execution_unit_0 (
     .exec_sm      (exec_sm_eu),
 
 // INPUTs
-    .dbg_halt_st  (dbg_halt_st),   // Halt/Run status from CPU
+    .dbg_halt_st  (cpu_halt_st),   // Halt/Run status from CPU
     .dbg_mem_dout (dbg_mem_dout),  // Debug unit data output
     .dbg_reg_wr   (dbg_reg_wr),    // Debug unit CPU register write
     .e_state      (e_state),       // Execution state
@@ -427,7 +433,7 @@ omsp_execution_unit execution_unit_0 (
     .inst_so      (inst_so),       // Decoded Inst: Single-operand arithmetic
     .inst_src     (inst_src),      // Decoded Inst: source (one hot)
     .inst_type    (inst_type),     // Decoded Instruction type
-    .mclk         (mclk),          // Main system clock
+    .mclk         (cpu_mclk),      // Main system clock
     .mdb_in       (eu_mdb_in),     // Memory data bus input
     .pc           (pc),            // Program counter
     .pc_nxt       (pc_nxt),        // Next PC value (for CALL & IRQ)
@@ -448,7 +454,11 @@ omsp_execution_unit execution_unit_0 (
 omsp_mem_backbone mem_backbone_0 (
 
 // OUTPUTs
+<<<<<<< HEAD
 	.cpu_halt_cmd (dbg_halt_cmd),  // Halt CPU command
+=======
+	.cpu_halt_cmd (cpu_halt_cmd),  // Halt CPU command
+>>>>>>> frontend_mod
     .dbg_mem_din  (dbg_mem_din),   // Debug unit Memory data input
     .dmem_addr    (dmem_addr),     // Data Memory address
     .dmem_cen     (dmem_cen),      // Data Memory chip enable (low active)
@@ -471,7 +481,8 @@ omsp_mem_backbone mem_backbone_0 (
     .pmem_writing (pmem_writing),
 			     
 // INPUTs
-    .cpu_halt_st  (dbg_halt_st),   // Halt/Run status from CPU
+    .cpu_halt_st  (cpu_halt_st),   // Halt/Run status from CPU
+    .dbg_halt_cmd (dbg_halt_cmd),  // Debug interface Halt CPU command
     .dbg_mem_addr (dbg_mem_addr),  // Debug address for rd/wr access
     .dbg_mem_dout (dbg_mem_dout),  // Debug unit data output
     .dbg_mem_en   (dbg_mem_en),    // Debug unit memory enable
@@ -483,7 +494,7 @@ omsp_mem_backbone mem_backbone_0 (
     .eu_mdb_out   (eu_mdb_out),    // Execution Unit Memory data bus output
     .fe_mab       (fe_mab[15:1]),  // Frontend Memory address bus
     .fe_mb_en     (fe_mb_en),      // Frontend Memory bus enable
-    .mclk         (mclk),          // Main system clock
+    .mclk         (dma_mclk),          // Main system clock
     .dma_addr	  (dma_addr),      // Direct Memory Access address
     .dma_din	  (dma_din),       // Direct Memory Access data input
     .dma_en       (dma_en),        // Direct Memory Access enable (high active)
@@ -512,7 +523,7 @@ omsp_sfr sfr_0 (
     .wdtifg_sw_set(wdtifg_sw_set), // Watchdog-timer interrupt flag software set
 			     
 // INPUTs
-    .mclk         (mclk),          // Main system clock
+    .mclk         (dma_mclk),      // Main system clock
     .nmi          (nmi),           // Non-maskable interrupt (asynchronous)
     .nmi_acc      (nmi_acc),       // Non-Maskable interrupt request accepted
     .per_addr     (per_addr),      // Peripheral address
@@ -544,7 +555,7 @@ omsp_watchdog watchdog_0 (
     .aclk           (aclk),          // ACLK
     .aclk_en        (aclk_en),       // ACLK enable
     .dbg_freeze     (dbg_freeze),    // Freeze Watchdog counter
-    .mclk           (mclk),          // Main system clock
+    .mclk           (dma_mclk),      // Main system clock
     .per_addr       (per_addr),      // Peripheral address
     .per_din        (per_din),       // Peripheral data input
     .per_en         (per_en),        // Peripheral enable (high active)
@@ -580,7 +591,7 @@ omsp_multiplier multiplier_0 (
     .per_dout     (per_dout_mpy),  // Peripheral data output
 			     
 // INPUTs
-    .mclk         (mclk),          // Main system clock
+    .mclk         (dma_mclk),          // Main system clock
     .per_addr     (per_addr),      // Peripheral address
     .per_din      (per_din),       // Peripheral data input
     .per_en       (per_en),        // Peripheral enable (high active)
@@ -626,7 +637,7 @@ omsp_dbg dbg_0 (
     .cpu_id       (cpu_id),        // CPU ID
     .dbg_clk      (dbg_clk),       // Debug unit clock
     .dbg_en_s     (dbg_en_s),      // Debug interface enable (synchronous)
-    .dbg_halt_st  (dbg_halt_st),   // Halt/Run status from CPU
+    .dbg_halt_st  (cpu_halt_st),   // Halt/Run status from CPU
     .dbg_mem_din  (dbg_mem_din),   // Debug unit Memory data input
     .dbg_reg_din  (dbg_reg_din),   // Debug unit CPU register data input
     .dbg_rst      (dbg_rst),       // Debug unit reset

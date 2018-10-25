@@ -60,6 +60,7 @@ task dma_write;
       dma_we     = size    ? 2'b11  :
                    addr[0] ? 2'b10  :  2'b01;
       dma_din    = data;
+      
       @(posedge mclk or posedge dma_tfx_cancel);
       while(~dma_ready & ~dma_tfx_cancel) @(posedge mclk or posedge dma_tfx_cancel);
       dma_en     = 1'b0;
@@ -69,7 +70,8 @@ task dma_write;
       if (~dma_tfx_cancel) dma_cnt_wr = dma_cnt_wr+1;
 
       // Check transfer response
-      if (~dma_tfx_cancel & (dma_resp != resp))
+   
+	  if (~dma_tfx_cancel & (dma_resp != resp))
 	begin
 	   $display("ERROR: DMA interface write response check -- address: 0x%h -- response: %h / expected: %h (%t ns)", addr, dma_resp, resp, $time);
 	   dma_wr_error = dma_wr_error+1;
@@ -128,7 +130,7 @@ initial
 	  @(negedge (mclk & dma_read_check_active) or posedge dma_tfx_cancel);
 	  if (~dma_tfx_cancel & (dma_read_check_data !== (dma_read_check_mask & dma_dout)) & ~puc_rst)
 	    begin
-	       $display("ERROR: DMA interface read check -- address: 0x%h -- read: 0x%h / expected: 0x%h (%t ns)", dma_read_check_addr, (dma_read_check_mask & dma_dout), dma_read_check_data, $time);
+	       $display("ERROR: DMA QUA interface read check -- address: 0x%h -- read: 0x%h / expected: 0x%h (%t ns)", dma_read_check_addr, (dma_read_check_mask & dma_dout), dma_read_check_data, $time);
 	       dma_rd_error = dma_rd_error+1;
 	    end
 	  dma_read_check_active =  1'b0;
@@ -250,10 +252,13 @@ initial
      dma_rd_error      = 0;
      #20;
      dma_rand_wait     = $urandom;
+     
      for (dma_mem_ref_idx=0; dma_mem_ref_idx < 128; dma_mem_ref_idx=dma_mem_ref_idx+1)
        begin
-	  dma_pmem_reference[dma_mem_ref_idx]             = $urandom;
-	  dma_dmem_reference[dma_mem_ref_idx]		  = $urandom;
+	  //dma_pmem_reference[dma_mem_ref_idx]             = $urandom;
+	  //dma_dmem_reference[dma_mem_ref_idx]		  = $urandom;
+	  dma_pmem_reference[dma_mem_ref_idx]             = 'h0;
+	  dma_dmem_reference[dma_mem_ref_idx]		  = 'h0;
 	  if (dma_verif_on && (`PMEM_SIZE>=4092) && (`DMEM_SIZE>=1024))
 	    begin
 	       pmem_0.mem[(`PMEM_SIZE-512)/2+dma_mem_ref_idx] = dma_pmem_reference[dma_mem_ref_idx];
@@ -283,7 +288,7 @@ initial
 	       dma_rand_addr = $urandom;
 
 	       // Randomize access through PMEM or DMEM memories
-	       dma_rand_if   = $urandom_range(1,0);
+	       dma_rand_if   = 1;//(sergio)$urandom_range(1,0);
 
 	       // Make sure the core is not in reset
 	       while(puc_rst) @(posedge mclk);
@@ -303,6 +308,7 @@ initial
 			 dma_read_16b(dma_rand_addr_full,  dma_dmem_reference[dma_rand_addr], 1'b0);
 		      end
 		 end
+		 
 	       else
 		 begin
 		    dma_rand_data = $urandom;
