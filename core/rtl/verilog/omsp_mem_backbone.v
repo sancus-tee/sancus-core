@@ -149,7 +149,7 @@ input                scan_enable;   // Scan enable (active during scan shifting)
 input               sm_violation;
 
 wire                 ext_mem_en;
-wire               	 ext_dmem_cen;
+wire               	 ext_dmem_en;
 wire          [15:0] ext_mem_din;
 //=============================================================================
 // 1)  DECODER
@@ -168,7 +168,7 @@ assign      cpu_halt_cmd  =  dbg_halt_cmd | (dma_en & dma_priority);
 assign      dma_resp      = ~dbg_mem_en & ~(ext_dmem_sel | ext_pmem_sel | ext_per_sel) & dma_en;
 
 // Master interface access is ready when the memory access occures
-assign      dma_ready     = ~dbg_mem_en &  (~ext_dmem_cen  | ~ext_pmem_cen  | ext_per_en | dma_resp);
+assign      dma_ready     = ~dbg_mem_en &  (ext_dmem_en  | ~ext_pmem_cen  | ext_per_en | dma_resp);
 
 // Use delayed version of 'dma_ready' to mask the 'dma_dout' data output
 // when not accessed and reduce toggle rate (thus power consumption)
@@ -219,21 +219,25 @@ wire  [1:0] UNUSED_dma_we       = dma_we;
 //------------------
 
 // Execution unit access
-wire               eu_dmem_cen   = ~(eu_mb_en & (eu_mab>=(`DMEM_BASE>>1)) &
-                                                (eu_mab<((`DMEM_BASE+`DMEM_SIZE)>>1)));
-wire        [15:0] eu_dmem_addr  = {1'b0, eu_mab}-(`DMEM_BASE>>1);
+wire			   eu_dmem_sel	= (eu_mab>=(`DMEM_BASE>>1)) & (eu_mab<((`DMEM_BASE+`DMEM_SIZE)>>1));
+wire               eu_dmem_en   = eu_mb_en & eu_dmem_sel;
+wire        [15:0] eu_dmem_addr = {1'b0, eu_mab}-(`DMEM_BASE>>1);
+
+// Front-end access
+// -- not allowed to execute from data memory --
 
 // External DMA Master / Debug interface access
 assign 				ext_dmem_sel = (ext_mem_addr[15:1]>=(`DMEM_BASE>>1)) & (ext_mem_addr[15:1]<((`DMEM_BASE+`DMEM_SIZE)>>1));
-assign            	ext_dmem_cen  = ~(ext_mem_en & ext_dmem_sel);
+assign            	ext_dmem_en  = ext_mem_en & ext_dmem_sel;
 wire       	 [15:0] ext_dmem_addr = {1'b0, ext_mem_addr[15:1]}-(`DMEM_BASE>>1);
 
    
 // RAM Interface
-wire [`DMEM_MSB:0] dmem_addr     = ~ext_dmem_cen ? ext_dmem_addr[`DMEM_MSB:0] : eu_dmem_addr[`DMEM_MSB:0];
-wire               dmem_cen      =  (ext_dmem_cen & eu_dmem_cen) | sm_violation;
-wire         [1:0] dmem_wen      = ~(ext_mem_wr | eu_mb_wr);
-wire        [15:0] dmem_din      = ~ext_dmem_cen ? ext_mem_dout : eu_mdb_out;
+wire               dmem_cen      =  ~(ext_dmem_en | eu_dmem_en) | sm_violation;
+//wire         [1:0] dmem_wen      = ~(ext_mem_wr | eu_mb_wr); 
+wire         [1:0] dmem_wen      =	ext_dmem_en ? ~ext_mem_wr                 : ~eu_mb_wr; // (Sergio)
+wire [`DMEM_MSB:0] dmem_addr     = ext_dmem_en ? ext_dmem_addr[`DMEM_MSB:0] : eu_dmem_addr[`DMEM_MSB:0];
+wire        [15:0] dmem_din      = ext_dmem_en ? ext_mem_dout : eu_mdb_out;
 
 
 // ROM Interface
@@ -241,8 +245,8 @@ wire        [15:0] dmem_din      = ~ext_dmem_cen ? ext_mem_dout : eu_mdb_out;
 parameter          PMEM_OFFSET   = (16'hFFFF-`PMEM_SIZE+1);
 
 // Execution unit access
-// NOTE: pmem requests from the execution are masked on violation (e.g. no
-// writes to SM public section)
+// NOTE: pmem requests from the execution are masked on violation 
+// (e.g. no writes to SM public section)
 wire               eu_pmem_cen   = ~(eu_mb_en & (eu_mab>=(PMEM_OFFSET>>1))) | sm_violation;
 wire        [15:0] eu_pmem_addr  = eu_mab-(PMEM_OFFSET>>1);
 
@@ -261,10 +265,13 @@ wire        [15:0] ext_pmem_addr = {1'b0, ext_mem_addr[15:1]}-(PMEM_OFFSET>>1);
 
    
 // ROM Interface (Execution unit has priority)
+wire               pmem_cen      =  (fe_pmem_cen & eu_pmem_cen & ext_pmem_cen);
+//wire         [1:0] pmem_wen      = ~(ext_mem_wr | (~eu_pmem_cen ? eu_mb_wr : 2'b00));
+wire         [1:0] pmem_wen      = 	~ext_pmem_cen ? ~ext_mem_wr :
+								(~eu_pmem_cen ? eu_mb_wr : 2'b11); //(Sergio)
+
 wire [`PMEM_MSB:0] pmem_addr     = ~ext_pmem_cen ? ext_pmem_addr[`PMEM_MSB:0] :
                                    ~eu_pmem_cen  ? eu_pmem_addr[`PMEM_MSB:0]  : fe_pmem_addr[`PMEM_MSB:0];
-wire               pmem_cen      =  (fe_pmem_cen & eu_pmem_cen & ext_pmem_cen);
-wire         [1:0] pmem_wen      = ~(ext_mem_wr | (~eu_pmem_cen ? eu_mb_wr : 2'b00));
 wire        [15:0] pmem_din      =  ~ext_pmem_cen ? ext_mem_dout : eu_mdb_out;
 
 wire               fe_pmem_wait  = (~fe_pmem_cen & ~eu_pmem_cen);
@@ -347,7 +354,7 @@ reg do_mask_eu;
 always @(posedge mclk or posedge puc_rst)
   if (puc_rst)           do_mask_eu <= 0;
   else if (sm_violation) do_mask_eu <= 1;
-  else if (!eu_dmem_cen) do_mask_eu <= 0;
+  else if (eu_dmem_en) do_mask_eu <= 0;
 
 wire [15:0] eu_mask = do_mask_eu ? 16'h0000 : 16'hffff;
 

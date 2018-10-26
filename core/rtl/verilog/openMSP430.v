@@ -361,12 +361,8 @@ omsp_frontend frontend_0 (
 			     
 // INPUTs
     .cpu_en_s     (cpu_en_s),      // Enable CPU code execution (synchronous)
-<<<<<<< HEAD
-=======
-    .cpu_halt_cmd (cpu_halt_cmd),  // Halt CPU	command
->>>>>>> frontend_mod
     .cpuoff       (cpuoff),        // Turns off the CPU
-    .dbg_halt_cmd (dbg_halt_cmd),  // Halt CPU	
+    .cpu_halt_cmd (cpu_halt_cmd),  // Halt CPU	command
     .dbg_reg_sel  (dbg_mem_addr[3:0]), // Debug selected register for rd/wr access
     .dma_en       (dma_en),             // Direct Memory Access enable (high active)
     .dma_wkup     (dma_wkup),           // DMA Sub-System Wake-up (asynchronous and non-glitchy)	
@@ -454,11 +450,7 @@ omsp_execution_unit execution_unit_0 (
 omsp_mem_backbone mem_backbone_0 (
 
 // OUTPUTs
-<<<<<<< HEAD
-	.cpu_halt_cmd (dbg_halt_cmd),  // Halt CPU command
-=======
 	.cpu_halt_cmd (cpu_halt_cmd),  // Halt CPU command
->>>>>>> frontend_mod
     .dbg_mem_din  (dbg_mem_din),   // Debug unit Memory data input
     .dmem_addr    (dmem_addr),     // Data Memory address
     .dmem_cen     (dmem_cen),      // Data Memory chip enable (low active)
