@@ -22,27 +22,27 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 #------------------------------------------------------------------------------
-#
+# 
 # File Name: rtlsim.sh
-#
+# 
 # Author(s):
 #             - Olivier Girard,    olgirard@gmail.com
 #             - Mihai M.,	   mmihai@delajii.net
 #
 #------------------------------------------------------------------------------
-# $Rev: 207 $
-# $LastChangedBy: olivier.girard $
-# $LastChangedDate: 2015-10-20 22:58:27 +0200 (Tue, 20 Oct 2015) $
+# $Rev$
+# $LastChangedBy$
+# $LastChangedDate$
 #------------------------------------------------------------------------------
 
 ###############################################################################
 #                            Parameter Check                                  #
 ###############################################################################
-EXPECTED_ARGS=5
+EXPECTED_ARGS=3
 if [ $# -ne $EXPECTED_ARGS ]; then
   echo "ERROR    : wrong number of arguments"
-  echo "USAGE    : rtlsim.sh <verilog stimulus file> <memory file> <submit file>   <seed> <dma_verif>"
-  echo "Example  : rtlsim.sh ./stimulus.v            pmem.mem      ../src/submit.f  123   NO_DMA_VERIF"
+  echo "USAGE    : rtlsim.sh <verilog stimulus file> <memory file> <submit file>"
+  echo "Example  : rtlsim.sh ./stimulus.v            pmem.mem      ../src/submit.f"
   echo "OMSP_SIMULATOR env keeps simulator name iverilog/cver/verilog/ncverilog/vsim/vcs"
   exit 1
 fi
@@ -73,40 +73,39 @@ fi
 if [ "${OMSP_SIMULATOR:-iverilog}" = iverilog ]; then
 
     rm -rf simv
-
+    IVERILOG_CMD="iverilog -Wall -Wno-timescale -Winfloop -o simv -c $3"
     NODUMP=${OMSP_NODUMP-0}
     if [ $NODUMP -eq 1 ]
       then
-        iverilog -o simv -c $3 -D SEED=$4 -D $5 -D NODUMP
+        $IVERILOG_CMD -D NODUMP
       else
-        iverilog -o simv -c $3 -D SEED=$4 -D $5
+        $IVERILOG_CMD
     fi
-
-    if [[ $(uname -s) == CYGWIN* ]];
-    then
-     	vvp.exe ./simv
-    else
-        ./simv
-    fi
+    
+if [ `uname -o` = "Cygwin" ]
+then
+	vvp.exe ./simv
+else
+    ./simv
+fi
 
 else
 
     NODUMP=${OMSP_NODUMP-0}
     if [ $NODUMP -eq 1 ] ; then
-       vargs="+define+SEED=$4 +define+$5 +define+NODUMP"
+       vargs="+define+NODUMP"
     else
-       vargs="+define+SEED=$4 +define+$5"
+       vargs=""
     fi
 
-   case $OMSP_SIMULATOR in
-    cver* )
+   case $OMSP_SIMULATOR in 
+    cver* ) 
        vargs="$vargs +define+VXL +define+CVER" ;;
     verilog* )
        vargs="$vargs +define+VXL" ;;
     ncverilog* )
        rm -rf INCA_libs
-       #vargs="$vargs +access+r +nclicq +ncinput+../bin/cov_ncverilog.tcl -covdut openMSP430 -covfile ../bin/cov_ncverilog.ccf -coverage all +define+TRN_FILE" ;;
-       vargs="$vargs +access+r +svseed=$4 +nclicq +define+TRN_FILE" ;;
+       vargs="$vargs +access+r +nclicq +ncinput+../bin/cov_ncverilog.tcl -covdut openMSP430 -covfile ../bin/cov_ncverilog.ccf -coverage all +define+TRN_FILE" ;;
     vcs* )
        rm -rf csrc simv*
        vargs="$vargs -R -debug_pp +vcs+lic+wait +v2k +define+VPD_FILE" ;;
@@ -123,7 +122,7 @@ else
        ./isim.exe -tclbatch isim.tcl
        exit
    esac
-
+   
    echo "Running: $OMSP_SIMULATOR -f $3 $vargs"
    exec $OMSP_SIMULATOR -f $3 $vargs
 fi

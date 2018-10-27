@@ -113,9 +113,7 @@ endfunction
 //=============================================================================
 
 wire  [2:0] i_state_bin = tb_openMSP430.dut.frontend_0.i_state;
-wire  [2:0] i_state_bin_nxt = tb_openMSP430.dut.frontend_0.i_state_nxt;
 wire  [4:0] e_state_bin = tb_openMSP430.dut.frontend_0.e_state;
-wire  [4:0] e_state_bin_nxt = tb_openMSP430.dut.frontend_0.e_state_nxt;
 
 wire        decode      = tb_openMSP430.dut.frontend_0.decode;
 wire [15:0] ir          = tb_openMSP430.dut.frontend_0.ir;
@@ -141,19 +139,6 @@ always @(i_state_bin)
       3'h4    : i_state =  "EXT2";
       3'h5    : i_state =  "IDLE";
       default : i_state =  "XXXXX";
-    endcase
-    
-reg [8*32-1:0] i_state_nxt;
-
-always @(i_state_bin_nxt)
-    case(i_state_bin_nxt)
-      3'h0    : i_state_nxt =  "IRQ_FETCH";
-      3'h1    : i_state_nxt =  "IRQ_DONE";
-      3'h2    : i_state_nxt =  "DEC";
-      3'h3    : i_state_nxt =  "EXT1";
-      3'h4    : i_state_nxt =  "EXT2";
-      3'h5    : i_state_nxt =  "IDLE";
-      default : i_state_nxt =  "XXXXX";
     endcase
    
 
@@ -186,34 +171,6 @@ always @(e_state_bin)
       5'h13   : e_state =  "IRQ_SP_RD";
       5'h14   : e_state =  "IRQ_SP_WR";
       default : e_state =  "xxxx";
-    endcase
-    
-reg [8*32-1:0] e_state_nxt;
-
-always @(e_state_bin_nxt)
-    case(e_state_bin_nxt)
-      5'h2    : e_state_nxt =  "IRQ_0";
-      5'h1    : e_state_nxt =  "IRQ_1";
-      5'h0    : e_state_nxt =  "IRQ_2";
-      5'h3    : e_state_nxt =  "IRQ_3";
-      5'h4    : e_state_nxt =  "IRQ_4";
-      5'h5    : e_state_nxt =  "SRC_AD";
-      5'h6    : e_state_nxt =  "SRC_RD";
-      5'h7    : e_state_nxt =  "SRC_WR";
-      5'h8    : e_state_nxt =  "DST_AD";
-      5'h9    : e_state_nxt =  "DST_RD";
-      5'hA    : e_state_nxt =  "DST_WR";
-      5'hB    : e_state_nxt =  "EXEC";
-      5'hC    : e_state_nxt =  "JUMP";
-      5'hD    : e_state_nxt =  "IDLE";
-      5'hE    : e_state_nxt =  "SPM";
-      5'hF    : e_state_nxt =  "DST_WR2";
-      5'h10   : e_state_nxt =  "IRQ_PRE";
-      5'h11   : e_state_nxt =  "IRQ_EXT_0";
-      5'h12   : e_state_nxt =  "IRQ_EXT_1";
-      5'h13   : e_state_nxt =  "IRQ_SP_RD";
-      5'h14   : e_state_nxt =  "IRQ_SP_WR";
-      default : e_state_nxt =  "xxxx";
     endcase
 
 
@@ -508,6 +465,7 @@ reg  [15:0] inst_pc;
 always @(posedge mclk or posedge puc_rst)
   if (puc_rst)     inst_pc  <=  16'h0000;
   else if (decode) inst_pc  <=  pc;
+  
 
 // Registers
 //===============================
@@ -526,7 +484,6 @@ wire [15:0]	r12	= tb_openMSP430.dut.execution_unit_0.register_file_0.r12[15:0];
 wire [15:0]	r13	= tb_openMSP430.dut.execution_unit_0.register_file_0.r13[15:0];
 wire [15:0]	r14	= tb_openMSP430.dut.execution_unit_0.register_file_0.r14[15:0];
 wire [15:0]	r15	= tb_openMSP430.dut.execution_unit_0.register_file_0.r15[15:0];
-
 
 endmodule // msp_debug
 

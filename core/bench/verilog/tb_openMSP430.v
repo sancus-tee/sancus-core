@@ -44,7 +44,11 @@
 `endif
 
 `define __SANCUS_SIM
-//`define NO_DMA_VERIF
+
+// Include DMEM and PMEM memory locations that are written by dma_task
+//`define SHOW_PMEM_WAVES  
+//`define SHOW_DMEM_WAVES
+  
 
 module  tb_openMSP430;
 
@@ -82,7 +86,7 @@ reg         [15:0] dma_din;
 reg                dma_en;
 reg                dma_priority;
 reg          [1:0] dma_we;
-reg                dma_wkup;
+//reg                dma_wkup;
 
 // Digital I/O
 wire               irq_port1;
@@ -231,9 +235,6 @@ reg                stimulus_done;
 // Debug interface tasks
 `include "dbg_uart_tasks.v"
 
-// Direct Memory Access interface tasks
-`include "dma_tasks.v"
-
 // Simple uart tasks
 //`include "uart_tasks.v"
 
@@ -242,6 +243,8 @@ reg                stimulus_done;
 `include "stimulus.v"
 `endif
 
+// Direct Memory Access interface tasks
+`include "dma_tasks.v"
    
 //
 // Initialize ROM
@@ -295,6 +298,8 @@ initial
 
 initial
   begin
+  	 //tmp_seed                = `SEED;
+     //tmp_seed                = $urandom(tmp_seed);
      error            = 0;
      stimulus_done    = 1;
      irq              = 14'h0000;
@@ -305,7 +310,6 @@ initial
      dma_en           = 1'b0;
      dma_priority     = 1'b0;
      dma_we           = 2'b00;
-     dma_wkup         = 1'b0;
      dma_tfx_cancel   = 1'b0;
      cpu_en           = 1'b1;
      dbg_en           = 1'b0;
@@ -392,7 +396,7 @@ openMSP430 dut (
     .irq_acc      (irq_acc),           // Interrupt request accepted (one-hot signal)
     .lfxt_enable  (lfxt_enable),       // ASIC ONLY: Low frequency oscillator enable
     .lfxt_wkup    (lfxt_wkup),         // ASIC ONLY: Low frequency oscillator wake-up (asynchronous)
-    .mclk              (mclk),                 // Main system clock
+    .mclk         (mclk),              // Main system clock
     .dma_dout          (dma_dout),             // Direct Memory Access data output
     .dma_ready         (dma_ready),            // Direct Memory Access is complete
     .dma_resp          (dma_resp),             // Direct Memory Access response (0:Okay / 1:Error)
@@ -422,7 +426,7 @@ openMSP430 dut (
     .dma_en            (dma_en),               // Direct Memory Access enable (high active)
     .dma_priority      (dma_priority),         // Direct Memory Access priority (0:low / 1:high)
     .dma_we            (dma_we),               // Direct Memory Access write byte enable (high active)
-    .dma_wkup          (dma_wkup),             // ASIC ONLY: DMA Sub-System Wake-up (asynchronous and non-glitchy)
+    //.dma_wkup          (dma_wkup),             // ASIC ONLY: DMA Sub-System Wake-up (asynchronous and non-glitchy)
     .nmi          (nmi),               // Non-maskable interrupt (asynchronous)
     .per_dout     (per_dout),          // Peripheral data output
     .pmem_dout    (pmem_dout),         // Program Memory data output
@@ -759,8 +763,14 @@ initial
           `endif
           $dumpfile(`DUMPFILE);
           $dumpvars(0, tb_openMSP430);
-       	  for (i= (`PMEM_SIZE-512)/2; i < (`PMEM_SIZE-512)/2+128; i=i+1)
-          	$dumpvars(0, pmem_0.mem[i]);//show the memory content into the waveform! (Sergio)          	
+          `ifdef SHOW_PMEM_WAVES
+          	for (i= (`PMEM_SIZE-512)/2; i < (`PMEM_SIZE-512)/2+128; i=i+1)
+          	$dumpvars(0, pmem_0.mem[i]);//show the memory content into the waveform! (Sergio) 
+       	  `endif
+       	  `ifdef SHOW_DMEM_WAVES
+          	for (i= (`PMEM_SIZE-512)/2; i < (`PMEM_SIZE-512)/2+128; i=i+1)
+          	$dumpvars(0, pmem_0.mem[i]);//show the memory content into the waveform! (Sergio) 
+       	  `endif 
        `endif
      `endif
    `endif
@@ -787,6 +797,7 @@ initial // Timeout
        $display("|               SIMULATION FAILED               |");
        $display("|              (simulation Timeout)             |");
        $display(" ===============================================");
+       tb_extra_report;
        $finish;
    `endif
   end
@@ -818,6 +829,7 @@ initial // Normal end of test
 	  $display("|               SIMULATION PASSED               |");
        end
      $display(" ===============================================");
+     tb_extra_report;
      $finish;
   end
 
@@ -833,7 +845,7 @@ initial // Normal end of test
 	 error = error+1;
       end
    endtask
-
+   
    task tb_extra_report;
       begin
          $display("DMA REPORT: Total Accesses: %-d Total RD: %-d Total WR: %-d", dma_cnt_rd+dma_cnt_wr,     dma_cnt_rd,   dma_cnt_wr);

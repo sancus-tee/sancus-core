@@ -22,9 +22,9 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 #------------------------------------------------------------------------------
-#
+# 
 # File Name: msp430sim_c
-#
+# 
 # Author(s):
 #             - Olivier Girard,    olgirard@gmail.com
 #
@@ -62,8 +62,9 @@ fi
 #                     Check if the required files exist                       #
 ###############################################################################
 softdir=../src-c/$1;
-elffile=../src-c/$1/$1.elf;
-verfile=../src-c/$1/$1.v;
+name=$(basename $softdir)
+elffile=../src-c/$1/$name.elf;
+verfile=../src-c/$1/$name.v;
 incfile=../../../rtl/verilog/openMSP430_defines.v;
 submitfile=../src/submit.f;
 if [ $OMSP_SIMULATOR == "isim" ]; then
@@ -106,39 +107,31 @@ echo " ======================================================="
 # Make local copy of the openMSP403 configuration file
 # and prepare it for MSPGCC preprocessing
 cp  $incfile  ./pmem.h
-sed -ie 's/`ifdef/#ifdef/g'         ./pmem.h
-sed -ie 's/`ifndef/#ifndef/g'       ./pmem.h
-sed -ie 's/`else/#else/g'           ./pmem.h
-sed -ie 's/`endif/#endif/g'         ./pmem.h
-sed -ie 's/`define/#define/g'       ./pmem.h
-sed -ie 's/`include/\/\/#include/g' ./pmem.h
-sed -ie 's/`//g'                    ./pmem.h
-sed -ie "s/'//g"                    ./pmem.h
+sed -i 's/`ifdef/#ifdef/g'   ./pmem.h 
+sed -i 's/`ifndef/#ifndef/g' ./pmem.h 
+sed -i 's/`else/#else/g'     ./pmem.h 
+sed -i 's/`endif/#endif/g'   ./pmem.h 
+sed -i 's/`define/#define/g' ./pmem.h
+sed -i 's/`include/\/\/include/g' ./pmem.h 
+sed -i 's/`//g'              ./pmem.h 
+sed -i "s/'//g"              ./pmem.h
 
 # Use MSPGCC preprocessor to extract the Program, Data
 # and Peripheral memory sizes
-if command -v msp430-elf-gcc >/dev/null; then
-    msp430-elf-gcc -E -P -x c ../bin/omsp_config.sh > pmem.sh
-else
-    msp430-gcc     -E -P -x c ../bin/omsp_config.sh > pmem.sh
-fi
+msp430-gcc -E -P -x c ../bin/omsp_config.sh > pmem.sh
 
 # Source the extracted configuration file
-if [[ $(uname -s) == CYGWIN* ]];
-then
-dos2unix pmem.sh
-fi
-source   pmem.sh
+source pmem.sh
 
 # Make C program
 echo "Compile, link & generate IHEX file (Program Memory: $pmemsize B, Data Memory: $dmemsize B, Peripheral Space: $persize B)..."
 cd $softdir
 make clean
 make
-cd ../../run/
+cd -
 
 # Create links
-if [[ $(uname -s) == CYGWIN* ]];
+if [ `uname -o` = "Cygwin" ]
 then
     cp $elffile pmem.elf
     cp $verfile stimulus.v
@@ -149,11 +142,7 @@ fi
 
 # Create IHEX file from ELF
 echo "Convert ELF file to IHEX format..."
-if command -v msp430-elf-objcopy >/dev/null; then
-    msp430-elf-objcopy -O ihex  pmem.elf pmem.ihex
-else
-    msp430-objcopy     -O ihex  pmem.elf pmem.ihex
-fi
+msp430-objcopy -O ihex  pmem.elf pmem.ihex
 
 # Generate Program memory file
 echo "Convert IHEX file to Verilog MEMH format..."
@@ -161,4 +150,4 @@ echo "Convert IHEX file to Verilog MEMH format..."
 
 # Start verilog simulation
 echo "Start Verilog simulation..."
-../bin/rtlsim.sh    stimulus.v pmem.mem $submitfile 0 "NO_DMA_VERIF"
+../bin/rtlsim.sh    stimulus.v pmem.mem $submitfile

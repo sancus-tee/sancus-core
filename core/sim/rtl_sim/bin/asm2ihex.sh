@@ -29,9 +29,9 @@
 #             - Olivier Girard,    olgirard@gmail.com
 #
 #------------------------------------------------------------------------------
-# $Rev: 207 $
-# $LastChangedBy: olivier.girard $
-# $LastChangedDate: 2015-10-20 22:58:27 +0200 (Tue, 20 Oct 2015) $
+# $Rev$
+# $LastChangedBy$
+# $LastChangedDate$
 #------------------------------------------------------------------------------
 
 ###############################################################################
@@ -107,8 +107,8 @@ fi
 #                  Compile, link & generate IHEX file                         #
 ###############################################################################
 echo ""
-echo "\$ $MSPGCC_PFX-as     -I ../src/sancus -alsm $2 -o $1.o > $1.l43"
-$MSPGCC_PFX-as      -I ../src/sancus -alsm         $2     -o $1.o     > $1.l43
+echo "\$ $MSPGCC_PFX-as      -alsm $2 -o $1.o > $1.l43"
+$MSPGCC_PFX-as      -alsm         $2     -o $1.o     > $1.l43
 echo "\$ $MSPGCC_PFX-objdump -xdsStr $1.o >> $1.l43"
 $MSPGCC_PFX-objdump -xdsStr       $1.o              >> $1.l43
 echo "\$ $MSPGCC_PFX-ld      -T ./pmem.x $1.o -o $1.elf"

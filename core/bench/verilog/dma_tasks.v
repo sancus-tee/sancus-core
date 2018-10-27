@@ -250,6 +250,7 @@ initial
      dma_cnt_rd        = 0;
      dma_wr_error      = 0;
      dma_rd_error      = 0;
+     dma_priority	   = 0; // (sergio, correct)
      #20;
      dma_rand_wait     = $urandom;
      
@@ -288,8 +289,8 @@ initial
 	       dma_rand_addr = $urandom;
 
 	       // Randomize access through PMEM or DMEM memories
-	       dma_rand_if   = 1;//(sergio)$urandom_range(1,0);
-
+	       dma_rand_if   = $urandom_range(1,0);
+ 
 	       // Make sure the core is not in reset
 	       while(puc_rst) @(posedge mclk);
 	       
