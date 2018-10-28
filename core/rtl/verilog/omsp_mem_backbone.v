@@ -125,7 +125,7 @@ output               pmem_writing;
 //=========
 input                cpu_halt_st;   // Halt/Run status from CPU
 input				 dbg_halt_cmd;
-input         [15:0] dbg_mem_addr;  // Debug address for rd/wr access
+input         [15:1] dbg_mem_addr;  // Debug address for rd/wr access (sergio)
 input         [15:0] dbg_mem_dout;  // Debug unit data output
 input                dbg_mem_en;    // Debug unit memory enable
 input          [1:0] dbg_mem_wr;    // Debug unit memory write
@@ -374,10 +374,10 @@ wire [15:0] eu_mask = do_mask_eu ? 16'h0000 : 16'hffff;
 
 assign eu_mdb_in = raw_eu_mdb_in & eu_mask;
 
-// Debug interface  data Mux
+// Debug interface data Mux
 //---------------------------------
 
-// Select between peripherals, RAM and ROM
+// Select between peripherals, DMEM and PMEM
 reg   [1:0] ext_mem_din_sel;
 always @(posedge mclk or posedge puc_rst)
   if (puc_rst)  ext_mem_din_sel <= 2'b00;

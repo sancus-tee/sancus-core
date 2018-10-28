@@ -349,7 +349,7 @@ omsp_frontend frontend_0 (
 // INPUTs
     .cpu_en_s     (cpu_en_s),      // Enable CPU code execution (synchronous)
     .cpuoff       (cpuoff),        // Turns off the CPU
-    .dbg_halt_cmd (dbg_halt_cmd),  // Halt CPU command
+    .cpu_halt_cmd (cpu_halt_cmd),  // Halt CPU command
     .dbg_reg_sel  (dbg_mem_addr[3:0]), // Debug selected register for rd/wr access
     .fe_pmem_wait (fe_pmem_wait),  // Frontend wait for Instruction fetch
     .gie          (gie),           // General interrupt enable
@@ -431,10 +431,10 @@ omsp_execution_unit execution_unit_0 (
 //=============================================================================
 // 5)  MEMORY BACKBONE
 //=============================================================================
-
 omsp_mem_backbone mem_backbone_0 (
 
 // OUTPUTs
+	.cpu_halt_cmd (cpu_halt_cmd),  // Halt CPU command, from     
     .dbg_mem_din  (dbg_mem_din),   // Debug unit Memory data input
     .dmem_addr    (dmem_addr),     // Data Memory address
     .dmem_cen     (dmem_cen),      // Data Memory chip enable (low active)
@@ -458,8 +458,8 @@ omsp_mem_backbone mem_backbone_0 (
 			     
 // INPUTs
     .cpu_halt_st  (cpu_halt_st),   // Halt/Run status from CPU
-    .dbg_halt_cmd (dbg_halt_cmd),  //(sergio)
-    .dbg_mem_addr (dbg_mem_addr),  // Debug address for rd/wr access
+    .dbg_halt_cmd (dbg_halt_cmd),  // Debug interface Halt CPU command
+    .dbg_mem_addr (dbg_mem_addr[15:1]), // Debug address for rd/wr access
     .dbg_mem_dout (dbg_mem_dout),  // Debug unit data output
     .dbg_mem_en   (dbg_mem_en),    // Debug unit memory enable
     .dbg_mem_wr   (dbg_mem_wr),    // Debug unit memory write

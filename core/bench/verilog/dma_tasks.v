@@ -256,10 +256,8 @@ initial
      
      for (dma_mem_ref_idx=0; dma_mem_ref_idx < 128; dma_mem_ref_idx=dma_mem_ref_idx+1)
        begin
-	  //dma_pmem_reference[dma_mem_ref_idx]             = $urandom;
-	  //dma_dmem_reference[dma_mem_ref_idx]		  = $urandom;
-	  dma_pmem_reference[dma_mem_ref_idx]             = 'h0;
-	  dma_dmem_reference[dma_mem_ref_idx]		  = 'h0;
+	  dma_pmem_reference[dma_mem_ref_idx]         = $urandom;
+	  dma_dmem_reference[dma_mem_ref_idx]		  = $urandom;
 	  if (dma_verif_on && (`PMEM_SIZE>=4092) && (`DMEM_SIZE>=1024))
 	    begin
 	       pmem_0.mem[(`PMEM_SIZE-512)/2+dma_mem_ref_idx] = dma_pmem_reference[dma_mem_ref_idx];

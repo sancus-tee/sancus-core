@@ -46,8 +46,8 @@
 `define __SANCUS_SIM
 
 // Include DMEM and PMEM memory locations that are written by dma_task
-//`define SHOW_PMEM_WAVES  
-//`define SHOW_DMEM_WAVES
+`define SHOW_PMEM_WAVES  
+`define SHOW_DMEM_WAVES
   
 
 module  tb_openMSP430;
@@ -768,8 +768,8 @@ initial
           	$dumpvars(0, pmem_0.mem[i]);//show the memory content into the waveform! (Sergio) 
        	  `endif
        	  `ifdef SHOW_DMEM_WAVES
-          	for (i= (`PMEM_SIZE-512)/2; i < (`PMEM_SIZE-512)/2+128; i=i+1)
-          	$dumpvars(0, pmem_0.mem[i]);//show the memory content into the waveform! (Sergio) 
+          	for (i= (`DMEM_SIZE-256)/2; i < (`DMEM_SIZE-256)/2+128; i=i+1)
+          	$dumpvars(0, dmem_0.mem[i]);//show the memory content into the waveform! (Sergio) 
        	  `endif 
        `endif
      `endif
