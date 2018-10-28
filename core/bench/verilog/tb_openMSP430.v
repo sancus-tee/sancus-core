@@ -46,8 +46,8 @@
 `define __SANCUS_SIM
 
 // Include DMEM and PMEM memory locations that are written by dma_task
-`define SHOW_PMEM_WAVES  
-`define SHOW_DMEM_WAVES
+//`define SHOW_PMEM_WAVES  
+//`define SHOW_DMEM_WAVES
   
 
 module  tb_openMSP430;
