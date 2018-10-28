@@ -1,0 +1,89 @@
+[*]
+[*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
+[*] Sun Oct 28 21:09:10 2018
+[*]
+[dumpfile] "/home/sergio/sancus-core/core/sim/rtl_sim/run/tb_openMSP430.vcd"
+[dumpfile_mtime] "Sun Oct 28 19:05:32 2018"
+[dumpfile_size] 16820227
+[savefile] "/home/sergio/sancus-core/core/sim/rtl_sim/run/tb_openMSP430_view_DBG_CPU.gtkw"
+[timestart] 204958000
+[size] 1366 704
+[pos] -51 -1
+*-19.000000 206075000 225925000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb_openMSP430.
+[treeopen] tb_openMSP430.dut.
+[treeopen] tb_openMSP430.uart_0.
+[sst_width] 233
+[signals_width] 271
+[sst_expanded] 1
+[sst_vpaned_height] 179
+@200
+-dbg_uart_wr
+@22
+tb_openMSP430.dbg_uart_wr.dbg_reg[7:0]
+tb_openMSP430.dbg_uart_wr.dbg_data[15:0]
+@200
+-dbg_uart_tx
+@28
+tb_openMSP430.dbg_uart_tx.txbuf[7:0]
+@420
+tb_openMSP430.dbg_uart_tx.txcnt
+@28
+tb_openMSP430.dbg_uart_tx.txbuf_full[9:0]
+tb_openMSP430.dbg_uart_tx_busy
+tb_openMSP430.dbg_uart_rxd_pre
+@200
+-
+@22
+tb_openMSP430.r15[15:0]
+@200
+-UART
+@28
+[color] 2
+tb_openMSP430.dut.dbg_0.dbg_clk
+tb_openMSP430.dut.dbg_0.dbg_uart_0.uart_state[2:0]
+@22
+tb_openMSP430.dut.dbg_0.dbg_addr[5:0]
+tb_openMSP430.dut.dbg_0.dbg_din[15:0]
+@28
+tb_openMSP430.dut.dbg_0.dbg_rd
+tb_openMSP430.dut.dbg_0.dbg_uart_txd
+tb_openMSP430.dut.dbg_0.dbg_wr
+@22
+tb_openMSP430.dut.dbg_0.dbg_dout[15:0]
+@28
+tb_openMSP430.dut.dbg_0.dbg_rd_rdy
+tb_openMSP430.dut.dbg_0.dbg_rst
+tb_openMSP430.dut.dbg_0.dbg_uart_rxd
+tb_openMSP430.dut.dbg_0.mem_burst
+tb_openMSP430.dut.dbg_0.mem_burst_end
+tb_openMSP430.dut.dbg_0.mem_burst_rd
+tb_openMSP430.dut.dbg_0.mem_burst_wr
+tb_openMSP430.dut.dbg_0.mem_bw
+tb_openMSP430.dut.dbg_0.dbg_uart_0.uart_state_nxt[2:0]
+@200
+-DBG unit
+@28
+tb_openMSP430.dut.dbg_0.dbg_halt_st
+@22
+tb_openMSP430.dut.dbg_0.dbg_mem_din[15:0]
+@28
+tb_openMSP430.dut.dbg_0.dbg_freeze
+tb_openMSP430.dut.dbg_0.dbg_halt_cmd
+@22
+tb_openMSP430.dut.dbg_0.dbg_mem_addr[15:0]
+tb_openMSP430.dut.dbg_0.dbg_mem_dout[15:0]
+@29
+[color] 3
+tb_openMSP430.dut.dbg_0.dbg_mem_en
+@28
+tb_openMSP430.dut.dbg_0.dbg_reg_wr
+tb_openMSP430.dut.dbg_0.dbg_cpu_reset
+tb_openMSP430.dut.dbg_0.dbg_uart_txd
+[pattern_trace] 1
+[pattern_trace] 0
+!100000@@
+?"000A
+@23
+tb_openMSP430.dbg_uart_wr.dbg_data[15:0]
+!!
