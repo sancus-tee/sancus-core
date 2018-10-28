@@ -217,8 +217,11 @@ wire        [15:0] inst_pc;
 wire    [8*32-1:0] inst_short;
 
 // Testbench variables
+
+integer            tmp_seed;
 integer            error;
 reg                stimulus_done;
+integer 		   i;
 
 
 //
@@ -298,8 +301,8 @@ initial
 
 initial
   begin
-  	 //tmp_seed                = `SEED;
-     //tmp_seed                = $urandom(tmp_seed);
+  	 tmp_seed         = `SEED;
+     tmp_seed         = $urandom(tmp_seed);
      error            = 0;
      stimulus_done    = 1;
      irq              = 14'h0000;
@@ -745,7 +748,7 @@ msp_debug msp_debug_0 (
 //
 // Generate Waveform
 //----------------------------------------
-integer i;
+
 initial
   begin
    `ifdef NODUMP

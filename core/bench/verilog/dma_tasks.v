@@ -130,7 +130,7 @@ initial
 	  @(negedge (mclk & dma_read_check_active) or posedge dma_tfx_cancel);
 	  if (~dma_tfx_cancel & (dma_read_check_data !== (dma_read_check_mask & dma_dout)) & ~puc_rst)
 	    begin
-	       $display("ERROR: DMA QUA interface read check -- address: 0x%h -- read: 0x%h / expected: 0x%h (%t ns)", dma_read_check_addr, (dma_read_check_mask & dma_dout), dma_read_check_data, $time);
+	       $display("ERROR: DMA interface read check -- address: 0x%h -- read: 0x%h / expected: 0x%h (%t ns)", dma_read_check_addr, (dma_read_check_mask & dma_dout), dma_read_check_data, $time);
 	       dma_rd_error = dma_rd_error+1;
 	    end
 	  dma_read_check_active =  1'b0;
@@ -321,7 +321,7 @@ initial
 			 #1;
 			 if (pmem_0.mem[(`PMEM_SIZE-512)/2+dma_rand_addr] !== dma_rand_data[15:0])
 			   begin
-			      $display("ERROR: DMA interface write PMEM-- address: 0x%h -- wrote: 0x%h / expected: 0x%h (%t ns)", dma_rand_addr_full, dma_rand_data[15:0], pmem_0.mem[(`PMEM_SIZE-512)/2+dma_rand_addr], $time);
+			      $display("ERROR: DMA interface write PMEM-- address: 0x%h -- wrote: 0x%h / PMEM content: 0x%h (%t ns)", dma_rand_addr_full, dma_rand_data[15:0], pmem_0.mem[(`PMEM_SIZE-512)/2+dma_rand_addr], $time);
 			      dma_wr_error = dma_wr_error+1;
 			   end
 		      end
@@ -334,7 +334,7 @@ initial
 			 #1;
 			 if (dmem_0.mem[(`DMEM_SIZE-256)/2+dma_rand_addr] !== dma_rand_data[15:0])
 			   begin
-			      $display("ERROR: DMA interface write DMEM-- address: 0x%h -- wrote: 0x%h / expected: 0x%h (%t ns)", dma_rand_addr_full, dma_rand_data[15:0], dmem_0.mem[(`DMEM_SIZE-256)/2+dma_rand_addr], $time);
+			      $display("ERROR: DMA interface write DMEM-- address: 0x%h -- wrote: 0x%h / DMEM content: 0x%h (%t ns)", dma_rand_addr_full, dma_rand_data[15:0], dmem_0.mem[(`DMEM_SIZE-256)/2+dma_rand_addr], $time);
 			      dma_wr_error = dma_wr_error+1;
 			   end
 		      end
