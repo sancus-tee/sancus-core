@@ -1,92 +1,51 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Mon Oct 29 11:00:57 2018
+[*] Mon Oct 29 18:10:00 2018
 [*]
 [dumpfile] "/home/sergio/sancus-core/core/sim/rtl_sim/run/tb_openMSP430.vcd"
-[dumpfile_mtime] "Mon Oct 29 10:58:39 2018"
-[dumpfile_size] 2537948
+[dumpfile_mtime] "Mon Oct 29 18:09:54 2018"
+[dumpfile_size] 2529007
 [savefile] "/home/sergio/sancus-core/core/sim/rtl_sim/run/tb_openMSP430_view_clock_module.gtkw"
-[timestart] 83800
-[size] 1078 702
+[timestart] 0
+[size] 1366 704
 [pos] -1 -1
-*-16.000000 175000 125000 875000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-18.000000 175000 175000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_openMSP430.
 [treeopen] tb_openMSP430.dma_read_16b.
 [treeopen] tb_openMSP430.dma_write.
 [treeopen] tb_openMSP430.dma_write_16b.
 [treeopen] tb_openMSP430.dut.
-[treeopen] tb_openMSP430.dut.dbg_0.
-[treeopen] tb_openMSP430.dut.execution_unit_0.
+[treeopen] tb_openMSP430.dut.clock_module_0.
 [treeopen] tb_openMSP430.dut.execution_unit_0.register_file_0.
-[treeopen] tb_openMSP430.dut.frontend_0.
 [treeopen] tb_openMSP430.dut.mem_backbone_0.
-[sst_width] 269
-[signals_width] 246
-[sst_expanded] 1
-[sst_vpaned_height] 180
+[sst_width] 48
+[signals_width] 261
+[sst_expanded] 0
+[sst_vpaned_height] 181
 @200
--READ check process
+-Reset Gen.
+-Signals in CAUSAL order
 @28
-tb_openMSP430.dma_read_check_active
-@22
-tb_openMSP430.dma_read_check_mask[15:0]
-tb_openMSP430.dma_read_check_addr[15:0]
-tb_openMSP430.dma_read_check_data[15:0]
-@420
-tb_openMSP430.dma_rd_error
-tb_openMSP430.dma_wr_error
-@200
--GENERIC READ task
-@22
-tb_openMSP430.dma_read.addr[15:0]
-tb_openMSP430.dma_read.data[15:0]
-@200
--GENERIC WRITE task
-@22
-tb_openMSP430.dma_write.addr[15:0]
-tb_openMSP430.dma_write.data[15:0]
-@28
-tb_openMSP430.dut.dma_wkup
+tb_openMSP430.dut.clock_module_0.reset_n
+tb_openMSP430.dut.clock_module_0.por_a
 tb_openMSP430.dut.clock_module_0.nodiv_mclk
-tb_openMSP430.dut.clock_module_0.dma_mclk
-[color] 2
-tb_openMSP430.mclk
-@22
-tb_openMSP430.dma_addr[15:1]
-@28
-tb_openMSP430.dma_en
-@c00028
-tb_openMSP430.dma_we[1:0]
-@28
-(0)tb_openMSP430.dma_we[1:0]
-(1)tb_openMSP430.dma_we[1:0]
-@1401200
--group_end
-@22
-tb_openMSP430.dma_din[15:0]
-@28
-tb_openMSP430.dma_ready
-@22
-tb_openMSP430.dma_dout[15:0]
+tb_openMSP430.dut.clock_module_0.por_noscan
+[color] 7
+tb_openMSP430.dut.clock_module_0.por
+tb_openMSP430.dut.clock_module_0.puc_a
+tb_openMSP430.dut.clock_module_0.puc_noscan_n
+[color] 7
+tb_openMSP430.puc_rst
 @200
 -DMA access process
+@28
+[color] 2
+tb_openMSP430.dut.dma_en
 @24
 tb_openMSP430.dma_rand_wait
 @28
 [color] 3
 tb_openMSP430.dma_rand_rdwr
-@c00022
-tb_openMSP430.dma_rand_addr[6:0]
-@28
-(0)tb_openMSP430.dma_rand_addr[6:0]
-(1)tb_openMSP430.dma_rand_addr[6:0]
-(2)tb_openMSP430.dma_rand_addr[6:0]
-(3)tb_openMSP430.dma_rand_addr[6:0]
-(4)tb_openMSP430.dma_rand_addr[6:0]
-(5)tb_openMSP430.dma_rand_addr[6:0]
-(6)tb_openMSP430.dma_rand_addr[6:0]
-@1401200
--group_end
 @22
 tb_openMSP430.dma_rand_addr_full[15:0]
 @c00022
@@ -110,78 +69,38 @@ tb_openMSP430.dma_rand_addr_full[15:0]
 (31)tb_openMSP430.dma_rand_data
 @1401200
 -group_end
-@28
-tb_openMSP430.dma_rand_if
 @200
--PMEM
-@28
-[color] 7
-tb_openMSP430.puc_rst
-[color] 3
-tb_openMSP430.sergio_dbg_here
-[color] 2
-tb_openMSP430.dut.frontend_0.mclk
-tb_openMSP430.dut.dma_en
-tb_openMSP430.dut.dbg_mem_en
-@29
-tb_openMSP430.dut.mem_backbone_0.ext_mem_en
-@28
-tb_openMSP430.dut.mem_backbone_0.ext_pmem_sel
-tb_openMSP430.dut.mem_backbone_0.eu_pmem_en
-tb_openMSP430.dut.mem_backbone_0.fe_pmem_en
-tb_openMSP430.dut.mem_backbone_0.sm_violation
-@200
--
-@28
-tb_openMSP430.dut.mem_backbone_0.ext_pmem_en
-tb_openMSP430.dut.mem_backbone_0.ext_mem_wr[1:0]
-tb_openMSP430.dut.mem_backbone_0.eu_mb_wr[1:0]
-@c00028
-+{tb_openMSP430.pmem_0.PMEM_wen[1:0]} tb_openMSP430.pmem_0.ram_wen[1:0]
-@28
-(0)tb_openMSP430.pmem_0.ram_wen[1:0]
-(1)tb_openMSP430.pmem_0.ram_wen[1:0]
-@1401200
--group_end
-@200
--
+-DMA interface
 @22
-tb_openMSP430.dut.mem_backbone_0.ext_mem_dout[15:0]
-tb_openMSP430.dut.mem_backbone_0.eu_mdb_out[15:0]
-tb_openMSP430.pmem_0.ram_din[15:0]
-@200
--Clock Module inputs
+tb_openMSP430.dma_addr[15:1]
+tb_openMSP430.dma_din[15:0]
 @28
-tb_openMSP430.dut.clock_module_0.cpu_en
-tb_openMSP430.dut.clock_module_0.cpuoff
-tb_openMSP430.dut.clock_module_0.dbg_cpu_reset
-tb_openMSP430.dut.clock_module_0.dbg_en
-tb_openMSP430.dut.clock_module_0.dco_clk
-tb_openMSP430.dut.clock_module_0.lfxt_clk
-tb_openMSP430.dut.clock_module_0.mclk_dma_enable
-tb_openMSP430.dut.clock_module_0.mclk_dma_wkup
-tb_openMSP430.dut.clock_module_0.mclk_enable
-tb_openMSP430.dut.clock_module_0.mclk_wkup
-tb_openMSP430.dut.clock_module_0.oscoff
+tb_openMSP430.dma_ready
 @22
-tb_openMSP430.dut.clock_module_0.per_addr[13:0]
-tb_openMSP430.dut.clock_module_0.per_din[15:0]
-@28
-tb_openMSP430.dut.clock_module_0.per_en
-tb_openMSP430.dut.clock_module_0.per_we[1:0]
-tb_openMSP430.dut.clock_module_0.reset_n
-tb_openMSP430.dut.clock_module_0.scan_enable
-tb_openMSP430.dut.clock_module_0.scg0
-tb_openMSP430.dut.clock_module_0.scg1
-tb_openMSP430.dut.clock_module_0.wdt_reset
+tb_openMSP430.dma_dout[15:0]
+@200
+-GENERIC WRITE task
+@22
+tb_openMSP430.dma_write.addr[15:0]
+tb_openMSP430.dma_write.data[15:0]
+@420
+tb_openMSP430.dma_wr_error
 @200
 -
+-GENERIC READ task
+@22
+tb_openMSP430.dma_read.addr[15:0]
+tb_openMSP430.dma_read.data[15:0]
+@200
+-READ check process
+@22
+tb_openMSP430.dma_read_check_addr[15:0]
+tb_openMSP430.dma_read_check_data[15:0]
 @28
-tb_openMSP430.dco_clk
-tb_openMSP430.dut.clock_module_0.por
-tb_openMSP430.dut.clock_module_0.nodiv_mclk
-tb_openMSP430.dco_enable
-tb_openMSP430.dco_local_enable
-tb_openMSP430.dco_wkup
+tb_openMSP430.dma_read_check_active
+@200
+-
+@420
+tb_openMSP430.dma_rd_error
 [pattern_trace] 1
 [pattern_trace] 0
