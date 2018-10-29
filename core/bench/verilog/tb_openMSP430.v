@@ -221,7 +221,7 @@ wire    [8*32-1:0] inst_short;
 integer            tmp_seed;
 integer            error;
 reg                stimulus_done;
-integer 		   i;
+integer 		   index_mem_dbg;
 
 
 //
@@ -768,12 +768,12 @@ initial
           $dumpfile(`DUMPFILE);
           $dumpvars(0, tb_openMSP430);
           `ifdef SHOW_PMEM_WAVES
-          	for (i= (`PMEM_SIZE-512)/2; i < (`PMEM_SIZE-512)/2+128; i=i+1)
-          	$dumpvars(0, pmem_0.mem[i]);//show the memory content into the waveform! (Sergio) 
+          	for (index_mem_dbg= (`PMEM_SIZE-512)/2; i < (`PMEM_SIZE-512)/2+128; i=i+1)
+          	$dumpvars(0, pmem_0.mem[index_mem_dbg]);//show the memory content into the waveform! (Sergio) 
        	  `endif
        	  `ifdef SHOW_DMEM_WAVES
-          	for (i= (`DMEM_SIZE-256)/2; i < (`DMEM_SIZE-256)/2+128; i=i+1)
-          	$dumpvars(0, dmem_0.mem[i]);//show the memory content into the waveform! (Sergio) 
+          	for (index_mem_dbg= (`DMEM_SIZE-256)/2; i < (`DMEM_SIZE-256)/2+128; i=i+1)
+          	$dumpvars(0, dmem_0.mem[index_mem_dbg]);//show the memory content into the waveform! (Sergio) 
        	  `endif 
        `endif
      `endif
