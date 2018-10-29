@@ -276,6 +276,7 @@ omsp_clock_module clock_module_0 (
     .aclk              (aclk),               // ACLK
     .aclk_en           (aclk_en),            // ACLK enablex
     .cpu_en_s          (cpu_en_s),           // Enable CPU code execution (synchronous)
+    //Signals ready for a future implementation of the upstream clock_module
     //.cpu_mclk          (cpu_mclk),           // Main system CPU only clock
     //.dma_mclk          (dma_mclk),           // Main system DMA and/or CPU clock
     .mclk			   (mclk),
@@ -317,7 +318,10 @@ omsp_clock_module clock_module_0 (
     .wdt_reset         (wdt_reset)           // Watchdog-timer reset
 );
 
-assign dma_mclk = mclk;
+// Signals ready for a future implementation of the upstream clock_module
+// for now just use the usual mclk: the main difference will be in the ASIC
+// implementation, whereas the FPGA will be still coherent with the upstream
+assign dma_mclk = mclk; 
 assign cpu_mclk = mclk;
 
 //=============================================================================
