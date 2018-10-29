@@ -188,6 +188,7 @@ wire                por;
 wire                gie;
 wire                cpu_mclk;
 wire                dma_mclk;
+wire 			    mclk;
 wire                mclk_dma_enable;
 wire                mclk_dma_wkup;
 wire                mclk_enable;
@@ -275,8 +276,9 @@ omsp_clock_module clock_module_0 (
     .aclk              (aclk),               // ACLK
     .aclk_en           (aclk_en),            // ACLK enablex
     .cpu_en_s          (cpu_en_s),           // Enable CPU code execution (synchronous)
-    .cpu_mclk          (cpu_mclk),           // Main system CPU only clock
-    .dma_mclk          (dma_mclk),           // Main system DMA and/or CPU clock
+    //.cpu_mclk          (cpu_mclk),           // Main system CPU only clock
+    //.dma_mclk          (dma_mclk),           // Main system DMA and/or CPU clock
+    .mclk			   (mclk),
     .dbg_clk           (dbg_clk),            // Debug unit clock
     .dbg_en_s          (dbg_en_s),           // Debug interface enable (synchronous)
     .dbg_rst           (dbg_rst),            // Debug unit reset
@@ -298,8 +300,8 @@ omsp_clock_module clock_module_0 (
     .dbg_en            (dbg_en),             // Debug interface enable (asynchronous)
     .dco_clk           (dco_clk),            // Fast oscillator (fast clock)
     .lfxt_clk          (lfxt_clk),           // Low frequency oscillator (typ 32kHz)
-    .mclk_dma_enable   (mclk_dma_enable),    // DMA Sub-System Clock enable
-    .mclk_dma_wkup     (mclk_dma_wkup),      // DMA Sub-System Clock wake-up (asynchronous)
+    //.mclk_dma_enable   (mclk_dma_enable),    // DMA Sub-System Clock enable
+    //.mclk_dma_wkup     (mclk_dma_wkup),      // DMA Sub-System Clock wake-up (asynchronous)
     .mclk_enable       (mclk_enable),        // Main System Clock enable
     .mclk_wkup         (mclk_wkup),          // Main System Clock wake-up (asynchronous)
     .oscoff            (oscoff),             // Turns off LFXT1 clock input
@@ -315,8 +317,8 @@ omsp_clock_module clock_module_0 (
     .wdt_reset         (wdt_reset)           // Watchdog-timer reset
 );
 
-assign mclk = dma_mclk; 
-
+assign dma_mclk = mclk;
+assign cpu_mclk = mclk;
 
 //=============================================================================
 // 3)  FRONTEND (<=> FETCH & DECODE)
