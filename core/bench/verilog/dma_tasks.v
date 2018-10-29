@@ -232,6 +232,7 @@ reg [15:0] dma_dmem_reference[0:127];
 reg	   	   dma_verif_on;
 reg	       dma_verif_verbose;
 
+reg sergio_dbg_here = 1'b0;
 initial
   begin
      // Initialize
@@ -250,7 +251,6 @@ initial
      dma_cnt_rd        = 0;
      dma_wr_error      = 0;
      dma_rd_error      = 0;
-     dma_priority	   = 0; // (sergio, correct)
      #20;
      dma_rand_wait     = $urandom;
      
@@ -266,9 +266,11 @@ initial
        end
 
      // Wait for reset release
-     repeat(1) @(posedge dco_clk);
+     repeat(4) @(posedge dco_clk); //(Sergio) puc_rst takes more time to be driven, so if you do not wait longer than usual the simulation will se the puc_rst as down instead of up FOR JUST ONE CLOCK CYCLE; i.e. when puc_rst goes from 'X' to '1'. It's enough to set dma_en = 1 and then trigger an unwanted mem access!
+//In fact, if you notice, the write / read error always occurs at 176ns which is the first avaiable rd/wr cycle.
      @(negedge puc_rst);
-
+     	 
+	 sergio_dbg_here = 1'b1;
      // Perform random read/write 16b memory accesses
      if (dma_verif_on && (`PMEM_SIZE>=4092) && (`DMEM_SIZE>=1024))
        begin

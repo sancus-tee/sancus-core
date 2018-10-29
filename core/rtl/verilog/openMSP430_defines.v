@@ -304,6 +304,20 @@
 
 
 //===============================================================
+// ASIC CLOCKING
+//===============================================================
+
+//-------------------------------------------------------
+// When uncommented, this define will enable the ASIC
+// architectural clock gating as well as the advanced low
+// power modes support (most common).
+// Comment this out in order to get FPGA-like clocking.
+//-------------------------------------------------------
+//`define ASIC_CLOCKING
+
+
+`ifdef ASIC_CLOCKING
+//===============================================================
 // LFXT CLOCK DOMAIN
 //===============================================================
 
@@ -327,7 +341,7 @@
 // DCO_CLK and LFXT_CLK with the BCSCTL2.SELMx register.
 // When commented, DCO_CLK is selected.
 //-------------------------------------------------------
-`define MCLK_MUX
+//`define MCLK_MUX
 
 //-------------------------------------------------------
 // SMCLK: Clock Mux
@@ -337,7 +351,7 @@
 // DCO_CLK and LFXT_CLK with the BCSCTL2.SELS register.
 // When commented, DCO_CLK is selected.
 //-------------------------------------------------------
-`define SMCLK_MUX
+//`define SMCLK_MUX
 
 //-------------------------------------------------------
 // WATCHDOG: Clock Mux
@@ -349,7 +363,7 @@
 // WATCHDOG_NOMUX_ACLK define is uncommented, SMCLK is
 // selected otherwise.
 //-------------------------------------------------------
-`define WATCHDOG_MUX
+//`define WATCHDOG_MUX
 //`define WATCHDOG_NOMUX_ACLK
 
 
@@ -427,6 +441,7 @@
 
 
 
+`endif
 `endif
 
 //==========================================================================//
@@ -759,6 +774,11 @@
 
 // Basic clock module: BCSCTL1 Control Register
 `define DIVAx       5:4
+`define DMA_CPUOFF  0
+`define DMA_OSCOFF  1
+`define DMA_SCG0    2
+`define DMA_SCG1    3
+
 
 // Basic clock module: BCSCTL2 Control Register
 `define SELMx       7

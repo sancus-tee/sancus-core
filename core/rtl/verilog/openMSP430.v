@@ -91,6 +91,7 @@ module  openMSP430 (
     dma_en,                                  // Direct Memory Access enable (high active)
     dma_priority,                            // Direct Memory Access priority (0:low / 1:high)
     dma_we,                                  // Direct Memory Access write byte enable (high active)
+    dma_wkup,                                // ASIC ONLY: DMA Sub-System Wake-up (asynchronous and non-glitchy)
     nmi,                           // Non-maskable interrupt (asynchronous)
     per_dout,                      // Peripheral data output
     pmem_dout,                     // Program Memory data output
@@ -141,14 +142,15 @@ input                dco_clk;      // Fast oscillator (fast clock)
 input         [15:0] dmem_dout;    // Data Memory data output
 input  	      [13:0] irq;          // Maskable interrupts
 input                lfxt_clk;     // Low frequency oscillator (typ 32kHz)
-input  	             nmi;          // Non-maskable interrupt (asynchronous and non-glitchy)
-input         [15:0] per_dout;     // Peripheral data output
-input         [15:0] pmem_dout;    // Program Memory data output
 input         [15:1] dma_addr;               // Direct Memory Access address
 input         [15:0] dma_din;                // Direct Memory Access data input
 input                dma_en;                 // Direct Memory Access enable (high active)
 input                dma_priority;           // Direct Memory Access priority (0:low / 1:high)
 input          [1:0] dma_we;                 // Direct Memory Access write byte enable (high active)
+input                dma_wkup;               // ASIC ONLY: DMA Wake-up (asynchronous and non-glitchy)
+input  	             nmi;          // Non-maskable interrupt (asynchronous and non-glitchy)
+input         [15:0] per_dout;     // Peripheral data output
+input         [15:0] pmem_dout;    // Program Memory data output
 
 input                reset_n;      // Reset Pin (active low, asynchronous and non-glitchy)
 input                scan_enable;  // ASIC ONLY: Scan enable (active during scan shifting)
@@ -184,6 +186,10 @@ wire                scg0;
 wire                scg1;
 wire                por;
 wire                gie;
+wire                cpu_mclk;
+wire                dma_mclk;
+wire                mclk_dma_enable;
+wire                mclk_dma_wkup;
 wire                mclk_enable;
 wire                mclk_wkup;
 wire         [31:0] cpu_id;
@@ -266,47 +272,52 @@ assign spm_violation = sm_irq;
 omsp_clock_module clock_module_0 (
 
 // OUTPUTs
-    .aclk         (aclk),          // ACLK
-    .aclk_en      (aclk_en),       // ACLK enablex
-    .cpu_en_s     (cpu_en_s),      // Enable CPU code execution (synchronous)
-    .dbg_clk      (dbg_clk),       // Debug unit clock
-    .dbg_en_s     (dbg_en_s),      // Debug interface enable (synchronous)
-    .dbg_rst      (dbg_rst),       // Debug unit reset
-    .dco_enable   (dco_enable),    // Fast oscillator enable
-    .dco_wkup     (dco_wkup),      // Fast oscillator wake-up (asynchronous)
-    .lfxt_enable  (lfxt_enable),   // Low frequency oscillator enable
-    .lfxt_wkup    (lfxt_wkup),     // Low frequency oscillator wake-up (asynchronous)
-    .mclk         (mclk),          // Main system clock
-    .per_dout     (per_dout_clk),  // Peripheral data output
-    .por          (por),           // Power-on reset
-    .puc_pnd_set  (puc_pnd_set),   // PUC pending set for the serial debug interface
-    .puc_rst      (puc_rst),       // Main system reset
-    .smclk        (smclk),         // SMCLK
-    .smclk_en     (smclk_en),      // SMCLK enable
-	     
+    .aclk              (aclk),               // ACLK
+    .aclk_en           (aclk_en),            // ACLK enablex
+    .cpu_en_s          (cpu_en_s),           // Enable CPU code execution (synchronous)
+    .cpu_mclk          (cpu_mclk),           // Main system CPU only clock
+    .dma_mclk          (dma_mclk),           // Main system DMA and/or CPU clock
+    .dbg_clk           (dbg_clk),            // Debug unit clock
+    .dbg_en_s          (dbg_en_s),           // Debug interface enable (synchronous)
+    .dbg_rst           (dbg_rst),            // Debug unit reset
+    .dco_enable        (dco_enable),         // Fast oscillator enable
+    .dco_wkup          (dco_wkup),           // Fast oscillator wake-up (asynchronous)
+    .lfxt_enable       (lfxt_enable),        // Low frequency oscillator enable
+    .lfxt_wkup         (lfxt_wkup),          // Low frequency oscillator wake-up (asynchronous)
+    .per_dout          (per_dout_clk),       // Peripheral data output
+    .por               (por),                // Power-on reset
+    .puc_pnd_set       (puc_pnd_set),        // PUC pending set for the serial debug interface
+    .puc_rst           (puc_rst),            // Main system reset
+    .smclk             (smclk),              // SMCLK
+    .smclk_en          (smclk_en),           // SMCLK enable
+
 // INPUTs
-    .cpu_en       (cpu_en),        // Enable CPU code execution (asynchronous)
-    .cpuoff       (cpuoff),        // Turns off the CPU
-    .dbg_cpu_reset(dbg_cpu_reset), // Reset CPU from debug interface
-    .dbg_en       (dbg_en),        // Debug interface enable (asynchronous)
-    .dco_clk      (dco_clk),       // Fast oscillator (fast clock)
-    .lfxt_clk     (lfxt_clk),      // Low frequency oscillator (typ 32kHz)
-    .mclk_enable  (mclk_enable),   // Main System Clock enable
-    .mclk_wkup    (mclk_wkup),     // Main System Clock wake-up (asynchronous)
-    .oscoff       (oscoff),        // Turns off LFXT1 clock input
-    .per_addr     (per_addr),      // Peripheral address
-    .per_din      (per_din),       // Peripheral data input
-    .per_en       (per_en),        // Peripheral enable (high active)
-    .per_we       (per_we),        // Peripheral write enable (high active)
-    .reset_n      (do_reset_n),    // Reset Pin (low active, asynchronous)
-    .scan_enable  (scan_enable),   // Scan enable (active during scan shifting)
-    .scan_mode    (scan_mode),     // Scan mode
-    .scg0         (scg0),          // System clock generator 1. Turns off the DCO
-    .scg1         (scg1),          // System clock generator 1. Turns off the SMCLK
-    .wdt_reset    (wdt_reset)      // Watchdog-timer reset
+    .cpu_en            (cpu_en),             // Enable CPU code execution (asynchronous)
+    .cpuoff            (cpuoff),             // Turns off the CPU
+    .dbg_cpu_reset     (dbg_cpu_reset),      // Reset CPU from debug interface
+    .dbg_en            (dbg_en),             // Debug interface enable (asynchronous)
+    .dco_clk           (dco_clk),            // Fast oscillator (fast clock)
+    .lfxt_clk          (lfxt_clk),           // Low frequency oscillator (typ 32kHz)
+    .mclk_dma_enable   (mclk_dma_enable),    // DMA Sub-System Clock enable
+    .mclk_dma_wkup     (mclk_dma_wkup),      // DMA Sub-System Clock wake-up (asynchronous)
+    .mclk_enable       (mclk_enable),        // Main System Clock enable
+    .mclk_wkup         (mclk_wkup),          // Main System Clock wake-up (asynchronous)
+    .oscoff            (oscoff),             // Turns off LFXT1 clock input
+    .per_addr          (per_addr),           // Peripheral address
+    .per_din           (per_din),            // Peripheral data input
+    .per_en            (per_en),             // Peripheral enable (high active)
+    .per_we            (per_we),             // Peripheral write enable (high active)
+    .reset_n           (reset_n),            // Reset Pin (low active, asynchronous)
+    .scan_enable       (scan_enable),        // Scan enable (active during scan shifting)
+    .scan_mode         (scan_mode),          // Scan mode
+    .scg0              (scg0),               // System clock generator 1. Turns off the DCO
+    .scg1              (scg1),               // System clock generator 1. Turns off the SMCLK
+    .wdt_reset         (wdt_reset)           // Watchdog-timer reset
 );
 
-   
+assign mclk = dma_mclk; 
+
+
 //=============================================================================
 // 3)  FRONTEND (<=> FETCH & DECODE)
 //=============================================================================
@@ -334,6 +345,8 @@ omsp_frontend frontend_0 (
     .irq_acc      (irq_acc),       // Interrupt request accepted
     .mab          (fe_mab),        // Frontend Memory address bus
     .mb_en        (fe_mb_en),      // Frontend Memory bus enable
+    .mclk_dma_enable   (mclk_dma_enable),// DMA Sub-System Clock enable
+    .mclk_dma_wkup     (mclk_dma_wkup),  // DMA Sub-System Clock wake-up (asynchronous)
     .mclk_enable  (mclk_enable),   // Main System Clock enable
     .mclk_wkup    (mclk_wkup),     // Main System Clock wake-up (asynchronous)
     .nmi_acc      (nmi_acc),       // Non-Maskable interrupt request accepted
@@ -351,10 +364,12 @@ omsp_frontend frontend_0 (
     .cpuoff       (cpuoff),        // Turns off the CPU
     .cpu_halt_cmd (cpu_halt_cmd),  // Halt CPU command
     .dbg_reg_sel  (dbg_mem_addr[3:0]), // Debug selected register for rd/wr access
+    .dma_en       (dma_en),        // Direct Memory Access enable (high active)
+    .dma_wkup     (dma_wkup),      // DMA Sub-System Wake-up (asynchronous and non-glitchy)
     .fe_pmem_wait (fe_pmem_wait),  // Frontend wait for Instruction fetch
     .gie          (gie),           // General interrupt enable
     .irq          (irq),           // Maskable interrupts
-    .mclk         (mclk),          // Main system clock
+    .mclk         (cpu_mclk),      // Main system clock
     .mdb_in       (fe_mdb_in),     // Frontend Memory data bus input
     .nmi_pnd      (nmi_pnd),       // Non-maskable interrupt pending
     .nmi_wkup     (nmi_wkup),      // NMI Wakeup
@@ -414,7 +429,7 @@ omsp_execution_unit execution_unit_0 (
     .inst_so      (inst_so),       // Decoded Inst: Single-operand arithmetic
     .inst_src     (inst_src),      // Decoded Inst: source (one hot)
     .inst_type    (inst_type),     // Decoded Instruction type
-    .mclk         (mclk),          // Main system clock
+    .mclk         (cpu_mclk),      // Main system clock
     .mdb_in       (eu_mdb_in),     // Memory data bus input
     .pc           (pc),            // Program counter
     .pc_nxt       (pc_nxt),        // Next PC value (for CALL & IRQ)
@@ -470,7 +485,7 @@ omsp_mem_backbone mem_backbone_0 (
     .eu_mdb_out   (eu_mdb_out),    // Execution Unit Memory data bus output
     .fe_mab       (fe_mab[15:1]),  // Frontend Memory address bus
     .fe_mb_en     (fe_mb_en),      // Frontend Memory bus enable
-    .mclk         (mclk),          // Main system clock
+    .mclk         (dma_mclk),      // Main system clock
     .dma_addr     (dma_addr),      // Direct Memory Access address
     .dma_din      (dma_din),       // Direct Memory Access data input
     .dma_en       (dma_en),        // Direct Memory Access enable (high active)
@@ -499,7 +514,7 @@ omsp_sfr sfr_0 (
     .wdtifg_sw_set(wdtifg_sw_set), // Watchdog-timer interrupt flag software set
 			     
 // INPUTs
-    .mclk         (mclk),          // Main system clock
+    .mclk         (dma_mclk),      // Main system clock
     .nmi          (nmi),           // Non-maskable interrupt (asynchronous)
     .nmi_acc      (nmi_acc),       // Non-Maskable interrupt request accepted
     .per_addr     (per_addr),      // Peripheral address
@@ -531,7 +546,7 @@ omsp_watchdog watchdog_0 (
     .aclk           (aclk),          // ACLK
     .aclk_en        (aclk_en),       // ACLK enable
     .dbg_freeze     (dbg_freeze),    // Freeze Watchdog counter
-    .mclk           (mclk),          // Main system clock
+    .mclk           (dma_mclk),      // Main system clock
     .per_addr       (per_addr),      // Peripheral address
     .per_din        (per_din),       // Peripheral data input
     .per_en         (per_en),        // Peripheral enable (high active)
@@ -567,7 +582,7 @@ omsp_multiplier multiplier_0 (
     .per_dout     (per_dout_mpy),  // Peripheral data output
 			     
 // INPUTs
-    .mclk         (mclk),          // Main system clock
+    .mclk         (dma_mclk),      // Main system clock
     .per_addr     (per_addr),      // Peripheral address
     .per_din      (per_din),       // Peripheral data input
     .per_en       (per_en),        // Peripheral enable (high active)
