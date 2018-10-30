@@ -1,0 +1,120 @@
+[*]
+[*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
+[*] Fri Oct 12 13:12:03 2018
+[*]
+[dumpfile] "/home/sergio/dma/tb/dma_controller_tb.vcd"
+[dumpfile_mtime] "Fri Oct 12 11:59:14 2018"
+[dumpfile_size] 67357
+[savefile] "/home/sergio/dma/tb/fifo_synch_reg_err.gtkw"
+[timestart] 158800
+[size] 1311 704
+[pos] 0 0
+*-12.636732 -1 17000 23000 163000 165000 167000 179000 169000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] dma_controller_tb.
+[treeopen] dma_controller_tb.dut.
+[treeopen] dma_controller_tb.dut.fifo_mem.
+[treeopen] dma_controller_tb.dut.fifo_mem.genregs[0].
+[treeopen] dma_controller_tb.dut.fifo_mem.genregs[0].fifo.
+[treeopen] dma_controller_tb.dut.fifo_mem.genregs[1].
+[treeopen] dma_controller_tb.dut.fifo_mem.genregs[2].
+[treeopen] dma_controller_tb.dut.fifo_mem.genregs[3].
+[treeopen] dma_controller_tb.dut.fifo_mem.genregs[4].
+[treeopen] dma_controller_tb.dut.fifo_mem.genregs[5].
+[treeopen] dma_controller_tb.dut.fifo_mem.genregs[6].
+[sst_width] 233
+[signals_width] 182
+[sst_expanded] 1
+[sst_vpaned_height] 175
+@28
+[color] 2
+dma_controller_tb.dut.clk
+@200
+-DMA-MSP Protocol
+@820
+[color] 4
++{dma_controller_tb.dut.DMA_state[120:0]} dma_controller_tb.dut.state[120:0]
+@22
+[color] 4
+dma_controller_tb.dut.dma_addr[4:0]
+[color] 4
++{dma_controller_tb.dut.DIN_to_MSP[7:0]} dma_controller_tb.dut.dma_out[7:0]
+@28
+[color] 4
+dma_controller_tb.dut.dma_en
+@c00128
+[color] 4
+#{CONTROL} dma_controller_tb.dut.dma_priority (1)dma_controller_tb.dut.dma_we[1:0] (0)dma_controller_tb.dut.dma_we[1:0]
+@c00028
+dma_controller_tb.dut.dma_we[1:0]
+@28
+(0)dma_controller_tb.dut.dma_we[1:0]
+(1)dma_controller_tb.dut.dma_we[1:0]
+@1401200
+-group_end
+@28
+dma_controller_tb.dut.dma_priority
+@1401200
+-group_end
+@28
+dma_controller_tb.msp_dut.dma_ready
+@200
+-MSP
+@820
+[color] 3
+dma_controller_tb.msp_dut.received_data[71:0]
+@200
+-FIFO
+@22
+dma_controller_tb.dut.fifo_mem.fifo_out[7:0]
+@28
+dma_controller_tb.dut.fifo_mem.fifo_enable
+@c00022
+dma_controller_tb.dut.fifo_mem.fifo_addr[3:0]
+@28
+(0)dma_controller_tb.dut.fifo_mem.fifo_addr[3:0]
+(1)dma_controller_tb.dut.fifo_mem.fifo_addr[3:0]
+(2)dma_controller_tb.dut.fifo_mem.fifo_addr[3:0]
+(3)dma_controller_tb.dut.fifo_mem.fifo_addr[3:0]
+@1401200
+-group_end
+@200
+-
+@28
+dma_controller_tb.dut.fifo_mem.increment_rd
+@c00022
+dma_controller_tb.dut.fifo_mem.rd_addr[3:0]
+@28
+(0)dma_controller_tb.dut.fifo_mem.rd_addr[3:0]
+(1)dma_controller_tb.dut.fifo_mem.rd_addr[3:0]
+(2)dma_controller_tb.dut.fifo_mem.rd_addr[3:0]
+(3)dma_controller_tb.dut.fifo_mem.rd_addr[3:0]
+@1401200
+-group_end
+@22
+dma_controller_tb.dut.fifo_mem.fifo_old_addr[3:0]
+@28
+dma_controller_tb.dut.fifo_mem.fifo_old_add_flag
+@22
++{dma_controller_tb.dut.fifo_mem.genregs[0].fifo.register0} dma_controller_tb.dut.fifo_mem.genregs[0].fifo.register[8:0]
++{dma_controller_tb.dut.fifo_mem.genregs[1].fifo.register1} dma_controller_tb.dut.fifo_mem.genregs[1].fifo.register[8:0]
++{dma_controller_tb.dut.fifo_mem.genregs[2].fifo.register2} dma_controller_tb.dut.fifo_mem.genregs[2].fifo.register[8:0]
++{dma_controller_tb.dut.fifo_mem.genregs[3].fifo.register3} dma_controller_tb.dut.fifo_mem.genregs[3].fifo.register[8:0]
+@c00022
++{dma_controller_tb.dut.fifo_mem.genregs[4].fifo.register4} dma_controller_tb.dut.fifo_mem.genregs[4].fifo.register[8:0]
+@28
+(0)dma_controller_tb.dut.fifo_mem.genregs[4].fifo.register[8:0]
+(1)dma_controller_tb.dut.fifo_mem.genregs[4].fifo.register[8:0]
+(2)dma_controller_tb.dut.fifo_mem.genregs[4].fifo.register[8:0]
+(3)dma_controller_tb.dut.fifo_mem.genregs[4].fifo.register[8:0]
+(4)dma_controller_tb.dut.fifo_mem.genregs[4].fifo.register[8:0]
+(5)dma_controller_tb.dut.fifo_mem.genregs[4].fifo.register[8:0]
+(6)dma_controller_tb.dut.fifo_mem.genregs[4].fifo.register[8:0]
+(7)dma_controller_tb.dut.fifo_mem.genregs[4].fifo.register[8:0]
+(8)dma_controller_tb.dut.fifo_mem.genregs[4].fifo.register[8:0]
+@1401200
+-group_end
+@22
++{dma_controller_tb.dut.fifo_mem.genregs[5].fifo.register5} dma_controller_tb.dut.fifo_mem.genregs[5].fifo.register[8:0]
++{dma_controller_tb.dut.fifo_mem.genregs[6].fifo.register6} dma_controller_tb.dut.fifo_mem.genregs[6].fifo.register[8:0]
+[pattern_trace] 1
+[pattern_trace] 0
