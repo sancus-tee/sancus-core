@@ -3,7 +3,7 @@ module dma_controller (
 	reset,
 	// Inputs from Device
 	num_words,
-	dev_addr,
+	start_addr,
 	rd_wr,
 	rqst,
 	dev_ack,
@@ -40,7 +40,7 @@ input clk, reset;
 input [FIFO_DEPTH:0] num_words;	//I should be able to write at max. as many words as the fifo can handle (=2^FIFO_DEPTH words),
 								//which you write onto FIFO_DEPTH bits.
 								//Or num_words can bigger and let FIFO_FULL FSM-branch handle the situation.It's up to you.
-input [ADD_LEN-1:0] dev_addr;
+input [ADD_LEN-1:0] start_addr;
 input rd_wr;
 input rqst;
 input dev_ack;
@@ -101,37 +101,8 @@ reg drive_dma_addr; //0: dma_addr = 'hz || 1: dma_addr
 
 
 //FSM States Definition
-`ifdef SIM
-	reg [15*8:0] state, next_state; //states stored in ASCII 
-`else
-	reg [4:0]state, next_state; //just codifies the states
-`endif
+reg [4:0]state, next_state; // codifies the states
 
-`ifdef SIM
-localparam 	IDLE  = "IDLE",
-			GET_REGS  = "GET_REGS",
-			LOAD_DMA_ADD  = "LOAD_DMA_ADD",
-			READ_MEM  = "READ_MEM",
-			ERROR  = "ERROR",
-			SEND_TO_DEV0  = "SEND_TO_DEV0",
-			WAIT_READ  = "WAIT_READ",
-			SEND_TO_DEV1  = "SEND_TO_DEV1",
-			OLD_ADDR_RD = "OLD_ADDR_RD",
-			NOP  = "NOP",
-			END_READ  = "END_READ",
-			// Write 
-			READ_DEV0  = "READ_DEV0",
-			READ_DEV1  = "READ_DEV1",
-			WAIT_WRITE  = "WAIT_WRITE",
-			SEND_TO_MEM0  = "SEND_TO_MEM0",
-			SEND_TO_MEM1  = "SEND_TO_MEM1",
-			OLD_ADDR_WR  = "OLD_ADDR_WR",
-			END_WRITE  = "END_WRITE",
-			// Fifo full 
-			FIFO_FULL_READ  = "FIFO_FULL_READ",
-			EMPTY_FIFO_READ  = "EMPTY_FIFO_READ",
-			RESET  = "RESET";
-`else
 localparam 	IDLE  = 0,
 			GET_REGS  = 1,
 			// Read
@@ -156,7 +127,6 @@ localparam 	IDLE  = 0,
 			FIFO_FULL_READ  = 18,
 			EMPTY_FIFO_READ  = 19,
 			RESET  = 20;
-`endif
 
 //--------------------------------//
 //--------------------------------//
@@ -194,7 +164,7 @@ register #(.REG_DEPTH(FIFO_DEPTH+1)) word0 (
 register #(.REG_DEPTH(ADD_LEN)) addr0 (
 				.clk(clk),
 				.reg_en(addr0_reg_en),
-				.data_in(dev_addr),
+				.data_in(start_addr),
 				.rst(addr0_rst),
 				.data_out(start_address));
 				
@@ -341,13 +311,15 @@ always @(state) begin
 		begin
 			addr0_reg_en <= 1'b1;
 			words_reg_en <= 1'b1;
-			dma_ack <= 1'b1;// signal "rqst aquired" to DEV
+			`ifdef SIM 
+			dma_ack <= 1'b1; // signal "rqst aquired" to DEV
+			`endif
 		end
 		//Read 
 		LOAD_DMA_ADD :  
 		begin
 			fifo_wr_rd <= 1'b1;
-			dma_en <= 1'b1; //impossible to generate dma_ready without dma_en ( line  #171 di memory_backbone)
+			dma_en <= 1'b1; // needed to generate dma_ready (#171 in memory_backbone)
 			drive_dma_addr <= 1'b1;
 		end
 		READ_MEM : 
@@ -375,7 +347,9 @@ always @(state) begin
 		SEND_TO_DEV0 : 
 		begin
 			count_rst <= 1'b1;
-			dma_ack <= 1'b1;
+			`ifdef SIM 
+			dma_ack <= 1'b1; // signal "rqst aquired" to DEV
+			`endif
 		end
 		WAIT_READ :
 		begin
@@ -412,7 +386,6 @@ always @(state) begin
 		WAIT_WRITE :
 		begin
 			msp_or_dev <= 1'b1;
-			//dma_ack <= 1'b1;
 			fifo_wr_rd <= 1'b1;
 		end
 		SEND_TO_MEM0 :
@@ -439,7 +412,7 @@ always @(state) begin
 			msp_or_dev <= 1'b1;
 			dma_we <= 2'b11;
 			drive_dma_addr <= 1'b1;
-			fifo_en <= 1'b1; // PROVA
+			fifo_en <= 1'b1;
 			fifo_old_add_flag <= 1'b1;
 		end
 		END_WRITE : 

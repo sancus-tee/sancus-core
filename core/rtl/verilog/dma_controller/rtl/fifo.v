@@ -54,9 +54,8 @@ fifo_reg #(.REG_DEPTH(DATA)) fifo (
 				.data_in(fifo_in),
 				.rst(rst),
 				.data_out(fifo_out),
-				.flag(flag[gi]),
-				`ifdef SIM .register(fifo_regs[gi]) `endif
-				);
+				`ifdef SIM .register(fifo_regs[gi]), `endif
+				.flag(flag[gi]));
 end 
 endgenerate	
 

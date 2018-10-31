@@ -112,15 +112,16 @@ endfunction
 // 2) CONNECTIONS TO MSP430 CORE INTERNALS
 //=============================================================================
 
-wire  [2:0] i_state_bin = tb_openMSP430.dut.frontend_0.i_state;
-wire  [4:0] e_state_bin = tb_openMSP430.dut.frontend_0.e_state;
+wire  [2:0] i_state_bin 		= tb_openMSP430.dut.frontend_0.i_state;
+wire  [4:0] e_state_bin			= tb_openMSP430.dut.frontend_0.e_state;
+wire        decode      		= tb_openMSP430.dut.frontend_0.decode;
+wire [15:0] ir          		= tb_openMSP430.dut.frontend_0.ir;
+wire        irq_detect  		= tb_openMSP430.dut.frontend_0.irq_detect;
+wire  [3:0] irq_num     		= tb_openMSP430.dut.frontend_0.irq_num;
+wire [15:0] pc          		= tb_openMSP430.dut.frontend_0.pc;
 
-wire        decode      = tb_openMSP430.dut.frontend_0.decode;
-wire [15:0] ir          = tb_openMSP430.dut.frontend_0.ir;
-wire        irq_detect  = tb_openMSP430.dut.frontend_0.irq_detect;
-wire  [3:0] irq_num     = tb_openMSP430.dut.frontend_0.irq_num;
-wire [15:0] pc          = tb_openMSP430.dut.frontend_0.pc;
-
+wire  [4:0] dma_device_state	= tb_openMSP430.dma_dev0.state;//sergio
+wire  [4:0] dma_cntrl_state		= tb_openMSP430.dma_cntrl.state;
    
 //=============================================================================
 // 3) GENERATE DEBUG SIGNALS
@@ -466,7 +467,61 @@ always @(posedge mclk or posedge puc_rst)
   if (puc_rst)     inst_pc  <=  16'h0000;
   else if (decode) inst_pc  <=  pc;
   
+// DMA controller states (sergio)
+//===============================
 
+reg [15*8:0] dma_dev_state; //states stored in ASCII 
+
+always @(dma_device_state)
+    case(dma_device_state)
+      	0	 : dma_dev_state   = "RESET",
+		1	 : dma_dev_state   = "IDLE",
+		2	 : dma_dev_state   = "GET_ADDRESS",
+		3	 : dma_dev_state   = "GENERATE_RQST",
+		4	 : dma_dev_state   = "WAIT_RD_DATA",
+		5	 : dma_dev_state   = "GET_RD_DATA",
+		7	 : dma_dev_state   = "ERROR_RD",
+		6	 : dma_dev_state   = "END_READ",
+		8	 : dma_dev_state   = "WAIT_RQ_RD",
+		9	 : dma_dev_state   = "WAIT_RD",
+		10	 : dma_dev_state   = "TB_WAIT_WR",
+		11	 : dma_dev_state   = "START_SENDING",
+		12	 : dma_dev_state   = "SEND_DATA",
+		16	 : dma_dev_state   = "END_WRITE",
+		15	 : dma_dev_state   = "DATA_WRITTEN",
+		13	 : dma_dev_state   = "WAIT_RQ_WR",
+		14	 : dma_dev_state   = "WAIT_WR",
+		17	 : dma_dev_state   = "DMA_WRITING_MEM",
+		18	 : dma_dev_state   = "START_RECEIVING";
+     default : dma_dev_state  = "XXXXX";
+    endcase
+    
+always @(dma_cntrl_state)
+	case(dma_cntrl_state)
+		0	: dma_cntrl_state   = "IDLE",
+		1	: dma_cntrl_state   = "GET_REGS",
+		2	: dma_cntrl_state   = "LOAD_DMA_ADD",
+		3	: dma_cntrl_state   = "READ_MEM",
+		4	: dma_cntrl_state   = "ERROR",
+		5	: dma_cntrl_state   = "SEND_TO_DEV0",
+		6	: dma_cntrl_state   = "WAIT_READ",
+		7	: dma_cntrl_state   = "SEND_TO_DEV1",
+		8	: dma_cntrl_state   = "OLD_ADDR_RD",
+		9	: dma_cntrl_state   = "NOP",
+		10	: dma_cntrl_state   = "END_READ",
+		11	: dma_cntrl_state   = "READ_DEV0",
+		12	: dma_cntrl_state   = "READ_DEV1",
+		13	: dma_cntrl_state   = "WAIT_WRITE",
+		14	: dma_cntrl_state   = "SEND_TO_MEM0",
+		15	: dma_cntrl_state   = "SEND_TO_MEM1",
+		16	: dma_cntrl_state   = "OLD_ADDR_WR",
+		17	: dma_cntrl_state   = "END_WRITE",
+		18	: dma_cntrl_state   = "FIFO_FULL_READ",
+		19	: dma_cntrl_state   = "EMPTY_FIFO_READ",
+		20	: dma_cntrl_state   = "RESET";      	
+	default : dma_cntrl_state   = "XXXXX";
+	endcase
+	 		
 // Registers
 //===============================
 wire [15:0]	r1	= tb_openMSP430.dut.execution_unit_0.register_file_0.r1[15:0];

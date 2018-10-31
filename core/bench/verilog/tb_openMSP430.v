@@ -43,12 +43,18 @@
 `include "openMSP430_defines.v"
 `endif
 
+//=====================================
+//		SIMULATION OPTIONS
+//=====================================
+
 `define __SANCUS_SIM
 
 // Include DMEM and PMEM memory locations that are written by dma_task
 //`define SHOW_PMEM_WAVES  
 //`define SHOW_DMEM_WAVES
   
+// Test the dma_controller (1) or use the dma_task.v (0)
+`define DMA_CONTR_TEST
 
 module  tb_openMSP430;
 
@@ -247,8 +253,10 @@ integer 		   index_mem_dbg;
 `endif
 
 // Direct Memory Access interface tasks
+`ifndef DMA_CONTR_TEST
 `include "dma_tasks.v"
-   
+`endif
+
 //
 // Initialize ROM
 //------------------------------
@@ -314,7 +322,9 @@ initial
      dma_priority     = 1'b0;
      dma_we           = 2'b00;
      dma_wkup         = 1'b0;
+     `ifdef RUNNING_DMA_TASK
      dma_tfx_cancel   = 1'b0;
+     `endif
      cpu_en           = 1'b1;
      dbg_en           = 1'b0;
      dbg_uart_rxd_sel = 1'b0;
@@ -401,9 +411,9 @@ openMSP430 dut (
     .lfxt_enable  (lfxt_enable),       // ASIC ONLY: Low frequency oscillator enable
     .lfxt_wkup    (lfxt_wkup),         // ASIC ONLY: Low frequency oscillator wake-up (asynchronous)
     .mclk         (mclk),              // Main system clock
-    .dma_dout          (dma_dout),             // Direct Memory Access data output
-    .dma_ready         (dma_ready),            // Direct Memory Access is complete
-    .dma_resp          (dma_resp),             // Direct Memory Access response (0:Okay / 1:Error)
+    .dma_dout     (dma_dout),             // Direct Memory Access data output
+    .dma_ready    (dma_ready),            // Direct Memory Access is complete
+    .dma_resp     (dma_resp),             // Direct Memory Access response (0:Okay / 1:Error)
     .per_addr     (per_addr),          // Peripheral address
     .per_din      (per_din),           // Peripheral data input
     .per_we       (per_we),            // Peripheral write enable (high active)
@@ -425,20 +435,82 @@ openMSP430 dut (
     .dmem_dout    (dmem_dout),         // Data Memory data output
     .irq          (irq_in),            // Maskable interrupts
     .lfxt_clk     (lfxt_clk),          // Low frequency oscillator (typ 32kHz)
-    .dma_addr          (dma_addr),             // Direct Memory Access address
-    .dma_din           (dma_din),              // Direct Memory Access data input
-    .dma_en            (dma_en),               // Direct Memory Access enable (high active)
-    .dma_priority      (dma_priority),         // Direct Memory Access priority (0:low / 1:high)
-    .dma_we            (dma_we),               // Direct Memory Access write byte enable (high active)
-    .dma_wkup          (dma_wkup),             // ASIC ONLY: DMA Sub-System Wake-up (asynchronous and non-glitchy)
+    .dma_addr     (dma_addr),             // Direct Memory Access address
+    .dma_din      (dma_din),              // Direct Memory Access data input
+    .dma_en       (dma_en),               // Direct Memory Access enable (high active)
+    .dma_priority (dma_priority),         // Direct Memory Access priority (0:low / 1:high)
+    .dma_we       (dma_we),               // Direct Memory Access write byte enable (high active)
+    .dma_wkup     (dma_wkup),             // ASIC ONLY: DMA Sub-System Wake-up (asynchronous and non-glitchy)
     .nmi          (nmi),               // Non-maskable interrupt (asynchronous)
     .per_dout     (per_dout),          // Peripheral data output
     .pmem_dout    (pmem_dout),         // Program Memory data output
     .reset_n      (reset_n),           // Reset Pin (low active, asynchronous)
     .scan_enable  (scan_enable),       // ASIC ONLY: Scan enable (active during scan shifting)
-    .scan_mode    (scan_mode),         // ASIC ONLY: Scan mode
+    .scan_mode	  (scan_mode),         // ASIC ONLY: Scan mode
     .wkup         (|wkup_in)           // ASIC ONLY: System Wake-up (asynchronous)
 );
+
+//
+// DMA Controller
+//----------------------------------
+
+dma_controller #(
+				 .ADD_LEN(??),
+				 .DATA_LEN(??)
+				// FIFO_DEPTH(), Advanced parameters, for now 
+				// FIFO_DIV_FACTOR() keept as default
+	) dma_0 (
+		
+	.clk		(mclk),
+	reset		(puc_rst),
+	// Inputs from Device
+	num_words	(),
+	start_addr 	(),
+	rd_wr		(),
+	rqst		(),
+	dev_ack		(),
+	dev_in		(),
+	// Outputs to Device
+	dma_ack		(),
+	dev_out		(),
+	end_flag	(),
+	
+	// Inputs from OpenMSP430
+	.dma_in			(dma_din),
+	.dma_ready		(dma_ready), 
+	.dma_resp		(dma_resp),
+	// Outputs to OpenMSP430
+	.dma_addr		(dma_addr),
+	.dma_out		(dma_out),
+	.dma_en			(dma_en),
+	.dma_priority	(dma_priority),
+	.dma_we			(dma_we));
+	
+//
+// Simple DMA Device
+//----------------------------------
+simple_dma_device simple_device (
+	// OUTPUTs to uP 
+    per_dout		(),			// Peripheral data output
+	// OUTPUTs to DMA
+	dev_ack			(),			// Ackowledge for the 2-phase handshake
+	dev_out			(),			// Output to DMA in write op.
+	dma_num_words	(),		// Number of words to be read
+	dma_rd_wr		(),			// Read or write request
+	dma_rqst		(),			// DMA op. request
+	dma_start_address (),  // Starting address for DMA op.
+	// INPUTs from uP
+    clk				(),				// Main system clock
+    per_addr		(),			// Peripheral address
+    per_din			(), 			// Peripheral data input
+    per_en			(),				// Peripheral enable (high active)
+    per_we			(),				// Peripheral write enable (high active)
+    reset			(),				// Main system reset
+	// INPUTs from DMA
+	dev_in			(),
+	dma_ack			(),
+	dma_end_flag	()
+	);	
 
 //
 // Digital I/O
@@ -797,11 +869,13 @@ initial // Timeout
        #500000;
      `endif
      `endif
-       $display(" ===============================================");
-       $display("|               SIMULATION FAILED               |");
-       $display("|              (simulation Timeout)             |");
-       $display(" ===============================================");
-       tb_extra_report;
+       	$display(" ===============================================");
+       	$display("|               SIMULATION FAILED               |");
+       	$display("|              (simulation Timeout)             |");
+       	$display(" ===============================================");
+		`ifdef RUNNING_DMA_TASK
+     	tb_extra_report;
+     	`endif
        $finish;
    `endif
   end
@@ -833,7 +907,9 @@ initial // Normal end of test
 	  $display("|               SIMULATION PASSED               |");
        end
      $display(" ===============================================");
-     tb_extra_report;
+     `ifdef RUNNING_DMA_TASK
+     	tb_extra_report;
+     `endif
      $finish;
   end
 
@@ -850,6 +926,7 @@ initial // Normal end of test
       end
    endtask
    
+`ifdef RUNNING_DMA_TASK
    task tb_extra_report;
       begin
          $display("DMA REPORT: Total Accesses: %-d Total RD: %-d Total WR: %-d", dma_cnt_rd+dma_cnt_wr,     dma_cnt_rd,   dma_cnt_wr);
@@ -864,6 +941,7 @@ initial // Normal end of test
          $display("");
       end
    endtask
+`endif
 
    task tb_skip_finish;
       input [65*8-1:0] skip_string;
@@ -873,7 +951,9 @@ initial // Normal end of test
          $display("%s", skip_string);
          $display(" ===============================================");
          $display("");
+         `ifdef RUNNING_DMA_TASK
          tb_extra_report;
+         `endif
          $finish;
       end
    endtask

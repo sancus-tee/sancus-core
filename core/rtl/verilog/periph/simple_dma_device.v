@@ -1,56 +1,82 @@
 module  simple_dma_device (
 
-// OUTPUTs
-    per_dout,                       // Peripheral data output
-
-// INPUTs
-    mclk,                           // Main system clock
-    per_addr,                       // Peripheral address
-    per_din,                        // Peripheral data input
-    per_en,                         // Peripheral enable (high active)
-    per_we,                         // Peripheral write enable (high active)
-    puc_rst                         // Main system reset
+// OUTPUTs to uP 
+    per_dout,			// Peripheral data output
+// OUTPUTs to DMA
+	dev_ack,			// Ackowledge for the 2-phase handshake
+	dev_out,			// Output to DMA in write op.
+	dma_num_words,		// Number of words to be read
+	dma_rd_wr,			// Read or write request
+	dma_rqst,			// DMA op. request
+	dma_start_address,  // Starting address for DMA op.
+// INPUTs from uP
+    clk,				// Main system clock
+    per_addr,			// Peripheral address
+    per_din, 			// Peripheral data input
+    per_en,				// Peripheral enable (high active)
+    per_we,				// Peripheral write enable (high active)
+    reset,				// Main system reset
+// INPUTs from DMA
+	dev_in,
+	dma_ack,
+	dma_end_flag
 );
 
+
 // OUTPUTs
-//=========
-output       [15:0] per_dout;       // Peripheral data output
-
+//===================
+// OUTPUTs to uP 
+output		[15:0] 		per_dout;			// Peripheral data output
+// OUTPUTs to DMA
+output					dev_ack;			// Ackowledge for the 2-phase handshake
+output			[15:0] 	dev_out;
+output			[15:0]	dma_num_words;		// Number of words to be read
+output 					dma_rd_wr;			// Read or write request
+output					dma_rqst;			// DMA op. request
+output			[15:0]	dma_start_address;	// Starting address for DMA op.
+	
 // INPUTs
-//=========
-input               mclk;           // Main system clock
-input        [13:0] per_addr;       // Peripheral address
-input        [15:0] per_din;        // Peripheral data input
-input               per_en;         // Peripheral enable (high active)
-input         [1:0] per_we;         // Peripheral write enable (high active)
-input               puc_rst;        // Main system reset
+//===================
+// INPUTs from uP
+input   	            clk;			// Main system clock
+input       	 [13:0] per_addr;		// Peripheral address
+input   	 	 [15:0] per_din;		// Peripheral data input
+input       	        per_en;         // Peripheral enable (high active)
+input	         [1:0]  per_we;         // Peripheral write enable (high active)
+input   	            reset;	        // Main system reset
+// INPUTs from DMA
+input					dev_in;
+input					dma_ack;
+input					dma_end_flag;
 
+
+assign dev_ack 			= 1'b1; //XXX this simple device it's always avaiable, no wait status 
 
 //=============================================================================
 // 1)  PARAMETER DECLARATION
 //=============================================================================
 
 // Register base address (must be aligned to decoder bit width)
-parameter       [14:0] BASE_ADDR   = 15'h0100;
+parameter       [14:0] BASE_ADDR	= 15'h0100;
 
 // Decoder bit width (defines how many bits are considered for address decoding)
-parameter              DEC_WD      =  3;
+parameter              DEC_WD		=  3;
 
 // Register addresses offset
-parameter [DEC_WD-1:0] CNTRL1      = 'h0,
-                       CNTRL2      = 'h2,
-                       CNTRL3      = 'h4,
-                       CNTRL4      = 'h6;
+parameter [DEC_WD-1:0] START_ADDR	= 'h0,
+                       N_WORDS	    = 'h2,
+                       CONFIG 		= 'h4,
+                       DATA_REG		= 'h6;
 
 // Register one-hot decoder utilities
 parameter              DEC_SZ      =  (1 << DEC_WD);
 parameter [DEC_SZ-1:0] BASE_REG    =  {{DEC_SZ-1{1'b0}}, 1'b1};
 
 // Register one-hot decoder
-parameter [DEC_SZ-1:0] CNTRL1_D    = (BASE_REG << CNTRL1),
-                       CNTRL2_D    = (BASE_REG << CNTRL2),
-                       CNTRL3_D    = (BASE_REG << CNTRL3),
-                       CNTRL4_D    = (BASE_REG << CNTRL4);
+parameter [DEC_SZ-1:0] START_ADDR_D 	= (BASE_REG << START_ADDR),
+                       N_WORDS_D    	= (BASE_REG << N_WORDS),
+                       CONFIG_D    		= (BASE_REG << CONFIG),
+                       DATA_REG_D    	= (BASE_REG << DATA_REG);
 
 
 //============================================================================
@@ -64,10 +90,10 @@ wire              reg_sel   =  per_en & (per_addr[13:DEC_WD-1]==BASE_ADDR[14:DEC
 wire [DEC_WD-1:0] reg_addr  =  {per_addr[DEC_WD-2:0], 1'b0};
 
 // Register address decode
-wire [DEC_SZ-1:0] reg_dec   =  (CNTRL1_D  &  {DEC_SZ{(reg_addr == CNTRL1 )}})  |
-                               (CNTRL2_D  &  {DEC_SZ{(reg_addr == CNTRL2 )}})  |
-                               (CNTRL3_D  &  {DEC_SZ{(reg_addr == CNTRL3 )}})  |
-                               (CNTRL4_D  &  {DEC_SZ{(reg_addr == CNTRL4 )}});
+wire [DEC_SZ-1:0] reg_dec   =  (START_ADDR_D  &  {DEC_SZ{(reg_addr == START_ADDR )}})  |
+                               (N_WORDS_D  &  {DEC_SZ{(reg_addr == N_WORDS )}})  |
+                               (CONFIG_D  &  {DEC_SZ{(reg_addr == CONFIG )}})
+                               (DATA_REG_D  &  {DEC_SZ{(reg_addr == DATA_REG )}}) ;
 
 // Read/Write probes
 wire              reg_write =  |per_we & reg_sel;
@@ -82,64 +108,110 @@ wire [DEC_SZ-1:0] reg_rd    = reg_dec & {DEC_SZ{reg_read}};
 // 3) REGISTERS
 //============================================================================
 
-// CNTRL1 Register
+// START_ADDR Register
 //-----------------   
-reg  [15:0] cntrl1;
+reg  [15:0] start_addr;
+wire        start_addr_wr = reg_wr[START_ADDR];
 
-wire        cntrl1_wr = reg_wr[CNTRL1];
+always @ (posedge mclk or posedge reset)
+  if (reset)        start_addr <=  16'h0000;
+  else if (start_addr_wr) start_addr <=  per_din;
+  else start_addr <= start_addr;
 
-always @ (posedge mclk or posedge puc_rst)
-  if (puc_rst)        cntrl1 <=  16'h0000;
-  else if (cntrl1_wr) cntrl1 <=  per_din;
+assign dma_start_address = start_addr;
 
    
-// CNTRL2 Register
+// N_WORDS Register
 //-----------------   
-reg  [15:0] cntrl2;
+reg  [15:0] n_words;
+wire        n_words_wr = reg_wr[N_WORDS];
 
-wire        cntrl2_wr = reg_wr[CNTRL2];
+always @ (posedge mclk or posedge reset)
+  if (reset)        n_words <=  16'h0000;
+  else if (n_words_wr) n_words <=  per_din;
+  else	n_words <= n_words;
 
-always @ (posedge mclk or posedge puc_rst)
-  if (puc_rst)        cntrl2 <=  16'h0000;
-  else if (cntrl2_wr) cntrl2 <=  per_din;
+assign dma_num_words = n_words;
 
    
-// CNTRL3 Register
+// CONFIG Register
 //-----------------   
-reg  [15:0] cntrl3;
+reg  [15:0] config_reg;
+wire        config_wr_ext = reg_wr[CONFIG];
+wire 		config_wr_intern;
 
-wire        cntrl3_wr = reg_wr[CNTRL3];
+always @ (posedge mclk or posedge reset)
+  if (reset)        		 config_reg <=  16'h0000;
+  else if (config_wr_ext) 	 config_reg <=  {config_reg[15:8], per_din[7:0]}; 
+  else if (config_wr_intern) config_reg <=  {internal_status, config_reg[7:1], (config_reg[0] & ~dma_end_flag)}; // autoreset when op. ends
+  else config_reg <= config_reg;
+  
+  
+// CONFIG register content  
 
-always @ (posedge mclk or posedge puc_rst)
-  if (puc_rst)        cntrl3 <=  16'h0000;
-  else if (cntrl3_wr) cntrl3 <=  per_din;
+// Only half of the config register is for CPU configuration; the other half is for the device itself. (Sergio)
+//
+// --------------------------------------------
+// | END_OP	| 0 | --- | 0 | RD_WR | 0 | START |
+// --------------------------------------------
+// |  15   | 14	| --- | 3 |  2	 | 1  |   0	  |
+// --------------------------------------------
 
+
+assign		dma_rqst  = config_reg[0];   
+assign		dma_rd_wr = config_reg[3]; // 1: Read | 0: Write
    
-// CNTRL4 Register
-//-----------------   
-reg  [15:0] cntrl4;
+// DATA_REG: it is read-only for the CPU!
+//---------------------------------------   
+reg  [15:0] data_reg;
+wire        data_wr = dma_ack & dma_rqst & dma_rd_wr;
 
-wire        cntrl4_wr = reg_wr[CNTRL4];
+always @ (posedge mclk or posedge reset)
+  if (reset)        data_reg <=  16'h0000;
+  else if (data_wr) data_reg <=  dev_in; // input from the DMA controller
+  else 				data_reg <= data_reg;
 
-always @ (posedge mclk or posedge puc_rst)
-  if (puc_rst)        cntrl4 <=  16'h0000;
-  else if (cntrl4_wr) cntrl4 <=  per_din;
 
-
-//============================================================================
-// 4) DATA OUTPUT GENERATION
-//============================================================================
+//=============================================================
+// 4) READ DATA GENERATION
+//=============================================================
 
 // Data output mux
-wire [15:0] cntrl1_rd  = cntrl1  & {16{reg_rd[CNTRL1]}};
-wire [15:0] cntrl2_rd  = cntrl2  & {16{reg_rd[CNTRL2]}};
-wire [15:0] cntrl3_rd  = cntrl3  & {16{reg_rd[CNTRL3]}};
-wire [15:0] cntrl4_rd  = cntrl4  & {16{reg_rd[CNTRL4]}};
+//-----------------  
+wire [15:0] start_addr_rd  	= start_addr  & {16{reg_rd[START_ADDR]}};
+wire [15:0] n_words_rd  	= n_words  & {16{reg_rd[N_WORDS]}};
+wire [15:0] config_rd  		= config  & {16{reg_rd[CONFIG]}};
+wire [15:0] data_out  		= data_reg  & {16{reg_rd[DATA_REG]}};
 
-wire [15:0] per_dout   =  cntrl1_rd  |
-                          cntrl2_rd  |
-                          cntrl3_rd  |
-                          cntrl4_rd;
+wire [15:0] per_dout   		= start_addr_rd  |
+		                      n_words_rd  	 |
+		                      config_rd  	 |
+		                   	  data_out;
+		                      
+//=============================================================
+// 5) DMA Device behaviour
+//=============================================================
+wire [7:0] 	internal_status;
+
+// Configuration register - internal flags to CPU.
+// Possibilities to extend the set of flags
+// --------------------------------------
+// | END_OP	|   0     |  ---	| 0 | 0 |
+// --------------------------------------
+// |  MSB   |  MSB -1 |	  ---	| 1 | 0 |
+// --------------------------------------
+
+
+assign internal_status[7]	= dma_end_flag;
+assign internal_status[6:0]	= {7{1'b0}};
+// All the signals that cause a change in the internal_status should be ORed to trigger a writing in the config_reg. In this case, it's only dma_end_flag.
+assign config_wr_intern	= dma_end_flag;
+assign dev_out 			= (~dma_rd_wr & start) ? 16'h7777 : 16'h0000;
+
+		
+
+
+
 
 
 endmodule // template_periph_16b

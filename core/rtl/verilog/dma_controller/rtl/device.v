@@ -1,13 +1,5 @@
-module device ( //Inputs from DMA
-				dma_ack,
-				dev_in,
-				clk, //device is sequential
-				start,
-				in_num_words,
-				in_start_address,
-				in_rd_wr,
-				reset,
-				dma_end_flag,
+module device ( //Outputs to higher logic
+				dev_ready,				
 				//Outputs to DMA
 				num_words,
 				start_address,
@@ -15,52 +7,63 @@ module device ( //Inputs from DMA
 				rqst,
 				dev_ack,
 				dev_out,
-				dev_ready);
+				//Inputs from higer logic
+				clk,
+				start,
+				in_num_words,
+				in_start_address,
+				in_rd_wr,
+				reset,
+				//Inputs from DMA
+				dma_ack,
+				dev_in,
+				dma_end_flag);
 				
 parameter DATA = 8;
 parameter ADD = 7;
 parameter WORD = 5;
 
-//Outputs
-output [WORD:0] num_words; 
-output [ADD-1:0] start_address;
-output  rd_wr;
-output [DATA-1:0] dev_out;
-output reg rqst;
-output reg dev_ack;
-output reg dev_ready;
-//Inputs from DMA
-input dma_ack;
-input [DATA-1:0] dev_in;
-input clk;
-input start;
-input [WORD:0] in_num_words; 
-input [ADD-1:0] in_start_address;
-input reset;
-input dma_end_flag;
-input in_rd_wr;
+// Outputs
+output [WORD:0] 	num_words; 
+output [ADD-1:0]	start_address;
+output  			rd_wr;
+output [DATA-1:0] 	dev_out;
+output reg 			rqst;
+output reg 			dev_ack;
+output reg 			dev_ready;
+// Inputs from DMA
+input 				dma_ack;
+input 				dma_end_flag;
+input [DATA-1:0] 	dev_in;
+// Inputs from higer logic
+input 				clk;
+input		 		start;
+input [WORD:0] 		in_num_words; 
+input [ADD-1:0] 	in_start_address;
+input 				reset;
+input 				in_rd_wr;
 
 
-//Internal variables
+// Internal variables
 reg start_add_en, start_add_rst; 
 reg num_words_en, num_word_rst;
 reg rd_wr_en, rd_wr_rst;
 reg [DATA-1:0] out;
 
-//Counter
+// Counter
 //wire tc_flag;
 //reg [WORD:0] count;
 //reg count_en, count_rst;
 
-//Error Flags
+// Error Flags
 reg error_rd;
 //reg error_wr; 
 
-//Testbench 
+// Testbench 
 integer i; //used to test wait states in read op.
 wire tb_count_wait;
 
-//FSM States Definition
+// FSM States Definition
 `ifdef SIM
 	reg [15*8:0] state, next_state; //states stored in ASCII 
 `else
@@ -119,7 +122,7 @@ always @(posedge clk) begin
 			if (state == SEND_DATA) out <= ~out;			
 end
 
-//Output assignment
+// Output assignment
 assign dev_out = out;
 
 /*//Counter
@@ -146,7 +149,7 @@ always @(posedge clk,posedge reset)	begin
 	else state <= next_state;
 end
 
-//Next State Generation
+// Next State Generation
 always @(state, reset, start, dma_ack, rd_wr, tb_count_wait, dma_end_flag, i) begin
 	case (state)
 		RESET:
