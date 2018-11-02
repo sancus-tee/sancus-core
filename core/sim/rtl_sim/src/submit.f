@@ -65,6 +65,6 @@
 ../../../rtl/verilog/periph/omsp_tsc.v
 ../../../rtl/verilog/periph/spi_master.v
 ../../../rtl/verilog/periph/omsp_led_digits.v
-../../../rtl/verilog/periph/simple_dma_device.v
 ../../../bench/verilog/file_io.v
 ../../../bench/verilog/omsp_uart_print.v
+../../../rtl/verilog/periph/simple_dma_device.v

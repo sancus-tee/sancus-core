@@ -1,0 +1,177 @@
+[*]
+[*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
+[*] Fri Nov  2 09:45:46 2018
+[*]
+[dumpfile] "/home/sergio/sancus-core/core/sim/rtl_sim/run/tb_openMSP430.vcd"
+[dumpfile_mtime] "Fri Nov  2 09:41:07 2018"
+[dumpfile_size] 263383
+[savefile] "/home/sergio/sancus-core/core/sim/rtl_sim/run/tb_openMSP430_view_dma_dev.gtkw"
+[timestart] 1903000
+[size] 1366 704
+[pos] -1 -1
+*-17.878859 2425000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb_openMSP430.
+[treeopen] tb_openMSP430.dma_cntrl.
+[sst_width] 233
+[signals_width] 234
+[sst_expanded] 1
+[sst_vpaned_height] 180
+@200
+-DMA Dev
+@28
+[color] 2
+tb_openMSP430.mclk
+@200
+-Outputs
+@22
+tb_openMSP430.dma_dev0.per_dout[15:0]
+@28
+tb_openMSP430.dma_dev0.dev_ack
+@22
+tb_openMSP430.dma_dev0.dev_out[15:0]
+tb_openMSP430.dma_dev0.dma_num_words[15:0]
+@28
+tb_openMSP430.dma_dev0.dma_rd_wr
+tb_openMSP430.dma_dev0.dma_rqst
+@22
+tb_openMSP430.dma_dev0.dma_start_address[15:0]
+@200
+-Inputs
+@22
+tb_openMSP430.dma_dev0.per_addr[13:0]
+tb_openMSP430.dma_dev0.per_din[15:0]
+@28
+tb_openMSP430.dma_dev0.per_en
+tb_openMSP430.dma_dev0.per_we[1:0]
+tb_openMSP430.dma_dev0.reset
+tb_openMSP430.dma_dev0.dma_ack
+tb_openMSP430.dma_dev0.dma_end_flag
+@22
+tb_openMSP430.dma_dev0.dev_in[15:0]
+@200
+-Reg Decode
+@28
+tb_openMSP430.dma_dev0.reg_sel
+tb_openMSP430.dma_dev0.reg_addr[2:0]
+@22
+tb_openMSP430.dma_dev0.reg_dec[7:0]
+tb_openMSP430.dma_dev0.reg_wr[7:0]
+tb_openMSP430.dma_dev0.reg_rd[7:0]
+@200
+-Internal regs
+@28
+tb_openMSP430.dma_dev0.n_words_wr
+@22
+tb_openMSP430.dma_dev0.n_words[15:0]
+@28
+tb_openMSP430.dma_dev0.start_addr_wr
+@22
+tb_openMSP430.dma_dev0.start_addr[15:0]
+@28
+tb_openMSP430.dma_dev0.config_wr_intern
+tb_openMSP430.dma_dev0.config_wr_ext
+@22
+tb_openMSP430.dma_dev0.config_reg[15:0]
+@28
+tb_openMSP430.dma_dev0.data_wr
+@22
+tb_openMSP430.dma_dev0.data_reg[15:0]
+tb_openMSP430.dma_dev0.config_rd[15:0]
+tb_openMSP430.dma_dev0.n_words_rd[15:0]
+tb_openMSP430.dma_dev0.data_rd[15:0]
+tb_openMSP430.dma_dev0.start_addr_rd[15:0]
+tb_openMSP430.dma_dev0.internal_status[7:0]
+@200
+-
+@28
+[color] 2
+tb_openMSP430.dma_cntrl.clk
+@22
+tb_openMSP430.mem200[15:0]
+tb_openMSP430.mem202[15:0]
+tb_openMSP430.mem204[15:0]
+@200
+-DMA Controller
+@820
+tb_openMSP430.msp_debug_0.dma_state[255:0]
+@28
+tb_openMSP430.dma_cntrl.dma_en
+tb_openMSP430.dma_cntrl.dma_ready
+tb_openMSP430.dma_cntrl.rd_wr
+@22
+tb_openMSP430.dma_cntrl.dma_addr[15:0]
+@28
+tb_openMSP430.dma_cntrl.flag_cnt_words
+@22
+tb_openMSP430.dma_cntrl.count[4:0]
+@201
+-DMA Contr. Outs
+@22
+tb_openMSP430.dma_cntrl.dev_in[15:0]
+@c00022
+tb_openMSP430.dma_cntrl.dev_out[15:0]
+@28
+(0)tb_openMSP430.dma_cntrl.dev_out[15:0]
+(1)tb_openMSP430.dma_cntrl.dev_out[15:0]
+(2)tb_openMSP430.dma_cntrl.dev_out[15:0]
+(3)tb_openMSP430.dma_cntrl.dev_out[15:0]
+(4)tb_openMSP430.dma_cntrl.dev_out[15:0]
+(5)tb_openMSP430.dma_cntrl.dev_out[15:0]
+(6)tb_openMSP430.dma_cntrl.dev_out[15:0]
+(7)tb_openMSP430.dma_cntrl.dev_out[15:0]
+(8)tb_openMSP430.dma_cntrl.dev_out[15:0]
+(9)tb_openMSP430.dma_cntrl.dev_out[15:0]
+(10)tb_openMSP430.dma_cntrl.dev_out[15:0]
+(11)tb_openMSP430.dma_cntrl.dev_out[15:0]
+(12)tb_openMSP430.dma_cntrl.dev_out[15:0]
+(13)tb_openMSP430.dma_cntrl.dev_out[15:0]
+(14)tb_openMSP430.dma_cntrl.dev_out[15:0]
+(15)tb_openMSP430.dma_cntrl.dev_out[15:0]
+@1401200
+-group_end
+@28
+tb_openMSP430.dma_cntrl.msp_or_dev
+@22
+tb_openMSP430.dma_cntrl.dma_in[15:0]
+tb_openMSP430.dma_cntrl.dma_out[15:0]
+@200
+-Internal FIFO
+@28
+tb_openMSP430.dma_cntrl.fifo_en
+@22
+tb_openMSP430.dma_cntrl.fifo_out[15:0]
+tb_openMSP430.dma_cntrl.fifo_mem.fifo_addr[4:0]
+tb_openMSP430.msp_debug_0.fifo_reg_0[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_1[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_2[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_3[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_4[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_5[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_6[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_7[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_8[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_9[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_10[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_11[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_12[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_13[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_14[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_15[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_16[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_17[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_18[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_19[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_20[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_21[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_22[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_23[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_24[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_25[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_26[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_27[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_28[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_29[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_30[16:0]
+tb_openMSP430.msp_debug_0.fifo_reg_31[16:0]
+[pattern_trace] 1
+[pattern_trace] 0

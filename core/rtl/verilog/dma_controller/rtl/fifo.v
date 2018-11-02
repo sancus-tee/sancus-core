@@ -30,14 +30,16 @@ output [DATA-1:0] fifo_out;
 //Internal Variables
 wire [2**ADDR_SIZE-1:0] flag; 
 wire [2**ADDR_SIZE-1:0] en_wire;
-wire [ADDR_SIZE-1:0] fifo_addr;
-wire increment_wr;
-wire increment_rd;
-wire decoder_en;
-wire [DATA:0] fifo_regs [2**ADDR_SIZE:0]; //DATA and not DATA-1 since 1 bit stores the read/write state of the reg
-reg [ADDR_SIZE-1:0] wr_addr;
-reg [ADDR_SIZE-1:0] rd_addr;
-reg [ADDR_SIZE-1:0] fifo_old_addr; 
+wire    [ADDR_SIZE-1:0] fifo_addr;
+wire                    increment_wr;
+wire                    increment_rd;
+wire                    decoder_en;
+`ifdef SIM | DMA_CONTR_TEST
+wire [DATA:0] fifo_regs [2**ADDR_SIZE-1:0]; //DATA and not DATA-1 since 1 bit stores the read/write state of the reg
+`endif
+reg     [ADDR_SIZE-1:0] wr_addr;
+reg     [ADDR_SIZE-1:0] rd_addr;
+reg     [ADDR_SIZE-1:0] fifo_old_addr; 
 
 //Generate Full or Empty signals
 assign full = &flag;
@@ -54,7 +56,9 @@ fifo_reg #(.REG_DEPTH(DATA)) fifo (
 				.data_in(fifo_in),
 				.rst(rst),
 				.data_out(fifo_out),
-				`ifdef SIM .register(fifo_regs[gi]), `endif
+				`ifdef SIM 
+				.register(fifo_regs[gi]), 
+				`endif
 				.flag(flag[gi]));
 end 
 endgenerate	

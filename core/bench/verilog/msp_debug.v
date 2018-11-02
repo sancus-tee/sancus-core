@@ -43,6 +43,7 @@
 module msp_debug (
 
 // OUTPUTs
+	dma_state,					   // DMA controller state
     e_state,                       // Execution state
     i_state,                       // Instruction fetch state
     inst_cycle,                    // Cycle number within current instruction
@@ -56,8 +57,11 @@ module msp_debug (
     puc_rst                        // Main system reset
 );
 
+parameter FIFO_DEPTH = 5; //(Sergio)
+
 // OUTPUTs
 //============
+output	[8*32-1:0] dma_state;	   // DMA controller state 
 output  [8*32-1:0] e_state;        // Execution state
 output  [8*32-1:0] i_state;        // Instruction fetch state
 output      [31:0] inst_cycle;     // Cycle number within current instruction
@@ -120,9 +124,42 @@ wire        irq_detect  		= tb_openMSP430.dut.frontend_0.irq_detect;
 wire  [3:0] irq_num     		= tb_openMSP430.dut.frontend_0.irq_num;
 wire [15:0] pc          		= tb_openMSP430.dut.frontend_0.pc;
 
-wire  [4:0] dma_device_state	= tb_openMSP430.dma_dev0.state;//sergio
+`ifdef DMA_CONTR_TEST
 wire  [4:0] dma_cntrl_state		= tb_openMSP430.dma_cntrl.state;
-   
+wire  [16:0] fifo_reg_0	        = tb_openMSP430.dma_cntrl.fifo_mem.genregs[0].fifo.register;
+wire  [16:0] fifo_reg_1	        = tb_openMSP430.dma_cntrl.fifo_mem.genregs[1].fifo.register;
+wire  [16:0] fifo_reg_2	        = tb_openMSP430.dma_cntrl.fifo_mem.genregs[2].fifo.register;
+wire  [16:0] fifo_reg_3	        = tb_openMSP430.dma_cntrl.fifo_mem.genregs[3].fifo.register;
+wire  [16:0] fifo_reg_4         = tb_openMSP430.dma_cntrl.fifo_mem.genregs[4].fifo.register;
+wire  [16:0] fifo_reg_5	        = tb_openMSP430.dma_cntrl.fifo_mem.genregs[5].fifo.register;
+wire  [16:0] fifo_reg_6	        = tb_openMSP430.dma_cntrl.fifo_mem.genregs[6].fifo.register;
+wire  [16:0] fifo_reg_7	        = tb_openMSP430.dma_cntrl.fifo_mem.genregs[7].fifo.register;
+wire  [16:0] fifo_reg_8	        = tb_openMSP430.dma_cntrl.fifo_mem.genregs[8].fifo.register;
+wire  [16:0] fifo_reg_9	        = tb_openMSP430.dma_cntrl.fifo_mem.genregs[9].fifo.register;
+wire  [16:0] fifo_reg_10	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[10].fifo.register;
+wire  [16:0] fifo_reg_11	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[11].fifo.register;
+wire  [16:0] fifo_reg_12	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[12].fifo.register;
+wire  [16:0] fifo_reg_13	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[13].fifo.register;
+wire  [16:0] fifo_reg_14	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[14].fifo.register;
+wire  [16:0] fifo_reg_15	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[15].fifo.register;
+wire  [16:0] fifo_reg_16	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[16].fifo.register;
+wire  [16:0] fifo_reg_17	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[17].fifo.register;
+wire  [16:0] fifo_reg_18	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[18].fifo.register;
+wire  [16:0] fifo_reg_19	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[19].fifo.register;
+wire  [16:0] fifo_reg_20	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[20].fifo.register;
+wire  [16:0] fifo_reg_21	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[21].fifo.register;
+wire  [16:0] fifo_reg_22	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[22].fifo.register;
+wire  [16:0] fifo_reg_23	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[23].fifo.register;
+wire  [16:0] fifo_reg_24	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[24].fifo.register;
+wire  [16:0] fifo_reg_25	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[25].fifo.register;
+wire  [16:0] fifo_reg_26	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[26].fifo.register;
+wire  [16:0] fifo_reg_27	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[27].fifo.register;
+wire  [16:0] fifo_reg_28	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[28].fifo.register;
+wire  [16:0] fifo_reg_29	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[29].fifo.register;
+wire  [16:0] fifo_reg_30	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[30].fifo.register;
+wire  [16:0] fifo_reg_31	    = tb_openMSP430.dma_cntrl.fifo_mem.genregs[31].fifo.register;
+
+`endif   
 //=============================================================================
 // 3) GENERATE DEBUG SIGNALS
 //=============================================================================
@@ -470,58 +507,63 @@ always @(posedge mclk or posedge puc_rst)
 // DMA controller states (sergio)
 //===============================
 
-reg [15*8:0] dma_dev_state; //states stored in ASCII 
+/*reg [15*8:0] dma_dev_state; //states stored in ASCII 
 
 always @(dma_device_state)
     case(dma_device_state)
-      	0	 : dma_dev_state   = "RESET",
-		1	 : dma_dev_state   = "IDLE",
-		2	 : dma_dev_state   = "GET_ADDRESS",
-		3	 : dma_dev_state   = "GENERATE_RQST",
-		4	 : dma_dev_state   = "WAIT_RD_DATA",
-		5	 : dma_dev_state   = "GET_RD_DATA",
-		7	 : dma_dev_state   = "ERROR_RD",
-		6	 : dma_dev_state   = "END_READ",
-		8	 : dma_dev_state   = "WAIT_RQ_RD",
-		9	 : dma_dev_state   = "WAIT_RD",
-		10	 : dma_dev_state   = "TB_WAIT_WR",
-		11	 : dma_dev_state   = "START_SENDING",
-		12	 : dma_dev_state   = "SEND_DATA",
-		16	 : dma_dev_state   = "END_WRITE",
-		15	 : dma_dev_state   = "DATA_WRITTEN",
-		13	 : dma_dev_state   = "WAIT_RQ_WR",
-		14	 : dma_dev_state   = "WAIT_WR",
-		17	 : dma_dev_state   = "DMA_WRITING_MEM",
+      	0	 : dma_dev_state   = "RESET";
+		1	 : dma_dev_state   = "IDLE";
+		2	 : dma_dev_state   = "GET_ADDRESS";
+		3	 : dma_dev_state   = "GENERATE_RQST";
+		4	 : dma_dev_state   = "WAIT_RD_DATA";
+		5	 : dma_dev_state   = "GET_RD_DATA";
+		7	 : dma_dev_state   = "ERROR_RD";
+		6	 : dma_dev_state   = "END_READ";
+		8	 : dma_dev_state   = "WAIT_RQ_RD";
+		9	 : dma_dev_state   = "WAIT_RD";
+		10	 : dma_dev_state   = "TB_WAIT_WR";
+		11	 : dma_dev_state   = "START_SENDING";
+		12	 : dma_dev_state   = "SEND_DATA";
+		16	 : dma_dev_state   = "END_WRITE";
+		15	 : dma_dev_state   = "DATA_WRITTEN";
+		13	 : dma_dev_state   = "WAIT_RQ_WR";
+		14	 : dma_dev_state   = "WAIT_WR";
+		17	 : dma_dev_state   = "DMA_WRITING_MEM";
 		18	 : dma_dev_state   = "START_RECEIVING";
      default : dma_dev_state  = "XXXXX";
-    endcase
-    
+    endcase*/
+
+`ifdef DMA_CONTR_TEST
+
+reg [8*32-1:0] dma_state;  
+   
 always @(dma_cntrl_state)
 	case(dma_cntrl_state)
-		0	: dma_cntrl_state   = "IDLE",
-		1	: dma_cntrl_state   = "GET_REGS",
-		2	: dma_cntrl_state   = "LOAD_DMA_ADD",
-		3	: dma_cntrl_state   = "READ_MEM",
-		4	: dma_cntrl_state   = "ERROR",
-		5	: dma_cntrl_state   = "SEND_TO_DEV0",
-		6	: dma_cntrl_state   = "WAIT_READ",
-		7	: dma_cntrl_state   = "SEND_TO_DEV1",
-		8	: dma_cntrl_state   = "OLD_ADDR_RD",
-		9	: dma_cntrl_state   = "NOP",
-		10	: dma_cntrl_state   = "END_READ",
-		11	: dma_cntrl_state   = "READ_DEV0",
-		12	: dma_cntrl_state   = "READ_DEV1",
-		13	: dma_cntrl_state   = "WAIT_WRITE",
-		14	: dma_cntrl_state   = "SEND_TO_MEM0",
-		15	: dma_cntrl_state   = "SEND_TO_MEM1",
-		16	: dma_cntrl_state   = "OLD_ADDR_WR",
-		17	: dma_cntrl_state   = "END_WRITE",
-		18	: dma_cntrl_state   = "FIFO_FULL_READ",
-		19	: dma_cntrl_state   = "EMPTY_FIFO_READ",
-		20	: dma_cntrl_state   = "RESET";      	
-	default : dma_cntrl_state   = "XXXXX";
+		0	: dma_state   = "IDLE";
+		1	: dma_state   = "GET_REGS";
+		2	: dma_state   = "LOAD_DMA_ADD";
+		3	: dma_state   = "READ_MEM";
+		4	: dma_state   = "ERROR";
+		5	: dma_state   = "SEND_TO_DEV0";
+		6	: dma_state   = "WAIT_READ";
+		7	: dma_state   = "SEND_TO_DEV1";
+		8	: dma_state   = "OLD_ADDR_RD";
+		9	: dma_state   = "NOP";
+		10	: dma_state   = "END_READ";
+		11	: dma_state   = "READ_DEV0";
+		12	: dma_state   = "READ_DEV1";
+		13	: dma_state   = "WAIT_WRITE";
+		14	: dma_state   = "SEND_TO_MEM0";
+		15	: dma_state   = "SEND_TO_MEM1";
+		16	: dma_state   = "OLD_ADDR_WR";
+		17	: dma_state   = "END_WRITE";
+		18	: dma_state   = "FIFO_FULL_READ";
+		19	: dma_state   = "EMPTY_FIFO_READ";
+		20	: dma_state   = "RESET";      	
+	default : dma_state   = "XXXXX";
 	endcase
-	 		
+`endif
+
 // Registers
 //===============================
 wire [15:0]	r1	= tb_openMSP430.dut.execution_unit_0.register_file_0.r1[15:0];

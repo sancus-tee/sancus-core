@@ -49,12 +49,12 @@
 
 `define __SANCUS_SIM
 
-// Include DMEM and PMEM memory locations that are written by dma_task
+// Include DMEM and PMEM memory locations that are written by dma_task.v
 //`define SHOW_PMEM_WAVES  
 //`define SHOW_DMEM_WAVES
-  
-// Test the dma_controller (1) or use the dma_task.v (0)
+
 `define DMA_CONTR_TEST
+
 
 module  tb_openMSP430;
 
@@ -87,12 +87,23 @@ wire               per_en;
 wire        [15:0] dma_dout;
 wire               dma_ready;
 wire               dma_resp;
-reg         [15:1] dma_addr;
-reg         [15:0] dma_din;
-reg                dma_en;
-reg                dma_priority;
-reg          [1:0] dma_we;
-reg                dma_wkup;
+
+`ifdef DMA_CONTR_TEST
+ wire       [15:0] dma_addr_16;
+ wire       [15:1] dma_addr = dma_addr_16[15:1];
+ wire       [15:0] dma_din;
+ wire              dma_en;
+ wire              dma_priority;
+ wire        [1:0] dma_we;
+ wire              dma_wkup;
+`else //dma_task.v in use
+ reg        [15:1] dma_addr;
+ reg        [15:0] dma_din;
+ reg               dma_en;
+ reg               dma_priority;
+ reg         [1:0] dma_we;
+ reg               dma_wkup;
+`endif
 
 // Digital I/O
 wire               irq_port1;
@@ -214,6 +225,7 @@ reg                dbg_uart_rx_busy;
 reg                dbg_uart_tx_busy;
 
 // Core testbench debuging signals
+wire    [8*32-1:0] dma_state;	
 wire    [8*32-1:0] i_state;
 wire    [8*32-1:0] e_state;
 wire        [31:0] inst_cycle;
@@ -232,7 +244,8 @@ integer 		   index_mem_dbg;
 
 //
 // Include files
-//------------------------------
+//------------------------------ 
+// The file NEEDS to be included here and not before because they need wires and regs that are declared in the previous lines
 
 // CPU & Memory registers
 `include "registers.v"
@@ -316,14 +329,14 @@ initial
      irq              = 14'h0000;
      nmi              = 1'b0;
      wkup             = 14'h0000;
-     dma_addr         = 15'h0000;
-     dma_din          = 16'h0000;
-     dma_en           = 1'b0;
-     dma_priority     = 1'b0;
-     dma_we           = 2'b00;
-     dma_wkup         = 1'b0;
      `ifdef RUNNING_DMA_TASK
-     dma_tfx_cancel   = 1'b0;
+      dma_addr         = 15'h0000;
+      dma_din          = 16'h0000;
+      dma_en           = 1'b0;
+      dma_priority     = 1'b0;
+      dma_we           = 2'b00;
+      dma_wkup         = 1'b0;
+      dma_tfx_cancel   = 1'b0;
      `endif
      cpu_en           = 1'b1;
      dbg_en           = 1'b0;
@@ -411,9 +424,9 @@ openMSP430 dut (
     .lfxt_enable  (lfxt_enable),       // ASIC ONLY: Low frequency oscillator enable
     .lfxt_wkup    (lfxt_wkup),         // ASIC ONLY: Low frequency oscillator wake-up (asynchronous)
     .mclk         (mclk),              // Main system clock
-    .dma_dout     (dma_dout),             // Direct Memory Access data output
-    .dma_ready    (dma_ready),            // Direct Memory Access is complete
-    .dma_resp     (dma_resp),             // Direct Memory Access response (0:Okay / 1:Error)
+    .dma_dout     (dma_dout),          // Direct Memory Access data output
+    .dma_ready    (dma_ready),         // Direct Memory Access is complete
+    .dma_resp     (dma_resp),          // Direct Memory Access response (0:Okay / 1:Error)
     .per_addr     (per_addr),          // Peripheral address
     .per_din      (per_din),           // Peripheral data input
     .per_we       (per_we),            // Peripheral write enable (high active)
@@ -435,12 +448,12 @@ openMSP430 dut (
     .dmem_dout    (dmem_dout),         // Data Memory data output
     .irq          (irq_in),            // Maskable interrupts
     .lfxt_clk     (lfxt_clk),          // Low frequency oscillator (typ 32kHz)
-    .dma_addr     (dma_addr),             // Direct Memory Access address
-    .dma_din      (dma_din),              // Direct Memory Access data input
-    .dma_en       (dma_en),               // Direct Memory Access enable (high active)
-    .dma_priority (dma_priority),         // Direct Memory Access priority (0:low / 1:high)
-    .dma_we       (dma_we),               // Direct Memory Access write byte enable (high active)
-    .dma_wkup     (dma_wkup),             // ASIC ONLY: DMA Sub-System Wake-up (asynchronous and non-glitchy)
+    .dma_addr     (dma_addr),          // Direct Memory Access address
+    .dma_din      (dma_din),           // Direct Memory Access data input
+    .dma_en       (dma_en),            // Direct Memory Access enable (high active)
+    .dma_priority (dma_priority),      // Direct Memory Access priority (0:low / 1:high)
+    .dma_we       (dma_we),            // Direct Memory Access write byte enable (high active)
+    .dma_wkup     (dma_wkup),          // ASIC ONLY: DMA Sub-System Wake-up (asynchronous and non-glitchy)
     .nmi          (nmi),               // Non-maskable interrupt (asynchronous)
     .per_dout     (per_dout),          // Peripheral data output
     .pmem_dout    (pmem_dout),         // Program Memory data output
@@ -450,67 +463,83 @@ openMSP430 dut (
     .wkup         (|wkup_in)           // ASIC ONLY: System Wake-up (asynchronous)
 );
 
+
+
+`ifdef DMA_CONTR_TEST // Include the dma_controller.v and a simple device to test it.
+parameter FIFO_DEPTH = 5;
+
+wire [15:0] dma_num_words;
+wire [15:0]	dma_start_address;
+wire 		dma_rd_wr;
+wire		dma_rqst;
+wire		dev_ack;
+wire [15:0]	dev_out;
+wire		dma_ack;
+wire [15:0]	dev_in;
+wire		dma_end_flag;
+wire [15:0] per_dout_dma_dev0;
 //
 // DMA Controller
 //----------------------------------
-
-dma_controller #(
-				 .ADD_LEN(??),
-				 .DATA_LEN(??)
-				// FIFO_DEPTH(), Advanced parameters, for now 
-				// FIFO_DIV_FACTOR() keept as default
-	) dma_0 (
-		
-	.clk		(mclk),
-	reset		(puc_rst),
-	// Inputs from Device
-	num_words	(),
-	start_addr 	(),
-	rd_wr		(),
-	rqst		(),
-	dev_ack		(),
-	dev_in		(),
+dma_controller #( .ADD_LEN(16),
+				  .DATA_LEN(16),
+				  .FIFO_DEPTH(FIFO_DEPTH))	
+	dma_cntrl (
 	// Outputs to Device
-	dma_ack		(),
-	dev_out		(),
-	end_flag	(),
-	
-	// Inputs from OpenMSP430
-	.dma_in			(dma_din),
-	.dma_ready		(dma_ready), 
-	.dma_resp		(dma_resp),
+	.dma_ack		(dma_ack),
+	.end_flag		(dma_end_flag),
+	.dev_out		(dev_in),
 	// Outputs to OpenMSP430
-	.dma_addr		(dma_addr),
-	.dma_out		(dma_out),
+	.dma_addr		(dma_addr_16),
+	.dma_out		(dma_din),
 	.dma_en			(dma_en),
 	.dma_priority	(dma_priority),
-	.dma_we			(dma_we));
+	.dma_we			(dma_we),
+	// Inputs from Device
+	.num_words		(dma_num_words),
+	.start_addr		(dma_start_address),
+	.rd_wr			(dma_rd_wr),
+	.rqst			(dma_rqst),
+	.dev_ack		(dev_ack),
+	.dev_in			(dev_out),	
+	// Inputs from OpenMSP430
+	.dma_in			(dma_dout),
+	.dma_ready		(dma_ready), 
+	.dma_resp		(dma_resp),
+	.clk			(mclk),
+	.reset			(puc_rst)	
+	);
 	
 //
 // Simple DMA Device
 //----------------------------------
-simple_dma_device simple_device (
+simple_dma_device dma_dev0 (
 	// OUTPUTs to uP 
-    per_dout		(),			// Peripheral data output
+    .per_dout		(per_dout_dma_dev0),// Peripheral data output
 	// OUTPUTs to DMA
-	dev_ack			(),			// Ackowledge for the 2-phase handshake
-	dev_out			(),			// Output to DMA in write op.
-	dma_num_words	(),		// Number of words to be read
-	dma_rd_wr		(),			// Read or write request
-	dma_rqst		(),			// DMA op. request
-	dma_start_address (),  // Starting address for DMA op.
+	.dev_ack		(dev_ack),	// Ackowledge for the 2-phase handshake
+	.dev_out		(dev_out),			// Output to DMA in write op.
+	.dma_num_words	(dma_num_words),	// Number of words to be read
+	.dma_rd_wr		(dma_rd_wr),		// Read or write request
+	.dma_rqst		(dma_rqst),			// DMA op. request
+	.dma_start_address (dma_start_address), // Starting address for DMA op.
 	// INPUTs from uP
-    clk				(),				// Main system clock
-    per_addr		(),			// Peripheral address
-    per_din			(), 			// Peripheral data input
-    per_en			(),				// Peripheral enable (high active)
-    per_we			(),				// Peripheral write enable (high active)
-    reset			(),				// Main system reset
-	// INPUTs from DMA
-	dev_in			(),
-	dma_ack			(),
-	dma_end_flag	()
+    .clk		    (mclk),		// Main system clock
+    .reset			(puc_rst),	// Main system reset
+	.per_addr       (per_addr), // Peripheral address
+    .per_din        (per_din),  // Peripheral data input
+    .per_en         (per_en),   // Peripheral enable (high active)
+    .per_we         (per_we),   // Peripheral write enable (high active)
+    // INPUTs from DMA
+	.dev_in			(dev_in),
+	.dma_ack		(dma_ack),
+	.dma_end_flag	(dma_end_flag)
 	);	
+
+`endif
+
+
+
 
 //
 // Digital I/O
@@ -760,6 +789,9 @@ assign per_dout = per_dout_dio       |
                   per_dout_tsc       |
                   per_dout_led       |
 `endif
+`ifdef DMA_CONTR_TEST
+                  per_dout_dma_dev0  |
+`endif
                   per_dout_file_io;
 
 
@@ -804,6 +836,7 @@ assign wkup_in = wkup | {1'b0,           // Vector 13  (0xFFFA)
 msp_debug msp_debug_0 (
 
 // OUTPUTs
+	.dma_state	  (dma_state),
     .e_state      (e_state),           // Execution state
     .i_state      (i_state),           // Instruction fetch state
     .inst_cycle   (inst_cycle),        // Cycle number within current instruction

@@ -29,15 +29,15 @@ initial begin
 `ifdef SIM $display("DMA: Simulation acquired at %2d",$time) `endif;
 end
 
-parameter ADD_LEN = 8;
-parameter DATA_LEN = 8;
-parameter FIFO_DEPTH = 4; //2^FIFO_DEPTH = regs in the FIFO.
+parameter ADD_LEN = 16; // Number of bits for the addresses
+parameter DATA_LEN = 16; // Number of bits for the data
+parameter FIFO_DEPTH = 5; //2^FIFO_DEPTH = regs in the FIFO.
 parameter FIFO_DIV_FACTOR = 3; //by default divide by 8
 
 input clk, reset;
 
 //-------Device interface ------//
-input [FIFO_DEPTH:0] num_words;	//I should be able to write at max. as many words as the fifo can handle (=2^FIFO_DEPTH words),
+input [FIFO_DEPTH-1:0] num_words;	//I should be able to write at max. as many words as the fifo can handle (=2^FIFO_DEPTH words),
 								//which you write onto FIFO_DEPTH bits.
 								//Or num_words can bigger and let FIFO_FULL FSM-branch handle the situation.It's up to you.
 input [ADD_LEN-1:0] start_addr;
@@ -59,10 +59,6 @@ output reg dma_en;
 output reg dma_priority; 
 output reg [1:0] dma_we;
 
-//-------- Testbench -------------//
-`ifdef SIM 
-	reg [2**FIFO_DEPTH-1:0] fifo_tb [DATA_LEN-1:0];
-`endif
 
 //--------------------------------//
 //--------------------------------//
@@ -84,14 +80,14 @@ reg old_addr_reg_en, old_addr_rst;
 //Flip-flop Mux Add
 reg mux;
 //Num_words register
-wire [FIFO_DEPTH:0] words;
+wire [FIFO_DEPTH-1:0] words;
 reg words_rst, words_reg_en;
 //Counter
 wire end_count;
-wire [FIFO_DEPTH:0] count;	
-wire [FIFO_DEPTH:0] count_in;	
+wire [FIFO_DEPTH-1:0] count;	
+wire [FIFO_DEPTH-1:0] count_in;	
 reg count_rst, count_en;
-wire count_en_1, count_en_LOAD_STATE;
+wire count_en_1;
 reg count_load;
 //FSM control logic  
 reg flag_cnt_words; //end-count for the FSM
@@ -101,7 +97,7 @@ reg drive_dma_addr; //0: dma_addr = 'hz || 1: dma_addr
 
 
 //FSM States Definition
-reg [4:0]state, next_state; // codifies the states
+reg [4:0] state, next_state; // codifies the states
 
 localparam 	IDLE  = 0,
 			GET_REGS  = 1,
@@ -154,7 +150,7 @@ fifo #(	.DATA(DATA_LEN),
 		.fifo_old_add_flag(fifo_old_add_flag));
 
 //DMA's internal registers
-register #(.REG_DEPTH(FIFO_DEPTH+1)) word0 (
+register #(.REG_DEPTH(FIFO_DEPTH)) word0 (
 				.clk(clk),
 				.reg_en(words_reg_en),
 				.data_in(num_words),
@@ -181,16 +177,15 @@ assign dma_addr = drive_dma_addr ? ( mux ? old_address : address) :
 					{ADD_LEN{1'bz}};
 
 //Counter
-assign count_en_LOAD_STATE = ((state == LOAD_DMA_ADD) & (next_state == READ_MEM)); 
-assign count_en_1 = count_en | count_en_LOAD_STATE;
+assign count_en_1 = count_en | ((state == LOAD_DMA_ADD) & (next_state == READ_MEM));
 //XXX È un po' una suinata ma è la cosa più semplice che ho trovato! Alla fine si trattava di gestire un solo maledetto caso, quindi ho scelto di fare l'hardware ad-hoc. Sono pure due stati consecutivi, quindi hanno solo l'ultimo bit diverso! Vuol dire che solo per l'ultimo bit ho bisogno di 2 AND gate, per gli altri possono essere condivisi.
 
-counter #(.L(FIFO_DEPTH+1)) count0 (
+counter #(.L(FIFO_DEPTH)) count0 (
 	.clk(clk),
 	.load(count_load),
 	.rst(count_rst),
 	.cnt_en(count_en_1),
-	.data_in({{FIFO_DEPTH{1'b0}},1'b1}), //necessary for write states, where you need to count 1 time less: the idea is to make the counter start from 1 instead of 0.
+	.data_in({{FIFO_DEPTH-1{1'b0}},1'b1}), //necessary for write states, where you need to count 1 time less: the idea is to make the counter start from 1 instead of 0.
 	.cnt(count),
 	.end_cnt(end_count));
 

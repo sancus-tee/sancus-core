@@ -67,6 +67,7 @@
 ../../../rtl/verilog/crypto/spongent_sbox.v
 ../../../rtl/verilog/crypto/sponge_wrap.v
 ../../../rtl/verilog/crypto/crypto_control.v
+
 ../../../rtl/verilog/dma_controller/rtl/counter.v
 ../../../rtl/verilog/dma_controller/rtl/decoder.v
 ../../../rtl/verilog/dma_controller/rtl/dma_controller.v
