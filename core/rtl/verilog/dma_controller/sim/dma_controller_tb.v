@@ -101,7 +101,7 @@ dma_controller #(	.ADD_LEN(ADD),
 			.dev_in(devOut),
 			// Outputs to Device
 			.num_words(numWords_out),
-			.dev_addr(startAddress_out),
+			.start_addr(startAddress_out),
 			.dma_ack(dmaAck),
 			.dev_out(devIn),
 			.end_flag(endFlag),

@@ -1,26 +1,25 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Sat Oct 13 19:39:52 2018
+[*] Fri Nov  2 14:47:03 2018
 [*]
-[dumpfile] "/home/sergio/dma/tb/gtk_views/dma_controller_tb.vcd"
-[dumpfile_mtime] "Sat Oct 13 18:51:26 2018"
-[dumpfile_size] 66208
-[savefile] "/home/sergio/dma/tb/gtk_views/dma_dev.gtkw"
-[timestart] 170180
-[size] 1311 704
+[dumpfile] "/home/sergio/sancus-core/core/rtl/verilog/dma_controller/sim/gtk_views/dma_controller_tb.vcd"
+[dumpfile_mtime] "Fri Nov  2 14:45:50 2018"
+[dumpfile_size] 24063
+[savefile] "/home/sergio/sancus-core/core/rtl/verilog/dma_controller/sim/gtk_views/dma_dev.gtkw"
+[timestart] 9430
+[size] 1366 704
 [pos] -1 -1
-*-12.886343 -1 187020 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-12.886343 21000 187020 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] dma_controller_tb.
 [treeopen] dma_controller_tb.dut.
 [treeopen] dma_controller_tb.dut.fifo_mem.genregs[0].
 [treeopen] dma_controller_tb.dut.fifo_mem.genregs[0].fifo.
-[sst_width] 48
-[signals_width] 174
-[sst_expanded] 0
+[sst_width] 233
+[signals_width] 270
+[sst_expanded] 1
 [sst_vpaned_height] 175
 @24
 dma_controller_tb.dut.start_address[4:0]
-+{dma_controller_tb.dut.numWords} dma_controller_tb.dut.words[4:0]
 @28
 dma_controller_tb.reset
 dma_controller_tb.Rqst
@@ -167,20 +166,14 @@ dma_controller_tb.dmaAck
 -
 @28
 +{dma_controller_tb.dut.DMA_end_flag} dma_controller_tb.dut.end_flag
-@c00024
-+{dma_controller_tb.dut.DMA_count} dma_controller_tb.dut.count[4:0]
-@28
-(0)dma_controller_tb.dut.count[4:0]
-(1)dma_controller_tb.dut.count[4:0]
-(2)dma_controller_tb.dut.count[4:0]
-(3)dma_controller_tb.dut.count[4:0]
-(4)dma_controller_tb.dut.count[4:0]
-@1401200
--group_end
-@28
-dma_controller_tb.dut.flag_cnt_words
+@22
+dma_controller_tb.dut.count[3:0]
 @200
 -DMA Bus
+@28
+dma_controller_tb.dut.dma_en
+@29
+dma_controller_tb.dut.dma_ack
 @22
 +{dma_controller_tb.dut.IN_from_DEV} dma_controller_tb.dut.dev_in[7:0]
 +{dma_controller_tb.dut.IN_from_MSP} dma_controller_tb.dut.dma_in[7:0]
@@ -244,7 +237,6 @@ dma_controller_tb.dut.dma_addr[4:0]
 @28
 dma_controller_tb.dut.mux
 @22
-dma_controller_tb.dut.count[4:0]
 dma_controller_tb.dut.old_address[4:0]
 @28
 dma_controller_tb.dut.old_addr_reg_en

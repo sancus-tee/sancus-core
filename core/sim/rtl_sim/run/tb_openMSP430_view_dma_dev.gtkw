@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Fri Nov  2 09:45:46 2018
+[*] Fri Nov  2 14:23:36 2018
 [*]
 [dumpfile] "/home/sergio/sancus-core/core/sim/rtl_sim/run/tb_openMSP430.vcd"
-[dumpfile_mtime] "Fri Nov  2 09:41:07 2018"
-[dumpfile_size] 263383
+[dumpfile_mtime] "Fri Nov  2 14:23:00 2018"
+[dumpfile_size] 265782
 [savefile] "/home/sergio/sancus-core/core/sim/rtl_sim/run/tb_openMSP430_view_dma_dev.gtkw"
 [timestart] 1903000
 [size] 1366 704
 [pos] -1 -1
-*-17.878859 2425000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-17.878859 2525000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_openMSP430.
 [treeopen] tb_openMSP430.dma_cntrl.
 [sst_width] 233
@@ -104,7 +104,7 @@ tb_openMSP430.dma_cntrl.dma_addr[15:0]
 tb_openMSP430.dma_cntrl.flag_cnt_words
 @22
 tb_openMSP430.dma_cntrl.count[4:0]
-@201
+@200
 -DMA Contr. Outs
 @22
 tb_openMSP430.dma_cntrl.dev_in[15:0]
@@ -138,6 +138,8 @@ tb_openMSP430.dma_cntrl.dma_out[15:0]
 -Internal FIFO
 @28
 tb_openMSP430.dma_cntrl.fifo_en
+@29
+tb_openMSP430.dma_cntrl.fifo_mem.fifo_wr_rd
 @22
 tb_openMSP430.dma_cntrl.fifo_out[15:0]
 tb_openMSP430.dma_cntrl.fifo_mem.fifo_addr[4:0]

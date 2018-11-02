@@ -87,7 +87,6 @@ wire end_count;
 wire [FIFO_DEPTH-1:0] count;	
 wire [FIFO_DEPTH-1:0] count_in;	
 reg count_rst, count_en;
-wire count_en_1;
 reg count_load;
 //FSM control logic  
 reg flag_cnt_words; //end-count for the FSM
@@ -97,8 +96,37 @@ reg drive_dma_addr; //0: dma_addr = 'hz || 1: dma_addr
 
 
 //FSM States Definition
-reg [4:0] state, next_state; // codifies the states
+`ifdef SIM
+	reg [15*8:0] state, next_state; //states stored in ASCII 
+`else
+	reg [4:0]state, next_state; //just codifies the states
+`endif
 
+`ifdef SIM
+localparam 	IDLE  = "IDLE",
+			GET_REGS  = "GET_REGS",
+			LOAD_DMA_ADD  = "LOAD_DMA_ADD",
+			READ_MEM  = "READ_MEM",
+			ERROR  = "ERROR",
+			SEND_TO_DEV0  = "SEND_TO_DEV0",
+			WAIT_READ  = "WAIT_READ",
+			SEND_TO_DEV1  = "SEND_TO_DEV1",
+			OLD_ADDR_RD = "OLD_ADDR_RD",
+			NOP  = "NOP",
+			END_READ  = "END_READ",
+			// Write 
+			READ_DEV0  = "READ_DEV0",
+			READ_DEV1  = "READ_DEV1",
+			WAIT_WRITE  = "WAIT_WRITE",
+			SEND_TO_MEM0  = "SEND_TO_MEM0",
+			SEND_TO_MEM1  = "SEND_TO_MEM1",
+			OLD_ADDR_WR  = "OLD_ADDR_WR",
+			END_WRITE  = "END_WRITE",
+			// Fifo full 
+			FIFO_FULL_READ  = "FIFO_FULL_READ",
+			EMPTY_FIFO_READ  = "EMPTY_FIFO_READ",
+			RESET  = "RESET";
+`else
 localparam 	IDLE  = 0,
 			GET_REGS  = 1,
 			// Read
@@ -123,6 +151,7 @@ localparam 	IDLE  = 0,
 			FIFO_FULL_READ  = 18,
 			EMPTY_FIFO_READ  = 19,
 			RESET  = 20;
+`endif
 
 //--------------------------------//
 //--------------------------------//
@@ -177,20 +206,17 @@ assign dma_addr = drive_dma_addr ? ( mux ? old_address : address) :
 					{ADD_LEN{1'bz}};
 
 //Counter
-assign count_en_1 = count_en | ((state == LOAD_DMA_ADD) & (next_state == READ_MEM));
-//XXX È un po' una suinata ma è la cosa più semplice che ho trovato! Alla fine si trattava di gestire un solo maledetto caso, quindi ho scelto di fare l'hardware ad-hoc. Sono pure due stati consecutivi, quindi hanno solo l'ultimo bit diverso! Vuol dire che solo per l'ultimo bit ho bisogno di 2 AND gate, per gli altri possono essere condivisi.
-
 counter #(.L(FIFO_DEPTH)) count0 (
 	.clk(clk),
 	.load(count_load),
 	.rst(count_rst),
-	.cnt_en(count_en_1),
-	.data_in({{FIFO_DEPTH-1{1'b0}},1'b1}), //necessary for write states, where you need to count 1 time less: the idea is to make the counter start from 1 instead of 0.
+	.cnt_en(1'b0),
+	.data_in({FIFO_DEPTH{1'b0}}),
 	.cnt(count),
 	.end_cnt(end_count));
 
 always @(count,words) begin
-	flag_cnt_words = (count == words); //NON words-1 PERCHÈ IL CONTEGGIO È FATTO SUL TERZO COLPO DI CLOCK in lettura
+	flag_cnt_words = (count == words-1);
 end	
 
 //State Assignment
@@ -202,7 +228,7 @@ always @(posedge clk,posedge reset)	begin
 end
 
 //Next State Generation
-always @(state, rqst, rd_wr, dma_ready, fifo_full, dma_resp, flag_cnt_words, flag_cnt_words, dev_ack, fifo_empty_partial, reset) begin
+always @(state, rqst, rd_wr, dma_ready, fifo_full, dma_resp, flag_cnt_words, dev_ack, fifo_empty_partial, reset) begin
 		next_state <= IDLE; //default
 		case (state)
 			RESET :

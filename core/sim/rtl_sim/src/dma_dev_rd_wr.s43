@@ -48,7 +48,7 @@ main:
         /* --------------     TEST RD/WR REGISTER ACCESS     --------------- */
 
 	mov  #DMEM_200 , &START_ADDR 
-	mov  #0x0002   , &N_WORDS    ; config number of words
+	mov  #0x0001   , &N_WORDS    ; config number of words
 	mov  #0x3333   , &DATA_REG
 	nop
 	nop

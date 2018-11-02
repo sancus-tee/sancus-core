@@ -34,9 +34,11 @@ wire    [ADDR_SIZE-1:0] fifo_addr;
 wire                    increment_wr;
 wire                    increment_rd;
 wire                    decoder_en;
-`ifdef SIM | DMA_CONTR_TEST
+
+`ifdef SIM //| DMA_CONTR_TEST)
 wire [DATA:0] fifo_regs [2**ADDR_SIZE-1:0]; //DATA and not DATA-1 since 1 bit stores the read/write state of the reg
 `endif
+
 reg     [ADDR_SIZE-1:0] wr_addr;
 reg     [ADDR_SIZE-1:0] rd_addr;
 reg     [ADDR_SIZE-1:0] fifo_old_addr; 

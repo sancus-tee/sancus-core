@@ -1,4 +1,4 @@
-module fifo_reg (
+module fifo_reg_synch (
 	clk,
 	reg_en,
 	wr_rd,
