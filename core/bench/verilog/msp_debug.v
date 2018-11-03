@@ -544,10 +544,10 @@ always @(dma_cntrl_state)
 		2	: dma_state   = "LOAD_DMA_ADD";
 		3	: dma_state   = "READ_MEM";
 		4	: dma_state   = "ERROR";
-		5	: dma_state   = "SEND_TO_DEV0";
-		6	: dma_state   = "WAIT_READ";
-		7	: dma_state   = "SEND_TO_DEV1";
-		8	: dma_state   = "OLD_ADDR_RD";
+		5	: dma_state   = "OLD_ADDR_RD";
+		6	: dma_state   = "SEND_TO_DEV0";
+		7	: dma_state   = "WAIT_READ";
+		8	: dma_state   = "SEND_TO_DEV1";
 		9	: dma_state   = "NOP";
 		10	: dma_state   = "END_READ";
 		11	: dma_state   = "READ_DEV0";

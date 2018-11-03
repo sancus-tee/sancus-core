@@ -39,28 +39,35 @@
 
 .global main
 
-.set START_ADDR	, 0x0100;
-.set N_WORDS	, 0x0102;
-.set CONFIG		, 0x0104;
-.set DATA_REG	, 0x0106;
+.equ START_ADDR	, 0x0100         ; Use EQU for constants, SET for variables
+.equ N_WORDS	, 0x0102;
+.equ CONFIG		, 0x0104;
+.equ DATA_REG	, 0x0106;
+
+.equ WRITE_OP   , 0x0001;
+.equ READ_OP    , 0x0005;
 
 main:
         /* --------------     TEST RD/WR REGISTER ACCESS     --------------- */
 
-	mov  #DMEM_200 , &START_ADDR 
-	mov  #0x0001   , &N_WORDS    ; config number of words
-	mov  #0x3333   , &DATA_REG
-	nop
-	nop
-	mov  #0x0001   , &CONFIG
-	mov  #0x0001   , r15
-	nop
-	nop
-	nop
-	mov  #0x0005   , &CONFIG 
-	nop
-	mov  #0x0002   , r15
-
+	   mov    #DMEM_200 , &START_ADDR 
+	   mov    #0x0001   , &N_WORDS   ; Config number of words
+	   mov    #0x3333   , &DATA_REG  ; Try to wirte in data_reg read-only reg. It should fail. 
+	   mov    #0x0001   , &CONFIG    ; Setup a write-to-mem op.
+	   
+LOOP1: mov    #0x8000   , r5         ; Bit mask to detect end_flag	   
+       and.b  #CONFIG   , r5         ; Save the ANDed content in r5 
+       cmp.w  0x8000    , r5     
+	   jne    LOOP1                  ; loops until end_flag assertion.
+	   mov    #0x0001   , r15        ; End of write-op
+	   mov    #0x0005   , &CONFIG    ; Setup a read-from-mem op.
+	   
+LOOP2: mov    #0x8000   , r5         ; Set the bit mask for the end_flag detection
+	   and.w  #CONFIG    , r5         ; Save the ANDed content in r5
+       cmp.w  r5        , 0x8000     
+	   jne    LOOP2                  ; loops until end_flag assertion.
+	   
+	   mov    #0x0002   , r15        ; End of write-op
 
 
         /* ----------------------         END OF TEST        --------------- */

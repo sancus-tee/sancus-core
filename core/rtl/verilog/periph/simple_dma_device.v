@@ -164,7 +164,7 @@ assign		dma_rd_wr = config_reg[2]; // 1: Read | 0: Write
 // DATA_REG: it is read-only for the CPU!
 //---------------------------------------   
 reg  [15:0] data_reg;
-wire        data_wr = dma_ack & dma_rqst & ~dma_rd_wr;
+wire        data_wr = dma_ack & dma_rqst & dma_rd_wr;
 
 always @ (posedge clk or posedge reset)
   if (reset)        data_reg <=  16'h0000;
