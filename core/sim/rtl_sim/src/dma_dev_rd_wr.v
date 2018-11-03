@@ -36,6 +36,7 @@
 /*===========================================================================*/
 
 `define PERIPH_TEMPLATE
+reg [32*8-1:0] simulation_status;
 
 initial
    begin
@@ -44,14 +45,12 @@ initial
       $display(" ===============================================");
       repeat(5) @(posedge mclk);
       stimulus_done = 0;
-
-      // TEST RD/WR REGISTER ACCESS
-      //--------------------------------------------------------
+      simulation_status = "IDLE";
       @(r15==16'h0001);
-   //   if (mem200 !== 16'h7777) tb_error("====== Writing Failed: @0x200 != 0x5555 =====");
-      
+      simulation_status = "WRITE-TO-MEM";
       @(r15==16'h0002);
-     // if (mem200 !== 16'h7777) tb_error("====== Reading Failed: @0x200 != 0x5555 =====");     
+	  simulation_status = "READ-FROM-MEM";
+      @(r15==16'h0003);
       stimulus_done = 1;
    end
 

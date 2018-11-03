@@ -87,23 +87,13 @@ wire               per_en;
 wire        [15:0] dma_dout;
 wire               dma_ready;
 wire               dma_resp;
+wire        [15:1] dma_addr;
+wire        [15:0] dma_din;
+wire               dma_en;
+wire               dma_priority;
+wire         [1:0] dma_we;
+wire               dma_wkup;
 
-`ifdef DMA_CONTR_TEST
- wire       [15:0] dma_addr_16;
- wire       [15:1] dma_addr = dma_addr_16[15:1];
- wire       [15:0] dma_din;
- wire              dma_en;
- wire              dma_priority;
- wire        [1:0] dma_we;
- wire              dma_wkup;
-`else //dma_task.v in use
- reg        [15:1] dma_addr;
- reg        [15:0] dma_din;
- reg               dma_en;
- reg               dma_priority;
- reg         [1:0] dma_we;
- reg               dma_wkup;
-`endif
 
 // Digital I/O
 wire               irq_port1;
@@ -478,10 +468,11 @@ wire		dma_ack;
 wire [15:0]	dev_in;
 wire		dma_end_flag;
 wire [15:0] per_dout_dma_dev0;
+wire [15:0] dma_addr_logical = dma_addr << 1;//urely for GTKVIEW waveforms
 //
 // DMA Controller
 //----------------------------------
-dma_controller #( .ADD_LEN(16),
+dma_controller #( .ADD_LEN(15),
 				  .DATA_LEN(16),
 				  .FIFO_DEPTH(FIFO_DEPTH))	
 	dma_cntrl (
@@ -490,7 +481,7 @@ dma_controller #( .ADD_LEN(16),
 	.end_flag		(dma_end_flag),
 	.dev_out		(dev_in),
 	// Outputs to OpenMSP430
-	.dma_addr		(dma_addr_16),
+	.dma_addr		(dma_addr),
 	.dma_out		(dma_din),
 	.dma_en			(dma_en),
 	.dma_priority	(dma_priority),

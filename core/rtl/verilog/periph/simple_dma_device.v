@@ -138,7 +138,7 @@ assign dma_num_words = n_words;
 //-----------------   
 reg  [15:0] config_reg;
 wire        config_wr_ext = reg_wr[CONFIG];
-wire 		config_wr_intern;
+reg 		config_wr_intern;
 
 always @ (posedge clk or posedge reset)
   if (reset)        		 config_reg <=  16'h0000;
@@ -202,11 +202,20 @@ wire [7:0] 	internal_status;
 // --------------------------------------
 
 
-assign internal_status[7]	= dma_end_flag;
+assign internal_status[7]	= config_wr_intern;//dma_end_flag;
 assign internal_status[6:0]	= {7{1'b0}};
-// All the signals that cause a change in the internal_status should be ORed to trigger a writing in the config_reg. In this case, it's only dma_end_flag.
-assign config_wr_intern	= dma_end_flag;
-assign dev_out 			= (~dma_rd_wr & dma_rqst) ? 16'h7777 : 16'h0000;
+
+wire   config_intern_change = dma_end_flag; // All the signals that cause a change in the internal_status should be here ORed to trigger a writing in the config_reg. In this case, it's only dma_end_flag.
+always @(config_intern_change) begin	
+	config_wr_intern	<= 1'b1;
+	@(posedge clk) config_wr_intern	<= 1'b0;
+end
+
+reg [15:0] incremental_out = 16'h0000;
+always @(posedge clk) begin
+	incremental_out = incremental_out +1;
+end
+assign dev_out 			= (~dma_rd_wr & dma_rqst) ? incremental_out : 16'h0000;
 
 		
 
