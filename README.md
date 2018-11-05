@@ -8,7 +8,7 @@ Minimal OpenMSP430 hardware extensions for isolation and attestation.
 
 ## Write to Memory
 Device - DMA interface
-![alt text](https://imgur.com/N0BktJo)
+![Imgur](https://i.imgur.com/N0BktJo.png)
 
 What is written into openMSP430 memory and into device internal registers
 ![Imgur](https://i.imgur.com/HEllTXG.png)
@@ -16,10 +16,10 @@ What is written into openMSP430 memory and into device internal registers
 
 ## Read from Memory
 Device - DMA interface
-![alt text](https://imgur.com/FvPgiMc)
+![Imgur](https://i.imgur.com/FvPgiMc.png)
 
 What is written into openMSP430 memory and into device internal registers
-![alt text](https://imgur.com/RsL1yWP)
+![Imgur](https://i.imgur.com/RsL1yWP.png)
 
 ## Overview
 
