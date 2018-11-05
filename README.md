@@ -11,7 +11,7 @@ Device - DMA interface
 ![Imgur](https://i.imgur.com/N0BktJo.png)
 
 What is written into openMSP430 memory and into device internal registers
-![Imgur](https://i.imgur.com/HEllTXG.png)
+![Imgur](https://i.imgur.com/RsL1yWP.png)
 
 
 ## Read from Memory
@@ -19,7 +19,7 @@ Device - DMA interface
 ![Imgur](https://i.imgur.com/FvPgiMc.png)
 
 What is written into openMSP430 memory and into device internal registers
-![Imgur](https://i.imgur.com/RsL1yWP.png)
+![Imgur](https://i.imgur.com/HEllTXG.png)
 
 ## Overview
 
