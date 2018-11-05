@@ -93,7 +93,7 @@ reg count_rst, count_en;
 reg count_load;
 // FSM control logic  
 wire security_violation;
-reg flag_cnt_words; //end-count for the FSM
+reg flag_cnt_words, flag_cnt_words_read; //end-counts for the FSM
 reg out_to_msp; //1: FIFO out to DMA || 0: FIFO out to DEV
 reg error_flag;  
 reg drive_dma_addr; //0: dma_addr = 'hz || 1: dma_addr
@@ -216,12 +216,13 @@ counter #(.L(ADD_LEN-1)) count0 (
 	.load(count_load),
 	.rst(count_rst),
 	.cnt_en(count_en),
-	.data_in({ADD_LEN-1{1'b0}}),
+	.data_in({{ADD_LEN-2{1'b0}},1'b0}),
 	.cnt(count),
 	.end_cnt(end_count));
 
 always @(count,words) begin
-	flag_cnt_words = (count == words-1);
+	flag_cnt_words = (count == words-1); 
+	flag_cnt_words_read = (count == words); // flag count for the read case
 end	
 
 // State Assignment
@@ -233,7 +234,7 @@ always @(posedge clk,posedge reset)	begin
 end
 
 // Next State Generation
-always @(state, rqst, rd_wr, dma_ready, fifo_full, dma_resp, flag_cnt_words, dev_ack, fifo_empty_partial, reset) begin
+always @(state, rqst, rd_wr, dma_ready, fifo_full, dma_resp, flag_cnt_words, flag_cnt_words_read, dev_ack, fifo_empty_partial, reset) begin
 		next_state <= IDLE; // default
 		case (state)
 			RESET :
@@ -249,7 +250,7 @@ always @(state, rqst, rd_wr, dma_ready, fifo_full, dma_resp, flag_cnt_words, dev
 			READ_MEM :
 				next_state <= dma_resp  ? ERROR : 
 							  fifo_full ? FIFO_FULL_READ :
-							  flag_cnt_words ? SEND_TO_DEV0 :
+							  flag_cnt_words_read ? SEND_TO_DEV0 :
 							  dma_ready ? READ_MEM : OLD_ADDR_RD;
 			OLD_ADDR_RD : 
 				next_state <= dma_ready ? READ_MEM : OLD_ADDR_RD;
@@ -292,7 +293,7 @@ always @(state, rqst, rd_wr, dma_ready, fifo_full, dma_resp, flag_cnt_words, dev
 end
 
 // Control Signals Generation
-always @(state) begin
+always @(state,dma_ready) begin
 	// default
 	addr0_reg_en <= 1'b0;
 	addr0_rst <= 1'b0;	
@@ -329,9 +330,9 @@ always @(state) begin
 		end
 		IDLE : 
 		begin
+			addr0_rst <= 1'b1;
 			count_rst <= 1'b1;	
 			fifo_rst <= 1'b1;//XXX controlla: secondo me in IDLE ci sta svuotare la FIFO e resettare i WR_ADDR e RD_ADDR, no?
-			addr0_rst <= 1'b1;
 			words_rst <= 1'b1;
 		end
 		GET_REGS : 
@@ -345,37 +346,38 @@ always @(state) begin
 		// Read 
 		LOAD_DMA_ADD :  
 		begin
-			fifo_wr_rd <= 1'b1;
+			count_en <= 1'b1 & dma_ready;
 			dma_en <= 1'b1; // needed to generate dma_ready (#171 in memory_backbone)
 			drive_dma_addr <= 1'b1;
+			fifo_wr_rd <= 1'b1;
 		end
 		READ_MEM : 
 		begin
+			count_en <= 1'b1;
 			dma_en <= 1'b1;
 			drive_dma_addr <= 1'b1;
 			fifo_en <= 1'b1;
 			fifo_wr_rd <= 1'b1;
-			count_en <= 1'b1;
 			old_addr_reg_en <= 1'b1;
 		end
 		OLD_ADDR_RD:
-		begin
-			mux <= 1'b1;
-			fifo_old_add_flag <= 1'b1;
-			fifo_wr_rd <= 1'b1;
+		begin			
 			dma_en <= 1'b1;
 			drive_dma_addr <= 1'b1;
+			fifo_old_add_flag <= 1'b1;
+			fifo_wr_rd <= 1'b1;
+			mux <= 1'b1;
 		end
 		ERROR :
 		begin
-			error_flag <= 1'b1;
 			drive_dma_addr <= 1'b1;
+			error_flag <= 1'b1;	
 		end
 		SEND_TO_DEV0 : 
 		begin
 			count_rst <= 1'b1;
 			`ifdef SIM 
-			dma_ack <= 1'b1; // signal "rqst aquired" to DEV
+			dma_ack <= 1'b1; // to signal to DEV that the rqst has been aquired
 			`endif
 		end
 		WAIT_READ :
@@ -385,9 +387,9 @@ always @(state) begin
 		end
 		SEND_TO_DEV1 :
 		begin
+			dma_ack  <= 1'b1;
 			count_en <= 1'b1;
-			fifo_en <= 1'b1;
-			dma_ack <= 1'b1;
+			fifo_en  <= 1'b1;
 		end
 		NOP : ;// dma_ack <= 1'b1;
 		END_READ : 
@@ -402,16 +404,16 @@ always @(state) begin
 		end
 		READ_DEV1 :
 		begin
-			out_to_msp <= 1'b1;
-			fifo_wr_rd <= 1'b1;
-			fifo_en <= 1'b1;
 			dma_ack <= 1'b1;
 			count_en <= 1'b1;
+			fifo_wr_rd <= 1'b1;
+			fifo_en <= 1'b1;
+			out_to_msp <= 1'b1;
 		end
 		WAIT_WRITE :
-		begin
-			out_to_msp <= 1'b1;
+		begin		
 			fifo_wr_rd <= 1'b1;
+			out_to_msp <= 1'b1;
 		end
 		SEND_TO_MEM0 :
 		begin
@@ -432,13 +434,13 @@ always @(state) begin
 		end
 		OLD_ADDR_WR :
 		begin
-			mux <= 1'b1; 
 			dma_en <= 1'b1;
-			out_to_msp <= 1'b1;
 			dma_we <= 2'b11;
 			drive_dma_addr <= 1'b1;
 			fifo_en <= 1'b1;
 			fifo_old_add_flag <= 1'b1;
+			mux <= 1'b1; 
+			out_to_msp <= 1'b1;
 		end
 		END_WRITE : 
 		begin

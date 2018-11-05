@@ -50,7 +50,7 @@
 .equ END_READ       , 0x8004;
    /* --------------     Values of START_ADD and NUM_WORDS  --------- */
 .set START_ADD      , DMEM_200
-.set N_WORDS        , 0x024
+.set N_WORDS        , 0x0004
 main:
 
         /* --------------     START TEST: 'write-to-mem' and 'read-from-mem' accesses     --------------- */
