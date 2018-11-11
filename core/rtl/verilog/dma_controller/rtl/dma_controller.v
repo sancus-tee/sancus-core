@@ -25,9 +25,11 @@ module dma_controller (
 	dma_we
 );
 
-initial begin
-`ifdef SIM $display("DMA: Simulation acquired at %2d",$time) `endif;
-end
+`ifdef SIM
+ initial begin
+  $display("DMA: Simulation acquired at %2d",$time);
+ end
+`endif
 
 parameter ADD_LEN = 16; // Number of bits for the addresses
 parameter DATA_LEN = 16; // Number of bits for the data
