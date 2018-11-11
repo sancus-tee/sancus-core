@@ -128,6 +128,8 @@ mkdir  ./log
 # Hardware multiplier test patterns
 ../bin/msp430sim mpy_basic                | tee ./log/mpy_basic.log
 
+# DMA read write test with simple device
+../bin/msp430sim dma_dev_rd_wr            | tee ./log/dma_dev_rd_wr.log
 
 # Report regression results
 ../bin/parse_results
