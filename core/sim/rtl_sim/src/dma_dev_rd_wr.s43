@@ -38,37 +38,67 @@
 .include "pmem_defs.asm"
 
 .global main
-	/* --------------     SET device register reference --------------- */
-.equ START_ADDR_REG	, 0x0100         ; Use EQU for constants, SET for variables
-.equ N_WORDS_REG	, 0x0102;
-.equ CONFIG_REG		, 0x0104;
-.equ DATA_REG	    , 0x0106;
-	/* --------------     Device instruction set      --------------- */
-.equ WRITE_OP       , 0x0001;
-.equ READ_OP        , 0x0005;
-.equ END_WRITE      , 0x8000;
-.equ END_READ       , 0x8004;
-   /* --------------     Values of START_ADD and NUM_WORDS  --------- */
-.set START_ADD      , DMEM_200
+	    /* --------------     SET device register reference --------------- */
+.equ START_ADDR_REG	, 0x0100      ; Use EQU for constants, SET for variables
+.equ N_WORDS_REG	, 0x0102
+.equ CONFIG_REG		, 0x0104
+.equ DATA_REG	    , 0x0106
+.equ OUT_REG	    , 0x0108
+	    /* --------------     Device instruction set      --------------- */
+.equ WRITE_OP       , 0x0001
+.equ END_WRITE      , 0x8000
+.equ READ_OP        , 0x0005
+.equ END_READ       , 0x8004
+.equ READ_OP_ACK    , 0x001D
+.equ WAIT_ACK_READ  , 0x200D
+.equ END_READ_ACK   , 0xA00C
+  
+        /* --------------     Values of START_ADD and NUM_WORDS  --------- */
+.set START_ADD      , DMEM_200     ; Starting memory address to be written 
 .set N_WORDS        , 0x0004
+.set OUT_VALUE      , 0xF1D0
 main:
 
         /* --------------     START TEST: 'write-to-mem' and 'read-from-mem' accesses     --------------- */
 
 	   mov    #START_ADD , &START_ADDR_REG 
 	   mov    #N_WORDS   , &N_WORDS_REG ; Config the number of words
-	   mov    #0x3333    , &DATA_REG    ; Try to wirte in data_reg read-only register. It should fail. 
+	   mov    #0x3333    , &DATA_REG    ; Try to write in data_reg read-only register. It should fail. 
+	   
+	   ; Start of operations
 	   mov    #WRITE_OP  , &CONFIG_REG  ; Setup a write-to-mem op.
+	   mov    #OUT_VALUE , &OUT_REG
 	   mov    #0x0001    , r15          ; Start Write-op
 	   
 LOOP1: cmp.w  #END_WRITE , &CONFIG_REG     
 	   jne    LOOP1                    ; loops until end_op.
 	   mov    #0x0002    , r15         ; End of write-op, start read-op
-	   mov    #0x0005    , &CONFIG_REG ; Setup a read-from-mem op.
+	   mov    #READ_OP   , &CONFIG_REG ; Setup a read-from-mem op.
 	   
 LOOP2: cmp.w  #END_READ  , &CONFIG_REG ;      
 	   jne    LOOP2                    ; loops until end_op.	   
-	   mov    #0x0003   , r15          ; End of read-op
+	   mov    #0x0003    , r15          ; End of read-op
+	   
+	   mov    #READ_OP_ACK   , &CONFIG_REG ; Setup a read-from-mem op with dev_ack controlled by main program
+ACK1:  cmp.w  #WAIT_ACK_READ , &CONFIG_REG ;      
+	   jne    ACK1                         ; 
+
+	   mov    #READ_OP_ACK   , &CONFIG_REG ; Setup a read-from-mem op with dev_ack controlled by main program
+ACK2:  cmp.w  #WAIT_ACK_READ , &CONFIG_REG ;      
+	   jne    ACK2                         ; 
+
+	   mov    #READ_OP_ACK   , &CONFIG_REG ; Setup a read-from-mem op with dev_ack controlled by main program
+ACK3:  cmp.w  #WAIT_ACK_READ , &CONFIG_REG ;      
+	   jne    ACK3                         ; 
+
+	   mov    #READ_OP_ACK   , &CONFIG_REG ; Setup a read-from-mem op with dev_ack controlled by main program
+ACK4:  cmp.w  #WAIT_ACK_READ , &CONFIG_REG ;      
+	   jne    ACK4                         ; 
+
+LOOP3: cmp.w  #END_READ_ACK , &CONFIG_REG ;      
+	   jne    LOOP3                    ; loops until end_op.	   
+	   mov    #0x0004    , r15          ; End of read-op	   
+	   
 
 
         /* ----------------------         END OF TEST        --------------- */

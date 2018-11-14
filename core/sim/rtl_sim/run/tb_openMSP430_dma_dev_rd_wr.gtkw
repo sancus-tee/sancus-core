@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Tue Nov 13 21:06:08 2018
+[*] Wed Nov 14 00:15:41 2018
 [*]
 [dumpfile] "/home/sergio/sancus-core/core/sim/rtl_sim/run/tb_openMSP430.vcd"
-[dumpfile_mtime] "Tue Nov 13 21:05:56 2018"
-[dumpfile_size] 395143
+[dumpfile_mtime] "Wed Nov 14 00:15:02 2018"
+[dumpfile_size] 592744
 [savefile] "/home/sergio/sancus-core/core/sim/rtl_sim/run/tb_openMSP430_dma_dev_rd_wr.gtkw"
-[timestart] 2934000
+[timestart] 6333000
 [size] 1311 704
 [pos] -1 -1
-*-18.889263 4098000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-17.889263 7025000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_openMSP430.
 [sst_width] 233
 [signals_width] 269

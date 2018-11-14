@@ -51,6 +51,8 @@ initial
       @(r15==16'h0002);
 	  simulation_status = "READ-FROM-MEM";
       @(r15==16'h0003);
+      simulation_status = "READ-FROM-MEM-ACK";
+      @(r15==16'h0004);
       stimulus_done = 1;
    end
 

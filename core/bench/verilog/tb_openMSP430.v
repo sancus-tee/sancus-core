@@ -312,8 +312,8 @@ initial
 
 initial
   begin
-  	 tmp_seed         = `SEED;
-     tmp_seed         = $urandom(tmp_seed);
+  	 //tmp_seed         = `SEED;
+     //tmp_seed         = $urandom(tmp_seed);
      error            = 0;
      stimulus_done    = 1;
      irq              = 14'h0000;
@@ -864,11 +864,15 @@ initial
           $dumpfile(`DUMPFILE);
           $dumpvars(0, tb_openMSP430);
           `ifdef SHOW_PMEM_WAVES
-          	for (index_mem_dbg= (`PMEM_SIZE-512)/2; i < (`PMEM_SIZE-512)/2+128; i=i+1)
+ //          `include "memory.v" TODO make the memory.v an external module as msp_debug, which contains all the memory cells required
+//									It would make the .gtkw file more ordinated, with tb_openMSP430 containing no junk signals
+          	for (index_mem_dbg= (`PMEM_SIZE-512)/2; index_mem_dbg < (`PMEM_SIZE-512)/2+128; index_mem_dbg=index_mem_dbg+1)
           	$dumpvars(0, pmem_0.mem[index_mem_dbg]);//show the memory content into the waveform! (Sergio) 
        	  `endif
        	  `ifdef SHOW_DMEM_WAVES
-          	for (index_mem_dbg= (`DMEM_SIZE-256)/2; i < (`DMEM_SIZE-256)/2+128; i=i+1)
+ //          `include "memory.v" TODO make the memory.v an external module as msp_debug, which contains all the memory cells required
+//									It would make the .gtkw file more ordinated, with tb_openMSP430 containing no junk signals
+          	for (index_mem_dbg= (`DMEM_SIZE-256)/2; index_mem_dbg < (`DMEM_SIZE-256)/2+128; index_mem_dbg=index_mem_dbg+1)
           	$dumpvars(0, dmem_0.mem[index_mem_dbg]);//show the memory content into the waveform! (Sergio) 
        	  `endif 
        `endif
@@ -960,9 +964,9 @@ initial // Normal end of test
 	      $display("");
               $display("Note: DMA if verification disabled (PMEM must be 4kB or bigger, DMEM must be 1kB or bigger)");
            end
-         $display("");
-         $display("SIMULATION SEED: %d", `SEED);
-         $display("");
+         //$display("");
+         //$display("SIMULATION SEED: %d", `SEED);
+         //$display("");
       end
    endtask
 `endif
