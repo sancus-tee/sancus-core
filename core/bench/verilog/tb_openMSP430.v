@@ -468,7 +468,7 @@ wire		dma_ack;
 wire [15:0]	dev_in;
 wire		dma_end_flag;
 wire [15:0] per_dout_dma_dev0;
-wire [15:0] dma_addr_logical = dma_addr << 1;//urely for GTKVIEW waveforms
+wire [15:0] dma_addr_logical = dma_addr << 1;//purely for GTKVIEW waveforms
 //
 // DMA Controller
 //----------------------------------

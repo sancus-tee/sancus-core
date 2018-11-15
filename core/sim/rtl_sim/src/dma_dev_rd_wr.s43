@@ -55,7 +55,7 @@
   
         /* --------------     Values of START_ADD and NUM_WORDS  --------- */
 .set START_ADD      , DMEM_200     ; Starting memory address to be written 
-.set N_WORDS        , 0x0008
+.set N_WORDS        , 0x0012
 .set OUT_VALUE      , 0xF1D0
 main:
 
@@ -89,27 +89,6 @@ WAIT:  cmp.w  #WAIT_ACK_READ , &CONFIG_REG ;
 
 EXIT:  mov    #0x0004        , r15         ; End of read-op
 	   
-/*	   mov    #READ_OP_ACK   , &CONFIG_REG ; Setup a read-from-mem op with dev_ack controlled by main program
-ACK1:  cmp.w  #WAIT_ACK_READ , &CONFIG_REG ;      
-	   jne    ACK1                         ; 
-
-	   mov    #READ_OP_ACK   , &CONFIG_REG ; Setup a read-from-mem op with dev_ack controlled by main program
-ACK2:  cmp.w  #WAIT_ACK_READ , &CONFIG_REG ;      
-	   jne    ACK2                         ; 
-
-	   mov    #READ_OP_ACK   , &CONFIG_REG ; Setup a read-from-mem op with dev_ack controlled by main program
-ACK3:  cmp.w  #WAIT_ACK_READ , &CONFIG_REG ;      
-	   jne    ACK3                         ; 
-
-	   mov    #READ_OP_ACK   , &CONFIG_REG ; Setup a read-from-mem op with dev_ack controlled by main program
-ACK4:  cmp.w  #WAIT_ACK_READ , &CONFIG_REG ;      
-	   jne    ACK4                         ; 
-
-LOOP3: cmp.w  #END_READ_ACK , &CONFIG_REG ;      
-	   jne    LOOP3                    ; loops until end_op.	   
-	   	   
-	   */
-
 
         /* ----------------------         END OF TEST        --------------- */
 end_of_test:

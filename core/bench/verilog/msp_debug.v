@@ -557,7 +557,7 @@ always @(dma_cntrl_state)
 		15	: dma_state   = "SEND_TO_MEM1";
 		16	: dma_state   = "OLD_ADDR_WR";
 		17	: dma_state   = "END_WRITE";
-		18	: dma_state   = "FIFO_FULL_READ";
+		18	: dma_state   = "WAIT_DEV_ACK";
 		19	: dma_state   = "EMPTY_FIFO_READ";
 		20	: dma_state   = "RESET";      	
 	default : dma_state   = "XXXXX";

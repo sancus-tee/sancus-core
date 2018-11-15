@@ -1,16 +1,18 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Wed Nov 14 00:15:41 2018
+[*] Thu Nov 15 12:18:51 2018
 [*]
 [dumpfile] "/home/sergio/sancus-core/core/sim/rtl_sim/run/tb_openMSP430.vcd"
-[dumpfile_mtime] "Wed Nov 14 00:15:02 2018"
-[dumpfile_size] 592744
+[dumpfile_mtime] "Thu Nov 15 12:18:23 2018"
+[dumpfile_size] 3613266
 [savefile] "/home/sergio/sancus-core/core/sim/rtl_sim/run/tb_openMSP430_dma_dev_rd_wr.gtkw"
-[timestart] 6333000
+[timestart] 0
 [size] 1311 704
 [pos] -1 -1
-*-17.889263 7025000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-22.889263 25000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_openMSP430.
+[treeopen] tb_openMSP430.dma_dev0.
+[treeopen] tb_openMSP430.dut.
 [sst_width] 233
 [signals_width] 269
 [sst_expanded] 1
@@ -54,13 +56,6 @@ tb_openMSP430.dma_dev0.out_reg[15:0]
 @28
 [color] 2
 tb_openMSP430.dma_cntrl.clk
-@22
-tb_openMSP430.mem200[15:0]
-tb_openMSP430.mem202[15:0]
-tb_openMSP430.mem204[15:0]
-tb_openMSP430.mem206[15:0]
-tb_openMSP430.mem208[15:0]
-tb_openMSP430.mem210[15:0]
 @200
 -DMA Controller
 @820
@@ -75,13 +70,52 @@ tb_openMSP430.dma_dev0.dma_rqst
 -DMA - MSP
 @22
 +{tb_openMSP430.dma_cntrl.dma_addr_physical[14:0]} tb_openMSP430.dma_cntrl.dma_addr[14:0]
+@c00022
 tb_openMSP430.dma_addr_logical[15:0]
+@28
+(0)tb_openMSP430.dma_addr_logical[15:0]
+(1)tb_openMSP430.dma_addr_logical[15:0]
+(2)tb_openMSP430.dma_addr_logical[15:0]
+(3)tb_openMSP430.dma_addr_logical[15:0]
+(4)tb_openMSP430.dma_addr_logical[15:0]
+(5)tb_openMSP430.dma_addr_logical[15:0]
+(6)tb_openMSP430.dma_addr_logical[15:0]
+(7)tb_openMSP430.dma_addr_logical[15:0]
+(8)tb_openMSP430.dma_addr_logical[15:0]
+(9)tb_openMSP430.dma_addr_logical[15:0]
+(10)tb_openMSP430.dma_addr_logical[15:0]
+(11)tb_openMSP430.dma_addr_logical[15:0]
+(12)tb_openMSP430.dma_addr_logical[15:0]
+(13)tb_openMSP430.dma_addr_logical[15:0]
+(14)tb_openMSP430.dma_addr_logical[15:0]
+(15)tb_openMSP430.dma_addr_logical[15:0]
+@1401200
+-group_end
+@c00022
 tb_openMSP430.dma_cntrl.dma_in[15:0]
 @28
-+{tb_openMSP430.dma_cntrl.dma_out_to_msp} tb_openMSP430.dma_cntrl.out_to_msp
+(0)tb_openMSP430.dma_cntrl.dma_in[15:0]
+(1)tb_openMSP430.dma_cntrl.dma_in[15:0]
+(2)tb_openMSP430.dma_cntrl.dma_in[15:0]
+(3)tb_openMSP430.dma_cntrl.dma_in[15:0]
+(4)tb_openMSP430.dma_cntrl.dma_in[15:0]
+(5)tb_openMSP430.dma_cntrl.dma_in[15:0]
+(6)tb_openMSP430.dma_cntrl.dma_in[15:0]
+(7)tb_openMSP430.dma_cntrl.dma_in[15:0]
+(8)tb_openMSP430.dma_cntrl.dma_in[15:0]
+(9)tb_openMSP430.dma_cntrl.dma_in[15:0]
+(10)tb_openMSP430.dma_cntrl.dma_in[15:0]
+(11)tb_openMSP430.dma_cntrl.dma_in[15:0]
+(12)tb_openMSP430.dma_cntrl.dma_in[15:0]
+(13)tb_openMSP430.dma_cntrl.dma_in[15:0]
+(14)tb_openMSP430.dma_cntrl.dma_in[15:0]
+(15)tb_openMSP430.dma_cntrl.dma_in[15:0]
+@1401200
+-group_end
 @22
-+{tb_openMSP430.dma_cntrl.dma_out[15:0]} tb_openMSP430.dma_cntrl.dma_out[15:0]
-tb_openMSP430.dma_dev0.dev_out[15:0]
++{tb_openMSP430.dma_cntrl.OUT_to_msp[15:0]} tb_openMSP430.dma_cntrl.dma_out[15:0]
+@28
++{tb_openMSP430.dma_cntrl.dma_out_to_msp} tb_openMSP430.dma_cntrl.out_to_msp
 @200
 -DMA - DEV
 @22
@@ -115,8 +149,29 @@ tb_openMSP430.dma_cntrl.fifo_full
 tb_openMSP430.msp_debug_0.fifo_reg_0[16:0]
 tb_openMSP430.msp_debug_0.fifo_reg_1[16:0]
 tb_openMSP430.msp_debug_0.fifo_reg_2[16:0]
+@c00022
 tb_openMSP430.msp_debug_0.fifo_reg_3[16:0]
-@800122
+@28
+(0)tb_openMSP430.msp_debug_0.fifo_reg_3[16:0]
+(1)tb_openMSP430.msp_debug_0.fifo_reg_3[16:0]
+(2)tb_openMSP430.msp_debug_0.fifo_reg_3[16:0]
+(3)tb_openMSP430.msp_debug_0.fifo_reg_3[16:0]
+(4)tb_openMSP430.msp_debug_0.fifo_reg_3[16:0]
+(5)tb_openMSP430.msp_debug_0.fifo_reg_3[16:0]
+(6)tb_openMSP430.msp_debug_0.fifo_reg_3[16:0]
+(7)tb_openMSP430.msp_debug_0.fifo_reg_3[16:0]
+(8)tb_openMSP430.msp_debug_0.fifo_reg_3[16:0]
+(9)tb_openMSP430.msp_debug_0.fifo_reg_3[16:0]
+(10)tb_openMSP430.msp_debug_0.fifo_reg_3[16:0]
+(11)tb_openMSP430.msp_debug_0.fifo_reg_3[16:0]
+(12)tb_openMSP430.msp_debug_0.fifo_reg_3[16:0]
+(13)tb_openMSP430.msp_debug_0.fifo_reg_3[16:0]
+(14)tb_openMSP430.msp_debug_0.fifo_reg_3[16:0]
+(15)tb_openMSP430.msp_debug_0.fifo_reg_3[16:0]
+(16)tb_openMSP430.msp_debug_0.fifo_reg_3[16:0]
+@1401200
+-group_end
+@c00122
 +{tb_openMSP430.msp_debug_0.fifo_reg_[4:31][16:0]} #{tb_openMSP430.msp_debug_0.fifo_reg_[6:31][16:0]} (0)tb_openMSP430.msp_debug_0.fifo_reg_6[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_6[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_6[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_6[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_6[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_6[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_6[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_6[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_6[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_6[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_6[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_6[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_6[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_6[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_6[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_6[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_6[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_7[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_7[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_7[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_7[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_7[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_7[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_7[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_7[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_7[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_7[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_7[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_7[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_7[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_7[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_7[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_7[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_7[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_8[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_8[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_8[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_8[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_8[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_8[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_8[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_8[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_8[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_8[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_8[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_8[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_8[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_8[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_8[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_8[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_8[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_9[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_9[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_9[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_9[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_9[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_9[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_9[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_9[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_9[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_9[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_9[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_9[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_9[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_9[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_9[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_9[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_9[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_10[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_10[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_10[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_10[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_10[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_10[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_10[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_10[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_10[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_10[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_10[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_10[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_10[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_10[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_10[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_10[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_10[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_11[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_11[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_11[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_11[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_11[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_11[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_11[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_11[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_11[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_11[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_11[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_11[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_11[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_11[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_11[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_11[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_11[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_12[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_12[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_12[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_12[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_12[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_12[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_12[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_12[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_12[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_12[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_12[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_12[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_12[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_12[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_12[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_12[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_12[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_13[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_13[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_13[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_13[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_13[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_13[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_13[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_13[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_13[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_13[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_13[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_13[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_13[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_13[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_13[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_13[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_13[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_14[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_14[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_14[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_14[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_14[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_14[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_14[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_14[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_14[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_14[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_14[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_14[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_14[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_14[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_14[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_14[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_14[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_15[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_15[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_15[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_15[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_15[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_15[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_15[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_15[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_15[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_15[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_15[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_15[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_15[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_15[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_15[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_15[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_15[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_16[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_16[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_16[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_16[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_16[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_16[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_16[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_16[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_16[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_16[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_16[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_16[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_16[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_16[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_16[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_16[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_16[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_17[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_17[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_17[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_17[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_17[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_17[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_17[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_17[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_17[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_17[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_17[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_17[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_17[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_17[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_17[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_17[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_17[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_18[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_18[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_18[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_18[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_18[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_18[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_18[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_18[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_18[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_18[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_18[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_18[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_18[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_18[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_18[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_18[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_18[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_19[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_19[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_19[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_19[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_19[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_19[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_19[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_19[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_19[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_19[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_19[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_19[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_19[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_19[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_19[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_19[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_19[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_20[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_20[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_20[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_20[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_20[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_20[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_20[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_20[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_20[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_20[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_20[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_20[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_20[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_20[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_20[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_20[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_20[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_21[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_21[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_21[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_21[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_21[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_21[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_21[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_21[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_21[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_21[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_21[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_21[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_21[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_21[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_21[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_21[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_21[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_22[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_22[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_22[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_22[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_22[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_22[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_22[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_22[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_22[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_22[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_22[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_22[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_22[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_22[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_22[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_22[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_22[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_23[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_23[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_23[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_23[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_23[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_23[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_23[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_23[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_23[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_23[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_23[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_23[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_23[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_23[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_23[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_23[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_23[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_24[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_24[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_24[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_24[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_24[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_24[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_24[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_24[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_24[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_24[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_24[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_24[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_24[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_24[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_24[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_24[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_24[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_25[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_25[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_25[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_25[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_25[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_25[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_25[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_25[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_25[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_25[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_25[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_25[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_25[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_25[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_25[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_25[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_25[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_26[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_26[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_26[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_26[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_26[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_26[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_26[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_26[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_26[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_26[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_26[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_26[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_26[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_26[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_26[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_26[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_26[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_27[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_27[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_27[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_27[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_27[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_27[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_27[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_27[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_27[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_27[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_27[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_27[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_27[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_27[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_27[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_27[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_27[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_28[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_28[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_28[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_28[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_28[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_28[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_28[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_28[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_28[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_28[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_28[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_28[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_28[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_28[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_28[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_28[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_28[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_29[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_29[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_29[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_29[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_29[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_29[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_29[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_29[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_29[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_29[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_29[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_29[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_29[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_29[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_29[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_29[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_29[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_30[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_30[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_30[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_30[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_30[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_30[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_30[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_30[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_30[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_30[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_30[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_30[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_30[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_30[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_30[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_30[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_30[16:0] (0)tb_openMSP430.msp_debug_0.fifo_reg_31[16:0] (1)tb_openMSP430.msp_debug_0.fifo_reg_31[16:0] (2)tb_openMSP430.msp_debug_0.fifo_reg_31[16:0] (3)tb_openMSP430.msp_debug_0.fifo_reg_31[16:0] (4)tb_openMSP430.msp_debug_0.fifo_reg_31[16:0] (5)tb_openMSP430.msp_debug_0.fifo_reg_31[16:0] (6)tb_openMSP430.msp_debug_0.fifo_reg_31[16:0] (7)tb_openMSP430.msp_debug_0.fifo_reg_31[16:0] (8)tb_openMSP430.msp_debug_0.fifo_reg_31[16:0] (9)tb_openMSP430.msp_debug_0.fifo_reg_31[16:0] (10)tb_openMSP430.msp_debug_0.fifo_reg_31[16:0] (11)tb_openMSP430.msp_debug_0.fifo_reg_31[16:0] (12)tb_openMSP430.msp_debug_0.fifo_reg_31[16:0] (13)tb_openMSP430.msp_debug_0.fifo_reg_31[16:0] (14)tb_openMSP430.msp_debug_0.fifo_reg_31[16:0] (15)tb_openMSP430.msp_debug_0.fifo_reg_31[16:0] (16)tb_openMSP430.msp_debug_0.fifo_reg_31[16:0]
 @22
 tb_openMSP430.msp_debug_0.fifo_reg_4[16:0]
@@ -147,9 +202,101 @@ tb_openMSP430.msp_debug_0.fifo_reg_28[16:0]
 tb_openMSP430.msp_debug_0.fifo_reg_29[16:0]
 tb_openMSP430.msp_debug_0.fifo_reg_30[16:0]
 tb_openMSP430.msp_debug_0.fifo_reg_31[16:0]
-@1001200
+@1401200
 -group_end
 @200
--
+-FIFO_FULL correct.
+-resum. from EMPTYING
+@22
+tb_openMSP430.dma_cntrl.fifo_mem.rd_addr[4:0]
+tb_openMSP430.dma_cntrl.fifo_mem.wr_addr[4:0]
+@201
+-Memory
+@22
+tb_openMSP430.mem200[15:0]
+tb_openMSP430.mem202[15:0]
+tb_openMSP430.mem204[15:0]
+tb_openMSP430.mem206[15:0]
+@c00022
+tb_openMSP430.mem208[15:0]
+@28
+(0)tb_openMSP430.mem208[15:0]
+(1)tb_openMSP430.mem208[15:0]
+(2)tb_openMSP430.mem208[15:0]
+(3)tb_openMSP430.mem208[15:0]
+(4)tb_openMSP430.mem208[15:0]
+(5)tb_openMSP430.mem208[15:0]
+(6)tb_openMSP430.mem208[15:0]
+(7)tb_openMSP430.mem208[15:0]
+(8)tb_openMSP430.mem208[15:0]
+(9)tb_openMSP430.mem208[15:0]
+(10)tb_openMSP430.mem208[15:0]
+(11)tb_openMSP430.mem208[15:0]
+(12)tb_openMSP430.mem208[15:0]
+(13)tb_openMSP430.mem208[15:0]
+(14)tb_openMSP430.mem208[15:0]
+(15)tb_openMSP430.mem208[15:0]
+@1401200
+-group_end
+@22
+tb_openMSP430.mem20A[15:0]
+tb_openMSP430.mem20C[15:0]
+tb_openMSP430.mem20E[15:0]
+tb_openMSP430.mem210[15:0]
+tb_openMSP430.mem212[15:0]
+tb_openMSP430.mem214[15:0]
+tb_openMSP430.mem216[15:0]
+tb_openMSP430.mem218[15:0]
+tb_openMSP430.mem21A[15:0]
+tb_openMSP430.mem21C[15:0]
+tb_openMSP430.mem21E[15:0]
+tb_openMSP430.mem220[15:0]
+tb_openMSP430.mem222[15:0]
+tb_openMSP430.mem224[15:0]
+tb_openMSP430.mem226[15:0]
+tb_openMSP430.mem228[15:0]
+tb_openMSP430.mem22A[15:0]
+tb_openMSP430.mem22C[15:0]
+tb_openMSP430.mem22E[15:0]
+tb_openMSP430.mem230[15:0]
+tb_openMSP430.mem232[15:0]
+tb_openMSP430.mem234[15:0]
+tb_openMSP430.mem236[15:0]
+tb_openMSP430.mem238[15:0]
+tb_openMSP430.mem23A[15:0]
+tb_openMSP430.mem23C[15:0]
+tb_openMSP430.mem23E[15:0]
+tb_openMSP430.mem240[15:0]
+tb_openMSP430.mem242[15:0]
+tb_openMSP430.mem244[15:0]
+tb_openMSP430.mem246[15:0]
+tb_openMSP430.mem248[15:0]
+tb_openMSP430.mem24A[15:0]
+tb_openMSP430.mem24C[15:0]
+tb_openMSP430.mem24E[15:0]
+tb_openMSP430.mem250[15:0]
+tb_openMSP430.mem252[15:0]
+tb_openMSP430.mem254[15:0]
+tb_openMSP430.mem256[15:0]
+tb_openMSP430.mem258[15:0]
+tb_openMSP430.mem25A[15:0]
+tb_openMSP430.mem25C[15:0]
+tb_openMSP430.mem25E[15:0]
+tb_openMSP430.mem260[15:0]
+tb_openMSP430.mem262[15:0]
+tb_openMSP430.mem264[15:0]
+tb_openMSP430.mem266[15:0]
+tb_openMSP430.mem268[15:0]
+tb_openMSP430.mem26A[15:0]
+tb_openMSP430.mem26C[15:0]
+tb_openMSP430.mem26E[15:0]
+tb_openMSP430.mem270[15:0]
+tb_openMSP430.mem272[15:0]
+tb_openMSP430.mem274[15:0]
+tb_openMSP430.mem276[15:0]
+tb_openMSP430.mem278[15:0]
+tb_openMSP430.mem27A[15:0]
+tb_openMSP430.mem27C[15:0]
+tb_openMSP430.mem27E[15:0]
 [pattern_trace] 1
 [pattern_trace] 0

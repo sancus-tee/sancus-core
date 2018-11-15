@@ -128,7 +128,7 @@ localparam 	IDLE  = "IDLE",
 			OLD_ADDR_WR  = "OLD_ADDR_WR",
 			END_WRITE  = "END_WRITE",
 			// Fifo full 
-			FIFO_FULL_READ  = "FIFO_FULL_READ",
+			WAIT_DEV_ACK  = "WAIT_DEV_ACK",
 			EMPTY_FIFO_READ  = "EMPTY_FIFO_READ",
 			RESET  = "RESET";
 `else
@@ -153,7 +153,7 @@ localparam 	IDLE  = 0,
 			OLD_ADDR_WR  = 16,
 			END_WRITE  = 17,
 			// Fifo full
-			FIFO_FULL_READ  = 18,
+			WAIT_DEV_ACK  = 18,
 			EMPTY_FIFO_READ  = 19,
 			RESET  = 20;
 `endif
@@ -210,7 +210,7 @@ register #(.REG_DEPTH(ADD_LEN)) old_addr0 (
 								
 assign address = start_address + count;
 assign dma_addr = drive_dma_addr ? ( mux ? old_address : address) :
-					{ADD_LEN{1'bz}};
+					{ADD_LEN{1'bz}};  //{1'b0}}; XXX: puoi mettere 1'b0 per questioni estetiche, meno rosso a schermo. Funziona in entrambi i modi, però personalmente sia meglio avere un indirizzo in alta impedenza che a zero, in modo tale da accorgersi nel caso si vada a leggerlo involontariamente
 
 // Counter
 counter #(.L(ADD_LEN-1)) count0 (
@@ -251,7 +251,7 @@ always @(state, rqst, rd_wr, dma_ready, fifo_full, dma_resp, flag_cnt_words, fla
 				next_state <= dma_ready ? READ_MEM : LOAD_DMA_ADD;
 			READ_MEM :
 				next_state <= dma_resp  ? ERROR : 
-							  fifo_full ? FIFO_FULL_READ :
+							  fifo_full ? WAIT_DEV_ACK :
 							  flag_cnt_words_read ? SEND_TO_DEV0 :
 							  dma_ready ? READ_MEM : OLD_ADDR_RD;
 			OLD_ADDR_RD : 
@@ -286,11 +286,11 @@ always @(state, rqst, rd_wr, dma_ready, fifo_full, dma_resp, flag_cnt_words, fla
 			END_WRITE : 
 				next_state <= IDLE;
 			// Fifo full
-			FIFO_FULL_READ : 
-				next_state <= dev_ack ? EMPTY_FIFO_READ : FIFO_FULL_READ;
+			WAIT_DEV_ACK : 
+				next_state <= dev_ack ? EMPTY_FIFO_READ : WAIT_DEV_ACK;
 			EMPTY_FIFO_READ :
 			    next_state <= fifo_empty_partial ? READ_MEM : 
-						      dev_ack ? EMPTY_FIFO_READ : FIFO_FULL_READ;
+						      dev_ack ? EMPTY_FIFO_READ : WAIT_DEV_ACK;
 		endcase
 end
 
@@ -451,13 +451,14 @@ always @(state,dma_ready) begin
 			end_flag <= 1'b1;
 		end
 		// Fifo full
-		FIFO_FULL_READ : 
+		WAIT_DEV_ACK : 
 		begin
-			dma_ack <= 1'b1;
-			dma_en <= 1'b1;
+			//dma_ack <= 1'b1;
+			//dma_en <= 1'b1;
 		end
 		EMPTY_FIFO_READ :
 		begin
+			dma_ack <= 1'b1;
 			fifo_en <= 1'b1;
 		end
 		endcase	

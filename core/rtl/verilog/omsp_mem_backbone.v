@@ -108,9 +108,9 @@ output         [1:0] dmem_wen;      // Data Memory write enable (low active)
 output        [15:0] eu_mdb_in;     // Execution Unit Memory data bus input
 output        [15:0] fe_mdb_in;     // Frontend Memory data bus input
 output               fe_pmem_wait;  // Frontend wait for Instruction fetch
-output        [15:0] dma_dout;          // Direct Memory Access data output
-output               dma_ready;         // Direct Memory Access is complete
-output               dma_resp;          // Direct Memory Access response (0:Okay / 1:Error)
+output        [15:0] dma_dout;      // Direct Memory Access data output
+output               dma_ready;     // Direct Memory Access is complete
+output               dma_resp;      // Direct Memory Access response (0:Okay / 1:Error)
 output        [13:0] per_addr;      // Peripheral address
 output        [15:0] per_din;       // Peripheral data input
 output         [1:0] per_we;        // Peripheral write enable (high active)
@@ -137,11 +137,11 @@ input         [15:0] eu_mdb_out;    // Execution Unit Memory data bus output
 input         [14:0] fe_mab;        // Frontend Memory address bus
 input                fe_mb_en;      // Frontend Memory bus enable
 input                mclk;          // Main system clock
-input         [15:1] dma_addr;          // Direct Memory Access address
-input         [15:0] dma_din;           // Direct Memory Access data input
-input                dma_en;            // Direct Memory Access enable (high active)
-input                dma_priority;      // Direct Memory Access priority (0:low / 1:high)
-input          [1:0] dma_we;            // Direct Memory Access write byte enable (high active)
+input         [15:1] dma_addr;      // Direct Memory Access address
+input         [15:0] dma_din;       // Direct Memory Access data input
+input                dma_en;        // Direct Memory Access enable (high active)
+input                dma_priority;  // Direct Memory Access priority (0:low / 1:high)
+input          [1:0] dma_we;        // Direct Memory Access write byte enable (high active)
 input         [15:0] per_dout;      // Peripheral data output
 input         [15:0] pmem_dout;     // Program Memory data output
 input                puc_rst;       // Main system reset
