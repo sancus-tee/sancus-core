@@ -210,7 +210,10 @@ register #(.REG_DEPTH(ADD_LEN)) old_addr0 (
 								
 assign address = start_address + count;
 assign dma_addr = drive_dma_addr ? ( mux ? old_address : address) :
-					{ADD_LEN{1'bz}};  //{1'b0}}; XXX: puoi mettere 1'b0 per questioni estetiche, meno rosso a schermo. Funziona in entrambi i modi, però personalmente sia meglio avere un indirizzo in alta impedenza che a zero, in modo tale da accorgersi nel caso si vada a leggerlo involontariamente
+					{ADD_LEN{1'bz}};// {1'b0}}; XXX: puoi mettere 1'b0 per questioni estetiche, 
+					                // meno rosso a schermo. Funziona in entrambi i modi, però 
+					                // personalmente sia meglio avere un indirizzo in alta impedenza 
+					                // che a zero, in modo tale da accorgersi nel caso si vada a leggerlo involontariamente
 
 // Counter
 counter #(.L(ADD_LEN-1)) count0 (
@@ -384,8 +387,10 @@ always @(state,dma_ready) begin
 		end
 		WAIT_READ :
 		begin
-			// NOP: it's not important to signal the DMA request, since the DMA is the master! Every time dev_ack goes LOW, device will say when it's ready again, then it will re-synch again passing by its synchronization 'START_READING' state. 
-			//Furthermore, dma_ack will be used as "data_valid" flag and now the avaiabla data is not valid at all
+			// NOP: it's not important to signal the DMA request, since the DMA is the master! 
+			// Every time dev_ack goes LOW, device will say when it's ready again, then it will 
+			// re-synch again passing by its synchronization 'START_READING' state. 
+			// Furthermore, dma_ack will be used as "data_valid" flag and now the avaiabla data is not valid at all
 		end
 		SEND_TO_DEV1 :
 		begin
