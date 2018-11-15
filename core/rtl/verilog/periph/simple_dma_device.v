@@ -162,7 +162,7 @@ always @ (posedge clk or posedge reset )
                                              config_reg[3:1], config_reg[START] & ~internal_status[7]}; 
   else                       config_reg <= config_reg;
 
-// DATA_REG: it is read-only for the CPU!
+// DATA_REG: Bridge between DMA Contr. and Dev.- It's Read-only for the CPU!
 //---------------------------------------   
 reg  [15:0] data_reg;
 wire        data_wr = dma_ack & dma_rqst & dma_rd_wr;
