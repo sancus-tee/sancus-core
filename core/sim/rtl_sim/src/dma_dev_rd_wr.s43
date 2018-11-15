@@ -55,7 +55,7 @@
   
         /* --------------     Values of START_ADD and NUM_WORDS  --------- */
 .set START_ADD      , DMEM_200     ; Starting memory address to be written 
-.set N_WORDS        , 0x0004
+.set N_WORDS        , 0x0008
 .set OUT_VALUE      , 0xF1D0
 main:
 
@@ -79,14 +79,13 @@ LOOP2: cmp.w  #END_READ  , &CONFIG_REG ;
 	   jne    LOOP2                    ; loops until end_op.	   
 	   mov    #0x0003    , r15         ; End of read-op
 	   	   
-	   mov    #READ_OP_ACK   , &CONFIG_REG ; Setup first read  	   
-       jmp    END
 SET:   mov    #READ_OP_ACK   , &CONFIG_REG ;   
 END:   cmp.w  #END_READ_ACK  , &CONFIG_REG ;      
 	   jne    WAIT
-	   jeq    EXIT	     
+	   jeq    EXIT
 WAIT:  cmp.w  #WAIT_ACK_READ , &CONFIG_REG ;      
-	   jeq    SET                          ;  
+	   jeq    SET                          ;
+	   jne    END  
 
 EXIT:  mov    #0x0004        , r15         ; End of read-op
 	   
