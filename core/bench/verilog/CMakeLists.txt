@@ -7,6 +7,7 @@ set(SRC
     msp_debug.v
     file_io.v
     dbg_uart_tasks.v
+    dma_tasks.v #(Sergio)
     sancus-def.v
     irq_macros.v
 )

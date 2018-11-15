@@ -50,6 +50,13 @@ set(SRC
     periph/omsp_spi_master.v
     periph/spi_master.v
     periph/omsp_led_digits.v
-)
+    periph/simple_dma_device.v # Attacker through DMA interface
+    dma_controller/rtl/counter.v #(Sergio's DMA interface support) 
+    dma_controller/rtl/decoder.v 
+    dma_controller/rtl/dma_controller.v
+    dma_controller/rtl/fifo.v
+    dma_controller/rtl/fifo_reg.v
+    dma_controller/rtl/register.v
+    )
 
 install(FILES ${SRC} DESTINATION ${INSTALL_RTL_PATH})
