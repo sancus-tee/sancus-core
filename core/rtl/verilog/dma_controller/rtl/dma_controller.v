@@ -213,7 +213,8 @@ assign dma_addr = drive_dma_addr ? ( mux ? old_address : address) :
 					{ADD_LEN{1'bz}};// {1'b0}}; XXX: puoi mettere 1'b0 per questioni estetiche, 
 					                // meno rosso a schermo. Funziona in entrambi i modi, però 
 					                // personalmente sia meglio avere un indirizzo in alta impedenza 
-					                // che a zero, in modo tale da accorgersi nel caso si vada a leggerlo involontariamente
+					                // che a zero, in modo tale da accorgersi nel caso si vada a 
+					                // leggerlo involontariamente
 
 // Counter
 counter #(.L(ADD_LEN-1)) count0 (
