@@ -1,0 +1,7 @@
+# Project
+openmsp430/
+
+# Vivado
+.Xil/
+*.log
+*.jou
