@@ -15,7 +15,7 @@ if { [info exists ::user_project_name] } {
 }
 
 variable script_file
-set script_file "build.tcl"
+set script_file "implement.tcl"
 
 # Help information for this script
 proc print_help {} {
