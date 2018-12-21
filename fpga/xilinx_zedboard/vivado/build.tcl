@@ -126,8 +126,6 @@ set files [list \
  [file normalize "${origin_dir}/../../../core/rtl/verilog/periph/omsp_tsc.v"] \
  [file normalize "${origin_dir}/../../../core/rtl/verilog/omsp_wakeup_cell.v"] \
  [file normalize "${origin_dir}/../../../core/rtl/verilog/periph/spi_master.v"] \
- [file normalize "${origin_dir}/../../../core/rtl/verilog/periph/template_periph_16b.v"] \
- [file normalize "${origin_dir}/../../../core/rtl/verilog/periph/template_periph_8b.v"] \
 ]
 add_files -norecurse -fileset $obj $files
 
