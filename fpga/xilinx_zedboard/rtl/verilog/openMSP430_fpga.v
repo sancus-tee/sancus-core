@@ -40,10 +40,10 @@
 
 module openMSP430_fpga (
     // Clock Sources
-	input  clk_sys,
-	input  clk_locked,
+	input                clk_sys,
+	input                clk_locked,
 
-	output mclk,
+	output               mclk,
 
 	// Memories
 	input         [15:0] dmem_dout,
@@ -139,11 +139,10 @@ wire               dbg_en;
 //=============================================================================
 
 // Reset input buffer
-//IBUF   ibuf_reset_n (.O(reset_pin), .I(BTND));
-//wire   reset_pin_n = ~reset_pin;
-wire   reset_pin_n = 1'b1;
+IBUF   BTND_PIN (.O(reset_pin), .I(BTND));
+wire   reset_pin_n = ~reset_pin;
 
-//assign reset_n = reset_pin_n;
+// Release the reset only, if the clock is locked
 assign reset_n = reset_pin_n & clk_locked;
 
 

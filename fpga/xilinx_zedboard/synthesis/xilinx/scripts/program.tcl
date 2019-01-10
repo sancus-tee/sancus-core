@@ -15,7 +15,7 @@ if { [info exists ::user_project_name] } {
 }
 
 variable script_file
-set script_file "program.tcl"
+set script_file "build.tcl"
 
 # Help information for this script
 proc print_help {} {
@@ -60,9 +60,6 @@ if { $::argc > 0 } {
   }
 }
 
-# Open project
-open_project [file normalize "${origin_dir}/${_xil_proj_name_}/${_xil_proj_name_}.xpr"]
-
 # Connect to server
 open_hw
 
@@ -76,7 +73,7 @@ refresh_hw_device -update_hw_probes false $obj
 
 # Program file
 set program_file [list \
-    [file normalize "${origin_dir}/${_xil_proj_name_}/${_xil_proj_name_}.runs/impl_1/design_1_wrapper.bit"] \
+    [file normalize "${origin_dir}/../${_xil_proj_name_}/${_xil_proj_name_}.runs/impl_1/design_1_wrapper.bit"] \
 ]
 set_property PROGRAM.FILE $program_file $obj
 
