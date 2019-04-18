@@ -697,6 +697,11 @@
 `define E_IDLE      4'hD
 `define E_SPM       4'hE
 `define E_DST_WR2   4'hF
+`define E_SM_IRQ_PAD 5'h10
+`define E_SM_IRQ_REGS 5'h11
+`define E_SM_IRQ_WAIT 5'h12
+`define E_SM_RETI_PAD 5'h13
+`define E_SM_RETI_REGS 5'h14
 
 // ALU control signals
 `define ALU_SRC_INV   0

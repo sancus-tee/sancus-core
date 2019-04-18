@@ -78,6 +78,9 @@ module  omsp_frontend (
     prev_inst_pc,
     handling_irq,
     irq_num,
+    sm_irq_save_regs,
+    sm_irq_restore_regs,
+    prev_inst_is_sm_reti,
 
 // INPUTs
     cpu_en_s,                      // Enable CPU code execution (synchronous)
@@ -100,14 +103,15 @@ module  omsp_frontend (
     wkup,                          // System Wake-up (asynchronous)
     spm_busy,
     pmem_writing,
-    sm_violation
+    sm_violation,
+    sm_executing
 );
 
 // OUTPUTs
 //=========
 output              dbg_halt_st;   // Halt/Run status from CPU
 output              decode_noirq;  // Frontend decode instruction
-output        [3:0] e_state;       // Execution state
+output        [4:0] e_state;       // Execution state
 output              exec_done;     // Execution completed
 output        [7:0] inst_ad;       // Decoded Inst: destination addressing mode
 output        [7:0] inst_as;       // Decoded Inst: source addressing mode
@@ -135,6 +139,9 @@ output       [15:0] current_inst_pc;
 output       [15:0] prev_inst_pc;
 output              handling_irq;
 output        [3:0] irq_num;
+output              sm_irq_save_regs;
+output              sm_irq_restore_regs;
+output              prev_inst_is_sm_reti;
 
 // INPUTs
 //=========
@@ -159,6 +166,7 @@ input               wkup;          // System Wake-up (asynchronous)
 input               spm_busy;
 input               pmem_writing;
 input               sm_violation;
+input               sm_executing;
 
 
 //=============================================================================
@@ -219,6 +227,11 @@ parameter E_JUMP      = `E_JUMP;
 parameter E_IDLE      = `E_IDLE;
 parameter E_SPM       = `E_SPM;
 parameter E_DST_WR2   = `E_DST_WR2;
+parameter E_SM_IRQ_PAD = `E_SM_IRQ_PAD;
+parameter E_SM_IRQ_REGS = `E_SM_IRQ_REGS;
+parameter E_SM_IRQ_WAIT = `E_SM_IRQ_WAIT;
+parameter E_SM_RETI_REGS = `E_SM_RETI_REGS;
+parameter E_SM_RETI_PAD = `E_SM_RETI_PAD;
 
 
 //=============================================================================
@@ -235,7 +248,7 @@ wire       irq_detect;
 wire [2:0] inst_type_nxt;
 wire       is_const;
 reg [15:0] sconst_nxt;
-reg  [3:0] e_state_nxt;
+reg  [4:0] e_state_nxt;
            
 // CPU on/off through the debug interface or cpu_en port
 wire   cpu_halt_cmd = dbg_halt_cmd | ~cpu_en_s;
@@ -408,6 +421,7 @@ reg  [15:0] pc;
 // Compute next PC value
 wire [15:0] pc_incr = pc + {14'h0000, fetch, 1'b0};
 wire [15:0] pc_nxt  = pc_sw_wr               ? pc_sw    :
+                      sm_irq_restore_pc      ? sm_irq_saved_pc :
                       (i_state==I_IRQ_FETCH) ? irq_addr :
                       (i_state==I_IRQ_DONE)  ? mdb_in   :  pc_incr;
 
@@ -426,6 +440,12 @@ wire       mclk_pc = mclk;
 always @(posedge mclk_pc or posedge puc_rst)
   if (puc_rst)  pc <= 16'h0000;
   else          pc <= pc_nxt;
+
+reg [15:0] sm_irq_saved_pc;
+
+always @(posedge mclk_pc or posedge puc_rst)
+  if (puc_rst)            sm_irq_saved_pc <= 16'h0000;
+  else if (sm_irq_save_regs) sm_irq_saved_pc <= pc_sw;
 
 // Check if ROM has been busy in order to retry ROM access
 reg pmem_busy;
@@ -840,18 +860,18 @@ always @(posedge mclk_decode or posedge puc_rst)
 //=============================================================================
 
 // State machine registers
-reg  [3:0] e_state;
+reg  [4:0] e_state;
 
 
 // State machine control signals
 //--------------------------------
 
 wire src_acalc_pre =  inst_as_nxt[`IDX]   | inst_as_nxt[`SYMB]    | inst_as_nxt[`ABS];
-wire src_rd_pre    =  inst_as_nxt[`INDIR] | inst_as_nxt[`INDIR_I] | inst_as_nxt[`IMM]  | inst_so_nxt[`RETI];
+wire src_rd_pre    =  inst_as_nxt[`INDIR] | inst_as_nxt[`INDIR_I] | inst_as_nxt[`IMM]  | (inst_so_nxt[`RETI] && !sm_irq_busy);
 wire dst_acalc_pre =  inst_ad_nxt[`IDX]   | inst_ad_nxt[`SYMB]    | inst_ad_nxt[`ABS];
 wire dst_acalc     =  inst_ad[`IDX]       | inst_ad[`SYMB]        | inst_ad[`ABS];
-wire dst_rd_pre    =  inst_ad_nxt[`IDX]   | inst_so_nxt[`PUSH]    | inst_so_nxt[`CALL] | inst_so_nxt[`RETI];
-wire dst_rd        =  inst_ad[`IDX]       | inst_so[`PUSH]        | inst_so[`CALL]     | inst_so[`RETI];
+wire dst_rd_pre    =  inst_ad_nxt[`IDX]   | inst_so_nxt[`PUSH]    | inst_so_nxt[`CALL] | (inst_so_nxt[`RETI] && !sm_irq_busy);
+wire dst_rd        =  inst_ad[`IDX]       | inst_so[`PUSH]        | inst_so[`CALL]     | (inst_so[`RETI] && !sm_irq_busy);
 
 wire inst_branch   =  (inst_ad_nxt[`DIR] & (ir[3:0]==4'h0)) | inst_type_nxt[`INST_JMP] | inst_so_nxt[`RETI];
 
@@ -881,10 +901,14 @@ always @(posedge mclk or posedge puc_rst)
 
 wire exec_spm = |spm_command;
 
+wire [4:0] first_irq_state = !sm_executing ? E_IRQ_0 : E_SM_IRQ_REGS;
+wire sm_reti = inst_so_nxt[`RETI] && sm_irq_busy;
+
 // Execution first state
-wire [3:0] e_first_state = ~dbg_halt_st  & inst_so_nxt[`IRQ] ? E_IRQ_0  :
+wire [4:0] e_first_state = ~dbg_halt_st  & inst_so_nxt[`IRQ] ? first_irq_state  :
                             cpu_halt_cmd | (i_state==I_IDLE) ? E_IDLE   :
                             cpuoff                           ? E_IDLE   :
+                            sm_reti                          ? E_SM_RETI_REGS :
                             src_acalc_pre                    ? E_SRC_AD :
                             src_rd_pre                       ? E_SRC_RD :
                             dst_acalc_pre                    ? E_DST_AD :
@@ -903,6 +927,13 @@ always @(*)
       E_IRQ_2  : e_state_nxt =  E_IRQ_3;
       E_IRQ_3  : e_state_nxt =  E_IRQ_4;
       E_IRQ_4  : e_state_nxt =  E_EXEC;
+
+      E_SM_IRQ_REGS : e_state_nxt = irq_padding == 0 ? E_SM_IRQ_WAIT : E_SM_IRQ_PAD;
+      E_SM_IRQ_PAD  : e_state_nxt = irq_padding == 0 ? E_SM_IRQ_WAIT : E_SM_IRQ_PAD;
+      E_SM_IRQ_WAIT : e_state_nxt = E_EXEC;
+
+      E_SM_RETI_REGS : e_state_nxt = reti_padding == 0 ? e_first_state : E_SM_RETI_PAD;
+      E_SM_RETI_PAD  : e_state_nxt = reti_padding == 0 ? e_first_state : E_SM_RETI_PAD;
 
       E_SRC_AD : e_state_nxt =  inst_sext_rdy     ? E_SRC_RD : E_SRC_AD;
 
@@ -940,12 +971,79 @@ always @(posedge mclk or posedge puc_rst)
 // Frontend State machine control signals
 //----------------------------------------
 
-wire exec_done = exec_jmp        ? (e_state==E_JUMP)                   :
+wire exec_done = (e_state == E_SM_RETI_REGS || e_state == E_SM_RETI_PAD) ? reti_padding == 0 :
+                 exec_jmp        ? (e_state==E_JUMP)                   :
                  exec_dst_wr     ? (e_state==E_DST_WR & ~pmem_writing) :
                  exec_src_wr     ? (e_state==E_SRC_WR)                 :
                  exec_spm        ? (e_state_nxt!=E_SPM)                :
                                    (e_state==E_EXEC | e_state==E_DST_WR2);
 
+
+// Nemesis
+// -------
+reg prev_irq;
+wire irq_arrived = |irq && !prev_irq;
+
+always @(posedge mclk or posedge puc_rst)
+  if (puc_rst) prev_irq <= 0;
+  else         prev_irq <= |irq;
+
+reg [2:0] reti_padding, reti_padding_nxt;
+reg reti_padding_inc;
+wire reti_padding_dec = e_state_nxt == E_SM_RETI_PAD;
+
+always @(posedge mclk or posedge puc_rst)
+  if (puc_rst) begin
+    reti_padding <= 0;
+    reti_padding_nxt <= 0;
+    reti_padding_inc <= 0;
+  end else begin
+    if (irq_arrived) begin
+      reti_padding_inc <= 1;
+    end else if (exec_done) begin
+      reti_padding_inc <= 0;
+    end
+
+    if (sm_irq_restore_regs)
+      reti_padding_nxt <= 0;
+
+    if (reti_padding_inc || irq_arrived)
+      reti_padding_nxt <= reti_padding_nxt + 1;
+
+    if (reti_padding_dec)
+      reti_padding <= reti_padding - 1;
+  end
+
+reg [2:0] irq_padding;
+wire [2:0] irq_padding_nxt = 5 - reti_padding_nxt;
+
+wire irq_padding_dec = e_state == E_SM_IRQ_PAD;
+
+always @(posedge mclk or posedge puc_rst)
+  if (puc_rst) irq_padding <= 0;
+  else if (irq_padding_dec) irq_padding <= irq_padding - 1;
+  else irq_padding <= irq_padding_nxt;
+
+reg sm_irq_busy;
+
+always @(posedge mclk or posedge puc_rst)
+  if (puc_rst) begin
+    sm_irq_busy <= 0;
+    reti_padding <= 0;
+  end else if (sm_irq_save_regs) begin
+    sm_irq_busy <= 1;
+    reti_padding <= reti_padding_nxt;
+  end
+
+wire sm_irq_save_regs = e_state == E_SM_IRQ_REGS;
+wire sm_irq_restore_regs = inst_so[`RETI] && sm_irq_busy;
+wire sm_irq_restore_pc = inst_so_nxt[`RETI] && sm_irq_busy && exec_done;
+
+reg prev_inst_is_sm_reti;
+
+always @(posedge mclk or posedge puc_rst)
+  if (puc_rst) prev_inst_is_sm_reti <= 0;
+  else if (exec_done) prev_inst_is_sm_reti <= sm_irq_restore_regs;
 
 //=============================================================================
 // 8)  EXECUTION-UNIT STATE CONTROL

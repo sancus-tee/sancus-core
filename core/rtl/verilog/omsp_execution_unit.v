@@ -62,6 +62,7 @@ module  omsp_execution_unit (
     scg1,                          // System clock generator 1. Turns off the SMCLK
     spm_violation,
     sm_busy,
+    sm_executing,
 
 // INPUTs
     dbg_halt_st,                   // Halt/Run status from CPU
@@ -92,7 +93,10 @@ module  omsp_execution_unit (
     current_inst_pc,
     prev_inst_pc,
     handling_irq,
-    irq_num
+    irq_num,
+    sm_irq_save_regs,
+    sm_irq_restore_regs,
+    prev_inst_is_sm_reti
 );
 
 // OUTPUTs
@@ -111,13 +115,14 @@ output              scg0;          // System clock generator 1. Turns off the DC
 output              scg1;          // System clock generator 1. Turns off the SMCLK
 output              spm_violation;
 output              sm_busy;
+output              sm_executing;
 
 // INPUTs
 //=========
 input               dbg_halt_st;   // Halt/Run status from CPU
 input        [15:0] dbg_mem_dout;  // Debug unit data output
 input               dbg_reg_wr;    // Debug unit CPU register write
-input         [3:0] e_state;       // Execution state
+input         [4:0] e_state;       // Execution state
 input               exec_done;     // Execution completed
 input         [7:0] inst_ad;       // Decoded Inst: destination addressing mode
 input         [7:0] inst_as;       // Decoded Inst: source addressing mode
@@ -143,6 +148,9 @@ input        [15:0] current_inst_pc;
 input        [15:0] prev_inst_pc;
 input               handling_irq;
 input         [3:0] irq_num;
+input               sm_irq_save_regs;
+input               sm_irq_restore_regs;
+input               prev_inst_is_sm_reti;
 
 
 //=============================================================================
@@ -251,7 +259,9 @@ omsp_register_file register_file_0 (
     .reg_sr_clr   (reg_sr_clr),   // Status register clear for interrupts
     .reg_sr_wr    (reg_sr_wr),    // Status Register update for RETI instruction
     .reg_incr     (reg_incr),     // Increment source register
-    .scan_enable  (scan_enable)   // Scan enable (active during scan shifting)
+    .scan_enable  (scan_enable),  // Scan enable (active during scan shifting)
+    .sm_irq_save_regs(sm_irq_save_regs),
+    .sm_irq_restore_regs(sm_irq_restore_regs)
 );
 
 
@@ -269,6 +279,7 @@ omsp_register_file register_file_0 (
 
 wire src_reg_src_sel    =  (e_state==`E_IRQ_0)                    |
                            (e_state==`E_IRQ_2)                    |
+                           (e_state==`E_SM_IRQ_REGS)               |
                           ((e_state==`E_SRC_RD) & ~inst_as[`ABS]) |
                           ((e_state==`E_SRC_WR) & ~inst_as[`ABS]) |
                           ((e_state==`E_EXEC)   &  inst_as[`DIR] & ~inst_type[`INST_JMP]);
@@ -319,6 +330,7 @@ wire dst_mdb_in_bw_sel  = ((e_state==`E_DST_WR) &   inst_so[`RETI]) |
 wire dst_fffe_sel       =  (e_state==`E_IRQ_0)  |
                            (e_state==`E_IRQ_1)  |
                            (e_state==`E_IRQ_3)  |
+                           (e_state==`E_SM_IRQ_REGS) |
                           ((e_state==`E_DST_RD) & (inst_so[`PUSH] | inst_so[`CALL]) & ~inst_so[`RETI]) |
                           ((e_state==`E_SRC_AD) & (inst_so[`PUSH] | inst_so[`CALL]) & inst_as[`IDX]) |
                           ((e_state==`E_SRC_RD) & (inst_so[`PUSH] | inst_so[`CALL]) & (inst_as[`INDIR] | inst_as[`INDIR_I]) & inst_src[1]);
@@ -474,6 +486,7 @@ wire [15:0] sm_key_select;
 wire [15:0] sm_current_id;
 wire [15:0] sm_prev_id;
 wire        sm_violation;
+wire        sm_executing;
 
 wire [0:`SECURITY-1] sm_key;
 
@@ -503,6 +516,7 @@ omsp_spm_control #(
   .puc_rst                (puc_rst),
   .pc                     (current_inst_pc),
   .prev_pc                (prev_inst_pc),
+  .prev_inst_is_sm_reti   (prev_inst_is_sm_reti),
   .handling_irq           (handling_irq),
   .irq_num                (irq_num),
   .eu_mab                 (mab),
@@ -529,7 +543,8 @@ omsp_spm_control #(
   .spm_current_id         (sm_current_id),
   .spm_prev_id            (sm_prev_id),
   .requested_data         (sm_requested_data),
-  .key_out                (sm_key)
+  .key_out                (sm_key),
+  .spm_executing          (sm_executing)
 );
 
 crypto_control #(

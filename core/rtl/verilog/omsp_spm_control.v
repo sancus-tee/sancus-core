@@ -8,6 +8,7 @@ module omsp_spm_control(
   input  wire                    puc_rst,
   input  wire             [15:0] pc,
   input  wire             [15:0] prev_pc,
+  input  wire                    prev_inst_is_sm_reti,
   input  wire                    handling_irq,
   input  wire              [3:0] irq_num,
   input  wire             [15:0] eu_mab,
@@ -34,7 +35,8 @@ module omsp_spm_control(
   output reg              [15:0] spm_current_id,
   output reg              [15:0] spm_prev_id,
   output reg              [15:0] requested_data,
-  output reg     [0:`SECURITY-1] key_out
+  output reg     [0:`SECURITY-1] key_out,
+  output wire                    spm_executing
 );
 
 parameter KEY_IDX_SIZE = -1;
@@ -133,6 +135,8 @@ always @(posedge mclk or posedge puc_rst)
   else if (prev_cycle_spm_id != spm_current_id)
     spm_prev_id <= prev_cycle_spm_id;
 
+assign spm_executing = |spms_executing;
+
 omsp_spm #(
   .KEY_IDX_SIZE         (KEY_IDX_SIZE)
 ) omsp_spms[0:`NB_SPMS-1](
@@ -140,6 +144,7 @@ omsp_spm #(
   .puc_rst              (puc_rst),
   .pc                   (pc),
   .prev_pc              (prev_pc),
+  .prev_inst_is_sm_reti (prev_inst_is_sm_reti),
   .eu_mab               (eu_mab),
   .eu_mb_en             (eu_mb_en),
   .eu_mb_wr             (eu_mb_wr),

@@ -157,7 +157,7 @@ wire          [8:0] inst_so;
 wire         [15:0] inst_src;
 wire          [2:0] inst_type;
 wire          [7:0] inst_jmp;
-wire          [3:0] e_state;
+wire          [4:0] e_state;
 wire                exec_done;
 wire                decode_noirq;
 wire                cpu_en_s;
@@ -225,9 +225,11 @@ wire         [15:0] current_inst_pc;
 wire         [15:0] prev_inst_pc;
 wire                handling_irq;
 wire          [3:0] irq_num;
+wire                sm_irq_save_regs;
 
 wire                spm_busy;
 wire                spm_violation;
+wire                sm_executing;
 wire                pmem_writing;
 
 `ifdef RESET_ON_VIOLATION
@@ -328,6 +330,9 @@ omsp_frontend frontend_0 (
     .prev_inst_pc (prev_inst_pc),
     .handling_irq (handling_irq),
     .irq_num      (irq_num),
+    .sm_irq_save_regs(sm_irq_save_regs),
+    .sm_irq_restore_regs(sm_irq_restore_regs),
+    .prev_inst_is_sm_reti(prev_inst_is_sm_reti),
 			     
 // INPUTs
     .cpu_en_s     (cpu_en_s),      // Enable CPU code execution (synchronous)
@@ -350,7 +355,8 @@ omsp_frontend frontend_0 (
     .wkup         (wkup),          // System Wake-up (asynchronous)
     .spm_busy     (spm_busy),
     .pmem_writing (pmem_writing),
-    .sm_violation (spm_violation)
+    .sm_violation (spm_violation),
+    .sm_executing (sm_executing)
 );
 
 
@@ -374,6 +380,7 @@ omsp_execution_unit execution_unit_0 (
     .scg1         (scg1),          // System clock generator 1. Turns off the SMCLK
     .spm_violation(spm_violation),
     .sm_busy      (spm_busy),
+    .sm_executing (sm_executing),
 
 // INPUTs
     .dbg_halt_st  (dbg_halt_st),   // Halt/Run status from CPU
@@ -405,7 +412,10 @@ omsp_execution_unit execution_unit_0 (
     .current_inst_pc (current_inst_pc),
     .prev_inst_pc (prev_inst_pc),
     .handling_irq (handling_irq),
-    .irq_num      (irq_num)
+    .irq_num      (irq_num),
+    .sm_irq_save_regs(sm_irq_save_regs),
+    .sm_irq_restore_regs(sm_irq_restore_regs),
+    .prev_inst_is_sm_reti(prev_inst_is_sm_reti)
 );
 
 

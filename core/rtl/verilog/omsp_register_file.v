@@ -83,7 +83,9 @@ module  omsp_register_file (
     reg_sr_wr,                    // Status register update for RETI instruction
     reg_sr_clr,                   // Status register clear for interrupts
     reg_incr,                     // Increment source register
-    scan_enable                   // Scan enable (active during scan shifting)
+    scan_enable,                  // Scan enable (active during scan shifting)
+    sm_irq_save_regs,
+    sm_irq_restore_regs
 );
 
 // OUTPUTs
@@ -125,6 +127,8 @@ input               reg_sr_wr;    // Status register update for RETI instruction
 input               reg_sr_clr;   // Status register clear for interrupts
 input               reg_incr;     // Increment source register
 input               scan_enable;  // Scan enable (active during scan shifting)
+input               sm_irq_save_regs;
+input               sm_irq_restore_regs;
 
 //=============================================================================
 // 1)  AUTOINCREMENT UNIT
@@ -173,6 +177,8 @@ wire       mclk_r1 = mclk;
 
 always @(posedge mclk_r1 or posedge puc_rst)
   if (puc_rst)        r1 <= 16'h0000;
+  else if (sm_irq_save_regs) r1 <= 16'h0000;
+  else if (sm_irq_restore_regs) r1 <= sm_irq_saved_r1;
   else if (r1_wr)     r1 <= reg_dest_val_in & 16'hfffe;
   else if (reg_sp_wr) r1 <= reg_sp_val      & 16'hfffe;
 `ifdef CLOCK_GATING
@@ -180,6 +186,12 @@ always @(posedge mclk_r1 or posedge puc_rst)
 `else
   else if (r1_inc)    r1 <= reg_incr_val    & 16'hfffe;
 `endif
+
+reg [15:0] sm_irq_saved_r1;
+
+always @(posedge mclk_r1 or posedge puc_rst)
+  if (puc_rst)            sm_irq_saved_r1 <= 16'h0000;
+  else if (sm_irq_save_regs) sm_irq_saved_r1 <= r1;
 
 
 // R2: Status register
@@ -255,6 +267,8 @@ wire        mclk_r2 = mclk;
 always @(posedge mclk_r2 or posedge puc_rst)
   if (puc_rst)         r2 <= 16'h0000;
   else if (reg_sr_clr) r2 <= 16'h0000;
+  else if (sm_irq_save_regs) r2 <= 16'h0000;
+  else if (sm_irq_restore_regs) r2 <= sm_irq_saved_r2;
   else                 r2 <= {7'h00, r2_v, r2_nxt, r2_n, r2_z, r2_c} & r2_mask;
 
 assign status = {r2[8], r2[2:0]};
@@ -263,6 +277,12 @@ assign cpuoff =  r2[4] | (r2_nxt[4] & r2_wr & cpuoff_mask[4]);
 assign oscoff =  r2[5];
 assign scg0   =  r2[6];
 assign scg1   =  r2[7];
+
+reg [15:0] sm_irq_saved_r2;
+
+always @(posedge mclk_r2 or posedge puc_rst)
+  if (puc_rst)            sm_irq_saved_r2 <= 16'h0000;
+  else if (sm_irq_save_regs) sm_irq_saved_r2 <= r2;
 
 
 // R3: Constant generator
@@ -312,12 +332,20 @@ wire       mclk_r4 = mclk;
 
 always @(posedge mclk_r4 or posedge puc_rst)
   if (puc_rst)      r4  <= 16'h0000;
+  else if (sm_irq_save_regs) r4 <= 16'h0000;
+  else if (sm_irq_restore_regs) r4 <= sm_irq_saved_r4;
   else if (r4_wr)   r4  <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r4  <= reg_incr_val;
 `else
   else if (r4_inc)  r4  <= reg_incr_val;
 `endif
+
+reg [15:0] sm_irq_saved_r4;
+
+always @(posedge mclk_r4 or posedge puc_rst)
+  if (puc_rst)            sm_irq_saved_r4 <= 16'h0000;
+  else if (sm_irq_save_regs) sm_irq_saved_r4 <= r4;
 
 // R5
 //------------
@@ -336,12 +364,20 @@ wire       mclk_r5 = mclk;
 
 always @(posedge mclk_r5 or posedge puc_rst)
   if (puc_rst)      r5  <= 16'h0000;
+  else if (sm_irq_save_regs) r5 <= 16'h0000;
+  else if (sm_irq_restore_regs) r5 <= sm_irq_saved_r5;
   else if (r5_wr)   r5  <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r5  <= reg_incr_val;
 `else
   else if (r5_inc)  r5  <= reg_incr_val;
 `endif
+
+reg [15:0] sm_irq_saved_r5;
+
+always @(posedge mclk_r5 or posedge puc_rst)
+  if (puc_rst)            sm_irq_saved_r5 <= 16'h0000;
+  else if (sm_irq_save_regs) sm_irq_saved_r5 <= r5;
 
 // R6
 //------------
@@ -360,12 +396,20 @@ wire       mclk_r6 = mclk;
 
 always @(posedge mclk_r6 or posedge puc_rst)
   if (puc_rst)      r6  <= 16'h0000;
+  else if (sm_irq_save_regs) r6 <= 16'h0000;
+  else if (sm_irq_restore_regs) r6 <= sm_irq_saved_r6;
   else if (r6_wr)   r6  <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r6  <= reg_incr_val;
 `else
   else if (r6_inc)  r6  <= reg_incr_val;
 `endif
+
+reg [15:0] sm_irq_saved_r6;
+
+always @(posedge mclk_r6 or posedge puc_rst)
+  if (puc_rst)            sm_irq_saved_r6 <= 16'h0000;
+  else if (sm_irq_save_regs) sm_irq_saved_r6 <= r6;
 
 // R7
 //------------
@@ -384,12 +428,20 @@ wire       mclk_r7 = mclk;
 
 always @(posedge mclk_r7 or posedge puc_rst)
   if (puc_rst)      r7  <= 16'h0000;
+  else if (sm_irq_save_regs) r7 <= 16'h0000;
+  else if (sm_irq_restore_regs) r7 <= sm_irq_saved_r7;
   else if (r7_wr)   r7  <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r7  <= reg_incr_val;
 `else
   else if (r7_inc)  r7  <= reg_incr_val;
 `endif
+
+reg [15:0] sm_irq_saved_r7;
+
+always @(posedge mclk_r7 or posedge puc_rst)
+  if (puc_rst)            sm_irq_saved_r7 <= 16'h0000;
+  else if (sm_irq_save_regs) sm_irq_saved_r7 <= r7;
 
 // R8
 //------------
@@ -408,12 +460,20 @@ wire       mclk_r8 = mclk;
 
 always @(posedge mclk_r8 or posedge puc_rst)
   if (puc_rst)      r8  <= 16'h0000;
+  else if (sm_irq_save_regs) r8 <= 16'h0000;
+  else if (sm_irq_restore_regs) r8 <= sm_irq_saved_r8;
   else if (r8_wr)   r8  <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r8  <= reg_incr_val;
 `else
   else if (r8_inc)  r8  <= reg_incr_val;
 `endif
+
+reg [15:0] sm_irq_saved_r8;
+
+always @(posedge mclk_r8 or posedge puc_rst)
+  if (puc_rst)            sm_irq_saved_r8 <= 16'h0000;
+  else if (sm_irq_save_regs) sm_irq_saved_r8 <= r8;
 
 // R9
 //------------
@@ -432,12 +492,20 @@ wire       mclk_r9 = mclk;
 
 always @(posedge mclk_r9 or posedge puc_rst)
   if (puc_rst)      r9  <= 16'h0000;
+  else if (sm_irq_save_regs) r9 <= 16'h0000;
+  else if (sm_irq_restore_regs) r9 <= sm_irq_saved_r9;
   else if (r9_wr)   r9  <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r9  <= reg_incr_val;
 `else
   else if (r9_inc)  r9  <= reg_incr_val;
 `endif
+
+reg [15:0] sm_irq_saved_r9;
+
+always @(posedge mclk_r9 or posedge puc_rst)
+  if (puc_rst)            sm_irq_saved_r9 <= 16'h0000;
+  else if (sm_irq_save_regs) sm_irq_saved_r9 <= r9;
 
 // R10
 //------------
@@ -456,12 +524,20 @@ wire       mclk_r10 = mclk;
 
 always @(posedge mclk_r10 or posedge puc_rst)
   if (puc_rst)      r10 <= 16'h0000;
+  else if (sm_irq_save_regs) r10 <= 16'h0000;
+  else if (sm_irq_restore_regs) r10 <= sm_irq_saved_r10;
   else if (r10_wr)  r10 <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r10 <= reg_incr_val;
 `else
   else if (r10_inc) r10 <= reg_incr_val;
 `endif
+
+reg [15:0] sm_irq_saved_r10;
+
+always @(posedge mclk_r10 or posedge puc_rst)
+  if (puc_rst)            sm_irq_saved_r10 <= 16'h0000;
+  else if (sm_irq_save_regs) sm_irq_saved_r10 <= r10;
 
 // R11
 //------------
@@ -480,12 +556,20 @@ wire       mclk_r11 = mclk;
 
 always @(posedge mclk_r11 or posedge puc_rst)
   if (puc_rst)      r11 <= 16'h0000;
+  else if (sm_irq_save_regs) r11 <= 16'h0000;
+  else if (sm_irq_restore_regs) r11 <= sm_irq_saved_r11;
   else if (r11_wr)  r11 <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r11 <= reg_incr_val;
 `else
   else if (r11_inc) r11 <= reg_incr_val;
 `endif
+
+reg [15:0] sm_irq_saved_r11;
+
+always @(posedge mclk_r11 or posedge puc_rst)
+  if (puc_rst)            sm_irq_saved_r11 <= 16'h0000;
+  else if (sm_irq_save_regs) sm_irq_saved_r11 <= r11;
 
 // R12
 //------------
@@ -504,12 +588,20 @@ wire       mclk_r12 = mclk;
 
 always @(posedge mclk_r12 or posedge puc_rst)
   if (puc_rst)      r12 <= 16'h0000;
+  else if (sm_irq_save_regs) r12 <= 16'h0000;
+  else if (sm_irq_restore_regs) r12 <= sm_irq_saved_r12;
   else if (r12_wr)  r12 <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r12 <= reg_incr_val;
 `else
   else if (r12_inc) r12 <= reg_incr_val;
 `endif
+
+reg [15:0] sm_irq_saved_r12;
+
+always @(posedge mclk_r12 or posedge puc_rst)
+  if (puc_rst)            sm_irq_saved_r12 <= 16'h0000;
+  else if (sm_irq_save_regs) sm_irq_saved_r12 <= r12;
 
 // R13
 //------------
@@ -528,12 +620,20 @@ wire       mclk_r13 = mclk;
 
 always @(posedge mclk_r13 or posedge puc_rst)
   if (puc_rst)      r13 <= 16'h0000;
+  else if (sm_irq_save_regs) r13 <= 16'h0000;
+  else if (sm_irq_restore_regs) r13 <= sm_irq_saved_r13;
   else if (r13_wr)  r13 <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r13 <= reg_incr_val;
 `else
   else if (r13_inc) r13 <= reg_incr_val;
 `endif
+
+reg [15:0] sm_irq_saved_r13;
+
+always @(posedge mclk_r13 or posedge puc_rst)
+  if (puc_rst)            sm_irq_saved_r13 <= 16'h0000;
+  else if (sm_irq_save_regs) sm_irq_saved_r13 <= r13;
 
 // R14
 //------------
@@ -552,12 +652,20 @@ wire       mclk_r14 = mclk;
 
 always @(posedge mclk_r14 or posedge puc_rst)
   if (puc_rst)      r14 <= 16'h0000;
+  else if (sm_irq_save_regs) r14 <= 16'h0000;
+  else if (sm_irq_restore_regs) r14 <= sm_irq_saved_r14;
   else if (r14_wr)  r14 <= reg_dest_val_in;
 `ifdef CLOCK_GATING
   else              r14 <= reg_incr_val;
 `else
   else if (r14_inc) r14 <= reg_incr_val;
 `endif
+
+reg [15:0] sm_irq_saved_r14;
+
+always @(posedge mclk_r14 or posedge puc_rst)
+  if (puc_rst)            sm_irq_saved_r14 <= 16'h0000;
+  else if (sm_irq_save_regs) sm_irq_saved_r14 <= r14;
 
 // R15
 //------------
@@ -576,12 +684,20 @@ wire       mclk_r15 = mclk;
 
 always @(posedge mclk_r15 or posedge puc_rst)
   if (puc_rst)      r15 <= 16'h0000;
+  else if (sm_irq_save_regs) r15 <= 16'h0000;
+  else if (sm_irq_restore_regs) r15 <= sm_irq_saved_r15;
   else if (r15_wr)  r15 <= reg_dest_val_in;
- `ifdef CLOCK_GATING
+`ifdef CLOCK_GATING
   else              r15 <= reg_incr_val;
 `else
- else if (r15_inc)  r15 <= reg_incr_val;
+  else if (r15_inc) r15 <= reg_incr_val;
 `endif
+
+reg [15:0] sm_irq_saved_r15;
+
+always @(posedge mclk_r15 or posedge puc_rst)
+  if (puc_rst)            sm_irq_saved_r15 <= 16'h0000;
+  else if (sm_irq_save_regs) sm_irq_saved_r15 <= r15;
 
 
 //=============================================================================

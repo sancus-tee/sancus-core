@@ -113,7 +113,7 @@ endfunction
 //=============================================================================
 
 wire  [2:0] i_state_bin = sancus_sim.dut.frontend_0.i_state;
-wire  [3:0] e_state_bin = sancus_sim.dut.frontend_0.e_state;
+wire  [4:0] e_state_bin = sancus_sim.dut.frontend_0.e_state;
 
 wire        decode      = sancus_sim.dut.frontend_0.decode;
 wire [15:0] ir          = sancus_sim.dut.frontend_0.ir;
@@ -164,6 +164,12 @@ always @(e_state_bin)
       4'hC    : e_state =  "JUMP";
       4'hD    : e_state =  "IDLE";
       4'hE    : e_state =  "SPM";
+      4'hF    : e_state =  "DST_WR2";
+      5'h10   : e_state =  "SM_IRQ_PAD";
+      5'h11   : e_state =  "SM_IRQ_REGS";
+      5'h12   : e_state =  "SM_IRQ_WAIT";
+      5'h13   : e_state =  "SM_RETI_PAD";
+      5'h14   : e_state =  "SM_RETI_REGS";
       default : e_state =  "xxxx";
     endcase
 
