@@ -994,7 +994,6 @@ wire reti_padding_dec = e_state_nxt == E_SM_RETI_PAD;
 
 always @(posedge mclk or posedge puc_rst)
   if (puc_rst) begin
-    reti_padding <= 0;
     reti_padding_nxt <= 0;
     reti_padding_inc <= 0;
   end else begin
@@ -1009,9 +1008,6 @@ always @(posedge mclk or posedge puc_rst)
 
     if (reti_padding_inc || irq_arrived)
       reti_padding_nxt <= reti_padding_nxt + 1;
-
-    if (reti_padding_dec)
-      reti_padding <= reti_padding - 1;
   end
 
 reg [2:0] irq_padding;
@@ -1033,6 +1029,8 @@ always @(posedge mclk or posedge puc_rst)
   end else if (sm_irq_save_regs) begin
     sm_irq_busy <= 1;
     reti_padding <= reti_padding_nxt;
+  end else if (reti_padding_dec) begin
+    reti_padding <= reti_padding - 1;
   end
 
 wire sm_irq_save_regs = e_state == E_SM_IRQ_REGS;
