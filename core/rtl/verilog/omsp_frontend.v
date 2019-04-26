@@ -80,7 +80,6 @@ module  omsp_frontend (
     irq_num,
     sm_irq_save_regs,
     sm_irq_restore_regs,
-    prev_inst_is_sm_reti,
 
 // INPUTs
     cpu_en_s,                      // Enable CPU code execution (synchronous)
@@ -141,7 +140,6 @@ output              handling_irq;
 output        [3:0] irq_num;
 output              sm_irq_save_regs;
 output              sm_irq_restore_regs;
-output              prev_inst_is_sm_reti;
 
 // INPUTs
 //=========
@@ -295,16 +293,27 @@ always @(posedge mclk or posedge puc_rst)
 // logic.
 reg [15:0] current_inst_pc;
 reg [15:0] prev_inst_pc;
+reg [15:0] sm_irq_saved_prev_inst_pc;
 always @(posedge mclk or posedge puc_rst)
   if (puc_rst)
   begin
     current_inst_pc <= 0;
     prev_inst_pc <= 0;
+    sm_irq_saved_prev_inst_pc <= 0;
+  end
+  else if (sm_irq_restore_regs)
+  begin
+    current_inst_pc <= sm_irq_saved_pc;
+    prev_inst_pc <= sm_irq_saved_prev_inst_pc;
   end
   else if (decode)
   begin
     current_inst_pc <= pc;
     prev_inst_pc <= current_inst_pc;
+  end
+  else if (sm_irq_save_regs)
+  begin
+    sm_irq_saved_prev_inst_pc <= prev_inst_pc;
   end
 
 
@@ -1036,12 +1045,6 @@ always @(posedge mclk or posedge puc_rst)
 wire sm_irq_save_regs = e_state == E_SM_IRQ_REGS;
 wire sm_irq_restore_regs = inst_so[`RETI] && sm_irq_busy;
 wire sm_irq_restore_pc = inst_so_nxt[`RETI] && sm_irq_busy && exec_done;
-
-reg prev_inst_is_sm_reti;
-
-always @(posedge mclk or posedge puc_rst)
-  if (puc_rst) prev_inst_is_sm_reti <= 0;
-  else if (exec_done) prev_inst_is_sm_reti <= sm_irq_restore_regs;
 
 //=============================================================================
 // 8)  EXECUTION-UNIT STATE CONTROL

@@ -8,7 +8,6 @@ module omsp_spm(
   input  wire                    puc_rst,
   input  wire             [15:0] pc,
   input  wire             [15:0] prev_pc,
-  input  wire                    prev_inst_is_sm_reti,
   input  wire             [15:0] eu_mab,
   input  wire                    eu_mb_en,
   input  wire              [1:0] eu_mb_wr,
@@ -124,7 +123,7 @@ wire access_public = eu_mb_en & (eu_mab >= public_start) & (eu_mab < public_end)
 wire access_secret = eu_mb_en & (eu_mab >= secret_start) & (eu_mab < secret_end);
 wire mem_violation = (access_public & ~(enable_spm | verify_spm | executing)) |
                      (access_secret & ~exec_public);
-wire exec_violation = exec_public & ~exec_spm(prev_pc) & (pc != public_start) & !prev_inst_is_sm_reti;
+wire exec_violation = exec_public & ~exec_spm(prev_pc) & (pc != public_start);
 wire create_violation = check_new_spm &
                         (do_overlap(r12, r13, public_start, public_end));// |
                          //do_overlap(r12, r13, secret_start, secret_end) |

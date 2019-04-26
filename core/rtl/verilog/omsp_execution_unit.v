@@ -95,8 +95,7 @@ module  omsp_execution_unit (
     handling_irq,
     irq_num,
     sm_irq_save_regs,
-    sm_irq_restore_regs,
-    prev_inst_is_sm_reti
+    sm_irq_restore_regs
 );
 
 // OUTPUTs
@@ -150,7 +149,6 @@ input               handling_irq;
 input         [3:0] irq_num;
 input               sm_irq_save_regs;
 input               sm_irq_restore_regs;
-input               prev_inst_is_sm_reti;
 
 
 //=============================================================================
@@ -516,7 +514,6 @@ omsp_spm_control #(
   .puc_rst                (puc_rst),
   .pc                     (current_inst_pc),
   .prev_pc                (prev_inst_pc),
-  .prev_inst_is_sm_reti   (prev_inst_is_sm_reti),
   .handling_irq           (handling_irq),
   .irq_num                (irq_num),
   .eu_mab                 (mab),

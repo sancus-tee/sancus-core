@@ -332,7 +332,6 @@ omsp_frontend frontend_0 (
     .irq_num      (irq_num),
     .sm_irq_save_regs(sm_irq_save_regs),
     .sm_irq_restore_regs(sm_irq_restore_regs),
-    .prev_inst_is_sm_reti(prev_inst_is_sm_reti),
 			     
 // INPUTs
     .cpu_en_s     (cpu_en_s),      // Enable CPU code execution (synchronous)
@@ -414,8 +413,7 @@ omsp_execution_unit execution_unit_0 (
     .handling_irq (handling_irq),
     .irq_num      (irq_num),
     .sm_irq_save_regs(sm_irq_save_regs),
-    .sm_irq_restore_regs(sm_irq_restore_regs),
-    .prev_inst_is_sm_reti(prev_inst_is_sm_reti)
+    .sm_irq_restore_regs(sm_irq_restore_regs)
 );
 
 
