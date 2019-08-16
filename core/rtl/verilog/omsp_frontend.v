@@ -225,12 +225,14 @@ parameter E_JUMP      = `E_JUMP;
 parameter E_IDLE      = `E_IDLE;
 parameter E_SPM       = `E_SPM;
 parameter E_DST_WR2   = `E_DST_WR2;
-parameter E_SM_IRQ_PAD = `E_SM_IRQ_PAD;
 parameter E_SM_IRQ_REGS = `E_SM_IRQ_REGS;
 parameter E_SM_IRQ_WAIT = `E_SM_IRQ_WAIT;
 parameter E_SM_RETI_REGS = `E_SM_RETI_REGS;
-parameter E_SM_RETI_PAD = `E_SM_RETI_PAD;
 
+`ifdef NEMESIS_RESISTANT
+parameter E_SM_IRQ_PAD = `E_SM_IRQ_PAD;
+parameter E_SM_RETI_PAD = `E_SM_RETI_PAD;
+`endif
 
 //=============================================================================
 // 3)  FRONTEND STATE MACHINE
@@ -937,12 +939,20 @@ always @(*)
       E_IRQ_3  : e_state_nxt =  E_IRQ_4;
       E_IRQ_4  : e_state_nxt =  E_EXEC;
 
+`ifdef NEMESIS_RESISTANT
       E_SM_IRQ_REGS : e_state_nxt = irq_padding == 0 ? E_SM_IRQ_WAIT : E_SM_IRQ_PAD;
       E_SM_IRQ_PAD  : e_state_nxt = irq_padding == 0 ? E_SM_IRQ_WAIT : E_SM_IRQ_PAD;
+`else
+      E_SM_IRQ_REGS : e_state_nxt = E_SM_IRQ_WAIT;
+`endif
       E_SM_IRQ_WAIT : e_state_nxt = E_EXEC;
 
+`ifdef NEMESIS_RESISTANT
       E_SM_RETI_REGS : e_state_nxt = reti_padding == 0 ? e_first_state : E_SM_RETI_PAD;
       E_SM_RETI_PAD  : e_state_nxt = reti_padding == 0 ? e_first_state : E_SM_RETI_PAD;
+`else
+      E_SM_RETI_REGS : e_state_nxt = e_first_state;
+`endif
 
       E_SRC_AD : e_state_nxt =  inst_sext_rdy     ? E_SRC_RD : E_SRC_AD;
 
@@ -980,7 +990,10 @@ always @(posedge mclk or posedge puc_rst)
 // Frontend State machine control signals
 //----------------------------------------
 
-wire exec_done = (e_state == E_SM_RETI_REGS || e_state == E_SM_RETI_PAD) ? reti_padding == 0 :
+wire exec_done =
+`ifdef NEMESIS_RESISTANT
+                (e_state == E_SM_RETI_REGS || e_state == E_SM_RETI_PAD) ? reti_padding == 0 :
+`endif
                  exec_jmp        ? (e_state==E_JUMP)                   :
                  exec_dst_wr     ? (e_state==E_DST_WR & ~pmem_writing) :
                  exec_src_wr     ? (e_state==E_SRC_WR)                 :
@@ -990,6 +1003,7 @@ wire exec_done = (e_state == E_SM_RETI_REGS || e_state == E_SM_RETI_PAD) ? reti_
 
 // Nemesis
 // -------
+`ifdef NEMESIS_RESISTANT
 reg prev_irq;
 wire irq_arrived = |irq && !prev_irq;
 
@@ -1029,17 +1043,23 @@ always @(posedge mclk or posedge puc_rst)
   else if (irq_padding_dec) irq_padding <= irq_padding - 1;
   else irq_padding <= irq_padding_nxt;
 
+always @(posedge mclk or posedge puc_rst)
+  if (puc_rst) begin
+    reti_padding <= 0;
+  end else if (sm_irq_save_regs) begin
+    reti_padding <= reti_padding_nxt;
+  end else if (reti_padding_dec) begin
+    reti_padding <= reti_padding - 1;
+  end
+`endif // NEMESIS_RESISTANT
+
 reg sm_irq_busy;
 
 always @(posedge mclk or posedge puc_rst)
   if (puc_rst) begin
     sm_irq_busy <= 0;
-    reti_padding <= 0;
   end else if (sm_irq_save_regs) begin
     sm_irq_busy <= 1;
-    reti_padding <= reti_padding_nxt;
-  end else if (reti_padding_dec) begin
-    reti_padding <= reti_padding - 1;
   end
 
 wire sm_irq_save_regs = e_state == E_SM_IRQ_REGS;

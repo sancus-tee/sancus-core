@@ -165,11 +165,11 @@ always @(e_state_bin)
       4'hD    : e_state =  "IDLE";
       4'hE    : e_state =  "SPM";
       4'hF    : e_state =  "DST_WR2";
-      5'h10   : e_state =  "SM_IRQ_PAD";
-      5'h11   : e_state =  "SM_IRQ_REGS";
-      5'h12   : e_state =  "SM_IRQ_WAIT";
-      5'h13   : e_state =  "SM_RETI_PAD";
-      5'h14   : e_state =  "SM_RETI_REGS";
+      5'h10   : e_state =  "SM_IRQ_REGS";
+      5'h11   : e_state =  "SM_IRQ_WAIT";
+      5'h12   : e_state =  "SM_RETI_REGS";
+      5'h13   : e_state =  "SM_IRQ_PAD";
+      5'h14   : e_state =  "SM_RETI_PAD";
       default : e_state =  "xxxx";
     endcase
 
