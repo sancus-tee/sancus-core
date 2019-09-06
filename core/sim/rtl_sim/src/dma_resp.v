@@ -38,7 +38,7 @@
 `define VERY_LONG_TIMEOUT
 
 // Jo: try to make the test complete in time
-`define DMA_ADRS_RANGE_SKIP 10
+`define DMA_ADRS_RANGE_SKIP 100
 
 integer jj, kk;
 reg [15:0] data_val;

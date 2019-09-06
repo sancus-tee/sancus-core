@@ -97,7 +97,7 @@ initial
 	   march_x_16b(('h10000-`PMEM_SIZE_DMA_TST+48), 16'hfffe, 1);
 	   inst_number_diff=inst_number-inst_number_old;
 	   if ( dma_priority & (inst_number_diff>2))   tb_error("CPU is not stopped in high priority mode");
-	   if (~dma_priority & (inst_number_diff<500)) tb_error("CPU is stopped in low priority mode");
+	   if (~dma_priority & (inst_number_diff<10)) tb_error("CPU is stopped in low priority mode");
 	     
 	   // RD/WR ACCESS: Data memory (16b)
 	   //--------------------------------------------------------

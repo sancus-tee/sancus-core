@@ -237,7 +237,9 @@ wire        [15:0] ext_dmem_addr = {1'b0, ext_mem_addr[15:1]}-(`DMEM_BASE>>1);
 
    
 // RAM Interface
-wire               dmem_cen      =  ~(ext_dmem_en | eu_dmem_en) | sm_violation;	
+// NOTE: allow DMA ext access on violation
+wire               eu_dmem_en_ok =  eu_dmem_en & ~sm_violation;
+wire               dmem_cen      =  ~(ext_dmem_en | eu_dmem_en_ok);
 wire         [1:0] dmem_wen      =   ext_dmem_en ? ~ext_mem_wr                 : ~eu_mb_wr;
 wire [`DMEM_MSB:0] dmem_addr     = ext_dmem_en ? ext_dmem_addr[`DMEM_MSB:0] : eu_dmem_addr[`DMEM_MSB:0];
 wire        [15:0] dmem_din      = ext_dmem_en ? ext_mem_dout : eu_mdb_out;
@@ -264,9 +266,9 @@ wire               fe_pmem_en    = fe_mb_en & fe_pmem_sel;
 wire        [15:0] fe_pmem_addr  = fe_mab-(PMEM_OFFSET>>1);
 
 // Debug interface access
-// NOTE: debug pmem accesses are masked on violation
+// NOTE: allow ext DMA pmem accesses on violation
 assign 			   ext_pmem_sel=(ext_mem_addr[15:1]>=(PMEM_OFFSET>>1));
-assign             ext_pmem_en  = ext_mem_en & ext_pmem_sel & ~eu_pmem_en & ~fe_pmem_en & ~sm_violation;
+assign             ext_pmem_en  = ext_mem_en & ext_pmem_sel & ~eu_pmem_en & ~fe_pmem_en; //& ~sm_violation;
 
 wire        [15:0] ext_pmem_addr = {1'b0, ext_mem_addr[15:1]}-(PMEM_OFFSET>>1);
 
