@@ -28,6 +28,8 @@ stdbuf -oL ../bin/msp430sim sancus/irq_as_indir_i          | tee ./log/sancus-ir
 stdbuf -oL ../bin/msp430sim sancus/sm_illegal_entry        | tee ./log/sancus-sm_illegal_entry.log
 stdbuf -oL ../bin/msp430sim sancus/sm_mem_violation        | tee ./log/sancus-sm_mem_violation.log
 
+stdbuf -oL ../bin/msp430sim sancus/sm_dma                  | tee ./log/sancus-sm_dma.log
+
 # Report regression results
 ../bin/parse_results
 exit $?

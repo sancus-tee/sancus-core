@@ -19,6 +19,7 @@ wire [15:0] sm_prev_id          = dut.execution_unit_0.spm_control_0.spm_prev_id
 wire [15:0] sm_prev_cycle_id    = dut.execution_unit_0.spm_control_0.prev_cycle_spm_id;
 
 wire [15:0] sm_0_public_start   = dut.execution_unit_0.spm_control_0.omsp_spms[0].public_start;
+wire [15:0] sm_0_public_end     = dut.execution_unit_0.spm_control_0.omsp_spms[0].public_end;
 wire [15:0] sm_1_public_start   = dut.execution_unit_0.spm_control_0.omsp_spms[1].public_start;
 wire [15:0] sm_0_secret_end     = dut.execution_unit_0.spm_control_0.omsp_spms[0].secret_end;
 wire        sm_0_enabled        = dut.execution_unit_0.spm_control_0.omsp_spms[0].enabled;

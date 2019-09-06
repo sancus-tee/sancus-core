@@ -30,9 +30,11 @@ module omsp_spm(
   input  wire             [15:0] key_in,
   input  wire [KEY_IDX_SIZE-1:0] key_idx,
   input  wire                    handling_irq,
+  input  wire             [15:0] dma_addr,
   output reg                     enabled,
   output wire                    executing,
   output wire                    violation,
+  output wire                    dma_violation,
   output wire                    data_selected,
   output wire                    key_selected,
   output reg              [15:0] requested_data,
@@ -134,6 +136,13 @@ wire create_violation = check_new_spm &
                          //do_overlap(r14, r15, secret_start, secret_end));
 assign violation = enabled & (mem_violation | exec_violation | create_violation);
 assign executing = enabled & exec_public;
+
+//XXX Jo: replicated the required MAL logic for now so we can check DMA in
+//        parallel to normal requests; we could think if we can optimize this
+//        somehow by re-using existing MAL circuitry(?)
+wire dma_access_public   = (dma_addr >= public_start) & (dma_addr < public_end);
+wire dma_access_secret   = (dma_addr >= secret_start) & (dma_addr < secret_end);                         
+assign dma_violation     = dma_access_public | dma_access_secret;
 
 always @(posedge mclk)
 begin

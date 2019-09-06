@@ -257,6 +257,7 @@ wire                spm_violation_eu;
 wire                exec_sm_eu;
 wire                pmem_writing;
 wire                sm_irq;
+wire                dma_violation;
 
 `ifdef RESET_ON_VIOLATION
 wire do_reset_n = reset_n & ~sm_irq;
@@ -412,6 +413,7 @@ omsp_execution_unit execution_unit_0 (
     .scg0         (scg0),          // System clock generator 1. Turns off the DCO
     .scg1         (scg1),          // System clock generator 1. Turns off the SMCLK
     .violation    (spm_violation_eu),
+    .dma_violation (dma_violation),
     .sm_busy      (spm_busy),
     .exec_sm      (exec_sm_eu),
 
@@ -445,7 +447,8 @@ omsp_execution_unit execution_unit_0 (
     .current_inst_pc (current_inst_pc),
     .prev_inst_pc (prev_inst_pc),
     .irq_num      (irq_num),
-    .irq_detect   (irq_detect)
+    .irq_detect   (irq_detect),
+    .dma_addr     (dma_addr)
 );
 
 
@@ -502,7 +505,8 @@ omsp_mem_backbone mem_backbone_0 (
     .puc_rst      (puc_rst),       // Main system reset
     .scan_enable  (scan_enable),   // Scan enable (active during scan shifting)
     // violation signal is buffered in front-end for remainder of instruction
-    .sm_violation (sm_irq)
+    .sm_violation (sm_irq),
+    .dma_violation (dma_violation)
 );
 
 //=============================================================================

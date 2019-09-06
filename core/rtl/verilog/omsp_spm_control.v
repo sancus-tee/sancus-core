@@ -29,6 +29,8 @@ module omsp_spm_control(
   input  wire                    write_key,
   input  wire             [15:0] key_in,
   input  wire [KEY_IDX_SIZE-1:0] key_idx,
+  input  wire             [15:1] dma_addr,
+  output wire                    dma_violation,
   output wire                    violation,
   output wire                    spm_data_select_valid,
   output wire                    spm_key_select_valid,
@@ -54,9 +56,13 @@ wire [0:`NB_SPMS-1] spms_first_disabled;
 wire [0:`NB_SPMS-1] spms_enabled;
 // output of the SPM array. violations detected by the SPMs
 wire [0:`NB_SPMS-1] spms_violation;
+wire [0:`NB_SPMS-1] spms_dma_violation;
 
 wire [0:`NB_SPMS-1] spms_data_selected;
 wire [0:`NB_SPMS-1] spms_key_selected;
+
+//TODO jo: zeroed LSB for now; we should probably check this for byte-granular edge-cases?
+wire [15:0] dma_addr_ext = {dma_addr,1'b0};
 
 reg [15:0] next_id;
 
@@ -76,6 +82,7 @@ always @(posedge mclk or posedge puc_rst)
     next_id <= next_id + 16'h1;
 
 assign violation = |spms_violation || (next_id == 16'hfff0);
+assign dma_violation = |spms_dma_violation;
 
 generate
   genvar i;
@@ -172,6 +179,8 @@ omsp_spm #(
   .enabled              (spms_enabled),
   .executing            (spms_executing),
   .violation            (spms_violation),
+  .dma_addr             (dma_addr_ext),
+  .dma_violation        (spms_dma_violation),
   .data_selected        (spms_data_selected),
   .key_selected         (spms_key_selected),
   .requested_data       (spms_requested_data),

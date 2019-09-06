@@ -94,7 +94,8 @@ module  omsp_mem_backbone (
     pmem_dout,                      // Program Memory data output
     puc_rst,                        // Main system reset
     scan_enable,                    // Scan enable (active during scan shifting)
-    sm_violation
+    sm_violation,
+    dma_violation
 );
 
 // OUTPUTs
@@ -147,6 +148,7 @@ input         [15:0] pmem_dout;     // Program Memory data output
 input                puc_rst;       // Main system reset
 input                scan_enable;   // Scan enable (active during scan shifting)
 input                sm_violation;
+input                dma_violation;
 
 wire                 ext_mem_en;
 wire          [15:0] ext_mem_din;
@@ -164,12 +166,16 @@ wire                 ext_per_en;
 //------------------------------------------
 `ifdef DMA_IF_EN
 
+// XXX mask DMA on violation
+wire dma_en_masked = dma_en & ~dma_violation;
+
 // Debug-interface always stops the CPU
 // Master interface stops the CPU in priority mode
-assign      cpu_halt_cmd  =  dbg_halt_cmd | (dma_en & dma_priority);
+assign      cpu_halt_cmd  =  dbg_halt_cmd | (dma_en_masked & dma_priority);
 
 // Return ERROR response if address lays outside the memory spaces (Peripheral, Data & Program memories)
-assign      dma_resp      = ~dbg_mem_en & ~(ext_dmem_sel | ext_pmem_sel | ext_per_sel) & dma_en;
+assign      dma_resp      = (~dbg_mem_en & ~(ext_dmem_sel | ext_pmem_sel | ext_per_sel) & dma_en_masked) |
+                            (dma_en & dma_violation);
 
 // Master interface access is ready when the memory access occures
 assign      dma_ready     = ~dbg_mem_en &  (ext_dmem_en  | ext_pmem_en  | ext_per_en | dma_resp);
@@ -182,14 +188,14 @@ always @ (posedge mclk or posedge puc_rst)
   else          dma_ready_dly <=  dma_ready;
 
 // Mux between debug and master interface
-assign      ext_mem_en    =  dbg_mem_en | dma_en;
+assign      ext_mem_en    =  dbg_mem_en | dma_en_masked;
 wire  [1:0] ext_mem_wr    =  dbg_mem_en ? dbg_mem_wr    :  dma_we;
 wire [15:1] ext_mem_addr  =  dbg_mem_en ? dbg_mem_addr  :  dma_addr;
 wire [15:0] ext_mem_dout  =  dbg_mem_en ? dbg_mem_dout  :  dma_din;
 
 // External interface read data
 assign      dbg_mem_din   =  ext_mem_din;
-assign      dma_dout      =  ext_mem_din & {16{dma_ready_dly}};
+assign      dma_dout      =  ext_mem_din & {16{dma_ready_dly}} & {16{~dma_violation}}; //jo: mask on violation in the same cycle
 
 
 `else
