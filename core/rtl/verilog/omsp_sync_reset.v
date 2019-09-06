@@ -68,11 +68,19 @@ input               rst_a;        // Asynchronous reset
 reg    [1:0] data_sync;
 
 // NOTE: the rst_a signal seems to glitch sometimes in iverilog (??)
-`ifdef __SANCUS_SIM
-always @(posedge clk)
-`else
+
+//======================================================================
+// NOTE (Sergio): In the openMSP430 upstream the sync_reset is
+// triggered also by the 'rst_a'; in this way it never glitches, and
+// I think it's important to have the reset as soon as you can,
+// otherwise the dma could not feel it on the first clock active edge
+// and, therefore, do an unwanted access which is even NOT felt by the mem itself
+
+//`ifdef __SANCUS_SIM
+//always @(posedge clk)
+//`else
 always @(posedge clk or posedge rst_a)
-`endif
+//`endif
   if (rst_a) data_sync <=  2'b11;
   else       data_sync <=  {data_sync[0], 1'b0};
 

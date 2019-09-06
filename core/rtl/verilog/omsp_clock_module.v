@@ -1009,7 +1009,6 @@ wire puc_a = por | wdt_reset;
 
 // Synchronous PUC reset
 wire puc_s = dbg_cpu_reset |                              // With the debug interface command
-
             (dbg_en_s & dbg_rst_noscan & ~puc_noscan_n);  // Sequencing making sure PUC is released
                                                           // after DBG_RST if the debug interface is
                                                           // enabled at power-on-reset time

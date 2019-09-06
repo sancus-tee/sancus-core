@@ -465,7 +465,25 @@ reg  [15:0] inst_pc;
 always @(posedge mclk or posedge puc_rst)
   if (puc_rst)     inst_pc  <=  16'h0000;
   else if (decode) inst_pc  <=  pc;
+  
 
+// Registers
+//===============================
+wire [15:0]	r1	= tb_openMSP430.dut.execution_unit_0.register_file_0.r1[15:0];
+wire [15:0]	r2	= tb_openMSP430.dut.execution_unit_0.register_file_0.r2[15:0];
+wire [15:0]	r3	= tb_openMSP430.dut.execution_unit_0.register_file_0.r3[15:0];
+wire [15:0]	r4	= tb_openMSP430.dut.execution_unit_0.register_file_0.r4[15:0];
+wire [15:0]	r5	= tb_openMSP430.dut.execution_unit_0.register_file_0.r5[15:0];
+wire [15:0]	r6	= tb_openMSP430.dut.execution_unit_0.register_file_0.r6[15:0];
+wire [15:0]	r7	= tb_openMSP430.dut.execution_unit_0.register_file_0.r7[15:0];
+wire [15:0]	r8	= tb_openMSP430.dut.execution_unit_0.register_file_0.r8[15:0];
+wire [15:0]	r9	= tb_openMSP430.dut.execution_unit_0.register_file_0.r9[15:0];
+wire [15:0]	r10	= tb_openMSP430.dut.execution_unit_0.register_file_0.r10[15:0];
+wire [15:0]	r11	= tb_openMSP430.dut.execution_unit_0.register_file_0.r11[15:0];
+wire [15:0]	r12	= tb_openMSP430.dut.execution_unit_0.register_file_0.r12[15:0];
+wire [15:0]	r13	= tb_openMSP430.dut.execution_unit_0.register_file_0.r13[15:0];
+wire [15:0]	r14	= tb_openMSP430.dut.execution_unit_0.register_file_0.r14[15:0];
+wire [15:0]	r15	= tb_openMSP430.dut.execution_unit_0.register_file_0.r15[15:0];
 
 endmodule // msp_debug
 
