@@ -74,6 +74,7 @@ task dma_write;
 	  if (~dma_tfx_cancel & (dma_resp != resp))
 	begin
 	   $display("ERROR: DMA interface write response check -- address: 0x%h -- response: %h / expected: %h (%t ns)", addr, dma_resp, resp, $time);
+        tb_error("DMA");
 	   dma_wr_error = dma_wr_error+1;
 	end
    end
@@ -131,6 +132,7 @@ initial
 	  if (~dma_tfx_cancel & (dma_read_check_data !== (dma_read_check_mask & dma_dout)) & ~puc_rst)
 	    begin
 	       $display("ERROR: DMA interface read check -- address: 0x%h -- read: 0x%h / expected: 0x%h (%t ns)", dma_read_check_addr, (dma_read_check_mask & dma_dout), dma_read_check_data, $time);
+           tb_error("DMA");
 	       dma_rd_error = dma_rd_error+1;
 	    end
 	  dma_read_check_active =  1'b0;
@@ -170,6 +172,7 @@ task dma_read;
       if (~dma_tfx_cancel & (dma_resp != resp))
 	begin
 	   $display("ERROR: DMA interface read response check -- address: 0x%h -- response: %h / expected: %h (%t ns)", addr, dma_resp, resp, $time);
+       tb_error("DMA");
 	   dma_rd_error = dma_rd_error+1;
 	end
    end
@@ -323,6 +326,7 @@ initial
 			 if (pmem_0.mem[(`PMEM_SIZE-512)/2+dma_rand_addr] !== dma_rand_data[15:0])
 			   begin
 			      $display("ERROR: DMA interface write PMEM-- address: 0x%h -- wrote: 0x%h / PMEM content: 0x%h (%t ns)", dma_rand_addr_full, dma_rand_data[15:0], pmem_0.mem[(`PMEM_SIZE-512)/2+dma_rand_addr], $time);
+                  tb_error("DMA");
 			      dma_wr_error = dma_wr_error+1;
 			   end
 		      end
@@ -336,6 +340,7 @@ initial
 			 if (dmem_0.mem[(`DMEM_SIZE-256)/2+dma_rand_addr] !== dma_rand_data[15:0])
 			   begin
 			      $display("ERROR: DMA interface write DMEM-- address: 0x%h -- wrote: 0x%h / DMEM content: 0x%h (%t ns)", dma_rand_addr_full, dma_rand_data[15:0], dmem_0.mem[(`DMEM_SIZE-256)/2+dma_rand_addr], $time);
+                  tb_error("DMA");
 			      dma_wr_error = dma_wr_error+1;
 			   end
 		      end
