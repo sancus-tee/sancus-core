@@ -7,9 +7,6 @@ export OMSP_NODUMP
 OMSP_SIMULATOR=iverilog
 export OMSP_SIMULATOR
 
-__SANCUS_SIM=1
-export __SANCUS_SIM
-
 rm -rf ./cov_work
 rm -rf ./log/*.log
 mkdir  ./log

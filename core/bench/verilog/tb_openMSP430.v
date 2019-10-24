@@ -43,8 +43,6 @@
 `include "openMSP430_defines.v"
 `endif
 
-`define __SANCUS_SIM
-
 // Include DMEM and PMEM memory locations that are written by dma_task
 //`define SHOW_PMEM_WAVES  
 //`define SHOW_DMEM_WAVES
@@ -246,8 +244,13 @@ integer 		   index_mem_dbg;
 `include "stimulus.v"
 `endif
 
-// Direct Memory Access interface tasks
+// Direct Memory Access interface background tasks
+// (excluded for sancus-sim simulations)
+`ifndef __SANCUS_SIM
 `include "dma_tasks.v"
+`else
+    reg        dma_tfx_cancel;
+`endif
    
 //
 // Initialize ROM
@@ -852,6 +855,7 @@ initial // Normal end of test
    
    task tb_extra_report;
       begin
+`ifndef __SANCUS_SIM
          $display("DMA REPORT: Total Accesses: %-d Total RD: %-d Total WR: %-d", dma_cnt_rd+dma_cnt_wr,     dma_cnt_rd,   dma_cnt_wr);
          $display("            Total Errors:   %-d Error RD: %-d Error WR: %-d", dma_rd_error+dma_wr_error, dma_rd_error, dma_wr_error);
          if (!((`PMEM_SIZE>=4092) && (`DMEM_SIZE>=1024)))
@@ -862,6 +866,7 @@ initial // Normal end of test
          $display("");
          $display("SIMULATION SEED: %d", `SEED);
          $display("");
+`endif
       end
    endtask
 
