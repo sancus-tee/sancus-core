@@ -87,6 +87,8 @@ _run('iverilog', '-DMEM_DEFINED', '-DPMEM_SIZE_CUSTOM', '-DDMEM_SIZE_CUSTOM',
                  '-DFILEIO_IN="{}"'.format(fileio_in),
                  '-DFILEIO_OUT="{}"'.format(fileio_out),
                  '-DDUMPFILE="{}"'.format(dumpfile),
+                 '-DSEED=1',
+                 '-D__SANCUS_SIM=1',
                  '-f', COMMANDS, '-o', sim_file)
 
 print('Starting Verilog simulation. Press <Ctrl-C> to get to the Icarus '

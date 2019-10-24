@@ -63,6 +63,7 @@ module  omsp_execution_unit (
     violation,
     sm_busy,
     exec_sm,
+    dma_violation,
 
 // INPUTs
     dbg_halt_st,                   // Halt/Run status from CPU
@@ -93,7 +94,8 @@ module  omsp_execution_unit (
     current_inst_pc,
     prev_inst_pc,
     irq_num,
-    irq_detect
+    irq_detect,
+    dma_addr
 );
 
 // OUTPUTs
@@ -113,6 +115,7 @@ output              scg1;          // System clock generator 1. Turns off the SM
 output              violation;
 output              sm_busy;
 output              exec_sm;
+output              dma_violation;
 
 // INPUTs
 //=========
@@ -145,6 +148,7 @@ input        [15:0] current_inst_pc;
 input        [15:0] prev_inst_pc;
 input         [3:0] irq_num;
 input               irq_detect;
+input        [15:1] dma_addr;
 
 //=============================================================================
 // 0)  INTERNAL WIRES/REGISTERS/PARAMETERS DECLARATION
@@ -589,7 +593,9 @@ omsp_spm_control #(
   .requested_data         (sm_requested_data),
   .key_out                (sm_key),
   .exec_sm                (exec_sm),
-  .enter_sm               (enter_sm)
+  .enter_sm               (enter_sm),
+  .dma_addr               (dma_addr),
+  .dma_violation          (dma_violation)
 );
 
 

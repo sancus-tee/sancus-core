@@ -57,6 +57,9 @@ if [ $# -ne $EXPECTED_ARGS ]; then
   exit 1
 fi
 
+# Generate random seed (sergio)
+seed=`od -A n -t d -N 4 /dev/urandom`
+
 
 ###############################################################################
 #                     Check if the required files exist                       #
@@ -111,6 +114,9 @@ rm -rf stimulus.v
 echo " ======================================================="
 echo "| Start simulation:             $1"
 echo " ======================================================="
+echo ""
+echo " Seed: $seed"
+echo ""
 
 # Create links
 if [ `uname -o` = "Cygwin" ]
@@ -151,4 +157,4 @@ echo "Convert IHEX file to Verilog MEMH format..."
 
 # Start verilog simulation
 echo "Start Verilog simulation..."
-../bin/rtlsim.sh    stimulus.v pmem.mem $submitfile
+../bin/rtlsim.sh    stimulus.v pmem.mem $submitfile $seed #(sergio) added $seed for random seed generation, to emulate what is done in the new openMSP430 release

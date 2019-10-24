@@ -43,7 +43,10 @@
 `include "openMSP430_defines.v"
 `endif
 
-`define __SANCUS_SIM
+// Include DMEM and PMEM memory locations that are written by dma_task
+//`define SHOW_PMEM_WAVES  
+//`define SHOW_DMEM_WAVES
+  
 
 module  tb_openMSP430;
 
@@ -71,6 +74,17 @@ wire        [15:0] per_din;
 wire        [15:0] per_dout;
 wire         [1:0] per_we;
 wire               per_en;
+
+// Direct Memory Access interface
+wire        [15:0] dma_dout;
+wire               dma_ready;
+wire               dma_resp;
+reg         [15:1] dma_addr;
+reg         [15:0] dma_din;
+reg                dma_en;
+reg                dma_priority;
+reg          [1:0] dma_we;
+reg                dma_wkup;
 
 // Digital I/O
 wire               irq_port1;
@@ -201,8 +215,11 @@ wire        [15:0] inst_pc;
 wire    [8*32-1:0] inst_short;
 
 // Testbench variables
+
+integer            tmp_seed;
 integer            error;
 reg                stimulus_done;
+integer 		   index_mem_dbg;
 
 
 //
@@ -227,6 +244,13 @@ reg                stimulus_done;
 `include "stimulus.v"
 `endif
 
+// Direct Memory Access interface background tasks
+// (excluded for sancus-sim simulations)
+`ifndef __SANCUS_SIM
+`include "dma_tasks.v"
+`else
+    reg        dma_tfx_cancel;
+`endif
    
 //
 // Initialize ROM
@@ -280,11 +304,20 @@ initial
 
 initial
   begin
+  	 tmp_seed         = `SEED;
+     tmp_seed         = $urandom(tmp_seed);
      error            = 0;
      stimulus_done    = 1;
      irq              = 14'h0000;
      nmi              = 1'b0;
      wkup             = 14'h0000;
+     dma_addr         = 15'h0000;
+     dma_din          = 16'h0000;
+     dma_en           = 1'b0;
+     dma_priority     = 1'b0;
+     dma_we           = 2'b00;
+     dma_wkup         = 1'b0;
+     dma_tfx_cancel   = 1'b0;
      cpu_en           = 1'b1;
      dbg_en           = 1'b0;
      dbg_uart_rxd_sel = 1'b0;
@@ -371,6 +404,9 @@ openMSP430 dut (
     .lfxt_enable  (lfxt_enable),       // ASIC ONLY: Low frequency oscillator enable
     .lfxt_wkup    (lfxt_wkup),         // ASIC ONLY: Low frequency oscillator wake-up (asynchronous)
     .mclk         (mclk),              // Main system clock
+    .dma_dout          (dma_dout),             // Direct Memory Access data output
+    .dma_ready         (dma_ready),            // Direct Memory Access is complete
+    .dma_resp          (dma_resp),             // Direct Memory Access response (0:Okay / 1:Error)
     .per_addr     (per_addr),          // Peripheral address
     .per_din      (per_din),           // Peripheral data input
     .per_we       (per_we),            // Peripheral write enable (high active)
@@ -392,6 +428,12 @@ openMSP430 dut (
     .dmem_dout    (dmem_dout),         // Data Memory data output
     .irq          (irq_in),            // Maskable interrupts
     .lfxt_clk     (lfxt_clk),          // Low frequency oscillator (typ 32kHz)
+    .dma_addr          (dma_addr),             // Direct Memory Access address
+    .dma_din           (dma_din),              // Direct Memory Access data input
+    .dma_en            (dma_en),               // Direct Memory Access enable (high active)
+    .dma_priority      (dma_priority),         // Direct Memory Access priority (0:low / 1:high)
+    .dma_we            (dma_we),               // Direct Memory Access write byte enable (high active)
+    .dma_wkup          (dma_wkup),             // ASIC ONLY: DMA Sub-System Wake-up (asynchronous and non-glitchy)
     .nmi          (nmi),               // Non-maskable interrupt (asynchronous)
     .per_dout     (per_dout),          // Peripheral data output
     .pmem_dout    (pmem_dout),         // Program Memory data output
@@ -710,6 +752,7 @@ msp_debug msp_debug_0 (
 //
 // Generate Waveform
 //----------------------------------------
+
 initial
   begin
    `ifdef NODUMP
@@ -727,6 +770,14 @@ initial
           `endif
           $dumpfile(`DUMPFILE);
           $dumpvars(0, tb_openMSP430);
+          `ifdef SHOW_PMEM_WAVES
+          	for (index_mem_dbg= (`PMEM_SIZE-512)/2; i < (`PMEM_SIZE-512)/2+128; i=i+1)
+          	$dumpvars(0, pmem_0.mem[index_mem_dbg]);//show the memory content into the waveform! (Sergio) 
+       	  `endif
+       	  `ifdef SHOW_DMEM_WAVES
+          	for (index_mem_dbg= (`DMEM_SIZE-256)/2; i < (`DMEM_SIZE-256)/2+128; i=i+1)
+          	$dumpvars(0, dmem_0.mem[index_mem_dbg]);//show the memory content into the waveform! (Sergio) 
+       	  `endif 
        `endif
      `endif
    `endif
@@ -753,6 +804,7 @@ initial // Timeout
        $display("|               SIMULATION FAILED               |");
        $display("|              (simulation Timeout)             |");
        $display(" ===============================================");
+       tb_extra_report;
        $finish;
    `endif
   end
@@ -784,6 +836,7 @@ initial // Normal end of test
 	  $display("|               SIMULATION PASSED               |");
        end
      $display(" ===============================================");
+     tb_extra_report;
      $finish;
   end
 
@@ -797,6 +850,36 @@ initial // Normal end of test
       begin
 	 $display("ERROR: %s %t", error_string, $time);
 	 error = error+1;
+      end
+   endtask
+   
+   task tb_extra_report;
+      begin
+`ifndef __SANCUS_SIM
+         $display("DMA REPORT: Total Accesses: %-d Total RD: %-d Total WR: %-d", dma_cnt_rd+dma_cnt_wr,     dma_cnt_rd,   dma_cnt_wr);
+         $display("            Total Errors:   %-d Error RD: %-d Error WR: %-d", dma_rd_error+dma_wr_error, dma_rd_error, dma_wr_error);
+         if (!((`PMEM_SIZE>=4092) && (`DMEM_SIZE>=1024)))
+           begin
+	      $display("");
+              $display("Note: DMA if verification disabled (PMEM must be 4kB or bigger, DMEM must be 1kB or bigger)");
+           end
+         $display("");
+         $display("SIMULATION SEED: %d", `SEED);
+         $display("");
+`endif
+      end
+   endtask
+
+   task tb_skip_finish;
+      input [65*8-1:0] skip_string;
+      begin
+         $display(" ===============================================");
+         $display("|               SIMULATION SKIPPED              |");
+         $display("%s", skip_string);
+         $display(" ===============================================");
+         $display("");
+         tb_extra_report;
+         $finish;
       end
    endtask
 

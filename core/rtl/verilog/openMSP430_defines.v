@@ -136,6 +136,12 @@
 //-------------------------------------------------------
 `define WATCHDOG
 
+//-------------------------------------------------------
+// Include/Exclude DMA interface support
+//-------------------------------------------------------
+`define DMA_IF_EN
+
+
 
 ///-------------------------------------------------------
 // Include/Exclude Non-Maskable-Interrupt support
@@ -298,6 +304,20 @@
 
 
 //===============================================================
+// ASIC CLOCKING
+//===============================================================
+
+//-------------------------------------------------------
+// When uncommented, this define will enable the ASIC
+// architectural clock gating as well as the advanced low
+// power modes support (most common).
+// Comment this out in order to get FPGA-like clocking.
+//-------------------------------------------------------
+//`define ASIC_CLOCKING
+
+
+`ifdef ASIC_CLOCKING
+//===============================================================
 // LFXT CLOCK DOMAIN
 //===============================================================
 
@@ -421,6 +441,7 @@
 
 
 
+`endif
 `endif
 
 //==========================================================================//
@@ -753,6 +774,11 @@
 
 // Basic clock module: BCSCTL1 Control Register
 `define DIVAx       5:4
+`define DMA_CPUOFF  0
+`define DMA_OSCOFF  1
+`define DMA_SCG0    2
+`define DMA_SCG1    3
+
 
 // Basic clock module: BCSCTL2 Control Register
 `define SELMx       7

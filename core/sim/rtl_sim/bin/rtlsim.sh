@@ -38,11 +38,11 @@
 ###############################################################################
 #                            Parameter Check                                  #
 ###############################################################################
-EXPECTED_ARGS=3
+EXPECTED_ARGS=4 #(sergio because now there is also the SEED
 if [ $# -ne $EXPECTED_ARGS ]; then
   echo "ERROR    : wrong number of arguments"
-  echo "USAGE    : rtlsim.sh <verilog stimulus file> <memory file> <submit file>"
-  echo "Example  : rtlsim.sh ./stimulus.v            pmem.mem      ../src/submit.f"
+  echo "USAGE    : rtlsim.sh <verilog stimulus file> <memory file> <submit file> <seed>"
+  echo "Example  : rtlsim.sh ./stimulus.v            pmem.mem      ../src/submit.f 123"
   echo "OMSP_SIMULATOR env keeps simulator name iverilog/cver/verilog/ncverilog/vsim/vcs"
   exit 1
 fi
@@ -77,9 +77,9 @@ if [ "${OMSP_SIMULATOR:-iverilog}" = iverilog ]; then
     NODUMP=${OMSP_NODUMP-0}
     if [ $NODUMP -eq 1 ]
       then
-        $IVERILOG_CMD -D NODUMP
+        $IVERILOG_CMD -D SEED=$4 -D NODUMP
       else
-        $IVERILOG_CMD
+        $IVERILOG_CMD -D SEED=$4
     fi
     
 if [ `uname -o` = "Cygwin" ]
@@ -93,9 +93,9 @@ else
 
     NODUMP=${OMSP_NODUMP-0}
     if [ $NODUMP -eq 1 ] ; then
-       vargs="+define+NODUMP"
+       vargs="+define+SEED=$4 +define+NODUMP"
     else
-       vargs=""
+       vargs="+define+SEED=$4"
     fi
 
    case $OMSP_SIMULATOR in 
@@ -105,7 +105,7 @@ else
        vargs="$vargs +define+VXL" ;;
     ncverilog* )
        rm -rf INCA_libs
-       vargs="$vargs +access+r +nclicq +ncinput+../bin/cov_ncverilog.tcl -covdut openMSP430 -covfile ../bin/cov_ncverilog.ccf -coverage all +define+TRN_FILE" ;;
+       vargs="$vargs +access+r +svseed=$4 +nclicq +ncinput+../bin/cov_ncverilog.tcl -covdut openMSP430 -covfile ../bin/cov_ncverilog.ccf -coverage all +define+TRN_FILE" ;;
     vcs* )
        rm -rf csrc simv*
        vargs="$vargs -R -debug_pp +vcs+lic+wait +v2k +define+VPD_FILE" ;;

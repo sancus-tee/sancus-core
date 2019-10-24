@@ -128,6 +128,11 @@ mkdir  ./log
 # Hardware multiplier test patterns
 ../bin/msp430sim mpy_basic                | tee ./log/mpy_basic.log
 
+# DMA Interface
+../bin/msp430sim dma_rdwr_16b             | tee ./log/dma_rdwr_16b.log
+../bin/msp430sim dma_rdwr_8b              | tee ./log/dma_rdwr_8b.log
+../bin/msp430sim dma_resp                 | tee ./log/dma_resp.log
+../bin/msp430sim dma_dbg_arbiter          | tee ./log/dma_dbg_arbiter.log
 
 # Report regression results
 ../bin/parse_results
