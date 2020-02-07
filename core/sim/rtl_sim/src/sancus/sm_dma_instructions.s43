@@ -1,0 +1,109 @@
+.include "pmem_defs.asm"
+.include "sancus_macros.asm"
+
+.set dma_done, DMEM_260
+.set foo_secret_start, DMEM_262
+.set foo_secret_end, DMEM_268
+
+.global main
+main:
+    clr r15
+    mov r15, &dma_done
+    disable_wdt
+    eint
+    sancus_enable #1234, #foo_text_start, #foo_text_end, #foo_secret_start, #foo_secret_end
+    br #foo_text_start
+
+    /* ----------------------         SANCUS MODULE      --------------- */
+
+foo_text_start:
+    ; add
+    ; addc
+    ; and
+    ; bic
+    ; bis
+    ; bit
+    ; call
+    ; cmp
+    ; dadd
+    ; jc
+    ; jeq
+    ; jge
+    ; jl
+    ; jmp
+    ; jn
+    ; jnc
+    ; jne
+
+    mov #foo_secret_start, r5
+    mov @r5, &foo_secret_start
+    mov #foo_text_start, r5
+    mov @r5, &foo_secret_start
+    mov #foo_secret_start, r6
+    ; -- mov --
+    mov r5, r6
+    mov r5, 5(r6)
+    mov r5, foo_secret_start
+    mov r5, &foo_secret_start
+    mov 3(r5), r6
+    mov 3(r5), 5(r6)
+    mov 3(r5), foo_secret_start
+    mov 3(r5), &foo_secret_start
+    mov foo_secret_start, r6
+    mov foo_secret_start, 5(r6)
+    mov foo_secret_start, foo_secret_start
+    mov foo_secret_start, &foo_secret_start
+    mov &foo_secret_start, r6
+    mov &foo_secret_start, 5(r6)
+    mov &foo_secret_start, foo_secret_start
+    mov &foo_secret_start, &foo_secret_start
+    mov @r5, r6
+    mov @r5, 5(r6)
+    mov @r5, foo_secret_start
+    mov @r5, &foo_secret_start
+    mov @r5+, r6
+    mov @r5+, 5(r6)
+    mov @r5+, foo_secret_start
+    mov @r5+, &foo_secret_start
+    mov #0x42, r6
+    mov #0x42, 5(r6)
+    mov #0x42, foo_secret_start
+    mov #0x42, &foo_secret_start
+    ; -- mov --
+
+    ; push
+    ; reti
+    ; rra
+    ; rrc
+    ; sbc
+    ; sub
+    ; subc
+    ; swpb
+    ; sxt
+    ; xor
+
+    mov #0x2000, r15
+foo_text_end:
+
+end_of_test:
+	mov #0x2000, r15
+fail_test:
+	br #0xffff
+
+.section .vectors, "a"
+.word end_of_test  ; Interrupt  0 (lowest priority)    <unused>
+.word end_of_test  ; Interrupt  1                      <unused>
+.word end_of_test  ; Interrupt  2                      <unused>
+.word end_of_test  ; Interrupt  3                      <unused>
+.word end_of_test  ; Interrupt  4                      <unused>
+.word end_of_test  ; Interrupt  5                      <unused>
+.word end_of_test  ; Interrupt  6                      <unused>
+.word end_of_test  ; Interrupt  7                      <unused>
+.word end_of_test  ; Interrupt  8                      <unused>
+.word end_of_test  ; Interrupt  9                      TEST IRQ
+.word end_of_test  ; Interrupt 10                      Watchdog timer
+.word end_of_test  ; Interrupt 11                      <unused>
+.word end_of_test  ; Interrupt 12                      <unused>
+.word end_of_test  ; Interrupt 13                      SM_IRQ
+.word end_of_test  ; Interrupt 14                      NMI
+.word main         ; Interrupt 15 (highest priority)   RESET
