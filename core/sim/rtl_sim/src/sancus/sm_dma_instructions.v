@@ -5,6 +5,8 @@
 // `define DMA_DONE_ADDR           (`DMEM_BASE+16'h60)
 `define FOO_TEXT_VAL            (16'hcafe)
 
+`define NO_TIMEOUT
+
 reg [63:0] tsc_val1;
 reg [63:0] tsc_val2;
 

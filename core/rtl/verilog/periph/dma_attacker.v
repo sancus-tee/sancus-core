@@ -3,6 +3,10 @@ module dma_attacker (
 // OUTPUTs
     per_dout,                       // Peripheral data output
     trace,
+    // dma_addr,
+    // dma_en,
+    // dma_we,
+    // dma_din,
 
 // INPUTs
     mclk,                           // Main system clock
@@ -10,13 +14,19 @@ module dma_attacker (
     per_din,                        // Peripheral data input
     per_en,                         // Peripheral enable (high active)
     per_we,                         // Peripheral write enable (high active)
-    puc_rst                         // Main system reset
+    puc_rst,                        // Main system reset
+    dma_ready,
+    dma_tfx_cancel,
 );
 
 // OUTPUTs
 //=========
 output      [15:0] per_dout;        // Peripheral data output
 output      [15:0] trace;
+// output      [15:1] dma_addr;
+// output             dma_en;
+// output       [1:0] dma_we;
+// output      [15:0] dma_din;
 
 // INPUTs
 //=========
@@ -26,6 +36,8 @@ input       [15:0] per_din;         // Peripheral data input
 input              per_en;          // Peripheral enable (high active)
 input        [1:0] per_we;          // Peripheral write enable (high active)
 input              puc_rst;         // Main system reset
+input              dma_ready;
+input              dma_tfx_cancel;
 
 
 //=============================================================================
@@ -152,18 +164,42 @@ wire [15:0] per_dout  =  cntrl1_rd  |
 // an open data memory address
 `define DMA_DMEM_ADDR           (`DMEM_BASE)
 // an open program memory address
-`define DMA_PMEM_ADDR           (`PMEM_BASE)
+`define DMA_PMEM_ADDR           (`DMEM_BASE + `DMEM_SIZE + 8'h10)
 // an open MMIO address
-`define DMA_MMIO_ADDR           (`MMIO_BASE)
+`define DMA_MMIO_ADDR           (8'h10)
+
+// dma_read_8b(`DMA_DMEM_ADDR, 8'h1, 0);
+
+// reg      [15:1] dma_addr = `DMA_DMEM_ADDR;
+// reg             dma_en = 1'b1;
+// reg       [1:0] dma_we = 2'b00;
+// reg      [15:0] dma_din = 16'h0000;
+
+// always @(posedge mclk) begin
+//   dma_addr = `DMA_DMEM_ADDR;
+//   dma_en   = 1'b1;
+//   dma_we   = 2'b00;
+//   dma_din  = 16'h0000;
+//   @(posedge mclk or posedge dma_tfx_cancel);
+//   while(~dma_ready & ~dma_tfx_cancel) @(posedge mclk or posedge dma_tfx_cancel);
+//   dma_en   = 1'b0;
+//   dma_addr = 15'h0000;
+// end
+
+// always @(posedge mclk) begin
+//     case (input)
+//         DMEM: dma_write_8b(`DMA_DMEM_ADDR, 8'h1, 0)
+//         PMEM: dma_write_8b(`DMA_PMEM_ADDR, 8'h1, 0)
+//         MMIO: dma_write_8b(`DMA_MMIO_ADDR, 8'h1, 0)
+//     endcase
+// end
+
+reg [15:0] dma_buffer;
 
 always @(posedge mclk) begin
-    case (input)
-        DMEM: dma_write_8b(`DMA_DMEM_ADDR, 8'h1, 0)
-        PMEM: dma_write_8b(`DMA_PMEM_ADDR, 8'h1, 0)
-        MMIO: dma_write_8b(`DMA_MMIO_ADDR, 8'h1, 0)
-    endcase
+  dma_buffer <= {dma_buffer[14:0], dma_ready};
 end
 
-wire [15:0] trace = {prev_trace[14:0], `DMA_READY};
+wire [15:0] trace = dma_buffer;
 
 endmodule

@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Wed Nov  6 02:04:14 2019
+[*] Fri Feb 21 10:49:14 2020
 [*]
 [dumpfile] "/home/mici/programming/sancus-main/sancus-core/core/sim/rtl_sim/run/tb_openMSP430.vcd"
-[dumpfile_mtime] "Wed Nov  6 02:03:13 2019"
-[dumpfile_size] 20577235
+[dumpfile_mtime] "Fri Feb 21 10:48:43 2020"
+[dumpfile_size] 6006908
 [savefile] "/home/mici/programming/sancus-main/sancus-core/core/sim/rtl_sim/run/myview.gtkw"
-[timestart] 420690000
-[size] 1920 1056
+[timestart] 1727310000
+[size] 1920 1029
 [pos] -1 -1
-*-18.000000 421126000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-18.000000 1727809000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_openMSP430.
 [treeopen] tb_openMSP430.dut.
 [sst_width] 217
@@ -25,11 +25,13 @@ tb_openMSP430.dut.execution_unit_0.mclk
 tb_openMSP430.dma_en
 tb_openMSP430.dma_ready
 tb_openMSP430.dut.mem_backbone_0.eu_dmem_en
+tb_openMSP430.dut.mem_backbone_0.eu_pmem_en
+@29
+tb_openMSP430.dut.mem_backbone_0.eu_per_en
 @200
 -
 @28
 tb_openMSP430.dut.mem_backbone_0.fe_pmem_en
-@29
 [color] 1
 tb_openMSP430.dut.frontend_0.exec_done
 [pattern_trace] 1

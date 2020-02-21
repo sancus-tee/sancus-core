@@ -50,6 +50,7 @@ set(SRC
     periph/omsp_spi_master.v
     periph/spi_master.v
     periph/omsp_led_digits.v
+    periph/dma_attacker.v
 )
 
 install(FILES ${SRC} DESTINATION ${INSTALL_RTL_PATH})

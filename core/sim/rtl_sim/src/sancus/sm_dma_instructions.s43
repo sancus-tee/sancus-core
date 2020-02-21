@@ -1,94 +1,211 @@
 .include "pmem_defs.asm"
 .include "sancus_macros.asm"
 
-.set dma_done, DMEM_260
 .set foo_secret_start, DMEM_262
 .set foo_secret_end, DMEM_268
+.set dmem_addr, DMEM_300
+.set pmem_addr, (0x5c00)
+.set mmio_addr, (0x100)
 
 .global main
 main:
     clr r15
-    mov r15, &dma_done
+    ;mov r15, &dma_done
     disable_wdt
     eint
     sancus_enable #1234, #foo_text_start, #foo_text_end, #foo_secret_start, #foo_secret_end
     br #foo_text_start
 
-    /* ----------------------         SANCUS MODULE      --------------- */
-
 foo_text_start:
-    ; add
-    ; addc
-    ; and
-    ; bic
-    ; bis
-    ; bit
-    ; call
-    ; cmp
-    ; dadd
-    ; jc
-    ; jeq
-    ; jge
-    ; jl
-    ; jmp
-    ; jn
-    ; jnc
-    ; jne
+    mov #dmem_addr, r5
+    mov #pmem_addr, r6
+    mov #mmio_addr, r7
+; --------------------------------     JUMP  INSTRUCTIONS     --------------------------------
+    jeq jmplabel0
+jmplabel0:
+    jne jmplabel1
+jmplabel1:
+    jc jmplabel2
+jmplabel2:
+    jnc jmplabel3
+jmplabel3:
+    jn jmplabel4
+jmplabel4:
+    jge jmplabel5
+jmplabel5:
+    jl jmplabel6
+jmplabel6:
+    jmp jmplabel7
+jmplabel7:
+    nop
+; -------------------------------- TWO PARAMETER INSTRUCTIONS --------------------------------
+    mov r4, r4
+    mov r4, 0(r5)
+    mov r4, 0(r6)
+    mov r4, 0(r7)
+    mov r4, dmem_addr
+    mov r4, pmem_addr
+    mov r4, &dmem_addr
+    mov r4, &pmem_addr
+    mov r4, &mmio_addr
 
-    mov #foo_secret_start, r5
-    mov @r5, &foo_secret_start
-    mov #foo_text_start, r5
-    mov @r5, &foo_secret_start
-    mov #foo_secret_start, r6
-    ; -- mov --
-    mov r5, r6
-    mov r5, 5(r6)
-    mov r5, foo_secret_start
-    mov r5, &foo_secret_start
-    mov 3(r5), r6
-    mov 3(r5), 5(r6)
-    mov 3(r5), foo_secret_start
-    mov 3(r5), &foo_secret_start
-    mov foo_secret_start, r6
-    mov foo_secret_start, 5(r6)
-    mov foo_secret_start, foo_secret_start
-    mov foo_secret_start, &foo_secret_start
-    mov &foo_secret_start, r6
-    mov &foo_secret_start, 5(r6)
-    mov &foo_secret_start, foo_secret_start
-    mov &foo_secret_start, &foo_secret_start
-    mov @r5, r6
-    mov @r5, 5(r6)
-    mov @r5, foo_secret_start
-    mov @r5, &foo_secret_start
-    mov @r5+, r6
-    mov @r5+, 5(r6)
-    mov @r5+, foo_secret_start
-    mov @r5+, &foo_secret_start
-    mov #0x42, r6
-    mov #0x42, 5(r6)
-    mov #0x42, foo_secret_start
-    mov #0x42, &foo_secret_start
-    ; -- mov --
+    mov 0(r5), r4
+    mov 0(r5), 0(r5)
+    mov 0(r5), 0(r6)
+    mov 0(r5), 0(r7)
+    mov 0(r5), dmem_addr
+    mov 0(r5), pmem_addr
+    mov 0(r5), &dmem_addr
+    mov 0(r5), &pmem_addr
+    mov 0(r5), &mmio_addr
 
-    ; push
-    ; reti
-    ; rra
-    ; rrc
-    ; sbc
-    ; sub
-    ; subc
-    ; swpb
-    ; sxt
-    ; xor
+    mov 0(r6), r4
+    mov 0(r6), 0(r5)
+    mov 0(r6), 0(r6)
+    mov 0(r6), 0(r7)
+    mov 0(r6), dmem_addr
+    mov 0(r6), pmem_addr
+    mov 0(r6), &dmem_addr
+    mov 0(r6), &pmem_addr
+    mov 0(r6), &mmio_addr
+
+    mov 0(r7), r4
+    mov 0(r7), 0(r5)
+    mov 0(r7), 0(r6)
+    mov 0(r7), 0(r7)
+    mov 0(r7), dmem_addr
+    mov 0(r7), pmem_addr
+    mov 0(r7), &dmem_addr
+    mov 0(r7), &pmem_addr
+    mov 0(r7), &mmio_addr
+
+    mov dmem_addr, r4
+    mov dmem_addr, 0(r5)
+    mov dmem_addr, 0(r6)
+    mov dmem_addr, 0(r7)
+    mov dmem_addr, dmem_addr
+    mov dmem_addr, pmem_addr
+    mov dmem_addr, &dmem_addr
+    mov dmem_addr, &pmem_addr
+    mov dmem_addr, &mmio_addr
+
+    mov pmem_addr, r4
+    mov pmem_addr, 0(r5)
+    mov pmem_addr, 0(r6)
+    mov pmem_addr, 0(r7)
+    mov pmem_addr, dmem_addr
+    mov pmem_addr, pmem_addr
+    mov pmem_addr, &dmem_addr
+    mov pmem_addr, &pmem_addr
+    mov pmem_addr, &mmio_addr
+
+    mov &dmem_addr, r4
+    mov &dmem_addr, 0(r5)
+    mov &dmem_addr, 0(r6)
+    mov &dmem_addr, 0(r7)
+    mov &dmem_addr, dmem_addr
+    mov &dmem_addr, pmem_addr
+    mov &dmem_addr, &dmem_addr
+    mov &dmem_addr, &pmem_addr
+    mov &dmem_addr, &mmio_addr
+
+    mov &pmem_addr, r4
+    mov &pmem_addr, 0(r5)
+    mov &pmem_addr, 0(r6)
+    mov &pmem_addr, 0(r7)
+    mov &pmem_addr, dmem_addr
+    mov &pmem_addr, pmem_addr
+    mov &pmem_addr, &dmem_addr
+    mov &pmem_addr, &pmem_addr
+    mov &pmem_addr, &mmio_addr
+
+    mov &mmio_addr, r4
+    mov &mmio_addr, 0(r5)
+    mov &mmio_addr, 0(r6)
+    mov &mmio_addr, 0(r7)
+    mov &mmio_addr, dmem_addr
+    mov &mmio_addr, pmem_addr
+    mov &mmio_addr, &dmem_addr
+    mov &mmio_addr, &pmem_addr
+    mov &mmio_addr, &mmio_addr
+
+    mov @r5, r4
+    mov @r5, 0(r5)
+    mov @r5, 0(r6)
+    mov @r5, 0(r7)
+    mov @r5, dmem_addr
+    mov @r5, pmem_addr
+    mov @r5, &dmem_addr
+    mov @r5, &pmem_addr
+    mov @r5, &mmio_addr
+
+    mov @r6, r4
+    mov @r6, 0(r5)
+    mov @r6, 0(r6)
+    mov @r6, 0(r7)
+    mov @r6, dmem_addr
+    mov @r6, pmem_addr
+    mov @r6, &dmem_addr
+    mov @r6, &pmem_addr
+    mov @r6, &mmio_addr
+
+    mov @r7, r4
+    mov @r7, 0(r5)
+    mov @r7, 0(r6)
+    mov @r7, 0(r7)
+    mov @r7, dmem_addr
+    mov @r7, pmem_addr
+    mov @r7, &dmem_addr
+    mov @r7, &pmem_addr
+    mov @r7, &mmio_addr
+
+    mov @r5+, r4
+    mov @r5+, 0(r5)
+    mov @r5+, 0(r6)
+    mov @r5+, 0(r7)
+    mov @r5+, dmem_addr
+    mov @r5+, pmem_addr
+    mov @r5+, &dmem_addr
+    mov @r5+, &pmem_addr
+    mov @r5+, &mmio_addr
+
+    mov @r6+, r4
+    mov @r6+, 0(r5)
+    mov @r6+, 0(r6)
+    mov @r6+, 0(r7)
+    mov @r6+, dmem_addr
+    mov @r6+, pmem_addr
+    mov @r6+, &dmem_addr
+    mov @r6+, &pmem_addr
+    mov @r6+, &mmio_addr
+
+    mov @r7+, r4
+    mov @r7+, 0(r5)
+    mov @r7+, 0(r6)
+    mov @r7+, 0(r7)
+    mov @r7+, dmem_addr
+    mov @r7+, pmem_addr
+    mov @r7+, &dmem_addr
+    mov @r7+, &pmem_addr
+    mov @r7+, &mmio_addr
+
+    mov #42, r4
+    mov #42, 0(r5)
+    mov #42, 0(r6)
+    mov #42, 0(r7)
+    mov #42, dmem_addr
+    mov #42, pmem_addr
+    mov #42, &dmem_addr
+    mov #42, &pmem_addr
+    mov #42, &mmio_addr
 
     mov #0x2000, r15
 foo_text_end:
 
 end_of_test:
-	mov #0x2000, r15
+    mov #0x2000, r15
 fail_test:
-	br #0xffff
+    br #0xffff
 
 .section .vectors, "a"
 .word end_of_test  ; Interrupt  0 (lowest priority)    <unused>
