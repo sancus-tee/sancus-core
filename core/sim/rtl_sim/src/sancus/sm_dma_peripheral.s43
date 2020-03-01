@@ -4,11 +4,13 @@
 .set dma_done, DMEM_260
 .set foo_secret_start, DMEM_262
 .set foo_secret_end, DMEM_268
+.set dma_trace, (0x0082)
+.set dma_addr, (0x0080)
 
 .global main
 main:
     clr r15
-    mov r15, &dma_done
+    mov #0x5C5C, &dma_addr
     disable_wdt
     eint
     sancus_enable #1234, #foo_text_start, #foo_text_end, #foo_secret_start, #foo_secret_end
@@ -17,11 +19,12 @@ main:
     /* ----------------------         SANCUS MODULE      --------------- */
 
 foo_text_start:
+    mov #foo_secret_start, r7
     mov 2(r7), &dma_done
-    mov #0x2000, r15
 foo_text_end:
 
 end_of_test:
+    mov &dma_trace, r8
 	mov #0x2000, r15
 fail_test:
 	br #0xffff

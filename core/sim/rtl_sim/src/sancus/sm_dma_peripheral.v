@@ -13,9 +13,7 @@ initial
       $display("===============================================");
       $display("                 START SIMULATION             |");
       $display("===============================================");
-      // Disable automatic DMA verification
       #10;
-      dma_verif_on = 0;
 
       repeat(5) @(posedge mclk);
       stimulus_done = 0;
@@ -25,17 +23,9 @@ initial
       $display("waiting for foo entry..");
       while(~sm_0_executing) @(posedge mclk);
 
-      /* ----------------------  DMA ACCESSES --------------- */
-      tsc_val1 <= cur_tsc;
-      dma_write_8b(`DMA_DONE_ADDR, 8'h1, 0);
-      dma_write_8b(`FOO_TEXT_ADDR + 4, 8'h1, 0);
-      dma_write_8b(`DMA_DONE_ADDR, 8'h1, 0);
-      dma_write_8b(`DMA_DONE_ADDR, 8'h1, 0);
-      // @(`DMA_DONE_ADDR == 0);
-
       /* ----------------------  END OF TEST --------------- */
-      $display("WAIT DIFFERENCE: %d", cur_tsc - tsc_val1);
       @(r15==16'h2000);
+      $display(r8);
 
       stimulus_done = 1;
    end
