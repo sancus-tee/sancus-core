@@ -79,12 +79,19 @@ wire               per_en;
 wire        [15:0] dma_dout;
 wire               dma_ready;
 wire               dma_resp;
-reg         [15:1] dma_addr;
 reg         [15:0] dma_din;
-reg                dma_en;
 reg                dma_priority;
-reg          [1:0] dma_we;
 reg                dma_wkup;
+
+`ifdef DMA_PER
+wire         [15:1] dma_addr;
+wire          [1:0] dma_we;
+wire                dma_en;
+`else
+reg         [15:1] dma_addr;
+reg          [1:0] dma_we;
+reg                dma_en;
+`endif
 
 // Digital I/O
 wire               irq_port1;
@@ -159,7 +166,6 @@ wire        [63:0] cur_tsc;
 // LED digits
 wire        [15:0] per_dout_led;
 wire        [15:0] per_dout_dma;
-wire        [15:0] dma_trace;
 wire         [7:0] led_so;
 
 // File IO
@@ -249,7 +255,11 @@ integer 		   index_mem_dbg;
 // Direct Memory Access interface background tasks
 // (excluded for sancus-sim simulations)
 `ifndef __SANCUS_SIM
-`include "dma_tasks.v"
+`ifndef DMA_PER
+    `include "dma_tasks.v"
+`else
+    reg        dma_tfx_cancel;
+`endif
 `else
     reg        dma_tfx_cancel;
 `endif
@@ -313,11 +323,13 @@ initial
      irq              = 14'h0000;
      nmi              = 1'b0;
      wkup             = 14'h0000;
-     dma_addr         = 15'h0000;
      dma_din          = 16'h0000;
-     dma_en           = 1'b0;
      dma_priority     = 1'b0;
-     dma_we           = 2'b00;
+     `ifndef DMA_PER
+       dma_addr         = 15'h0000;
+       dma_we           = 2'b00;
+       dma_en           = 1'b0;
+     `endif
      dma_wkup         = 1'b0;
      dma_tfx_cancel   = 1'b0;
      cpu_en           = 1'b1;
@@ -633,28 +645,27 @@ omsp_tsc tsc_0(
 
 assign cur_tsc = tsc_0.tsc;
 
+`ifdef DMA_PER
 //
-// LED Digits
+// DMA Attacker
 //----------------------------------
 dma_attacker dma_periph(
     .per_dout (per_dout_dma),
-    .trace    (dma_trace),
-    // .dma_addr(dma_addr),
-    // .dma_en(dma_en),
-    // .dma_we(dma_we),
-    // .dma_din(dma_din),
+    .dma_addr(dma_addr),
+    .dma_en(dma_en),
+    .dma_we(dma_we),
     .mclk     (mclk),
     .per_addr (per_addr),
     .per_din  (per_din),
     .per_en   (per_en),
     .per_we   (per_we),
     .puc_rst  (puc_rst),
-    .dma_ready(dma_ready),
-    .dma_tfx_cancel(dma_tfx_cancel)
+    .dma_ready(dma_ready)
 );
+`endif
 
 //
-// DMA Attacker
+// LED Digits
 //----------------------------------
 omsp_led_digits led_digits(
     .per_dout (per_dout_led),
@@ -879,6 +890,7 @@ initial // Normal end of test
    task tb_extra_report;
       begin
 `ifndef __SANCUS_SIM
+`ifndef DMA_PER
          $display("DMA REPORT: Total Accesses: %-d Total RD: %-d Total WR: %-d", dma_cnt_rd+dma_cnt_wr,     dma_cnt_rd,   dma_cnt_wr);
          $display("            Total Errors:   %-d Error RD: %-d Error WR: %-d", dma_rd_error+dma_wr_error, dma_rd_error, dma_wr_error);
          if (!((`PMEM_SIZE>=4092) && (`DMEM_SIZE>=1024)))
@@ -889,6 +901,7 @@ initial // Normal end of test
          $display("");
          $display("SIMULATION SEED: %d", `SEED);
          $display("");
+`endif
 `endif
       end
    endtask

@@ -2,11 +2,9 @@ module dma_attacker (
 
 // OUTPUTs
     per_dout,                       // Peripheral data output
-    trace,
-    // dma_addr,
-    // dma_en,
-    // dma_we,
-    // dma_din,
+    dma_addr,
+    dma_en,
+    dma_we,
 
 // INPUTs
     mclk,                           // Main system clock
@@ -16,17 +14,14 @@ module dma_attacker (
     per_we,                         // Peripheral write enable (high active)
     puc_rst,                        // Main system reset
     dma_ready,
-    dma_tfx_cancel,
 );
 
 // OUTPUTs
 //=========
 output      [15:0] per_dout;        // Peripheral data output
-output      [15:0] trace;
-// output      [15:1] dma_addr;
-// output             dma_en;
-// output       [1:0] dma_we;
-// output      [15:0] dma_din;
+output      [15:1] dma_addr;
+output             dma_en;
+output       [1:0] dma_we;
 
 // INPUTs
 //=========
@@ -37,24 +32,22 @@ input              per_en;          // Peripheral enable (high active)
 input        [1:0] per_we;          // Peripheral write enable (high active)
 input              puc_rst;         // Main system reset
 input              dma_ready;
-input              dma_tfx_cancel;
-
 
 //=============================================================================
 // 1)  PARAMETER DECLARATION
 //=============================================================================
 
 // Register base address (must be aligned to decoder bit width)
-parameter       [14:0] BASE_ADDR   = 15'h0250;
+parameter       [14:0] BASE_ADDR   = 15'h0080;
 
 // Decoder bit width (defines how many bits are considered for address decoding)
 parameter              DEC_WD      =  2;
 
 // Register addresses offset
-parameter [DEC_WD-1:0] CNTRL1      =  'h0,
-                       CNTRL2      =  'h1,
-                       CNTRL3      =  'h2,
-                       CNTRL4      =  'h3;
+parameter [DEC_WD-1:0] DMA_PER_ADDR_LO =  'h0,
+                       DMA_PER_ADDR_HI =  'h1,
+                       DMA_PER_TRACE   =  'h2,
+                       CNTRL4          =  'h3;
 
 
 // Register one-hot decoder utilities
@@ -62,10 +55,10 @@ parameter              DEC_SZ      =  (1 << DEC_WD);
 parameter [DEC_SZ-1:0] BASE_REG    =  {{DEC_SZ-1{1'b0}}, 1'b1};
 
 // Register one-hot decoder
-parameter [DEC_SZ-1:0] CNTRL1_D  = (BASE_REG << CNTRL1),
-                       CNTRL2_D  = (BASE_REG << CNTRL2),
-                       CNTRL3_D  = (BASE_REG << CNTRL3),
-                       CNTRL4_D  = (BASE_REG << CNTRL4);
+parameter [DEC_SZ-1:0] DMA_PER_ADDR_D  = (BASE_REG << DMA_PER_ADDR_LO),
+                       DMA_PER_EN_D    = (BASE_REG << DMA_PER_ADDR_HI),
+                       DMA_PER_TRACE_D = (BASE_REG << DMA_PER_TRACE),
+                       CNTRL4_D        = (BASE_REG << CNTRL4);
 
 
 //============================================================================
@@ -79,10 +72,10 @@ wire              reg_sel      =  per_en & (per_addr[13:DEC_WD-1]==BASE_ADDR[14:
 wire [DEC_WD-1:0] reg_addr     =  {1'b0, per_addr[DEC_WD-2:0]};
 
 // Register address decode
-wire [DEC_SZ-1:0] reg_dec      = (CNTRL1_D  &  {DEC_SZ{(reg_addr==(CNTRL1 >>1))}}) |
-                                 (CNTRL2_D  &  {DEC_SZ{(reg_addr==(CNTRL2 >>1))}}) |
-                                 (CNTRL3_D  &  {DEC_SZ{(reg_addr==(CNTRL3 >>1))}}) |
-                                 (CNTRL4_D  &  {DEC_SZ{(reg_addr==(CNTRL4 >>1))}});
+wire [DEC_SZ-1:0] reg_dec      = (DMA_PER_ADDR_D   &  {DEC_SZ{(reg_addr==(DMA_PER_ADDR_LO >>1))}}) |
+                                 (DMA_PER_EN_D     &  {DEC_SZ{(reg_addr==(DMA_PER_ADDR_HI >>1))}}) |
+                                 (DMA_PER_TRACE_D  &  {DEC_SZ{(reg_addr==(DMA_PER_TRACE >>1))}}) |
+                                 (CNTRL4_D         &  {DEC_SZ{(reg_addr==(CNTRL4 >>1))}});
 
 // Read/Write probes
 wire              reg_lo_write =  per_we[0] & reg_sel;
@@ -99,41 +92,33 @@ wire [DEC_SZ-1:0] reg_rd       = reg_dec & {DEC_SZ{reg_read}};
 // 3) REGISTERS
 //============================================================================
 
-// CNTRL1 Register
+// DMA_PER_ADDR_LO Register
 //-----------------
-reg  [7:0] cntrl1;
+reg  [7:0] dma_per_addr_lo;
 
-wire       cntrl1_wr  = CNTRL1[0] ? reg_hi_wr[CNTRL1] : reg_lo_wr[CNTRL1];
-wire [7:0] cntrl1_nxt = CNTRL1[0] ? per_din[15:8]     : per_din[7:0];
+wire       dma_per_addr_lo_wr  = DMA_PER_ADDR_LO[0] ? reg_hi_wr[DMA_PER_ADDR_LO] : reg_lo_wr[DMA_PER_ADDR_LO];
+wire [7:0] dma_per_addr_lo_nxt = DMA_PER_ADDR_LO[0] ? per_din[15:8]     : per_din[7:0];
 
 always @ (posedge mclk or posedge puc_rst)
-  if (puc_rst)        cntrl1 <=  8'h00;
-  else if (cntrl1_wr) cntrl1 <=  cntrl1_nxt;
+  if (puc_rst)        dma_per_addr_lo <=  8'h00;
+  else if (dma_per_addr_lo_wr) dma_per_addr_lo <=  dma_per_addr_lo_nxt;
 
 
-// CNTRL2 Register
+// DMA_PER_ADDR_HI Register
 //-----------------
-reg  [7:0] cntrl2;
+reg  [7:0] dma_per_addr_hi;
 
-wire       cntrl2_wr  = CNTRL2[0] ? reg_hi_wr[CNTRL2] : reg_lo_wr[CNTRL2];
-wire [7:0] cntrl2_nxt = CNTRL2[0] ? per_din[15:8]     : per_din[7:0];
+wire       dma_per_addr_hi_wr  = DMA_PER_ADDR_HI[0] ? reg_hi_wr[DMA_PER_ADDR_HI] : reg_lo_wr[DMA_PER_ADDR_HI];
+wire [7:0] dma_per_addr_hi_nxt = DMA_PER_ADDR_HI[0] ? per_din[15:8]     : per_din[7:0];
 
 always @ (posedge mclk or posedge puc_rst)
-  if (puc_rst)        cntrl2 <=  8'h00;
-  else if (cntrl2_wr) cntrl2 <=  cntrl2_nxt;
+  if (puc_rst)        dma_per_addr_hi <=  8'h00;
+  else if (dma_per_addr_hi_wr) dma_per_addr_hi <=  dma_per_addr_hi_nxt;
 
 
-// CNTRL3 Register
+// DMA_PER_TRACE Register
 //-----------------
-reg  [7:0] cntrl3;
-
-wire       cntrl3_wr  = CNTRL3[0] ? reg_hi_wr[CNTRL3] : reg_lo_wr[CNTRL3];
-wire [7:0] cntrl3_nxt = CNTRL3[0] ? per_din[15:8]     : per_din[7:0];
-
-always @ (posedge mclk or posedge puc_rst)
-  if (puc_rst)        cntrl3 <=  8'h00;
-  else if (cntrl3_wr) cntrl3 <=  cntrl3_nxt;
-
+reg  [15:0] dma_per_trace;
 
 // CNTRL4 Register
 //-----------------
@@ -150,56 +135,17 @@ always @ (posedge mclk or posedge puc_rst)
 // 4) DATA OUTPUT GENERATION
 //============================================================================
 
-// Data output mux
-wire [15:0] cntrl1_rd   = {8'h00, (cntrl1  & {8{reg_rd[CNTRL1]}})}  << (8 & {4{CNTRL1[0]}});
-wire [15:0] cntrl2_rd   = {8'h00, (cntrl2  & {8{reg_rd[CNTRL2]}})}  << (8 & {4{CNTRL2[0]}});
-wire [15:0] cntrl3_rd   = {8'h00, (cntrl3  & {8{reg_rd[CNTRL3]}})}  << (8 & {4{CNTRL3[0]}});
-wire [15:0] cntrl4_rd   = {8'h00, (cntrl4  & {8{reg_rd[CNTRL4]}})}  << (8 & {4{CNTRL4[0]}});
+wire [15:0] per_dout = |reg_rd ? dma_per_trace : 16'h0;
 
-wire [15:0] per_dout  =  cntrl1_rd  |
-                         cntrl2_rd  |
-                         cntrl3_rd  |
-                         cntrl4_rd;
-
-// an open data memory address
-`define DMA_DMEM_ADDR           (`DMEM_BASE)
-// an open program memory address
-`define DMA_PMEM_ADDR           (`DMEM_BASE + `DMEM_SIZE + 8'h10)
-// an open MMIO address
-`define DMA_MMIO_ADDR           (8'h10)
-
-// dma_read_8b(`DMA_DMEM_ADDR, 8'h1, 0);
-
-// reg      [15:1] dma_addr = `DMA_DMEM_ADDR;
-// reg             dma_en = 1'b1;
-// reg       [1:0] dma_we = 2'b00;
-// reg      [15:0] dma_din = 16'h0000;
-
-// always @(posedge mclk) begin
-//   dma_addr = `DMA_DMEM_ADDR;
-//   dma_en   = 1'b1;
-//   dma_we   = 2'b00;
-//   dma_din  = 16'h0000;
-//   @(posedge mclk or posedge dma_tfx_cancel);
-//   while(~dma_ready & ~dma_tfx_cancel) @(posedge mclk or posedge dma_tfx_cancel);
-//   dma_en   = 1'b0;
-//   dma_addr = 15'h0000;
-// end
-
-// always @(posedge mclk) begin
-//     case (input)
-//         DMEM: dma_write_8b(`DMA_DMEM_ADDR, 8'h1, 0)
-//         PMEM: dma_write_8b(`DMA_PMEM_ADDR, 8'h1, 0)
-//         MMIO: dma_write_8b(`DMA_MMIO_ADDR, 8'h1, 0)
-//     endcase
-// end
-
-reg [15:0] dma_buffer;
+reg      [15:1] dma_addr = 15'h0;
+reg             dma_en = 1'b1;
+reg       [1:0] dma_we = 2'b00;
 
 always @(posedge mclk) begin
-  dma_buffer <= {dma_buffer[14:0], dma_ready};
+  dma_per_trace <= {dma_per_trace[14:0], ~dma_ready};
+  dma_en <= 1'b1;
+  dma_addr <= {dma_per_addr_hi[6:0], dma_per_addr_lo};
+  dma_we <= 2'b00;
 end
-
-wire [15:0] trace = dma_buffer;
 
 endmodule

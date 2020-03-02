@@ -10,6 +10,9 @@ export OMSP_SIMULATOR
 __SANCUS_SIM=1
 export __SANCUS_SIM
 
+DMA_PER=1
+export DMA_PER
+
 rm -rf ./cov_work
 rm -rf ./log/*.log
 mkdir  ./log
