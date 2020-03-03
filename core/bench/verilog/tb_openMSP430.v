@@ -83,14 +83,14 @@ reg         [15:0] dma_din;
 reg                dma_priority;
 reg                dma_wkup;
 
-`ifdef DMA_PER
-wire         [15:1] dma_addr;
-wire          [1:0] dma_we;
-wire                dma_en;
-`else
+`ifdef DMA_SIM
 reg         [15:1] dma_addr;
 reg          [1:0] dma_we;
 reg                dma_en;
+`else
+wire         [15:1] dma_addr;
+wire          [1:0] dma_we;
+wire                dma_en;
 `endif
 
 // Digital I/O
@@ -255,11 +255,11 @@ integer 		   index_mem_dbg;
 // Direct Memory Access interface background tasks
 // (excluded for sancus-sim simulations)
 `ifndef __SANCUS_SIM
-`ifndef DMA_PER
-    `include "dma_tasks.v"
-`else
-    reg        dma_tfx_cancel;
-`endif
+    `ifdef DMA_SIM
+        `include "dma_tasks.v"
+    `else
+        reg        dma_tfx_cancel;
+    `endif
 `else
     reg        dma_tfx_cancel;
 `endif
@@ -325,7 +325,7 @@ initial
      wkup             = 14'h0000;
      dma_din          = 16'h0000;
      dma_priority     = 1'b0;
-     `ifndef DMA_PER
+     `ifdef DMA_SIM
        dma_addr         = 15'h0000;
        dma_we           = 2'b00;
        dma_en           = 1'b0;
@@ -645,7 +645,7 @@ omsp_tsc tsc_0(
 
 assign cur_tsc = tsc_0.tsc;
 
-`ifdef DMA_PER
+`ifndef DMA_SIM
 //
 // DMA Attacker
 //----------------------------------
@@ -890,7 +890,7 @@ initial // Normal end of test
    task tb_extra_report;
       begin
 `ifndef __SANCUS_SIM
-`ifndef DMA_PER
+`ifdef DMA_SIM
          $display("DMA REPORT: Total Accesses: %-d Total RD: %-d Total WR: %-d", dma_cnt_rd+dma_cnt_wr,     dma_cnt_rd,   dma_cnt_wr);
          $display("            Total Errors:   %-d Error RD: %-d Error WR: %-d", dma_rd_error+dma_wr_error, dma_rd_error, dma_wr_error);
          if (!((`PMEM_SIZE>=4092) && (`DMEM_SIZE>=1024)))
