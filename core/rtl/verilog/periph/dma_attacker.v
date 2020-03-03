@@ -47,7 +47,7 @@ parameter              DEC_WD      =  2;
 parameter [DEC_WD-1:0] DMA_PER_ADDR_LO =  'h0,
                        DMA_PER_ADDR_HI =  'h1,
                        DMA_PER_TRACE   =  'h2,
-                       CNTRL4          =  'h3;
+                       DMA_PER_CNT     =  'h3;
 
 
 // Register one-hot decoder utilities
@@ -58,7 +58,7 @@ parameter [DEC_SZ-1:0] BASE_REG    =  {{DEC_SZ-1{1'b0}}, 1'b1};
 parameter [DEC_SZ-1:0] DMA_PER_ADDR_D  = (BASE_REG << DMA_PER_ADDR_LO),
                        DMA_PER_EN_D    = (BASE_REG << DMA_PER_ADDR_HI),
                        DMA_PER_TRACE_D = (BASE_REG << DMA_PER_TRACE),
-                       CNTRL4_D        = (BASE_REG << CNTRL4);
+                       DMA_PER_CNT_D   = (BASE_REG << DMA_PER_CNT);
 
 
 //============================================================================
@@ -75,7 +75,7 @@ wire [DEC_WD-1:0] reg_addr     =  {1'b0, per_addr[DEC_WD-2:0]};
 wire [DEC_SZ-1:0] reg_dec      = (DMA_PER_ADDR_D   &  {DEC_SZ{(reg_addr==(DMA_PER_ADDR_LO >>1))}}) |
                                  (DMA_PER_EN_D     &  {DEC_SZ{(reg_addr==(DMA_PER_ADDR_HI >>1))}}) |
                                  (DMA_PER_TRACE_D  &  {DEC_SZ{(reg_addr==(DMA_PER_TRACE >>1))}}) |
-                                 (CNTRL4_D         &  {DEC_SZ{(reg_addr==(CNTRL4 >>1))}});
+                                 (DMA_PER_CNT_D    &  {DEC_SZ{(reg_addr==(DMA_PER_CNT >>1))}});
 
 // Read/Write probes
 wire              reg_lo_write =  per_we[0] & reg_sel;
@@ -118,18 +118,18 @@ always @ (posedge mclk or posedge puc_rst)
 
 // DMA_PER_TRACE Register
 //-----------------
-reg  [15:0] dma_per_trace;
+reg  [15:0] dma_per_trace = 16'h0;
 
-// CNTRL4 Register
+// DMA_PER_CNT Register
 //-----------------
-reg  [7:0] cntrl4;
+reg  [7:0] dma_per_cnt;
 
-wire       cntrl4_wr  = CNTRL4[0] ? reg_hi_wr[CNTRL4] : reg_lo_wr[CNTRL4];
-wire [7:0] cntrl4_nxt = CNTRL4[0] ? per_din[15:8]     : per_din[7:0];
+wire       dma_per_cnt_wr  = DMA_PER_CNT[0] ? reg_hi_wr[DMA_PER_CNT] : reg_lo_wr[DMA_PER_CNT];
+wire [7:0] dma_per_cnt_nxt = DMA_PER_CNT[0] ? per_din[15:8]     : per_din[7:0];
 
 always @ (posedge mclk or posedge puc_rst)
-  if (puc_rst)        cntrl4 <=  8'h00;
-  else if (cntrl4_wr) cntrl4 <=  cntrl4_nxt;
+  if (puc_rst)        dma_per_cnt <=  8'h00;
+  else if (dma_per_cnt_wr) dma_per_cnt <=  dma_per_cnt_nxt;
 
 //============================================================================
 // 4) DATA OUTPUT GENERATION
@@ -141,11 +141,27 @@ reg      [15:1] dma_addr = 15'h0;
 reg             dma_en = 1'b1;
 reg       [1:0] dma_we = 2'b00;
 
+reg [3:0] internal_cnt = 4'h0;
+
 always @(posedge mclk) begin
-  dma_per_trace <= {dma_per_trace[14:0], ~dma_ready};
-  dma_en <= 1'b1;
-  dma_addr <= {dma_per_addr_hi[6:0], dma_per_addr_lo};
-  dma_we <= 2'b00;
+  case (dma_per_cnt)
+    8'h0: begin
+        if (internal_cnt != 4'h0) begin
+          dma_per_trace <= {dma_per_trace[14:0], ~dma_ready};
+          dma_en <= 1'b1;
+          dma_addr <= {dma_per_addr_hi[6:0], dma_per_addr_lo};
+          dma_we <= 2'b00;
+          internal_cnt <= internal_cnt - 1;
+        end
+      end
+    8'h1: begin
+        internal_cnt <= 8'd15;
+        dma_per_cnt <= dma_per_cnt - 1;
+      end
+    default: begin
+        dma_per_cnt <= dma_per_cnt - 1;
+      end
+  endcase
 end
 
 endmodule
