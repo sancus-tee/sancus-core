@@ -163,9 +163,12 @@ wire               ta_out2_en;
 wire        [15:0] per_dout_tsc;
 wire        [63:0] cur_tsc;
 
+`ifndef DMA_SIM
+wire        [15:0] per_dout_dma;
+`endif
+
 // LED digits
 wire        [15:0] per_dout_led;
-wire        [15:0] per_dout_dma;
 wire         [7:0] led_so;
 
 // File IO
@@ -651,9 +654,9 @@ assign cur_tsc = tsc_0.tsc;
 //----------------------------------
 dma_attacker dma_periph(
     .per_dout (per_dout_dma),
-    .dma_addr(dma_addr),
-    .dma_en(dma_en),
-    .dma_we(dma_we),
+    .dma_addr (dma_addr),
+    .dma_en   (dma_en),
+    .dma_we   (dma_we),
     .mclk     (mclk),
     .per_addr (per_addr),
     .per_din  (per_din),
@@ -723,7 +726,9 @@ assign per_dout = per_dout_dio       |
 `else
                   per_dout_tsc       |
                   per_dout_led       |
+`ifndef DMA_SIM
                   per_dout_dma       |
+`endif
 `endif
                   per_dout_file_io;
 

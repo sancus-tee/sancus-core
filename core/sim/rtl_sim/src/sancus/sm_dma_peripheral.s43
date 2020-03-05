@@ -19,6 +19,7 @@ main:
     /* ----------------------         SANCUS MODULE      --------------- */
 
 foo_text_start:
+    mov #0x0200, &dma_trace
     mov #foo_secret_start, r7
     mov 2(r7), &dma_done
 foo_text_end:
