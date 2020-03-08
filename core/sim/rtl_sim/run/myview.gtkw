@@ -1,21 +1,21 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Sun Mar  1 18:52:00 2020
+[*] Sun Mar  8 01:56:58 2020
 [*]
 [dumpfile] "/home/mici/programming/sancus-main/sancus-core/core/sim/rtl_sim/run/tb_openMSP430.vcd"
-[dumpfile_mtime] "Sun Mar  1 18:51:15 2020"
-[dumpfile_size] 6023385
+[dumpfile_mtime] "Sat Mar  7 23:58:21 2020"
+[dumpfile_size] 6031370
 [savefile] "/home/mici/programming/sancus-main/sancus-core/core/sim/rtl_sim/run/myview.gtkw"
-[timestart] 122097000
+[timestart] 122318000
 [size] 1920 1029
 [pos] -1 -1
 *-18.000000 155135000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_openMSP430.
 [treeopen] tb_openMSP430.dut.
 [sst_width] 217
-[signals_width] 158
+[signals_width] 174
 [sst_expanded] 1
-[sst_vpaned_height] 671
+[sst_vpaned_height] 582
 @820
 tb_openMSP430.inst_full[255:0]
 @22
