@@ -106,6 +106,26 @@ wire        dma_per_cnt_wr = reg_wr[DMA_PER_CNT];
 always @ (posedge mclk or posedge puc_rst)
   if (puc_rst)        dma_per_cnt <=  16'h00;
   else if (dma_per_cnt_wr) dma_per_cnt <=  per_din;
+  else begin
+    case (dma_per_cnt)
+      8'h0: begin
+          if (internal_cnt != 4'h0) begin
+            dma_per_trace <= {dma_per_trace[14:0], ~dma_ready};
+            dma_en <= 1'b1;
+            dma_addr <= dma_per_addr[14:0];
+            dma_we <= 2'b00;
+            internal_cnt <= internal_cnt - 1;
+          end
+        end
+      8'h1: begin
+          internal_cnt <= 8'd15;
+          dma_per_cnt <= dma_per_cnt - 1;
+        end
+      default: begin
+          dma_per_cnt <= dma_per_cnt - 1;
+        end
+    endcase
+  end
 
 // DMA_PER_TRACE Register
 //-----------------
@@ -122,26 +142,5 @@ reg             dma_en = 1'b0;
 reg       [1:0] dma_we = 2'b00;
 
 reg [3:0] internal_cnt = 4'h0;
-
-always @(posedge mclk) begin
-  case (dma_per_cnt)
-    8'h0: begin
-        if (internal_cnt != 4'h0) begin
-          dma_per_trace <= {dma_per_trace[14:0], ~dma_ready};
-          dma_en <= 1'b1;
-          dma_addr <= dma_per_addr[14:0];
-          dma_we <= 2'b00;
-          internal_cnt <= internal_cnt - 1;
-        end
-      end
-    8'h1: begin
-        internal_cnt <= 8'd15;
-        dma_per_cnt <= dma_per_cnt - 1;
-      end
-    default: begin
-        dma_per_cnt <= dma_per_cnt - 1;
-      end
-  endcase
-end
 
 endmodule

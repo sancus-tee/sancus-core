@@ -1,0 +1,1 @@
+ xsload -b xula2-lx25 --flash sancus-core-dma.mcs
