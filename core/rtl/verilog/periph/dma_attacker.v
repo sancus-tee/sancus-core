@@ -13,7 +13,7 @@ module dma_attacker (
     per_en,                         // Peripheral enable (high active)
     per_we,                         // Peripheral write enable (high active)
     puc_rst,                        // Main system reset
-    dma_ready,
+    dma_ready
 );
 
 // OUTPUTs
@@ -114,15 +114,18 @@ always @ (posedge mclk or posedge puc_rst)
             dma_en <= 1'b1;
             dma_addr <= dma_per_addr[14:0];
             dma_we <= 2'b00;
-            internal_cnt <= internal_cnt - 1;
+            internal_cnt <= internal_cnt - 4'h1;
+          end
+          else begin
+            dma_en <= 1'b0;
           end
         end
       8'h1: begin
           internal_cnt <= 8'd15;
-          dma_per_cnt <= dma_per_cnt - 1;
+          dma_per_cnt <= dma_per_cnt - 16'h1;
         end
       default: begin
-          dma_per_cnt <= dma_per_cnt - 1;
+          dma_per_cnt <= dma_per_cnt - 16'h1;
         end
     endcase
   end

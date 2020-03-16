@@ -21,9 +21,9 @@
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 //
 //----------------------------------------------------------------------------
-// 
+//
 // *File Name: openMSP430_fpga.v
-// 
+//
 // *Module Description:
 //                      openMSP430 FPGA Top-level for the Avnet LX9 Microboard
 //
@@ -360,7 +360,7 @@ omsp_gpio #(.P1_EN(1),
     .p6_dout_en   (),              // Port 6 data output enable
     .p6_sel       (),              // Port 6 function select
     .per_dout     (per_dout_dio),  // Peripheral data output
-			     
+
 // INPUTs
     .mclk         (mclk),          // Main system clock
     .p1_din       (p1_din),        // Port 1 data input
@@ -563,6 +563,7 @@ assign per_dout = per_dout_dio      |
                   per_dout_uart2    |
                   //per_dout_ps2      |
                   per_dout_tsc      |
+                  per_dout_dma      |
                   per_dout_led      |
                   per_dout_spi;
 
