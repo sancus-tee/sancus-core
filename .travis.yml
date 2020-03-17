@@ -18,3 +18,4 @@ script:
 env:
   - TARGET=run_all
   - TARGET=run_all_sancus
+  - TARGET=run_dma_periph

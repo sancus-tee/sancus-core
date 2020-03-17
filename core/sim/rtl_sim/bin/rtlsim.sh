@@ -75,16 +75,16 @@ if [ "${OMSP_SIMULATOR:-iverilog}" = iverilog ]; then
     rm -rf simv
     IVERILOG_CMD="iverilog -Wall -Wno-timescale -Winfloop -o simv -c $3"
     NODUMP=${OMSP_NODUMP-0}
-    if [ -z "${DMA_SIM}" ]; then
-      DMA_SIM_FLAG='-DDMA_SIM'
+    if [ -z "${__SANCUS_SIM}" ]; then
+      SIM_FLAG=''
     else
-      DMA_SIM_FLAG=''
+      SIM_FLAG='-D__SANCUS_SIM'
     fi
     if [ $NODUMP -eq 1 ]
       then
-        $IVERILOG_CMD -D SEED=$4 -D NODUMP ${DMA_SIM_FLAG}
+        $IVERILOG_CMD -D SEED=$4 -D NODUMP ${SIM_FLAG}
       else
-        $IVERILOG_CMD -D SEED=$4 ${DMA_SIM_FLAG}
+        $IVERILOG_CMD -D SEED=$4 ${SIM_FLAG}
     fi
 
 if [ `uname -o` = "Cygwin" ]

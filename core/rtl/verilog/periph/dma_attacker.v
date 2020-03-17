@@ -121,6 +121,9 @@ always @ (posedge mclk or posedge puc_rst)
           end
         end
       8'h1: begin
+          dma_en <= 1'b1;
+          dma_addr <= dma_per_addr[14:0];
+          dma_we <= 2'b00;
           internal_cnt <= 8'd15;
           dma_per_cnt <= dma_per_cnt - 16'h1;
         end

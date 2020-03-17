@@ -8,28 +8,58 @@
 .set dma_cnt, (0x0072)
 .set dma_trace, (0x0074)
 
+; This enclave accepts a guess for a passcode in the r6 register. It also has a
+; counter to log the number of incorrect guesses.
+; If the user's guess is correct, the counter is reset, if it is incorrect, the
+; number is increased.
+; Using the DMA attacker peripheral that issues read requests to unprotected
+; data memory, we can distinguish between the ADD and MOV instructions.
+; Since these instructions have the same execution length, these different
+; execution traces are indistinguishable for a Nemesis attacker.
+
 .global main
 main:
     clr r15
-    mov #0x5C5C, &dma_addr
+    mov #dma_done, &dma_addr
     disable_wdt
     eint
     sancus_enable #1234, #foo_text_start, #foo_text_end, #foo_secret_start, #foo_secret_end
-    mov #0x0002, &dma_cnt
+    mov #0x41, r6
+    mov #0x01, r10
+    mov #0x02, &dma_cnt
     br #foo_text_start
 
     /* ----------------------         SANCUS MODULE      --------------- */
 
 foo_text_start:
-    mov #foo_secret_start, r7
-    mov 2(r7), &dma_done
+    mov #0x42, r7
+    cmp r6, r7
+    jz 1f
+    mov #0x00, &foo_secret_start
+    jmp 2f
+1:  add #0x01, &foo_secret_start
+    jmp 2f
+2:  mov #0x0, r7
 foo_text_end:
 
+    /* ----------------------        SAVE DMA TRACES     --------------- */
+
 end_of_test:
+    nop
+    nop
+    nop
+    nop
+    cmp #0x00, r10
+    jz 3f
+    mov #0x00, r10
     mov &dma_trace, r8
-	mov #0x2000, r15
+    mov #0x42, r6
+    mov #0x02, &dma_cnt
+    br #foo_text_start
+3:  mov &dma_trace, r9
+    mov #0x2000, r15
 fail_test:
-	br #0xffff
+    br #0xffff
 
 .section .vectors, "a"
 .word end_of_test  ; Interrupt  0 (lowest priority)    <unused>
