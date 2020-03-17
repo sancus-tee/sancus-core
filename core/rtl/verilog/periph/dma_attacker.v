@@ -2,9 +2,9 @@ module dma_attacker (
 
 // OUTPUTs
     per_dout,                       // Peripheral data output
-    dma_addr,
-    dma_en,
-    dma_we,
+    dma_addr,                       // DMA address
+    dma_en,                         // DMA enable
+    dma_we,                         // DMA write enable
 
 // INPUTs
     mclk,                           // Main system clock
@@ -13,15 +13,15 @@ module dma_attacker (
     per_en,                         // Peripheral enable (high active)
     per_we,                         // Peripheral write enable (high active)
     puc_rst,                        // Main system reset
-    dma_ready
+    dma_ready                       // DMA ready
 );
 
 // OUTPUTs
 //=========
 output      [15:0] per_dout;        // Peripheral data output
-output      [15:1] dma_addr;
-output             dma_en;
-output       [1:0] dma_we;
+output      [15:1] dma_addr;        // DMA address
+output             dma_en;          // DMA enable
+output       [1:0] dma_we;          // DMA write enable
 
 // INPUTs
 //=========
@@ -31,7 +31,7 @@ input       [15:0] per_din;         // Peripheral data input
 input              per_en;          // Peripheral enable (high active)
 input        [1:0] per_we;          // Peripheral write enable (high active)
 input              puc_rst;         // Main system reset
-input              dma_ready;
+input              dma_ready;       // DMA ready
 
 //=============================================================================
 // 1)  PARAMETER DECLARATION
@@ -103,6 +103,16 @@ reg  [15:0] dma_per_cnt;
 
 wire        dma_per_cnt_wr = reg_wr[DMA_PER_CNT];
 
+reg  [15:0] dma_per_trace = 16'h0;
+
+wire [15:0] per_dout = |reg_rd ? dma_per_trace : 16'h0;
+
+reg  [15:1] dma_addr = 15'h0;
+reg         dma_en   = 1'b0;
+reg   [1:0] dma_we   = 2'b00;
+
+reg [3:0] internal_cnt = 4'h0;
+
 always @ (posedge mclk or posedge puc_rst)
   if (puc_rst)        dma_per_cnt <=  16'h00;
   else if (dma_per_cnt_wr) dma_per_cnt <=  per_din;
@@ -113,7 +123,6 @@ always @ (posedge mclk or posedge puc_rst)
             dma_per_trace <= {dma_per_trace[14:0], ~dma_ready};
             dma_en <= 1'b1;
             dma_addr <= dma_per_addr[14:0];
-            dma_we <= 2'b00;
             internal_cnt <= internal_cnt - 4'h1;
           end
           else begin
@@ -123,7 +132,6 @@ always @ (posedge mclk or posedge puc_rst)
       8'h1: begin
           dma_en <= 1'b1;
           dma_addr <= dma_per_addr[14:0];
-          dma_we <= 2'b00;
           internal_cnt <= 8'd15;
           dma_per_cnt <= dma_per_cnt - 16'h1;
         end
@@ -132,21 +140,5 @@ always @ (posedge mclk or posedge puc_rst)
         end
     endcase
   end
-
-// DMA_PER_TRACE Register
-//-----------------
-reg  [15:0] dma_per_trace = 16'h0;
-
-//============================================================================
-// 4) DATA OUTPUT GENERATION
-//============================================================================
-
-wire [15:0] per_dout = |reg_rd ? dma_per_trace : 16'h0;
-
-reg      [15:1] dma_addr = 15'h0;
-reg             dma_en = 1'b0;
-reg       [1:0] dma_we = 2'b00;
-
-reg [3:0] internal_cnt = 4'h0;
 
 endmodule

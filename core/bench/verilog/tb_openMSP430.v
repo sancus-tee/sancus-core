@@ -260,7 +260,7 @@ integer 		   index_mem_dbg;
 `ifndef __SANCUS_SIM
     `include "dma_tasks.v"
 `else
-    reg        dma_tfx_cancel;
+    reg dma_tfx_cancel;
 `endif
 
 //
