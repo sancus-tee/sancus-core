@@ -118,22 +118,24 @@ always @ (posedge mclk or posedge puc_rst)
   else if (dma_per_cnt_wr) dma_per_cnt <=  per_din;
   else begin
     case (dma_per_cnt)
-      8'h0: begin
-          if (internal_cnt != 4'h0) begin
-            dma_per_trace <= {dma_per_trace[14:0], ~dma_ready};
-            dma_en <= 1'b1;
-            dma_addr <= dma_per_addr[14:0];
-            internal_cnt <= internal_cnt - 4'h1;
-          end
-          else begin
+      16'h0: begin
+          dma_per_trace <= {dma_per_trace[14:0], ~dma_ready};
+          dma_en <= 1'b1;
+          dma_addr <= dma_per_addr[14:0];
+          internal_cnt <= internal_cnt - 4'h1;
+          if (internal_cnt == 4'h0) begin
             dma_en <= 1'b0;
+            dma_per_cnt <= 16'hFFFF;
           end
         end
-      8'h1: begin
+      16'h1: begin
           dma_en <= 1'b1;
           dma_addr <= dma_per_addr[14:0];
           internal_cnt <= 8'd15;
           dma_per_cnt <= dma_per_cnt - 16'h1;
+        end
+      16'hFFFF: begin
+          // do nothing
         end
       default: begin
           dma_per_cnt <= dma_per_cnt - 16'h1;
