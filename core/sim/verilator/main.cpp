@@ -19,11 +19,15 @@
 #include <stdio.h>
 #include <unistd.h>
 
-const double TIMESCALE       = 1e-9;
-const int    CLOCK_FREQUENCY = 100*1e6;
-const int    CLOCK_PERIOD    = 1/(CLOCK_FREQUENCY*TIMESCALE);
+#include "ProgressBar.hpp"
 
-const std::uint64_t MAX_CYCLES = 1000000000ULL;
+const double TIMESCALE       = 1e-9;
+const int    CLOCK_FREQUENCY = 20*1e6;
+const int    CLOCK_PERIOD    = 1/(CLOCK_FREQUENCY*TIMESCALE);
+// const std::uint64_t MAX_CYCLES = 1000000000ULL;
+const std::uint64_t MAX_CYCLES = 10000ULL;
+const int    MAX_EXECUTION_TIME = MAX_CYCLES*CLOCK_PERIOD;
+
 
 // class Memory
 // {
@@ -277,12 +281,14 @@ int main(int argc, char** argv)
 {
     // assert(argc >= 2 && "No memory file name given");
 
+    // initialize the progress bar
+    ProgressBar progressBar(MAX_CYCLES, 100);
+
     Verilated::commandArgs(argc, argv);
 
     auto top = std::unique_ptr<Vtb_openMSP430>{new Vtb_openMSP430};
-    top->tb_openMSP430__DOT__reset_n = 1;
-    top->tb_openMSP430__DOT__dco_clk = 1;
-    top->tb_openMSP430__DOT__dco_local_enable = 1;
+    top->reset_n = 1;
+    top->dco_clk = 1;
 
     // auto memoryFile = argv[argc - 1];
     // auto memory = Memory{*top, memoryFile};
@@ -312,16 +318,19 @@ int main(int argc, char** argv)
         auto clockEdge = (mainTime % (CLOCK_PERIOD/2) == 0);
 
         if (clockEdge){
-            top->tb_openMSP430__DOT__dco_clk = !top->tb_openMSP430__DOT__dco_clk;
+            top->dco_clk = !top->dco_clk;
         }
 
 
         if (mainTime >= 5*CLOCK_PERIOD)
-            top->tb_openMSP430__DOT__reset_n = 0;
+            top->reset_n = 0;
+        if (mainTime >= 50*CLOCK_PERIOD)
+            top->reset_n = 1;
+        
 
         top->eval();
 
-        if (clockEdge && top->tb_openMSP430__DOT__dco_clk)
+        if (clockEdge && top->dco_clk)
         {
             // if (memory.eval())
             //     top->eval();
@@ -347,18 +356,20 @@ int main(int argc, char** argv)
 
             // if (byteDev.eval())
             //     top->eval();
-
-            if (mainTime >= MAX_CYCLES*CLOCK_PERIOD)
+            // FIXME: For now, limited to 100k cycles
+            if (mainTime >= MAX_EXECUTION_TIME)
             {
                 isDone = true;
-                result = 1;
+                result = 0; //change to 1 if reverting back to abort on max_cycles
             }
+            ++progressBar;
+            progressBar.display();
         }
-
         tracer->dump(mainTime);
 
         mainTime++;
     }
+    progressBar.done();
 
     tracer->close();
     return result;

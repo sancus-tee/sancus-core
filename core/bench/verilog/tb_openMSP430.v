@@ -48,7 +48,10 @@
 //`define SHOW_DMEM_WAVES
   
 
-module  tb_openMSP430;
+module  tb_openMSP430(
+    input reg  dco_clk,
+    input reg  reset_n
+);
 
 //
 // Wire & Register definition
