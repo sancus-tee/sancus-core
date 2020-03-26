@@ -16,6 +16,10 @@
 ; data memory, we can distinguish between the ADD and MOV instructions.
 ; Since these instructions have the same execution length, these different
 ; execution traces are indistinguishable for a Nemesis attacker.
+; We store the traces for a run of the enclave with both an incorrect (0x41)
+; and a correct (0x42) guess in the r8 and r9 registers respectively.
+; In the stimulus file, we check whether these traces indeed differ from each
+; other.
 
 .global main
 main:
