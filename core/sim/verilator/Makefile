@@ -30,7 +30,7 @@ mem-file:
 	# /usr/local/share/sancus/tools/ihex2mem.tcl -ihex $(BUILD_DIR)/ihex -out $(BUILD_DIR)/pmem.mem -mem_size 41984
 
 sim: all mem-file
-	cd $(BUILD_DIR); ./$(EXE_NAME) -f $(BUILD_DIR)/mem_file -c 1000
+	./$(BUILD_DIR)/$(EXE_NAME) -f $(BUILD_DIR)/mem_file 
 
 FORCE:
 

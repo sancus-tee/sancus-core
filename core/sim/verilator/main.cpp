@@ -50,40 +50,37 @@ enum exit_codes{success, error, timeout, program_abort, no_input_file};
                     "Memory does not contain a multiple of words");
 
             auto i = std::size_t{0};
-            printf("0x0000: ");
+            // printf("0x0000: ");
             while (i < memoryBytes.size())
             {
-                if(i%32 == 0) printf("\n0x%4x: ", i/2);
+                // if(i%32 == 0) printf("\n0x%4x: ", i/2);
                 auto b0 = memoryBytes[i++];
                 auto b1 = memoryBytes[i++];
 
                 Word word = b0 | (b1 << 8) ; // little endian
                 // auto word = (b0 << 8) | b1;
-                printf("%4x ", word);
+                // printf("%4x ", word);
                 memory_.push_back(word);
             }
-            printf("\nRead memory of %u bytes.\n", memoryBytes.size());
+            // printf("\nRead memory of %u bytes.\n", memoryBytes.size());
         }
     }
 
-    bool eval()
+    bool eval(bool clockedge)
     {
-        auto updated = false;
-
-        if (! *_chip_enable) // chip enable is low active
+        bool updated = false;
+        if (! *_chip_enable            // chip enable is low active
+            && *_write_enable != 0b11  // write enable is low active
+            && clockedge)              // only write on rising clockedges
         {
-            if (*_write_enable != 0b11) // write enable is low active
-            {
-                write(*_addr, *_write_enable, *_din);
-            }
-            // Always write to dout
-            *_dout = read(*_addr);
-
-            updated = true;
+            write(*_addr, *_write_enable, *_din);
         }
-        printf("[Memory] %s Regs are: cen: %x wen: %x, addr: %2x, in: %2x, out:%2x\n",_name.c_str(), *_chip_enable, *_write_enable, *_addr, *_din, *_dout);
+        
+        if(clockedge) *_dout = read(prev_address, clockedge);
+        prev_address = *_addr;
 
-        return false;
+        // printf("[Memory] %s Regs are: cen: %x wen: %x, addr: %2x, in: %2x, out:%2x\n",_name.c_str(), *_chip_enable, *_write_enable, *_addr, *_din, *_dout);
+
     }
 
     string print_memory(){
@@ -107,12 +104,17 @@ enum exit_codes{success, error, timeout, program_abort, no_input_file};
     using Word = std::uint16_t;
     using Mask = std::uint8_t;
 
-    Word read(Address address)
+    Word read(Address address, bool clockedge)
     {
         ensureEnoughMemory(address);
         Word memoryValue = memory_[(prev_address)];
-        prev_address = address;
-        printf("[Memory] %s [Read] %x : %x\n", _name.c_str(), prev_address, memoryValue);
+        // printf("[Memory] %s [Read] %x : %x\n", _name.c_str(), prev_address, memoryValue);
+        
+        // Update value to be read next on pos edges
+        // if (clockedge){  
+        //     prev_address = address;
+        // }
+
         return memoryValue;
     }
 
@@ -131,7 +133,7 @@ enum exit_codes{success, error, timeout, program_abort, no_input_file};
         memoryValue &= ~bitMask;
         memoryValue |= value & bitMask;
 
-        printf("[Memory] %s [Write] %x : %x\n", _name.c_str(), address, memoryValue);
+        // printf("[Memory] %s [Write] %x : %x\n", _name.c_str(), address, memoryValue);
     }
 
     void ensureEnoughMemory(Address address)
@@ -199,9 +201,11 @@ int main(int argc, char** argv)
                     .help("Name of the outputted simulation vcd file.") .metavar("OUTFILE");
     parser.add_option("-t", "--type") .dest("type") .set_default("pmem")
                     .help("File type (elf, hex, pmem allowed)") .metavar("TYPE");
-    // parser.add_option("-q", "--quiet")
-    //                 .action("store_false") .dest("verbose") .set_default("1")
-    //                 .help("don't print status messages to stdout");
+    // parser.add_option("-v", "--verbose")
+    //                 .action("store_true") .dest("verbose") .set_default("0")
+    //                 .help("Print debug messages to stdout");
+    // parser.add_option("-d", "--debug") .dest("debugfile")
+    //                 .help("Prints all log messages to a debug file") .metavar("LOGFILE");
     parser.add_option("-c", "--cycles") .dest("cycles") .type("long") .set_default(MAX_CYCLES)
                     .help("Maximum of cycles to execute before aborting. Set 0 for no timeout.") .metavar("TYPE");
 
@@ -282,16 +286,12 @@ int main(int argc, char** argv)
         
 
         top->eval();
+        data_memory.eval(clockEdge && top->dco_clk);
+        program_memory.eval(clockEdge && top->dco_clk);
+        // top->eval();
 
         if (clockEdge && top->dco_clk)
         {   
-            // Evaluate both memories and run top eval again if something changed.
-            if (data_memory.eval())
-                top->eval();
-
-            if (program_memory.eval())
-                top->eval();
-
             if (mainTime >= MAX_EXECUTION_TIME && check_timeout)
             {
                 isDone = true;
@@ -311,8 +311,8 @@ int main(int argc, char** argv)
 
     // printf("\nProgram Memory:\n");
     // printf(program_memory.print_memory().c_str());
-    printf("\nData Memory at exit:\n");
-    printf(data_memory.print_memory().c_str());
+    // printf("\nData Memory at exit:\n");
+    // printf(data_memory.print_memory().c_str());
     
     return exit_program(result);
 
