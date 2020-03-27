@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 
 #include <cstdint>
@@ -19,261 +20,167 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "ProgressBar.hpp"
+#include "OptionParser.h"
+
+using namespace std;
+using optparse::OptionParser;
 
 const double TIMESCALE       = 1e-9;
 const int    CLOCK_FREQUENCY = 20*1e6;
 const int    CLOCK_PERIOD    = 1/(CLOCK_FREQUENCY*TIMESCALE);
-// const std::uint64_t MAX_CYCLES = 1000000000ULL;
-const std::uint64_t MAX_CYCLES = 10000ULL;
-const int    MAX_EXECUTION_TIME = MAX_CYCLES*CLOCK_PERIOD;
+uint64_t MAX_CYCLES = 1000000000ULL;
 
+enum exit_codes{success, error, timeout, program_abort, no_input_file};
 
-// class Memory
-// {
-// public:
+ class Memory
+ {
+ public:
 
-//     Memory(Vtb_openMSP430& top, const char* memoryFile) : top_{top}
-//     {
-//         auto ifs = std::ifstream{memoryFile, std::ifstream::binary};
-//         auto memoryBytes =
-//             std::vector<unsigned char>{std::istreambuf_iterator<char>(ifs), {}};
+    Memory(Vtb_openMSP430& top, const char* memoryFile, string name,
+        CData *chip_enable, CData *write_enable, SData *addr, SData *din, SData *dout) 
+            : top_{top}, _name{name}, _chip_enable{chip_enable}, _write_enable{write_enable}, _addr{addr}, _din{din}, _dout{dout}
+    {
+        // We allow null strings as input and then use an empty memory
+        if(strcmp(memoryFile, "")){
+            auto ifs = std::ifstream{memoryFile, std::ifstream::binary};
+            auto memoryBytes =
+                std::vector<unsigned char>{std::istreambuf_iterator<char>(ifs), {}};
 
-//         assert((memoryBytes.size() % 4 == 0) &&
-//                "Memory does not contain a multiple of words");
+            assert((memoryBytes.size() % 2 == 0) &&
+                    "Memory does not contain a multiple of words");
 
-//         auto i = std::size_t{0};
+            auto i = std::size_t{0};
+            printf("0x0000: ");
+            while (i < memoryBytes.size())
+            {
+                if(i%32 == 0) printf("\n0x%4x: ", i/2);
+                auto b0 = memoryBytes[i++];
+                auto b1 = memoryBytes[i++];
 
-//         while (i < memoryBytes.size())
-//         {
-//             auto b0 = memoryBytes[i++];
-//             auto b1 = memoryBytes[i++];
-//             auto b2 = memoryBytes[i++];
-//             auto b3 = memoryBytes[i++];
+                Word word = b0 | (b1 << 8) ; // little endian
+                // auto word = (b0 << 8) | b1;
+                printf("%4x ", word);
+                memory_.push_back(word);
+            }
+            printf("\nRead memory of %u bytes.\n", memoryBytes.size());
+        }
+    }
 
-//             auto word = b0 | (b1 << 8) | (b2 << 16) | (b3 << 24);
-//             memory_.push_back(word);
-//         }
-//     }
+    bool eval()
+    {
+        auto updated = false;
 
-//     bool eval()
-//     {
-//         auto updated = false;
+        if (! *_chip_enable) // chip enable is low active
+        {
+            if (*_write_enable != 0b11) // write enable is low active
+            {
+                write(*_addr >> 1, *_write_enable, *_din);
+            }
+            // Always write to dout
+            *_dout = read(*_addr >> 1);
 
-//         if (top_.ibus_cmd_valid)
-//         {
-//             top_.ibus_rsp_valid = true;
-//             top_.ibus_rsp_payload_rdata = read(top_.ibus_cmd_payload_address);
-//             updated = true;
-//         }
+            updated = true;
+        }
+        printf("[Memory] %s Regs are: cen: %x wen: %x, addr: %2x, in: %2x, out:%2x\n",_name.c_str(), *_chip_enable, *_write_enable, *_addr, *_din, *_dout);
 
-//         if (top_.dbus_cmd_valid)
-//         {
-//             top_.dbus_cmd_ready = true;
+        return updated;
+    }
 
-//             if (top_.dbus_cmd_payload_write)
-//             {
-//                 write(top_.dbus_cmd_payload_address,
-//                       top_.dbus_cmd_payload_wmask,
-//                       top_.dbus_cmd_payload_wdata);
-//             }
-//             else
-//             {
-//                 top_.dbus_rsp_valid = true;
-//                 top_.dbus_rsp_payload_rdata =
-//                     read(top_.dbus_cmd_payload_address);
-//             }
+    string print_memory(){
+        std::ostringstream stringStream;
+        // stringStream << "0x0000: ";
+        
+        auto i =0;
+        vector<Word>::iterator it;
+        for(it = memory_.begin(); it != memory_.end(); it++,i++ ) {
+            if (i%16 == 0){
+                stringStream << endl << "0x" << setfill('0') << setw(4) << right << hex << i*2 << ": ";
+            } 
+            stringStream << setfill('0') << setw(4) << right << hex<< memory_[i] << " ";
+        }
+        return stringStream.str();
+    }
 
-//             updated = true;
-//         }
+ private:
 
-//         return updated;
-//     }
+    using Address = std::uint16_t;
+    using Word = std::uint16_t;
+    using Mask = std::uint8_t;
 
-// private:
+    Word read(Address address)
+    {
+        ensureEnoughMemory(address);
+        Word memoryValue = memory_[(address)];
+        printf("[Memory] %s [Read] %x : %x\n", _name.c_str(), address, memoryValue);
+        return memoryValue;
+    }
 
-//     using Address = std::uint32_t;
-//     using Word = std::uint32_t;
-//     using Mask = std::uint8_t;
+    void write(Address address, Mask mask, Word value)
+    {
+        ensureEnoughMemory(address);
 
-//     Word read(Address address)
-//     {
-//         ensureEnoughMemory(address);
-//         return memory_[(address >> 2)];
-//     }
+        auto bitMask = Word{0};
+        switch(mask){
+        case 0b00: bitMask = 0xffff; break;
+        case 0b01: bitMask = 0xff00; break;
+        case 0b10: bitMask = 0x00ff; break;
+        }
 
-//     void write(Address address, Mask mask, Word value)
-//     {
-//         ensureEnoughMemory(address);
+        auto& memoryValue = memory_[(address)];
+        memoryValue &= ~bitMask;
+        memoryValue |= value & bitMask;
 
-//         auto bitMask = Word{0};
-//         if (mask & 0x1) bitMask |= 0x000000ff;
-//         if (mask & 0x2) bitMask |= 0x0000ff00;
-//         if (mask & 0x4) bitMask |= 0x00ff0000;
-//         if (mask & 0x8) bitMask |= 0xff000000;
+        printf("[Memory] %s [Write] %x : %x\n", _name.c_str(), address, memoryValue);
+    }
 
-//         auto& memoryValue = memory_[(address >> 2)];
-//         memoryValue &= ~bitMask;
-//         memoryValue |= value & bitMask;
-//     }
+    void ensureEnoughMemory(Address address)
+    {
+        if ((address) >= memory_.size())
+        {
+            memory_.reserve((address) + 1);
 
-//     void ensureEnoughMemory(Address address)
-//     {
-//         if ((address >> 2) >= memory_.size())
-//         {
-//             memory_.reserve((address >> 2) + 1);
+            while ((address) >= memory_.size())
+                memory_.push_back(0xcafe);
+        }
+    }
 
-//             while ((address >> 2) >= memory_.size())
-//                 memory_.push_back(0xcafebabe);
-//         }
-//     }
-
-//     Vtb_openMSP430& top_;
-//     std::vector<Word> memory_;
-// };
-
-// class CharDev
-// {
-// public:
-
-//     CharDev(Vtb_openMSP430& top) : top_{top}, gotEot_{false}
-//     {
-//     }
-
-//     void eval()
-//     {
-//         if (top_.charOut_valid)
-//         {
-//             auto charOut = char(top_.charOut_payload);
-
-//             if (charOut == 0x4)
-//                 gotEot_ = true;
-//             else
-//             {
-//                 gotEot_ = false;
-//                 std::cout << charOut;
-//             }
-//         }
-//     }
-
-//     bool gotEot() const
-//     {
-//         return gotEot_;
-//     }
-
-// private:
-
-//     Vtb_openMSP430& top_;
-//     bool gotEot_;
-// };
-
-// class TestDev
-// {
-// public:
-
-//     TestDev(Vtb_openMSP430& top) : top_{top}, result_{-1}
-//     {
-//     }
-
-//     void eval()
-//     {
-//         if (top_.testOut_valid)
-//             result_ = top_.testOut_payload;
-//     }
-
-//     bool gotResult() const
-//     {
-//         return result_ >= 0;
-//     }
-
-//     bool hasFailed() const
-//     {
-//         return gotResult() && result_ != 0;
-//     }
-
-//     int failedTest() const
-//     {
-//         assert(hasFailed() && "No failed tests");
-//         return result_;
-//     }
-
-// private:
-
-//     Vtb_openMSP430& top_;
-//     int result_;
-// };
-
-// class ByteDev
-// {
-// public:
-
-//     ByteDev(Vtb_openMSP430& top) : top_{top}
-//     {
-//     }
-
-//     bool eval()
-//     {
-//         if (top_.reset)
-//             return false;
-
-//         top_.byteIo_rdata_valid = false;
-
-//         if (top_.byteIo_wdata_valid)
-//         {
-//             auto charOut = char(top_.byteIo_wdata_payload);
-//             std::cout << charOut;
-//         }
-
-//         if (!hasStdinByte && stdinAvailable())
-//         {
-//             currentStdinByte = std::cin.get();
-//             hasStdinByte = !std::cin.eof();
-//         }
-
-//         if (hasStdinByte)
-//         {
-//             top_.byteIo_rdata_valid = true;
-//             top_.byteIo_rdata_payload = currentStdinByte;
-
-//             if (top_.byteIo_rdata_ready)
-//                 hasStdinByte = false;
-
-//             return true;
-//         }
-
-//         return false;
-//     }
-
-// private:
-
-//     bool stdinAvailable() const
-//     {
-//         if (std::cin.eof())
-//             return false;
-
-//         fd_set rfds;
-//         FD_ZERO(&rfds);
-//         FD_SET(STDIN_FILENO, &rfds);
-
-//         timeval tv;
-//         tv.tv_sec = 0;
-//         tv.tv_usec = 0;
-
-//         int result = select(1, &rfds, nullptr, nullptr, &tv);
-//         return result == 1;
-//     }
-
-//     Vtb_openMSP430& top_;
-//     char currentStdinByte;
-//     bool hasStdinByte = false;
-// };
+    Vtb_openMSP430& top_;
+    std::vector<Word> memory_;
+    string _name;
+    CData *_chip_enable;
+    CData *_write_enable;
+    SData *_addr;
+    SData *_din;
+    SData *_dout;
+};
 
 auto tracer = std::unique_ptr<VerilatedVcdC>{new VerilatedVcdC};
 
-void exit_handler(int s){
+int exit_program(int result){
+    cout << endl << endl << "======================== Simulation ended ========================" << endl;
+    switch(result){
+        case success:
+            cout <<         "================ Simulation succeeded gracefully =================" << endl;
+            break;
+        case timeout:
+            cout <<         "===== Simulation stopped after timeout of " << MAX_CYCLES << " cycles =====" << endl;
+            break;
+        case program_abort:
+            cout <<         "============= Simulation stopped after program abort =============" << endl;
+            break;
+        default:
+            cout <<         "============== Simulation failed with unknown error ==============" << endl;
+            break;
+    }
+
     tracer->close();
-    printf("Program aborted\n");
-    exit(1); 
+    return result;
+}
+
+void exit_handler(int s){
+    exit_program(program_abort);
+    
+    exit(program_abort); 
 
 }
 
@@ -281,24 +188,68 @@ int main(int argc, char** argv)
 {
     // assert(argc >= 2 && "No memory file name given");
 
-    // initialize the progress bar
-    ProgressBar progressBar(MAX_CYCLES, 100);
+    // Set up option parser based on some GitHub library
+    OptionParser parser = OptionParser() .description("Sancus Simulator based on Verilator");
 
+    parser.add_option("-f", "--file") .dest("filename")
+                    .help("Input file to use") .metavar("FILE");
+    parser.add_option("-o", "--out_file") .dest("vcd_filename") .set_default("sim.vcd")
+                    .help("Name of the outputted simulation vcd file.") .metavar("OUTFILE");
+    parser.add_option("-t", "--type") .dest("type") .set_default("pmem")
+                    .help("File type (elf, hex, pmem allowed)") .metavar("TYPE");
+    // parser.add_option("-q", "--quiet")
+    //                 .action("store_false") .dest("verbose") .set_default("1")
+    //                 .help("don't print status messages to stdout");
+    parser.add_option("-c", "--cycles") .dest("cycles") .type("long") .set_default(MAX_CYCLES)
+                    .help("Maximum of cycles to execute before aborting. Set 0 for no timeout.") .metavar("TYPE");
+
+    optparse::Values options = parser.parse_args(argc, argv);
+    vector<string> args = parser.args();
+
+
+    cout << "======================= Sancus Simulator =======================" << endl;
+
+    // check input filename given
+    string mem_file = options["filename"];
+    if (mem_file == ""){
+        cout << "No input file given. Aborting." << endl;
+        exit(no_input_file);
+    } else {
+        cout << "Using input file " << mem_file << "." << endl;
+    }
+
+    // Print simulation output file
+    cout << "Using " << options["vcd_filename"] << " as simulation file." << endl;
+
+    // Set up Max cycles and whether we want to abort on timeouts
+    MAX_CYCLES = (uint64_t) options.get("cycles");;
+    auto check_timeout = true;
+    if(MAX_CYCLES == 0){
+        cout << "Max cycles set to 0. Not aborting simulation due to timeout..." << endl;
+        check_timeout = false;
+    } else {
+        cout << "Enabled automatic timeout after " << MAX_CYCLES << " cycles." << endl;
+    }
+    uint64_t MAX_EXECUTION_TIME = MAX_CYCLES*CLOCK_PERIOD;
+
+
+    // Start verilator
     Verilated::commandArgs(argc, argv);
-
     auto top = std::unique_ptr<Vtb_openMSP430>{new Vtb_openMSP430};
     top->reset_n = 1;
     top->dco_clk = 1;
 
     // auto memoryFile = argv[argc - 1];
-    // auto memory = Memory{*top, memoryFile};
-    // auto charDev = CharDev{*top};
-    // auto testDev = TestDev{*top};
-    // auto byteDev = ByteDev{*top};
+    // Initialize data memory (ram) as a fresh memory
+    auto data_memory = Memory{*top, "", "[DMEM]",
+            &top->dmem_cen, &top->dmem_wen, &top->dmem_addr, &top->dmem_din, &top->dmem_dout};
+    // Initialize program memory (rom) with the given memory file
+    auto program_memory = Memory{*top, mem_file.c_str(), "[ROM ]",
+            &top->pmem_cen, &top->pmem_wen, &top->pmem_addr, &top->pmem_din, &top->pmem_dout};
 
     Verilated::traceEverOn(true);
     top->trace(tracer.get(), 99);
-    tracer->open("sim.vcd");
+    tracer->open(options["vcd_filename"].c_str());
 
     vluint64_t mainTime = 0;
     auto isDone = false;
@@ -331,46 +282,36 @@ int main(int argc, char** argv)
         top->eval();
 
         if (clockEdge && top->dco_clk)
-        {
-            // if (memory.eval())
-            //     top->eval();
+        {   
+            // Evaluate both memories and run top eval again if something changed.
+            if (data_memory.eval())
+                top->eval();
 
-            // charDev.eval();
-            // testDev.eval();
+            if (program_memory.eval())
+                top->eval();
 
-            // if (charDev.gotEot())
-            //     isDone = true;
-
-            // if (testDev.gotResult())
-            // {
-            //     isDone = true;
-
-            //     if (testDev.hasFailed())
-            //     {
-            //         std::cerr << "Test " << testDev.failedTest() << " failed\n";
-            //         result = 1;
-            //     }
-            //     else
-            //         std::cout << "All tests passed\n";
-            // }
-
-            // if (byteDev.eval())
-            //     top->eval();
-            // FIXME: For now, limited to 100k cycles
-            if (mainTime >= MAX_EXECUTION_TIME)
+            if (mainTime >= MAX_EXECUTION_TIME && check_timeout)
             {
                 isDone = true;
-                result = 0; //change to 1 if reverting back to abort on max_cycles
+                result = timeout;
             }
-            ++progressBar;
-            progressBar.display();
+
+            // Finish simulation if cpuoff marks that processor turned off.
+            if (top->cpuoff){
+                isDone = true;
+                result = success;
+            }
         }
         tracer->dump(mainTime);
 
         mainTime++;
     }
-    progressBar.done();
 
-    tracer->close();
-    return result;
+    // printf("\nProgram Memory:\n");
+    // printf(program_memory.print_memory().c_str());
+    printf("\nData Memory at exit:\n");
+    printf(data_memory.print_memory().c_str());
+    
+    return exit_program(result);
+
 }

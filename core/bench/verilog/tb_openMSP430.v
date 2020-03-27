@@ -50,7 +50,19 @@
 
 module  tb_openMSP430(
     input reg  dco_clk,
-    input reg  reset_n
+    input reg  reset_n,
+    input wire dmem_dout,   // Input of dmem, passed into verilog by verilator
+    input wire pmem_dout,   // Input of pmem " --- " -- "
+
+    output reg cpuoff,
+    output wire dmem_addr,  // Addressing bits of pmem and dmem, passed to verilator
+    output wire dmem_cen,   // low active
+    output wire dmem_din,
+    output wire dmem_wen,   // low active
+    output wire pmem_addr,
+    output wire pmem_cen,   // low active
+    output wire pmem_din,
+    output wire pmem_wen    // low active
 );
 
 //
@@ -182,6 +194,7 @@ wire               aclk_en;
 wire               smclk;
 wire               smclk_en;
 reg                reset_n;
+wire               cpuoff;
 wire               puc_rst;
 reg                nmi;
 reg         [13:0] irq;
@@ -259,14 +272,14 @@ integer 		   index_mem_dbg;
 //
 // Initialize ROM
 //------------------------------
-`ifndef PMEM_FILE
-`define PMEM_FILE "./pmem.mem"
-`endif
+// `ifndef PMEM_FILE
+// `define PMEM_FILE "./pmem.mem"
+// `endif
 
-initial
-  begin
-    $readmemh(`PMEM_FILE, pmem_0.mem);
-  end
+// initial
+//   begin
+//     $readmemh(`PMEM_FILE, pmem_0.mem);
+//   end
 
 //
 // Generate Clock & Reset
@@ -355,36 +368,36 @@ initial
 // Program Memory
 //----------------------------------
 
-ram #(`PMEM_MSB, `PMEM_SIZE) pmem_0 (
+// ram #(`PMEM_MSB, `PMEM_SIZE) pmem_0 (
 
-// OUTPUTs
-    .ram_dout    (pmem_dout),          // Program Memory data output
+// // OUTPUTs
+//     .ram_dout    (pmem_dout),          // Program Memory data output
 
-// INPUTs
-    .ram_addr    (pmem_addr),          // Program Memory address
-    .ram_cen     (pmem_cen),           // Program Memory chip enable (low active)
-    .ram_clk     (mclk),               // Program Memory clock
-    .ram_din     (pmem_din),           // Program Memory data input
-    .ram_wen     (pmem_wen)            // Program Memory write enable (low active)
-);
+// // INPUTs
+//     .ram_addr    (pmem_addr),          // Program Memory address
+//     .ram_cen     (pmem_cen),           // Program Memory chip enable (low active)
+//     .ram_clk     (mclk),               // Program Memory clock
+//     .ram_din     (pmem_din),           // Program Memory data input
+//     .ram_wen     (pmem_wen)            // Program Memory write enable (low active)
+// );
 
 
 //
 // Data Memory
 //----------------------------------
 
-ram #(`DMEM_MSB, `DMEM_SIZE) dmem_0 (
+// ram #(`DMEM_MSB, `DMEM_SIZE) dmem_0 (
 
-// OUTPUTs
-    .ram_dout    (dmem_dout),          // Data Memory data output
+// // OUTPUTs
+//     .ram_dout    (dmem_dout),          // Data Memory data output
 
-// INPUTs
-    .ram_addr    (dmem_addr),          // Data Memory address
-    .ram_cen     (dmem_cen),           // Data Memory chip enable (low active)
-    .ram_clk     (mclk),               // Data Memory clock
-    .ram_din     (dmem_din),           // Data Memory data input
-    .ram_wen     (dmem_wen)            // Data Memory write enable (low active)
-);
+// // INPUTs
+//     .ram_addr    (dmem_addr),          // Data Memory address
+//     .ram_cen     (dmem_cen),           // Data Memory chip enable (low active)
+//     .ram_clk     (mclk),               // Data Memory clock
+//     .ram_din     (dmem_din),           // Data Memory data input
+//     .ram_wen     (dmem_wen)            // Data Memory write enable (low active)
+// );
 
 
 //
@@ -423,6 +436,7 @@ openMSP430 dut (
     .smclk        (smclk),             // ASIC ONLY: SMCLK
     .smclk_en     (smclk_en),          // FPGA ONLY: SMCLK enable
     .spm_violation (sm_violation),
+    .cpuoff       (cpuoff),            // For simulation: Access to finished computation bit
 
 // INPUTs
     .cpu_en       (cpu_en),            // Enable CPU code execution (asynchronous)

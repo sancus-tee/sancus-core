@@ -76,7 +76,8 @@ module  openMSP430 (
     puc_rst,                       // Main system reset
     smclk,                         // ASIC ONLY: SMCLK
     smclk_en,                      // FPGA ONLY: SMCLK enable
-    spm_violation,
+    spm_violation,      
+    cpuoff,                        // Add for easy simulator access to finished program.
 
 // INPUTs
     cpu_en,                        // Enable CPU code execution (asynchronous and non-glitchy)
@@ -132,6 +133,7 @@ output               puc_rst;      // Main system reset
 output               smclk;        // ASIC ONLY: SMCLK
 output               smclk_en;     // FPGA ONLY: SMCLK enable
 output               spm_violation;
+output               cpuoff;       // Add for easy simulator access to finished program.
 
 // INPUTs
 //=========
