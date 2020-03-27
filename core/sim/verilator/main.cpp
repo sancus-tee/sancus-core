@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include "loguru.hpp"
 #include "OptionParser.h"
 
 using namespace std;
@@ -29,6 +30,7 @@ const double TIMESCALE       = 1e-9;
 const int    CLOCK_FREQUENCY = 20*1e6;
 const int    CLOCK_PERIOD    = 1/(CLOCK_FREQUENCY*TIMESCALE);
 uint64_t MAX_CYCLES = 1000000000ULL;
+vluint64_t mainTime;
 
 enum exit_codes{success, error, timeout, program_abort, no_input_file};
 
@@ -40,29 +42,24 @@ enum exit_codes{success, error, timeout, program_abort, no_input_file};
         CData *chip_enable, CData *write_enable, SData *addr, SData *din, SData *dout) 
             : top_{top}, _name{name}, _chip_enable{chip_enable}, _write_enable{write_enable}, _addr{addr}, _din{din}, _dout{dout}
     {
-        // We allow null strings as input and then use an empty memory
+        // We allow null strings as input and then use an empty memory (For RAM)
         if(strcmp(memoryFile, "")){
             auto ifs = std::ifstream{memoryFile, std::ifstream::binary};
             auto memoryBytes =
                 std::vector<unsigned char>{std::istreambuf_iterator<char>(ifs), {}};
 
-            assert((memoryBytes.size() % 2 == 0) &&
-                    "Memory does not contain a multiple of words");
+            CHECK_F((memoryBytes.size() % 2 == 0), "Memory does not contain a multiple of words");
 
             auto i = std::size_t{0};
-            // printf("0x0000: ");
             while (i < memoryBytes.size())
             {
-                // if(i%32 == 0) printf("\n0x%4x: ", i/2);
                 auto b0 = memoryBytes[i++];
                 auto b1 = memoryBytes[i++];
 
                 Word word = b0 | (b1 << 8) ; // little endian
-                // auto word = (b0 << 8) | b1;
-                // printf("%4x ", word);
                 memory_.push_back(word);
             }
-            // printf("\nRead memory of %u bytes.\n", memoryBytes.size());
+            LOG_F(INFO,"Read program memory of %lu bytes.\n", memoryBytes.size());
         }
     }
 
@@ -79,13 +76,12 @@ enum exit_codes{success, error, timeout, program_abort, no_input_file};
         if(clockedge) *_dout = read(prev_address, clockedge);
         prev_address = *_addr;
 
-        // printf("[Memory] %s Regs are: cen: %x wen: %x, addr: %2x, in: %2x, out:%2x\n",_name.c_str(), *_chip_enable, *_write_enable, *_addr, *_din, *_dout);
+        LOG_F(1,"[Memory] %s Regs are: cen: %x wen: %x, addr: %2x, in: %2x, out:%2x\n",_name.c_str(), *_chip_enable, *_write_enable, *_addr, *_din, *_dout);
 
     }
 
     string print_memory(){
-        std::ostringstream stringStream;
-        // stringStream << "0x0000: ";
+        ostringstream stringStream;
         
         auto i =0;
         vector<Word>::iterator it;
@@ -100,20 +96,15 @@ enum exit_codes{success, error, timeout, program_abort, no_input_file};
 
  private:
 
-    using Address = std::uint16_t;
-    using Word = std::uint16_t;
-    using Mask = std::uint8_t;
+    using Address = uint16_t;
+    using Word = uint16_t;
+    using Mask = uint8_t;
 
     Word read(Address address, bool clockedge)
     {
         ensureEnoughMemory(address);
         Word memoryValue = memory_[(prev_address)];
-        // printf("[Memory] %s [Read] %x : %x\n", _name.c_str(), prev_address, memoryValue);
-        
-        // Update value to be read next on pos edges
-        // if (clockedge){  
-        //     prev_address = address;
-        // }
+        LOG_F(1,"[Memory] %s [Read] %x : %x\n", _name.c_str(), prev_address, memoryValue);
 
         return memoryValue;
     }
@@ -133,7 +124,7 @@ enum exit_codes{success, error, timeout, program_abort, no_input_file};
         memoryValue &= ~bitMask;
         memoryValue |= value & bitMask;
 
-        // printf("[Memory] %s [Write] %x : %x\n", _name.c_str(), address, memoryValue);
+        LOG_F(1,"[Memory] %s [Write] %x : %x\n", _name.c_str(), address, memoryValue);
     }
 
     void ensureEnoughMemory(Address address)
@@ -161,19 +152,21 @@ enum exit_codes{success, error, timeout, program_abort, no_input_file};
 auto tracer = std::unique_ptr<VerilatedVcdC>{new VerilatedVcdC};
 
 int exit_program(int result){
-    cout << endl << endl << "======================== Simulation ended ========================" << endl;
+    printf("\n\n\n");
+    LOG_F(INFO, "======================== Simulation ended ========================");
+    LOG_F(INFO, "Cycles simulated: %llu", mainTime / CLOCK_PERIOD);
     switch(result){
         case success:
-            cout <<         "================ Simulation succeeded gracefully =================" << endl;
+            LOG_F(INFO,     "================ Simulation succeeded gracefully =================");
             break;
         case timeout:
-            cout <<         "===== Simulation stopped after timeout of " << MAX_CYCLES << " cycles =====" << endl;
+            LOG_F(INFO,     "===== Simulation stopped after timeout of %llu cycles =====", MAX_CYCLES);
             break;
         case program_abort:
-            cout <<         "============= Simulation stopped after program abort =============" << endl;
+            LOG_F(INFO,     "============= Simulation stopped after program abort =============");
             break;
         default:
-            cout <<         "============== Simulation failed with unknown error ==============" << endl;
+            LOG_F(INFO,     "============== Simulation failed with unknown error ==============");
             break;
     }
 
@@ -183,9 +176,7 @@ int exit_program(int result){
 
 void exit_handler(int s){
     exit_program(program_abort);
-    
     exit(program_abort); 
-
 }
 
 int main(int argc, char** argv)
@@ -193,48 +184,92 @@ int main(int argc, char** argv)
     // assert(argc >= 2 && "No memory file name given");
 
     // Set up option parser based on some GitHub library
-    OptionParser parser = OptionParser() .description("Sancus Simulator based on Verilator");
+    OptionParser parser = OptionParser() 
+        .description("Sancus Simulator based on Verilator. Expects a .elf file as input.")
+        .usage("usage: %prog [OPTIONS] ELF-FILE");
 
-    parser.add_option("-f", "--file") .dest("filename")
-                    .help("Input file to use") .metavar("FILE");
-    parser.add_option("-o", "--out_file") .dest("vcd_filename") .set_default("sim.vcd")
+    parser.add_option("-d", "--dumpfile") .dest("vcd_filename") .set_default("sim.vcd")
                     .help("Name of the outputted simulation vcd file.") .metavar("OUTFILE");
-    parser.add_option("-t", "--type") .dest("type") .set_default("pmem")
-                    .help("File type (elf, hex, pmem allowed)") .metavar("TYPE");
+    parser.add_option("-t", "--type") .dest("type") .set_default("elf")
+                    .help("File type (elf, binary allowed)") .metavar("TYPE");
     // parser.add_option("-v", "--verbose")
     //                 .action("store_true") .dest("verbose") .set_default("0")
     //                 .help("Print debug messages to stdout");
-    // parser.add_option("-d", "--debug") .dest("debugfile")
-    //                 .help("Prints all log messages to a debug file") .metavar("LOGFILE");
+    parser.add_option("-d", "--debug") .dest("debugfile")
+                    .help("Prints all log messages to a debug file") .metavar("LOGFILE");
     parser.add_option("-c", "--cycles") .dest("cycles") .type("long") .set_default(MAX_CYCLES)
-                    .help("Maximum of cycles to execute before aborting. Set 0 for no timeout.") .metavar("TYPE");
+                    .help("Maximum of cycles to execute before aborting. Set 0 for no timeout.") .metavar("INT");
 
     optparse::Values options = parser.parse_args(argc, argv);
     vector<string> args = parser.args();
 
+    // time-stamp the start of the log.
+    // also detects verbosity level on command line as -v.
+    loguru::init(argc, argv);
 
-    cout << "======================= Sancus Simulator =======================" << endl;
-
-    // check input filename given
-    string mem_file = options["filename"];
-    if (mem_file == ""){
-        cout << "No input file given. Aborting." << endl;
-        exit(no_input_file);
-    } else {
-        cout << "Using input file " << mem_file << "." << endl;
+    // Put every log message in "everything.log":
+    if (options.get("debug")){
+        loguru::add_file(options["debug"].c_str(), loguru::Append, loguru::Verbosity_MAX);
     }
 
+    LOG_F(INFO, "======================= Sancus Simulator =======================");
+
+    // check input filename given
+    const char* in_file;
+    if (args.size() == 0 || args[0] == ""){
+        LOG_F(INFO, "No input file given. Aborting.");
+        exit(no_input_file);
+    } else {
+        in_file = args[0].c_str();
+        LOG_F(INFO, "Using input file %s.", in_file);
+    }
+
+    // Depeding on type option, convert input file from elf to binary in tmp directory
+    string mem_file;    
+    if(options["type"] == "elf"){
+        LOG_SCOPE_F(INFO, "Performing objcopy of elf file");
+        LOG_F(INFO, "Generating temporary binary form of given elf file...");
+        // Generate temp file
+        char tmp_file[] = "/tmp/tmp_sancus_XXXXXX";
+        int tmp_filedes = mkstemp(tmp_file);
+        CHECK_F(tmp_filedes > -1, "Failed to create temporary file with error code %i.", tmp_filedes);
+        
+        // Store it in mem_file
+        mem_file = string(tmp_file);
+        LOG_F(INFO, "Temp file is %s", mem_file.c_str());
+        
+        // Run objcopy
+        string command = "msp430-objcopy -O binary " + string(in_file) + " " + mem_file;
+        FILE *fp = popen(command.c_str(), "r");
+        if (fp == NULL){
+            LOG_F(ERROR, "Failed to generate binary version of elf file!");
+        }
+        else{
+            LOG_F(INFO, string(">> " + command).c_str());
+            LOG_F(INFO, "..done!");
+        }
+
+        close(tmp_filedes);
+        fclose(fp);
+
+    } else {
+        // by default assume the input file is of binary form
+        mem_file = in_file;
+    }
+
+
     // Print simulation output file
-    cout << "Using " << options["vcd_filename"] << " as simulation file." << endl;
+    const char* sim_filename = options["vcd_filename"].c_str();
+    LOG_F(INFO, "Using %s as simulation file.", sim_filename );
 
     // Set up Max cycles and whether we want to abort on timeouts
     MAX_CYCLES = (uint64_t) options.get("cycles");;
     auto check_timeout = true;
     if(MAX_CYCLES == 0){
-        cout << "Max cycles set to 0. Not aborting simulation due to timeout..." << endl;
+        LOG_F(INFO, "Max cycles set to 0. Will not abort simulation due to timeout.");
         check_timeout = false;
     } else {
-        cout << "Enabled automatic timeout after " << MAX_CYCLES << " cycles." << endl;
+        LOG_F(INFO, "Enabled automatic timeout after %llu cycles.", MAX_CYCLES);
     }
     uint64_t MAX_EXECUTION_TIME = MAX_CYCLES*CLOCK_PERIOD;
 
@@ -255,9 +290,9 @@ int main(int argc, char** argv)
 
     Verilated::traceEverOn(true);
     top->trace(tracer.get(), 99);
-    tracer->open(options["vcd_filename"].c_str());
+    tracer->open(sim_filename);
 
-    vluint64_t mainTime = 0;
+    mainTime = 0;
     auto isDone = false;
     int result = 0;
 
@@ -309,10 +344,10 @@ int main(int argc, char** argv)
         mainTime++;
     }
 
-    // printf("\nProgram Memory:\n");
-    // printf(program_memory.print_memory().c_str());
-    // printf("\nData Memory at exit:\n");
-    // printf(data_memory.print_memory().c_str());
+    LOG_F(1, "Program memory at exit was..");
+    LOG_F(1, program_memory.print_memory().c_str());
+    LOG_F(1, "Data memory at exit was..");
+    LOG_F(1, data_memory.print_memory().c_str());
     
     return exit_program(result);
 
