@@ -74,16 +74,16 @@ enum exit_codes{success, error, timeout, program_abort, no_input_file};
         {
             if (*_write_enable != 0b11) // write enable is low active
             {
-                write(*_addr >> 1, *_write_enable, *_din);
+                write(*_addr, *_write_enable, *_din);
             }
             // Always write to dout
-            *_dout = read(*_addr >> 1);
+            *_dout = read(*_addr);
 
             updated = true;
         }
         printf("[Memory] %s Regs are: cen: %x wen: %x, addr: %2x, in: %2x, out:%2x\n",_name.c_str(), *_chip_enable, *_write_enable, *_addr, *_din, *_dout);
 
-        return updated;
+        return false;
     }
 
     string print_memory(){
@@ -110,8 +110,9 @@ enum exit_codes{success, error, timeout, program_abort, no_input_file};
     Word read(Address address)
     {
         ensureEnoughMemory(address);
-        Word memoryValue = memory_[(address)];
-        printf("[Memory] %s [Read] %x : %x\n", _name.c_str(), address, memoryValue);
+        Word memoryValue = memory_[(prev_address)];
+        prev_address = address;
+        printf("[Memory] %s [Read] %x : %x\n", _name.c_str(), prev_address, memoryValue);
         return memoryValue;
     }
 
@@ -145,6 +146,7 @@ enum exit_codes{success, error, timeout, program_abort, no_input_file};
     }
 
     Vtb_openMSP430& top_;
+    Address prev_address;
     std::vector<Word> memory_;
     string _name;
     CData *_chip_enable;
