@@ -150,7 +150,7 @@ begin
   begin
     if (mem_violation)
     begin
-      $write("mem violation @0x%h, from ", eu_mab);
+      $display("mem violation @0x%h, from ", eu_mab);
       if (handling_irq) $display("IRQ");
       else              $display("0x%h", pc);
     end

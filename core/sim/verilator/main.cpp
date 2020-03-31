@@ -2,12 +2,14 @@
 
 #include <verilated.h>
 #include <verilated_vcd_c.h>
+// #include <verilated_fst_c.h>
 
 #include <memory>
 #include <vector>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <sys/stat.h>
 
 #include <cstdint>
 #include <cassert>
@@ -32,7 +34,12 @@ const int    CLOCK_PERIOD    = 1/(CLOCK_FREQUENCY*TIMESCALE);
 uint64_t MAX_CYCLES = 1000000000ULL;
 vluint64_t mainTime;
 
-enum exit_codes{success, error, timeout, program_abort, no_input_file};
+enum exit_codes{status_success, status_error, status_timeout, status_program_abort, status_no_input_file};
+
+inline bool check_file_exists (const char* filename) {
+    struct stat buffer;   
+    return (stat (filename, &buffer) == 0); 
+}
 
  class Memory
  {
@@ -150,19 +157,21 @@ enum exit_codes{success, error, timeout, program_abort, no_input_file};
 };
 
 auto tracer = std::unique_ptr<VerilatedVcdC>{new VerilatedVcdC};
+// auto tracer = std::unique_ptr<VerilatedFstC>{new VerilatedFstC};
+// VerilatedFstC* tfp = new VerilatedFstC;
 
 int exit_program(int result){
     printf("\n\n\n");
     LOG_F(INFO, "======================== Simulation ended ========================");
     LOG_F(INFO, "Cycles simulated: %llu", mainTime / CLOCK_PERIOD);
     switch(result){
-        case success:
+        case status_success:
             LOG_F(INFO,     "================ Simulation succeeded gracefully =================");
             break;
-        case timeout:
+        case status_timeout:
             LOG_F(INFO,     "===== Simulation stopped after timeout of %llu cycles =====", MAX_CYCLES);
             break;
-        case program_abort:
+        case status_program_abort:
             LOG_F(INFO,     "============= Simulation stopped after program abort =============");
             break;
         default:
@@ -175,8 +184,8 @@ int exit_program(int result){
 }
 
 void exit_handler(int s){
-    exit_program(program_abort);
-    exit(program_abort); 
+    exit_program(status_program_abort);
+    exit(status_program_abort); 
 }
 
 int main(int argc, char** argv)
@@ -216,9 +225,9 @@ int main(int argc, char** argv)
 
     // check input filename given
     const char* in_file;
-    if (args.size() == 0 || args[0] == ""){
-        LOG_F(INFO, "No input file given. Aborting.");
-        exit(no_input_file);
+    if (args.size() == 0 || args[0] == "" || ! check_file_exists(args[0].c_str())){
+        LOG_F(INFO, "No input file given or file does not exist. Aborting.");
+        exit(status_no_input_file);
     } else {
         in_file = args[0].c_str();
         LOG_F(INFO, "Using input file %s.", in_file);
@@ -255,6 +264,11 @@ int main(int argc, char** argv)
     } else {
         // by default assume the input file is of binary form
         mem_file = in_file;
+    }
+
+    if(! check_file_exists(mem_file.c_str())){
+        LOG_F(ERROR, "Aiming to use file %s as memory dump but this file does not exist. Aborting.");
+        exit(status_error);
     }
 
 
@@ -295,7 +309,7 @@ int main(int argc, char** argv)
     mainTime = 0;
     auto isDone = false;
     int result = 0;
-
+    int cpuoff_timer = 10; // After CPUOFF, do 10 more cycles for nicer GTKWave outputs.
 
     // Register sigabort handler to finish writing vcd file
     struct sigaction sigIntHandler; 
@@ -330,13 +344,13 @@ int main(int argc, char** argv)
             if (mainTime >= MAX_EXECUTION_TIME && check_timeout)
             {
                 isDone = true;
-                result = timeout;
+                result = status_timeout;
             }
 
             // Finish simulation if cpuoff marks that processor turned off.
-            if (top->cpuoff){
+            if (top->cpuoff && cpuoff_timer-- < 0){
                 isDone = true;
-                result = success;
+                result = status_success;
             }
         }
         tracer->dump(mainTime);
