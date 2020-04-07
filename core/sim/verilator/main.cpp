@@ -34,7 +34,7 @@ const int    CLOCK_PERIOD    = 1/(CLOCK_FREQUENCY*TIMESCALE);
 uint64_t MAX_CYCLES = 1000000000ULL;
 vluint64_t mainTime;
 
-enum exit_codes{status_success, status_error, status_timeout, status_program_abort, status_no_input_file};
+enum exit_codes{status_success, status_error, status_timeout, status_program_abort, status_no_input_file, status_sm_violation};
 
 inline bool check_file_exists (const char* filename) {
     struct stat buffer;   
@@ -141,13 +141,14 @@ inline bool check_file_exists (const char* filename) {
             memory_.reserve((address) + 1);
 
             while ((address) >= memory_.size())
-                memory_.push_back(0xcafe);
+                memory_.push_back(null_word);
         }
     }
 
     Vtb_openMSP430& top_;
     Address prev_address;
     std::vector<Word> memory_;
+    Word null_word = Word{0};
     string _name;
     CData *_chip_enable;
     CData *_write_enable;
@@ -173,6 +174,9 @@ int exit_program(int result){
             break;
         case status_program_abort:
             LOG_F(INFO,     "============= Simulation stopped after program abort =============");
+            break;
+        case status_sm_violation:
+            LOG_F(INFO,     "============= Simulation stopped after SM Violation occured =============");
             break;
         default:
             LOG_F(INFO,     "============== Simulation failed with unknown error ==============");
@@ -206,8 +210,10 @@ int main(int argc, char** argv)
     //                 .help("Print debug messages to stdout");
     parser.add_option("-d", "--debug") .dest("debugfile")
                     .help("Prints all log messages to a debug file") .metavar("LOGFILE");
-    parser.add_option("-c", "--cycles") .dest("cycles") .type("long") .set_default(MAX_CYCLES)
+    parser.add_option("-c", "--cycles") .dest("cycles") .type("int") .set_default(MAX_CYCLES)
                     .help("Maximum of cycles to execute before aborting. Set 0 for no timeout.") .metavar("INT");
+    parser.add_option("--stop-after-sm-violation") .dest("sm_violation_stopcount") .type("long") .set_default(0)
+                    .help("If set to larger than 0, stops the simulation X cycles after a SM Violation occured. Default: -1 (disabled).") .metavar("X");
 
     optparse::Values options = parser.parse_args(argc, argv);
     vector<string> args = parser.args();
@@ -218,6 +224,7 @@ int main(int argc, char** argv)
 
     // Put every log message in "everything.log":
     if (options.get("debug")){
+        LOG_F(INFO, "Logging all messages into file %s", options["debug"].c_str());
         loguru::add_file(options["debug"].c_str(), loguru::Append, loguru::Verbosity_MAX);
     }
 
@@ -277,7 +284,7 @@ int main(int argc, char** argv)
     LOG_F(INFO, "Using %s as simulation file.", sim_filename );
 
     // Set up Max cycles and whether we want to abort on timeouts
-    MAX_CYCLES = (uint64_t) options.get("cycles");;
+    MAX_CYCLES = (uint64_t) options.get("cycles");
     auto check_timeout = true;
     if(MAX_CYCLES == 0){
         LOG_F(INFO, "Max cycles set to 0. Will not abort simulation due to timeout.");
@@ -287,6 +294,14 @@ int main(int argc, char** argv)
     }
     uint64_t MAX_EXECUTION_TIME = MAX_CYCLES*CLOCK_PERIOD;
 
+    // --stop-after-sm-violation allows to abort simulation X cycles after an sm violation occured
+    int sm_violation_stopcount = (int) options.get("sm_violation_stopcount");
+    bool stop_on_sm_violation = false;
+    bool sm_violation_occured = false;
+    if(sm_violation_stopcount >= 0){
+        stop_on_sm_violation = true;
+        LOG_F(INFO, "Will abort simulation %i cycles after any SM_VIOLATION", sm_violation_stopcount);
+    }
 
     // Start verilator
     Verilated::commandArgs(argc, argv);
@@ -351,6 +366,17 @@ int main(int argc, char** argv)
             if (top->cpuoff && cpuoff_timer-- < 0){
                 isDone = true;
                 result = status_success;
+            }
+
+            // Finish simulation if requested after sm violation
+            if (stop_on_sm_violation){
+                if (top->sm_violation){
+                    sm_violation_occured = true;
+                }
+                if (sm_violation_occured && sm_violation_stopcount-- <= 0){
+                    isDone = true;
+                    result = status_sm_violation;
+                }
             }
         }
         tracer->dump(mainTime);

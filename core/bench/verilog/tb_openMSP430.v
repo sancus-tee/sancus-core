@@ -55,6 +55,8 @@ module  tb_openMSP430(
     input wire pmem_dout,   // Input of pmem " --- " -- "
 
     output reg cpuoff,
+    output wire sm_violation,
+    
     output wire dmem_addr,  // Addressing bits of pmem and dmem, passed to verilator
     output wire dmem_cen,   // low active
     output wire dmem_din,
