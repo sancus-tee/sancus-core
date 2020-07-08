@@ -1,0 +1,84 @@
+.include "pmem_defs.asm"
+.include "sancus_macros.asm"
+
+.set dma_done, DMEM_260
+.set foo_secret_start, DMEM_262
+.set foo_secret_end, DMEM_268
+.set dma_addr, (0x0070)
+.set dma_cnt, (0x0072)
+.set dma_trace, (0x0074)
+
+; This enclave accepts a guess for a passcode in the r6 register. It also has a
+; counter to log the number of incorrect guesses.
+; If the user's guess is correct, the counter is reset, if it is incorrect, the
+; number is increased.
+; Using the DMA attacker peripheral that issues read requests to unprotected
+; data memory, we can distinguish between the ADD and MOV instructions.
+; Since these instructions have the same execution length, these different
+; execution traces are indistinguishable for a Nemesis attacker.
+; We store the traces for a run of the enclave with both an incorrect (0x41)
+; and a correct (0x42) guess in the r8 and r9 registers respectively.
+; In the stimulus file, we check whether these traces indeed differ from each
+; other.
+
+.global main
+main:
+    clr r15
+    mov #dma_done, &dma_addr
+    disable_wdt
+    eint
+    sancus_enable #1234, #foo_text_start, #foo_text_end, #foo_secret_start, #foo_secret_end
+    mov #0x41, r6
+    mov #0x01, r10
+    mov #0x02, &dma_cnt
+    br #foo_text_start
+
+    /* ----------------------         SANCUS MODULE      --------------- */
+
+foo_text_start:
+    mov #0x42, r7
+    cmp r6, r7
+    jz 1f
+    mov #0x00, &foo_secret_start
+    jmp 2f
+1:  add #0x01, &foo_secret_start
+    jmp 2f
+2:  mov #0x0, r7
+foo_text_end:
+
+    /* ----------------------        SAVE DMA TRACES     --------------- */
+
+end_of_test:
+    nop
+    nop
+    nop
+    nop
+    cmp #0x00, r10
+    jz 3f
+    mov #0x00, r10
+    mov &dma_trace, r8
+    mov #0x42, r6
+    mov #0x02, &dma_cnt
+    br #foo_text_start
+3:  mov &dma_trace, r9
+    mov #0x2000, r15
+fail_test:
+    br #0xffff
+
+.section .vectors, "a"
+.word end_of_test  ; Interrupt  0 (lowest priority)    <unused>
+.word end_of_test  ; Interrupt  1                      <unused>
+.word end_of_test  ; Interrupt  2                      <unused>
+.word end_of_test  ; Interrupt  3                      <unused>
+.word end_of_test  ; Interrupt  4                      <unused>
+.word end_of_test  ; Interrupt  5                      <unused>
+.word end_of_test  ; Interrupt  6                      <unused>
+.word end_of_test  ; Interrupt  7                      <unused>
+.word end_of_test  ; Interrupt  8                      <unused>
+.word end_of_test  ; Interrupt  9                      TEST IRQ
+.word end_of_test  ; Interrupt 10                      Watchdog timer
+.word end_of_test  ; Interrupt 11                      <unused>
+.word end_of_test  ; Interrupt 12                      <unused>
+.word end_of_test  ; Interrupt 13                      SM_IRQ
+.word end_of_test  ; Interrupt 14                      NMI
+.word main         ; Interrupt 15 (highest priority)   RESET

@@ -21,9 +21,9 @@
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 //
 //----------------------------------------------------------------------------
-// 
+//
 // *File Name: tb_openMSP430.v
-// 
+//
 // *Module Description:
 //                      openMSP430 testbench and Sancus simulator
 //
@@ -44,9 +44,9 @@
 `endif
 
 // Include DMEM and PMEM memory locations that are written by dma_task
-//`define SHOW_PMEM_WAVES  
+//`define SHOW_PMEM_WAVES
 //`define SHOW_DMEM_WAVES
-  
+
 
 module  tb_openMSP430;
 
@@ -79,12 +79,19 @@ wire               per_en;
 wire        [15:0] dma_dout;
 wire               dma_ready;
 wire               dma_resp;
-reg         [15:1] dma_addr;
 reg         [15:0] dma_din;
-reg                dma_en;
 reg                dma_priority;
-reg          [1:0] dma_we;
 reg                dma_wkup;
+
+`ifndef __SANCUS_SIM
+reg         [15:1] dma_addr;
+reg          [1:0] dma_we;
+reg                dma_en;
+`else
+wire         [15:1] dma_addr;
+wire          [1:0] dma_we;
+wire                dma_en;
+`endif
 
 // Digital I/O
 wire               irq_port1;
@@ -155,6 +162,10 @@ wire               ta_out2_en;
 // Time Stamp Counter
 wire        [15:0] per_dout_tsc;
 wire        [63:0] cur_tsc;
+
+`ifdef __SANCUS_SIM
+wire        [15:0] per_dout_dma;
+`endif
 
 // LED digits
 wire        [15:0] per_dout_led;
@@ -247,11 +258,11 @@ integer 		   index_mem_dbg;
 // Direct Memory Access interface background tasks
 // (excluded for sancus-sim simulations)
 `ifndef __SANCUS_SIM
-`include "dma_tasks.v"
+    `include "dma_tasks.v"
 `else
-    reg        dma_tfx_cancel;
+    reg dma_tfx_cancel;
 `endif
-   
+
 //
 // Initialize ROM
 //------------------------------
@@ -311,11 +322,13 @@ initial
      irq              = 14'h0000;
      nmi              = 1'b0;
      wkup             = 14'h0000;
-     dma_addr         = 15'h0000;
      dma_din          = 16'h0000;
-     dma_en           = 1'b0;
      dma_priority     = 1'b0;
-     dma_we           = 2'b00;
+     `ifndef __SANCUS_SIM
+       dma_addr         = 15'h0000;
+       dma_we           = 2'b00;
+       dma_en           = 1'b0;
+     `endif
      dma_wkup         = 1'b0;
      dma_tfx_cancel   = 1'b0;
      cpu_en           = 1'b1;
@@ -346,7 +359,7 @@ initial
      scan_mode        = 1'b0;
   end
 
-   
+
 //
 // Program Memory
 //----------------------------------
@@ -485,7 +498,7 @@ omsp_gpio #(.P1_EN(1),
     .p6_dout_en   (p6_dout_en),        // Port 6 data output enable
     .p6_sel       (p6_sel),            // Port 6 function select
     .per_dout     (per_dout_dio),      // Peripheral data output
-			     
+
 // INPUTs
     .mclk         (mclk),              // Main system clock
     .p1_din       (p1_din),            // Port 1 data input
@@ -538,7 +551,7 @@ omsp_timerA timerA_0 (
     .ta_cci2b     (ta_cci2b),          // Timer A compare 2 input B
     .taclk        (taclk)              // TACLK external timer clock (SLOW)
 );
-   
+
 //
 // Simple full duplex UART (8N1 protocol)
 //----------------------------------------
@@ -631,6 +644,25 @@ omsp_tsc tsc_0(
 
 assign cur_tsc = tsc_0.tsc;
 
+`ifdef __SANCUS_SIM
+//
+// DMA Attacker
+//----------------------------------
+dma_attacker dma_periph(
+    .per_dout (per_dout_dma),
+    .dma_addr (dma_addr),
+    .dma_en   (dma_en),
+    .dma_we   (dma_we),
+    .mclk     (mclk),
+    .per_addr (per_addr),
+    .per_din  (per_din),
+    .per_en   (per_en),
+    .per_we   (per_we),
+    .puc_rst  (puc_rst),
+    .dma_ready(dma_ready)
+);
+`endif
+
 //
 // LED Digits
 //----------------------------------
@@ -690,6 +722,9 @@ assign per_dout = per_dout_dio       |
 `else
                   per_dout_tsc       |
                   per_dout_led       |
+`ifdef __SANCUS_SIM
+                  per_dout_dma       |
+`endif
 `endif
                   per_dout_file_io;
 
@@ -772,12 +807,12 @@ initial
           $dumpvars(0, tb_openMSP430);
           `ifdef SHOW_PMEM_WAVES
           	for (index_mem_dbg= (`PMEM_SIZE-512)/2; i < (`PMEM_SIZE-512)/2+128; i=i+1)
-          	$dumpvars(0, pmem_0.mem[index_mem_dbg]);//show the memory content into the waveform! (Sergio) 
+          	$dumpvars(0, pmem_0.mem[index_mem_dbg]);//show the memory content into the waveform! (Sergio)
        	  `endif
        	  `ifdef SHOW_DMEM_WAVES
           	for (index_mem_dbg= (`DMEM_SIZE-256)/2; i < (`DMEM_SIZE-256)/2+128; i=i+1)
-          	$dumpvars(0, dmem_0.mem[index_mem_dbg]);//show the memory content into the waveform! (Sergio) 
-       	  `endif 
+          	$dumpvars(0, dmem_0.mem[index_mem_dbg]);//show the memory content into the waveform! (Sergio)
+       	  `endif
        `endif
      `endif
    `endif
@@ -793,10 +828,10 @@ initial // Timeout
    `else
      `ifdef VERY_LONG_TIMEOUT
        #500000000;
-     `else     
+     `else
      `ifdef LONG_TIMEOUT
        #5000000;
-     `else     
+     `else
        #500000;
      `endif
      `endif
@@ -831,7 +866,7 @@ initial // Normal end of test
 	  $display("|               SIMULATION FAILED               |");
 	  $display("|     (the verilog stimulus didn't complete)    |");
        end
-     else 
+     else
        begin
 	  $display("|               SIMULATION PASSED               |");
        end
@@ -852,7 +887,7 @@ initial // Normal end of test
 	 error = error+1;
       end
    endtask
-   
+
    task tb_extra_report;
       begin
 `ifndef __SANCUS_SIM
