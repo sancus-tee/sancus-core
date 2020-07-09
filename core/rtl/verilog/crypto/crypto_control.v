@@ -845,11 +845,8 @@ always @(posedge clk)
 always @(posedge clk)
     if (state == WRITE_VKEY_DONE & cmd_key)
         $display("Vendor key: %h", key);
-    else if (state == WRAP_TEXT_WAIT & next_state == WRAP_TEXT & cmd_key) begin
-        $write(".");
-        // $fflush(); TODO: Put flush back in for regular updates
-    end else if (state == SUCCESS & cmd_key)
-        $display("\nSM key: %h", key);
+    else if (state == SUCCESS & cmd_key)
+        $display("SM key: %h", key);
 
 // module instantiations *******************************************************
 wire        wrap_busy;

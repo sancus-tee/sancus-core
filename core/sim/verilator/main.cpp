@@ -25,6 +25,9 @@
 #include "loguru/loguru.hpp"
 #include "cpp-optparse/OptionParser.h"
 
+#define COLOR_CRYPT "\033[1m\033[36m"      /* Bold Cyan */
+#define COLOR_RESET "\033[0m"
+
 using namespace std;
 using optparse::OptionParser;
 
@@ -338,6 +341,9 @@ int main(int argc, char** argv)
     sigIntHandler.sa_flags = 0;
     sigaction(SIGINT, &sigIntHandler, NULL);
 
+    int spinner_pos = 0;
+    auto *crypto_busy = &(top->tb_openMSP430__DOT__dut__DOT__execution_unit_0__DOT__crypto_busy);
+    auto *spm_cmd = &(top->tb_openMSP430__DOT__dut__DOT__spm_command);
 
     while (!isDone)
     {
@@ -387,6 +393,17 @@ int main(int argc, char** argv)
         tracer->dump(mainTime);
 
         mainTime++;
+
+        /* Hack to show progress spinner while crypto unit is busy for first 6
+         * spm_cmd (SM_DISABLE, SM_ENABLE, SM_VERIFY_ADDR, SM_VERIFY_PREV,
+         * SM_AE_WRAP, SM_AE_UNWRAP) */
+        if (*crypto_busy && (*spm_cmd < 64))
+        {
+            char cursor_spin[4]={'\\', '|', '-', '/'};
+            printf(COLOR_CRYPT "[crypto] %c\b\b\b\b\b\b\b\b\b\b" COLOR_RESET, cursor_spin[spinner_pos]);
+            fflush(stdout);
+            spinner_pos = (spinner_pos+1) % 4;
+        }
     }
 
     LOG_F(1, "Program memory at exit was..");
