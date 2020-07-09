@@ -1,16 +1,18 @@
 BASE_DIR = ../..
-BUILD_DIR = build
+ifndef $(BUILD_DIR)
+    BUILD_DIR = build
+endif
 TOPLEVEL_MODULE = tb_openMSP430
 TOPLEVEL_DIR = bench/verilog
 VERILOG_FILE_NAME = $(TOPLEVEL_MODULE).v
 VERILOG_INPUT = $(BASE_DIR)/$(TOPLEVEL_DIR)/$(VERILOG_FILE_NAME)
 VERILATOR_NAME = V$(TOPLEVEL_MODULE)
-EXE_NAME = sancus-fastsim
+EXE_NAME = sancus-sim
 EXE_FILE = $(BUILD_DIR)/$(EXE_NAME)
 # OPTIMIZATION 
 CFLAGS = -O3 -std=c++11 -DLOGURU_STACKTRACES=0
 OPTIMIZATION = -O3 -CFLAGS "$(CFLAGS)"
-DEPENDENCIES = main.cpp cpp-optparse/OptionParser.cpp loguru/loguru.cpp
+DEPENDENCIES = $(shell pwd)/main.cpp $(shell pwd)/cpp-optparse/OptionParser.cpp $(shell pwd)/loguru/loguru.cpp
 
 IN_ELF_FILE = program.elf
 

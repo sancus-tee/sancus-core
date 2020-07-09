@@ -6,7 +6,7 @@ notifications:
   email: false
 
 before_install:
-  - sudo apt-get install build-essential cmake iverilog tk binutils-msp430 gcc-msp430 msp430-libc msp430mcu expect-dev -y
+  - sudo apt-get install build-essential cmake iverilog tk binutils-msp430 gcc-msp430 msp430-libc msp430mcu expect-dev verilator -y
 
 install:
   - mkdir build && cd build && cmake .. && cd ..
