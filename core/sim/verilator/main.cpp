@@ -22,8 +22,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "loguru.hpp"
-#include "OptionParser.h"
+#include "loguru/loguru.hpp"
+#include "cpp-optparse/OptionParser.h"
 
 using namespace std;
 using optparse::OptionParser;
@@ -220,6 +220,11 @@ int main(int argc, char** argv)
 
     // time-stamp the start of the log.
     // also detects verbosity level on command line as -v.
+    loguru::g_preamble_thread = false;
+    loguru::g_preamble_date   = false;
+    loguru::g_preamble_uptime = false;
+    loguru::g_preamble_time   = false;
+    loguru::g_preamble_file   = false;
     loguru::init(argc, argv);
 
     // Put every log message in "everything.log":

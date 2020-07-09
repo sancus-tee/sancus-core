@@ -8,9 +8,9 @@ VERILATOR_NAME = V$(TOPLEVEL_MODULE)
 EXE_NAME = sancus-fastsim
 EXE_FILE = $(BUILD_DIR)/$(EXE_NAME)
 # OPTIMIZATION 
-CFLAGS = -O3 -std=c++11 
+CFLAGS = -O3 -std=c++11 -DLOGURU_STACKTRACES=0
 OPTIMIZATION = -O3 -CFLAGS "$(CFLAGS)"
-DEPENDENCIES = main.cpp OptionParser.cpp loguru.cpp
+DEPENDENCIES = main.cpp cpp-optparse/OptionParser.cpp loguru/loguru.cpp
 
 IN_ELF_FILE = program.elf
 

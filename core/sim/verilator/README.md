@@ -7,9 +7,13 @@ This is a Sancus Simulator implementation based on Verilator. Features include:
 - Faster than the old Icarus Simulator
 
 ## Installation
-Run `cmake` once on the top directory of sancus-core (to generate some input.v variables). Then run `make install` in this directory. You can simulate elf files with `./bin/sancus-fastsim path-to-elf-file`. Fastsim can be used as drop-in replacement for sancus-sim, but some options are not possible with verilator and are as such removed (--ram, --rom).
+Run `cmake` once on the top directory of sancus-core (to generate some input.v
+variables). Then run `make` in this directory. You can simulate elf
+files with `./build/sancus-fastsim path-to-elf-file`. Fastsim can be used as
+drop-in replacement for sancus-sim, but some options are not possible with
+verilator and are as such removed (--ram, --rom).
 
-## Limitations / ToDos
+## Limitations / TODOs
 
 - Some bug remains revolving enclaves...
 - Verilator does not support [$fflush without arguments](https://github.com/verilator/verilator/issues/1638) which would be useful for crypto-controls.v to update key generation.

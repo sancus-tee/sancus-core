@@ -1,0 +1,6 @@
+[submodule "core/sim/verilator/loguru"]
+	path = core/sim/verilator/loguru
+	url = https://github.com/emilk/loguru.git
+[submodule "core/sim/verilator/cpp-optparse"]
+	path = core/sim/verilator/cpp-optparse
+	url = https://github.com/weisslj/cpp-optparse.git
