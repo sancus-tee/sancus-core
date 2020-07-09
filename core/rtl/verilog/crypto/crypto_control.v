@@ -847,7 +847,7 @@ always @(posedge clk)
         $display("Vendor key: %h", key);
     else if (state == WRAP_TEXT_WAIT & next_state == WRAP_TEXT & cmd_key) begin
         $write(".");
-        $fflush();
+        // $fflush(); TODO: Put flush back in for regular updates
     end else if (state == SUCCESS & cmd_key)
         $display("\nSM key: %h", key);
 

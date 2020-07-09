@@ -48,7 +48,24 @@
 //`define SHOW_DMEM_WAVES
   
 
-module  tb_openMSP430;
+module  tb_openMSP430(
+    input reg  dco_clk,
+    input reg  reset_n,
+    input wire dmem_dout,   // Input of dmem, passed into verilog by verilator
+    input wire pmem_dout,   // Input of pmem " --- " -- "
+
+    output reg cpuoff,
+    output wire sm_violation,
+    
+    output wire dmem_addr,  // Addressing bits of pmem and dmem, passed to verilator
+    output wire dmem_cen,   // low active
+    output wire dmem_din,
+    output wire dmem_wen,   // low active
+    output wire pmem_addr,
+    output wire pmem_cen,   // low active
+    output wire pmem_din,
+    output wire pmem_wen    // low active
+);
 
 //
 // Wire & Register definition
@@ -154,6 +171,7 @@ wire               ta_out2_en;
 
 // Time Stamp Counter
 wire        [15:0] per_dout_tsc;
+wire        [63:0] tsc;
 wire        [63:0] cur_tsc;
 
 // LED digits
@@ -178,6 +196,7 @@ wire               aclk_en;
 wire               smclk;
 wire               smclk_en;
 reg                reset_n;
+wire               cpuoff;
 wire               puc_rst;
 reg                nmi;
 reg         [13:0] irq;
@@ -227,85 +246,85 @@ integer 		   index_mem_dbg;
 //------------------------------
 
 // CPU & Memory registers
-`include "registers.v"
+// `include "registers.v"
 
 // Sancus-specific register/wire definitions
-`include "sancus-def.v"
-`include "irq_macros.v"
+// `include "sancus-def.v"
+// `include "irq_macros.v"
 
 // Debug interface tasks
-`include "dbg_uart_tasks.v"
+// `include "dbg_uart_tasks.v"
 
 // Simple uart tasks
 //`include "uart_tasks.v"
 
-`ifndef NO_STIMULUS
-// Verilog stimulus
-`include "stimulus.v"
-`endif
+// `ifndef NO_STIMULUS
+// // Verilog stimulus
+// `include "stimulus.v"
+// `endif
 
 // Direct Memory Access interface background tasks
 // (excluded for sancus-sim simulations)
-`ifndef __SANCUS_SIM
-`include "dma_tasks.v"
-`else
-    reg        dma_tfx_cancel;
-`endif
+// `ifndef __SANCUS_SIM
+// `include "dma_tasks.v"
+// `else
+//     reg        dma_tfx_cancel;
+// `endif
    
 //
 // Initialize ROM
 //------------------------------
-`ifndef PMEM_FILE
-`define PMEM_FILE "./pmem.mem"
-`endif
+// `ifndef PMEM_FILE
+// `define PMEM_FILE "./pmem.mem"
+// `endif
 
-initial
-  begin
-    #10 $readmemh(`PMEM_FILE, pmem_0.mem);
-  end
+// initial
+//   begin
+//     $readmemh(`PMEM_FILE, pmem_0.mem);
+//   end
 
 //
 // Generate Clock & Reset
-//------------------------------
+//------------------------------ NOTE: TODO: Transform this block to C++
+// initial
+//   begin
+//      dco_clk          = 1'b0;
+//      dco_local_enable = 1'b0;
+//      forever
+//        begin
+// 	  #25;   // 20 MHz
+// 	  dco_local_enable = (dco_enable===1) ? dco_enable : (dco_wkup===1);
+// 	  if (dco_local_enable)
+// 	    dco_clk = ~dco_clk;
+//        end
+//   end
+// NOTE: probably not needed
+// initial
+//   begin
+//      lfxt_clk          = 1'b0;
+//      lfxt_local_enable = 1'b0;
+//      forever
+//        begin
+// 	  #763;  // 655 kHz
+// 	  lfxt_local_enable = (lfxt_enable===1) ? lfxt_enable : (lfxt_wkup===1);
+// 	  if (lfxt_local_enable)
+// 	    lfxt_clk = ~lfxt_clk;
+//        end
+//   end
+// NOTE: TODO: Transform to C++. Reset everything if reset is low. High, low, high with waits. No idea why this exact numbers, play around. One cycle should be enough.
+// initial
+//   begin
+//      reset_n       = 1'b1;
+//      #93;
+//      reset_n       = 1'b0;
+//      #593;
+//      reset_n       = 1'b1;
+//   end
+// NOTE: TODO: Reevaluate later.
 initial
   begin
-     dco_clk          = 1'b0;
-     dco_local_enable = 1'b0;
-     forever
-       begin
-	  #25;   // 20 MHz
-	  dco_local_enable = (dco_enable===1) ? dco_enable : (dco_wkup===1);
-	  if (dco_local_enable)
-	    dco_clk = ~dco_clk;
-       end
-  end
-
-initial
-  begin
-     lfxt_clk          = 1'b0;
-     lfxt_local_enable = 1'b0;
-     forever
-       begin
-	  #763;  // 655 kHz
-	  lfxt_local_enable = (lfxt_enable===1) ? lfxt_enable : (lfxt_wkup===1);
-	  if (lfxt_local_enable)
-	    lfxt_clk = ~lfxt_clk;
-       end
-  end
-
-initial
-  begin
-     reset_n       = 1'b1;
-     #93;
-     reset_n       = 1'b0;
-     #593;
-     reset_n       = 1'b1;
-  end
-
-initial
-  begin
-  	 tmp_seed         = `SEED;
-     tmp_seed         = $urandom(tmp_seed);
+  	//  tmp_seed         = `SEED;
+    //  tmp_seed         = $urandom(tmp_seed);
      error            = 0;
      stimulus_done    = 1;
      irq              = 14'h0000;
@@ -317,7 +336,7 @@ initial
      dma_priority     = 1'b0;
      dma_we           = 2'b00;
      dma_wkup         = 1'b0;
-     dma_tfx_cancel   = 1'b0;
+    //  dma_tfx_cancel   = 1'b0;
      cpu_en           = 1'b1;
      dbg_en           = 1'b0;
      dbg_uart_rxd_sel = 1'b0;
@@ -351,36 +370,36 @@ initial
 // Program Memory
 //----------------------------------
 
-ram #(`PMEM_MSB, `PMEM_SIZE) pmem_0 (
+// ram #(`PMEM_MSB, `PMEM_SIZE) pmem_0 (
 
-// OUTPUTs
-    .ram_dout    (pmem_dout),          // Program Memory data output
+// // OUTPUTs
+//     .ram_dout    (pmem_dout),          // Program Memory data output
 
-// INPUTs
-    .ram_addr    (pmem_addr),          // Program Memory address
-    .ram_cen     (pmem_cen),           // Program Memory chip enable (low active)
-    .ram_clk     (mclk),               // Program Memory clock
-    .ram_din     (pmem_din),           // Program Memory data input
-    .ram_wen     (pmem_wen)            // Program Memory write enable (low active)
-);
+// // INPUTs
+//     .ram_addr    (pmem_addr),          // Program Memory address
+//     .ram_cen     (pmem_cen),           // Program Memory chip enable (low active)
+//     .ram_clk     (mclk),               // Program Memory clock
+//     .ram_din     (pmem_din),           // Program Memory data input
+//     .ram_wen     (pmem_wen)            // Program Memory write enable (low active)
+// );
 
 
 //
 // Data Memory
 //----------------------------------
 
-ram #(`DMEM_MSB, `DMEM_SIZE) dmem_0 (
+// ram #(`DMEM_MSB, `DMEM_SIZE) dmem_0 (
 
-// OUTPUTs
-    .ram_dout    (dmem_dout),          // Data Memory data output
+// // OUTPUTs
+//     .ram_dout    (dmem_dout),          // Data Memory data output
 
-// INPUTs
-    .ram_addr    (dmem_addr),          // Data Memory address
-    .ram_cen     (dmem_cen),           // Data Memory chip enable (low active)
-    .ram_clk     (mclk),               // Data Memory clock
-    .ram_din     (dmem_din),           // Data Memory data input
-    .ram_wen     (dmem_wen)            // Data Memory write enable (low active)
-);
+// // INPUTs
+//     .ram_addr    (dmem_addr),          // Data Memory address
+//     .ram_cen     (dmem_cen),           // Data Memory chip enable (low active)
+//     .ram_clk     (mclk),               // Data Memory clock
+//     .ram_din     (dmem_din),           // Data Memory data input
+//     .ram_wen     (dmem_wen)            // Data Memory write enable (low active)
+// );
 
 
 //
@@ -419,6 +438,7 @@ openMSP430 dut (
     .smclk        (smclk),             // ASIC ONLY: SMCLK
     .smclk_en     (smclk_en),          // FPGA ONLY: SMCLK enable
     .spm_violation (sm_violation),
+    .cpuoff       (cpuoff),            // For simulation: Access to finished computation bit
 
 // INPUTs
     .cpu_en       (cpu_en),            // Enable CPU code execution (asynchronous)
@@ -621,6 +641,7 @@ template_periph_16b #(.BASE_ADDR((15'd`PER_SIZE-15'h0070) & 15'h7ff8)) template_
 //----------------------------------
 omsp_tsc tsc_0(
     .per_dout (per_dout_tsc),
+    .tsc      (tsc),
     .mclk     (mclk),
     .per_addr (per_addr),
     .per_din  (per_din),
@@ -629,7 +650,7 @@ omsp_tsc tsc_0(
     .puc_rst  (puc_rst)
 );
 
-assign cur_tsc = tsc_0.tsc;
+assign cur_tsc = tsc;
 
 //
 // LED Digits
@@ -753,135 +774,135 @@ msp_debug msp_debug_0 (
 // Generate Waveform
 //----------------------------------------
 
-initial
-  begin
-   `ifdef NODUMP
-   `else
-     `ifdef VPD_FILE
-        $vcdplusfile("tb_openMSP430.vpd");
-        $vcdpluson();
-     `else
-       `ifdef TRN_FILE
-          $recordfile ("tb_openMSP430.trn");
-          $recordvars;
-       `else
-          `ifndef DUMPFILE
-            `define DUMPFILE "tb_openMSP430.vcd"
-          `endif
-          $dumpfile(`DUMPFILE);
-          $dumpvars(0, tb_openMSP430);
-          `ifdef SHOW_PMEM_WAVES
-          	for (index_mem_dbg= (`PMEM_SIZE-512)/2; i < (`PMEM_SIZE-512)/2+128; i=i+1)
-          	$dumpvars(0, pmem_0.mem[index_mem_dbg]);//show the memory content into the waveform! (Sergio) 
-       	  `endif
-       	  `ifdef SHOW_DMEM_WAVES
-          	for (index_mem_dbg= (`DMEM_SIZE-256)/2; i < (`DMEM_SIZE-256)/2+128; i=i+1)
-          	$dumpvars(0, dmem_0.mem[index_mem_dbg]);//show the memory content into the waveform! (Sergio) 
-       	  `endif 
-       `endif
-     `endif
-   `endif
-  end
+// initial
+//   begin
+//    `ifdef NODUMP
+//    `else
+//      `ifdef VPD_FILE
+//         $vcdplusfile("tb_openMSP430.vpd");
+//         $vcdpluson();
+//      `else
+//        `ifdef TRN_FILE
+//           $recordfile ("tb_openMSP430.trn");
+//           $recordvars;
+//        `else
+//           `ifndef DUMPFILE
+//             `define DUMPFILE "tb_openMSP430.vcd"
+//           `endif
+//           $dumpfile(`DUMPFILE);
+//           $dumpvars(0, tb_openMSP430);
+//           `ifdef SHOW_PMEM_WAVES
+//           	for (index_mem_dbg= (`PMEM_SIZE-512)/2; i < (`PMEM_SIZE-512)/2+128; i=i+1)
+//           	$dumpvars(0, pmem_0.mem[index_mem_dbg]);//show the memory content into the waveform! (Sergio) 
+//        	  `endif
+//        	  `ifdef SHOW_DMEM_WAVES
+//           	for (index_mem_dbg= (`DMEM_SIZE-256)/2; i < (`DMEM_SIZE-256)/2+128; i=i+1)
+//           	$dumpvars(0, dmem_0.mem[index_mem_dbg]);//show the memory content into the waveform! (Sergio) 
+//        	  `endif 
+//        `endif
+//      `endif
+//    `endif
+//   end
 
 //
 // End of simulation
 //----------------------------------------
 
-initial // Timeout
-  begin
-   `ifdef NO_TIMEOUT
-   `else
-     `ifdef VERY_LONG_TIMEOUT
-       #500000000;
-     `else     
-     `ifdef LONG_TIMEOUT
-       #5000000;
-     `else     
-       #500000;
-     `endif
-     `endif
-       $display(" ===============================================");
-       $display("|               SIMULATION FAILED               |");
-       $display("|              (simulation Timeout)             |");
-       $display(" ===============================================");
-       tb_extra_report;
-       $finish;
-   `endif
-  end
+// initial // Timeout
+//   begin
+//    `ifdef NO_TIMEOUT
+//    `else
+//      `ifdef VERY_LONG_TIMEOUT
+//        #500000000;
+//      `else     
+//      `ifdef LONG_TIMEOUT
+//        #5000000;
+//      `else     
+//        #500000;
+//      `endif
+//      `endif
+//        $display(" ===============================================");
+//        $display("|               SIMULATION FAILED               |");
+//        $display("|              (simulation Timeout)             |");
+//        $display(" ===============================================");
+//        tb_extra_report;
+//        $finish;
+//    `endif
+//   end
 
-initial // Normal end of test
-  begin
-     // finish on stimulus/CPU halt
-    `ifdef NO_STIMULUS
-         @(negedge inst_irq_rst);
-         while(~cpuoff) @(posedge mclk);
-    `else
-         @(negedge stimulus_done);
-         wait(inst_pc=='hffff);
-    `endif
+// initial // Normal end of test
+//   begin
+//      // finish on stimulus/CPU halt
+//     `ifdef NO_STIMULUS
+//          @(negedge inst_irq_rst);
+//          while(~cpuoff) @(posedge mclk);
+//     `else
+//          @(negedge stimulus_done);
+//          wait(inst_pc=='hffff);
+//     `endif
 
-     $display(" ===============================================");
-     if (error!=0)
-       begin
-	  $display("|               SIMULATION FAILED               |");
-	  $display("|     (some verilog stimulus checks failed)     |");
-       end
-     else if (~stimulus_done)
-       begin
-	  $display("|               SIMULATION FAILED               |");
-	  $display("|     (the verilog stimulus didn't complete)    |");
-       end
-     else 
-       begin
-	  $display("|               SIMULATION PASSED               |");
-       end
-     $display(" ===============================================");
-     tb_extra_report;
-     $finish;
-  end
+//      $display(" ===============================================");
+//      if (error!=0)
+//        begin
+// 	  $display("|               SIMULATION FAILED               |");
+// 	  $display("|     (some verilog stimulus checks failed)     |");
+//        end
+//      else if (~stimulus_done)
+//        begin
+// 	  $display("|               SIMULATION FAILED               |");
+// 	  $display("|     (the verilog stimulus didn't complete)    |");
+//        end
+//      else 
+//        begin
+// 	  $display("|               SIMULATION PASSED               |");
+//        end
+//      $display(" ===============================================");
+//      tb_extra_report;
+//      $finish;
+//   end
 
 
 //
 // Tasks Definition
 //------------------------------
 
-   task tb_error;
-      input [65*8:0] error_string;
-      begin
-	 $display("ERROR: %s %t", error_string, $time);
-	 error = error+1;
-      end
-   endtask
+//    task tb_error;
+//       input [65*8:0] error_string;
+//       begin
+// 	 $display("ERROR: %s %t", error_string, $time);
+// 	 error = error+1;
+//       end
+//    endtask
    
-   task tb_extra_report;
-      begin
-`ifndef __SANCUS_SIM
-         $display("DMA REPORT: Total Accesses: %-d Total RD: %-d Total WR: %-d", dma_cnt_rd+dma_cnt_wr,     dma_cnt_rd,   dma_cnt_wr);
-         $display("            Total Errors:   %-d Error RD: %-d Error WR: %-d", dma_rd_error+dma_wr_error, dma_rd_error, dma_wr_error);
-         if (!((`PMEM_SIZE>=4092) && (`DMEM_SIZE>=1024)))
-           begin
-	      $display("");
-              $display("Note: DMA if verification disabled (PMEM must be 4kB or bigger, DMEM must be 1kB or bigger)");
-           end
-         $display("");
-         $display("SIMULATION SEED: %d", `SEED);
-         $display("");
-`endif
-      end
-   endtask
+//    task tb_extra_report;
+//       begin
+// `ifndef __SANCUS_SIM
+//          $display("DMA REPORT: Total Accesses: %-d Total RD: %-d Total WR: %-d", dma_cnt_rd+dma_cnt_wr,     dma_cnt_rd,   dma_cnt_wr);
+//          $display("            Total Errors:   %-d Error RD: %-d Error WR: %-d", dma_rd_error+dma_wr_error, dma_rd_error, dma_wr_error);
+//          if (!((`PMEM_SIZE>=4092) && (`DMEM_SIZE>=1024)))
+//            begin
+// 	      $display("");
+//               $display("Note: DMA if verification disabled (PMEM must be 4kB or bigger, DMEM must be 1kB or bigger)");
+//            end
+//          $display("");
+//          $display("SIMULATION SEED: %d", `SEED);
+//          $display("");
+// `endif
+//       end
+//    endtask
 
-   task tb_skip_finish;
-      input [65*8-1:0] skip_string;
-      begin
-         $display(" ===============================================");
-         $display("|               SIMULATION SKIPPED              |");
-         $display("%s", skip_string);
-         $display(" ===============================================");
-         $display("");
-         tb_extra_report;
-         $finish;
-      end
-   endtask
+//    task tb_skip_finish;
+//       input [65*8-1:0] skip_string;
+//       begin
+//          $display(" ===============================================");
+//          $display("|               SIMULATION SKIPPED              |");
+//          $display("%s", skip_string);
+//          $display(" ===============================================");
+//          $display("");
+//          tb_extra_report;
+//          $finish;
+//       end
+//    endtask
 
 
 endmodule
