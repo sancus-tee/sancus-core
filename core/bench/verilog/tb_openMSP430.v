@@ -54,26 +54,28 @@
   module  tb_openMSP430(
       input reg  dco_clk,
       input reg  reset_n,
-      input wire dmem_dout,   // Input of dmem, passed into verilog by verilator
-      input wire pmem_dout,   // Input of pmem " --- " -- "
+      input wire [15:0] dmem_dout,   // Input of dmem, passed into verilog by verilator
+      input wire [15:0] pmem_dout,   // Input of pmem " --- " -- "
   
       output reg cpuoff,
       output wire sm_violation,
       
-      output wire dmem_addr,  // Addressing bits of pmem and dmem, passed to verilator
-      output wire dmem_cen,   // low active
-      output wire dmem_din,
-      output wire dmem_wen,   // low active
-      output wire pmem_addr,
-      output wire pmem_cen,   // low active
-      output wire pmem_din,
-      output wire pmem_wen    // low active
+      output wire [`DMEM_MSB:0] dmem_addr,  // Addressing bits of pmem and dmem, passed to verilator
+      output wire               dmem_cen,   // low active
+      output wire [15:0]        dmem_din,
+      output wire [1:0]         dmem_wen,   // low active
+      output wire [`PMEM_MSB:0] pmem_addr,
+      output wire               pmem_cen,   // low active
+      output wire [15:0]        pmem_din,
+      output wire [1:0]         pmem_wen    // low active
   );
 `endif /* VERILATOR */
 
 //
 // Wire & Register definition
 //------------------------------
+
+`ifndef VERILATOR // For Verilator, these are defined as in/outputs above.
 
 // Data Memory interface
 wire [`DMEM_MSB:0] dmem_addr;
@@ -88,6 +90,8 @@ wire               pmem_cen;
 wire        [15:0] pmem_din;
 wire         [1:0] pmem_wen;
 wire        [15:0] pmem_dout;
+
+`endif /* VERILATOR */
 
 // Peripherals interface
 wire        [13:0] per_addr;
@@ -186,7 +190,9 @@ wire         [7:0] led_so;
 wire        [15:0] per_dout_file_io;
 
 // Clock / Reset & Interrupts
+`ifndef VERILATOR // For Verilator, these are defined as in/outputs above.
 reg                dco_clk;
+`endif /* VERILATOR */
 wire               dco_enable;
 wire               dco_wkup;
 reg                dco_local_enable;
@@ -199,8 +205,10 @@ wire               aclk;
 wire               aclk_en;
 wire               smclk;
 wire               smclk_en;
+`ifndef VERILATOR // For Verilator, these are defined as in/outputs above.
 reg                reset_n;
 wire               cpuoff;
+`endif /* VERILATOR */
 wire               puc_rst;
 reg                nmi;
 reg         [13:0] irq;
@@ -209,7 +217,9 @@ wire        [13:0] irq_in;
 reg                cpu_en;
 reg         [13:0] wkup;
 wire        [13:0] wkup_in;
+`ifndef VERILATOR // For Verilator, these are defined as in/outputs above.
 wire               sm_violation;
+`endif /* VERILATOR */
 
 // Scan (ASIC version only)
 reg                scan_enable;

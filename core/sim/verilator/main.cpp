@@ -88,6 +88,7 @@ inline bool check_file_exists (const char* filename) {
 
         LOG_F(1,"[Memory] %s Regs are: cen: %x wen: %x, addr: %2x, in: %2x, out:%2x\n",_name.c_str(), *_chip_enable, *_write_enable, *_addr, *_din, *_dout);
 
+        return true;
     }
 
     string print_memory(){
@@ -160,6 +161,7 @@ inline bool check_file_exists (const char* filename) {
     SData *_dout;
 };
 
+bool tracer_enabled = true;
 auto tracer = std::unique_ptr<VerilatedVcdC>{new VerilatedVcdC};
 // auto tracer = std::unique_ptr<VerilatedFstC>{new VerilatedFstC};
 // VerilatedFstC* tfp = new VerilatedFstC;
@@ -167,13 +169,13 @@ auto tracer = std::unique_ptr<VerilatedVcdC>{new VerilatedVcdC};
 int exit_program(int result){
     printf("\n\n\n");
     LOG_F(INFO, "======================== Simulation ended ========================");
-    LOG_F(INFO, "Cycles simulated: %llu", mainTime / CLOCK_PERIOD);
+    LOG_F(INFO, "Cycles simulated: %lu", mainTime / CLOCK_PERIOD);
     switch(result){
         case status_success:
             LOG_F(INFO,     "================ Simulation succeeded gracefully =================");
             break;
         case status_timeout:
-            LOG_F(INFO,     "===== Simulation stopped after timeout of %llu cycles =====", MAX_CYCLES);
+            LOG_F(INFO,     "===== Simulation stopped after timeout of %lu cycles =====", MAX_CYCLES);
             break;
         case status_program_abort:
             LOG_F(INFO,     "============= Simulation stopped after program abort =============");
@@ -186,7 +188,9 @@ int exit_program(int result){
             break;
     }
 
-    tracer->close();
+    if(tracer_enabled){
+        tracer->close();
+    }
     return result;
 }
 
@@ -206,6 +210,8 @@ int main(int argc, char** argv)
 
     parser.add_option("-d", "--dumpfile") .dest("vcd_filename") .set_default("sim.vcd")
                     .help("Name of the outputted simulation vcd file.") .metavar("OUTFILE");
+    parser.add_option("--disable_simfile") .action("store_true") .dest("dump_disable") .set_default("0")
+                    .help("Disables writing simulation to dumpfile.") .metavar("DISABLE_DUMPING");
     parser.add_option("-t", "--type") .dest("type") .set_default("elf")
                     .help("File type (elf, binary allowed)") .metavar("TYPE");
     // parser.add_option("-v", "--verbose")
@@ -282,14 +288,20 @@ int main(int argc, char** argv)
     }
 
     if(! check_file_exists(mem_file.c_str())){
-        LOG_F(ERROR, "Aiming to use file %s as memory dump but this file does not exist. Aborting.");
+        LOG_F(ERROR, "Aiming to use file %s as memory dump but this file does not exist. Aborting.", mem_file.c_str());
         exit(status_error);
     }
 
 
-    // Print simulation output file
+    // Store simulation output file
     const char* sim_filename = options["vcd_filename"].c_str();
-    LOG_F(INFO, "Using %s as simulation file.", sim_filename );
+    // Check whether we want to create a dumpfile
+    if(options.get("dump_disable")){
+        tracer_enabled = false;
+        LOG_F(INFO, "Disabled dumping to a simulation file.");
+    } else {
+        LOG_F(INFO, "Using %s as simulation file.", sim_filename );
+    }
 
     // Set up Max cycles and whether we want to abort on timeouts
     MAX_CYCLES = (uint64_t) options.get("cycles");
@@ -298,7 +310,7 @@ int main(int argc, char** argv)
         LOG_F(INFO, "Max cycles set to 0. Will not abort simulation due to timeout.");
         check_timeout = false;
     } else {
-        LOG_F(INFO, "Enabled automatic timeout after %llu cycles.", MAX_CYCLES);
+        LOG_F(INFO, "Enabled automatic timeout after %lu cycles.", MAX_CYCLES);
     }
     uint64_t MAX_EXECUTION_TIME = MAX_CYCLES*CLOCK_PERIOD;
 
@@ -325,9 +337,12 @@ int main(int argc, char** argv)
     auto program_memory = Memory{*top, mem_file.c_str(), "[ROM ]",
             &top->pmem_cen, &top->pmem_wen, &top->pmem_addr, &top->pmem_din, &top->pmem_dout};
 
-    Verilated::traceEverOn(true);
-    top->trace(tracer.get(), 99);
-    tracer->open(sim_filename);
+    // Enable verilator tracing if we are dumping
+    if(tracer_enabled) {
+        Verilated::traceEverOn(true);
+        top->trace(tracer.get(), 99);
+        tracer->open(sim_filename);
+    }
 
     mainTime = 0;
     auto isDone = false;
@@ -390,7 +405,9 @@ int main(int argc, char** argv)
                 }
             }
         }
-        tracer->dump(mainTime);
+        if(tracer_enabled){
+            tracer->dump(mainTime);
+        }
 
         mainTime++;
 
