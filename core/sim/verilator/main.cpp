@@ -161,7 +161,8 @@ inline bool check_file_exists (const char* filename) {
     SData *_dout;
 };
 
-bool tracer_enabled = true;
+bool tracer_enabled = false;
+bool crypto_show  = false;
 auto tracer = std::unique_ptr<VerilatedVcdC>{new VerilatedVcdC};
 // auto tracer = std::unique_ptr<VerilatedFstC>{new VerilatedFstC};
 // VerilatedFstC* tfp = new VerilatedFstC;
@@ -208,24 +209,34 @@ int main(int argc, char** argv)
         .description("Sancus Simulator based on Verilator. Expects a .elf file as input.")
         .usage("usage: %prog [OPTIONS] ELF-FILE");
 
-    parser.add_option("-d", "--dumpfile") .dest("vcd_filename") .set_default("sim.vcd")
-                    .help("Name of the outputted simulation vcd file.") .metavar("OUTFILE");
-    parser.add_option("--disable_simfile") .action("store_true") .dest("dump_disable") .set_default("0")
-                    .help("Disables writing simulation to dumpfile.") .metavar("DISABLE_DUMPING");
+    parser.add_option("-d", "--dumpfile") .dest("vcd_filename") .set_default("")
+                    .help("Name of the optional outputted simulation vcd file.") .metavar("OUTFILE");
     parser.add_option("-t", "--type") .dest("type") .set_default("elf")
-                    .help("File type (elf, binary allowed)") .metavar("TYPE");
+                    .help("File type (default=elf). Override to pass a binary file.") .metavar("TYPE");
     // parser.add_option("-v", "--verbose")
     //                 .action("store_true") .dest("verbose") .set_default("0")
     //                 .help("Print debug messages to stdout");
-    parser.add_option("-d", "--debug") .dest("debugfile")
-                    .help("Prints all log messages to a debug file") .metavar("LOGFILE");
+    parser.add_option("-l", "--log") .dest("logfile") .set_default("")
+                    .help("Prints all log messages to a debug log file.") .metavar("LOGFILE");
     parser.add_option("-c", "--cycles") .dest("cycles") .type("int") .set_default(MAX_CYCLES)
-                    .help("Maximum of cycles to execute before aborting. Set 0 for no timeout.") .metavar("INT");
+                    .help("Maximum of cycles to execute before aborting. Set to 0 for no timeout.") .metavar("INT");
     parser.add_option("--stop-after-sm-violation") .dest("sm_violation_stopcount") .type("long") .set_default(0)
-                    .help("If set to larger than 0, stops the simulation X cycles after a SM Violation occured. Default: -1 (disabled).") .metavar("X");
+                    .help("If set to larger than 0, stops the simulation X cycles after a SM Violation occured. Default: 0 (stop directly on violation). Set to -1 to continue after violation.") .metavar("X");
+    parser.add_option("--crypto-show") .action("store_true") .dest("crypto_show") 
+                    .help("Enable spinning cursor terminal animation for indicating activity of the CPU's crypto unit (default=off). Passing this flag is not recommended when running sancus-sim from a non-interactive terminal.") ;
 
     optparse::Values options = parser.parse_args(argc, argv);
     vector<string> args = parser.args();
+
+    // check input filename given
+    const char* in_file;
+    if (args.size() == 0 || args[0] == "" || ! check_file_exists(args[0].c_str())){
+        parser.print_help();
+        exit(status_no_input_file);
+    } else {
+        in_file = args[0].c_str();
+        LOG_F(INFO, "Using input file %s.", in_file);
+    }
 
     // time-stamp the start of the log.
     // also detects verbosity level on command line as -v.
@@ -237,22 +248,13 @@ int main(int argc, char** argv)
     loguru::init(argc, argv);
 
     // Put every log message in "everything.log":
-    if (options.get("debug")){
-        LOG_F(INFO, "Logging all messages into file %s", options["debug"].c_str());
-        loguru::add_file(options["debug"].c_str(), loguru::Append, loguru::Verbosity_MAX);
+    const char* log_filename = options["logfile"].c_str();
+    if(strlen(log_filename) > 0){
+        LOG_F(INFO, "Logging all messages into file %s", log_filename);
+        loguru::add_file(log_filename, loguru::Append, loguru::Verbosity_MAX);
     }
 
     LOG_F(INFO, "======================= Sancus Simulator =======================");
-
-    // check input filename given
-    const char* in_file;
-    if (args.size() == 0 || args[0] == "" || ! check_file_exists(args[0].c_str())){
-        LOG_F(INFO, "No input file given or file does not exist. Aborting.");
-        exit(status_no_input_file);
-    } else {
-        in_file = args[0].c_str();
-        LOG_F(INFO, "Using input file %s.", in_file);
-    }
 
     // Depeding on type option, convert input file from elf to binary in tmp directory
     string mem_file;    
@@ -292,15 +294,12 @@ int main(int argc, char** argv)
         exit(status_error);
     }
 
-
     // Store simulation output file
     const char* sim_filename = options["vcd_filename"].c_str();
     // Check whether we want to create a dumpfile
-    if(options.get("dump_disable")){
-        tracer_enabled = false;
-        LOG_F(INFO, "Disabled dumping to a simulation file.");
-    } else {
+    if(strlen(sim_filename) > 0){
         LOG_F(INFO, "Using %s as simulation file.", sim_filename );
+        tracer_enabled = true;
     }
 
     // Set up Max cycles and whether we want to abort on timeouts
@@ -318,9 +317,15 @@ int main(int argc, char** argv)
     int sm_violation_stopcount = (int) options.get("sm_violation_stopcount");
     bool stop_on_sm_violation = false;
     bool sm_violation_occured = false;
-    if(sm_violation_stopcount >= 0){
+    if(sm_violation_stopcount >= 0)
+    {
         stop_on_sm_violation = true;
         LOG_F(INFO, "Will abort simulation %i cycles after any SM_VIOLATION", sm_violation_stopcount);
+    }
+
+    if (options.get("crypto_show"))
+    {
+        crypto_show = true;
     }
 
     // Start verilator
@@ -414,7 +419,7 @@ int main(int argc, char** argv)
         /* Hack to show progress spinner while crypto unit is busy for first 6
          * spm_cmd (SM_DISABLE, SM_ENABLE, SM_VERIFY_ADDR, SM_VERIFY_PREV,
          * SM_AE_WRAP, SM_AE_UNWRAP) */
-        if (*crypto_busy && (*spm_cmd < 64))
+        if (crypto_show && *crypto_busy && (*spm_cmd < 64))
         {
             char cursor_spin[4]={'\\', '|', '-', '/'};
             printf(COLOR_CRYPT "[crypto] %c\b\b\b\b\b\b\b\b\b\b" COLOR_RESET, cursor_spin[spinner_pos]);
