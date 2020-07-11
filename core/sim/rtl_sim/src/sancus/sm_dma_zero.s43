@@ -1,0 +1,68 @@
+.include "pmem_defs.asm"
+.include "sancus_macros.asm"
+
+.set foo_secret_start, DMEM_262
+.set foo_secret_end, DMEM_268
+
+.set dma_addr, (0x0070)
+.set dma_cnt, (0x0072)
+.set dma_trace, (0x0074)
+
+.global main
+main:
+    clr r15
+
+    disable_wdt
+    eint
+    sancus_enable #1234, #foo_text_start, #foo_text_end, #foo_secret_start, #foo_secret_end
+
+    mov #0x50, &dma_addr
+    mov #0x01, r10
+    br #foo_text_start
+
+    /* ----------------------         SANCUS MODULE      --------------- */
+
+foo_text_start:
+    cmp #0x00, r10
+    jz 1f
+    mov #0x42, &foo_secret_start
+    mov &foo_secret_start, r8
+    jmp 2f
+1:  mov &foo_secret_start, r9
+2:  nop
+foo_text_end:
+    nop
+
+    /* ----------------------        END     --------------- */
+
+end_of_test:
+    nop
+    nop
+    nop
+    nop
+    cmp #0x00, r10
+    jz 3f
+    mov #0x00, r10
+    mov #0x02, &dma_cnt
+    br #foo_text_start
+3:  mov #0x2000, r15
+fail_test:
+    br #0xffff
+
+.section .vectors, "a"
+.word end_of_test  ; Interrupt  0 (lowest priority)    <unused>
+.word end_of_test  ; Interrupt  1                      <unused>
+.word end_of_test  ; Interrupt  2                      <unused>
+.word end_of_test  ; Interrupt  3                      <unused>
+.word end_of_test  ; Interrupt  4                      <unused>
+.word end_of_test  ; Interrupt  5                      <unused>
+.word end_of_test  ; Interrupt  6                      <unused>
+.word end_of_test  ; Interrupt  7                      <unused>
+.word end_of_test  ; Interrupt  8                      <unused>
+.word end_of_test  ; Interrupt  9                      TEST IRQ
+.word end_of_test  ; Interrupt 10                      Watchdog timer
+.word end_of_test  ; Interrupt 11                      <unused>
+.word end_of_test  ; Interrupt 12                      <unused>
+.word end_of_test  ; Interrupt 13                      SM_IRQ
+.word end_of_test  ; Interrupt 14                      NMI
+.word main         ; Interrupt 15 (highest priority)   RESET
