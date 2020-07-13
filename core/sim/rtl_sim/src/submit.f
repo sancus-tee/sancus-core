@@ -21,9 +21,9 @@
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 //
 //-----------------------------------------------------------------------------
-// 
+//
 // File Name: submit.f
-// 
+//
 // Author(s):
 //             - Olivier Girard,    olgirard@gmail.com
 //
@@ -65,5 +65,6 @@
 ../../../rtl/verilog/periph/omsp_tsc.v
 ../../../rtl/verilog/periph/spi_master.v
 ../../../rtl/verilog/periph/omsp_led_digits.v
+../../../rtl/verilog/periph/dma_attacker.v
 ../../../bench/verilog/file_io.v
 ../../../bench/verilog/omsp_uart_print.v

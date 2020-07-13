@@ -21,9 +21,9 @@
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 //
 //----------------------------------------------------------------------------
-// 
+//
 // *File Name: openMSP430_fpga.v
-// 
+//
 // *Module Description:
 //                      openMSP430 FPGA Top-level for the Avnet LX9 Microboard
 //
@@ -84,6 +84,19 @@ assign mosi_o = 1'b0;
 //=============================================================================
 // 1)  INTERNAL WIRES/REGISTERS/PARAMETERS DECLARATION
 //=============================================================================
+
+// Direct Memory Access interface
+wire        [15:0] dma_dout;
+wire               dma_ready;
+wire               dma_resp;
+reg         [15:0] dma_din;
+reg                dma_priority;
+reg                dma_wkup;
+wire        [15:1] dma_addr;
+wire         [1:0] dma_we;
+wire               dma_en;
+wire        [15:0] per_dout_dma;
+reg                dma_tfx_cancel;
 
 // openMSP430 output buses
 wire        [13:0] per_addr;
@@ -252,6 +265,15 @@ assign  reset_n = reset_pin_n & dcm_locked;
 //=============================================================================
 // 4)  OPENMSP430
 //=============================================================================
+
+initial
+  begin
+     dma_din          = 16'h0000;
+     dma_priority     = 1'b0;
+     dma_wkup         = 1'b0;
+     dma_tfx_cancel   = 1'b0;
+  end
+
 wire spm_violation;
 openMSP430 openMSP430_0 (
 // OUTPUTs
@@ -275,6 +297,9 @@ openMSP430 openMSP430_0 (
     .puc_rst      (puc_rst),      // Main system reset
     .smclk_en     (smclk_en),     // SMCLK enable
     //.spm_violation(spm_violation),
+    .dma_dout     (dma_dout),     // Direct Memory Access data output
+    .dma_ready    (dma_ready),    // Direct Memory Access is complete
+    .dma_resp     (dma_resp),     // Direct Memory Access response (0:Okay / 1:Error)
 
 // INPUTs
     .cpu_en       (1'b1),         // Enable CPU code execution (asynchronous)
@@ -284,6 +309,12 @@ openMSP430 openMSP430_0 (
     .dmem_dout    (dmem_dout),    // Data Memory data output
     .irq          (irq_bus),      // Maskable interrupts
     .lfxt_clk     (1'b0),         // Low frequency oscillator (typ 32kHz)
+    .dma_addr     (dma_addr),     // Direct Memory Access address
+    .dma_din      (dma_din),      // Direct Memory Access data input
+    .dma_en       (dma_en),       // Direct Memory Access enable (high active)
+    .dma_priority (dma_priority), // Direct Memory Access priority (0:low / 1:high)
+    .dma_we       (dma_we),       // Direct Memory Access write byte enable (high active)
+    .dma_wkup     (dma_wkup),     // ASIC ONLY: DMA Sub-System Wake-up (asynchronous and non-glitchy)
     .nmi          (nmi),          // Non-maskable interrupt (asynchronous)
     .per_dout     (per_dout),     // Peripheral data output
     .pmem_dout    (pmem_dout),    // Program Memory data output
@@ -317,7 +348,7 @@ omsp_gpio #(.P1_EN(1),
     .p2_sel       (p2_sel),        // Port 2 function select
     .p3_dout      (p3_dout),       // Port 3 data output
     .p3_dout_en   (p3_dout_en),    // Port 3 data output enable
-    .p3_sel       (),        // Port 3 function select
+    .p3_sel       (),              // Port 3 function select
     .p4_dout      (),              // Port 4 data output
     .p4_dout_en   (),              // Port 4 data output enable
     .p4_sel       (),              // Port 4 function select
@@ -328,7 +359,7 @@ omsp_gpio #(.P1_EN(1),
     .p6_dout_en   (),              // Port 6 data output enable
     .p6_sel       (),              // Port 6 function select
     .per_dout     (per_dout_dio),  // Peripheral data output
-			     
+
 // INPUTs
     .mclk         (mclk),          // Main system clock
     .p1_din       (p1_din),        // Port 1 data input
@@ -491,6 +522,21 @@ omsp_spi_master spi_master(
     .puc_rst    (puc_rst)
 );
 
+// DMA Attacker
+dma_attacker dma_periph(
+    .per_dout (per_dout_dma),
+    .dma_addr (dma_addr),
+    .dma_en   (dma_en),
+    .dma_we   (dma_we),
+    .mclk     (mclk),
+    .per_addr (per_addr),
+    .per_din  (per_din),
+    .per_en   (per_en),
+    .per_we   (per_we),
+    .puc_rst  (puc_rst),
+    .dma_ready(dma_ready)
+);
+
 // LED digits
 omsp_led_digits led_digits(
     .per_dout   (per_dout_led),
@@ -514,6 +560,7 @@ assign per_dout = per_dout_dio      |
                   per_dout_uart2    |
                   //per_dout_ps2      |
                   per_dout_tsc      |
+                  per_dout_dma      |
                   per_dout_led      |
                   per_dout_spi;
 

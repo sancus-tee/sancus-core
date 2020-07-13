@@ -27,6 +27,12 @@ stdbuf -oL ../bin/msp430sim sancus/sm_mem_violation        | tee ./log/sancus-sm
 
 stdbuf -oL ../bin/msp430sim sancus/sm_dma                  | tee ./log/sancus-sm_dma.log
 
+__SANCUS_SIM=1
+export __SANCUS_SIM
+
+stdbuf -oL ../bin/msp430sim sancus/sm_dma_peripheral                  | tee ./log/sancus-sm_dma_peripheral.log
+stdbuf -oL ../bin/msp430sim sancus/sm_dma_zero                  | tee ./log/sancus-sm_dma_zero.log
+
 # Report regression results
 ../bin/parse_results
 exit $?
