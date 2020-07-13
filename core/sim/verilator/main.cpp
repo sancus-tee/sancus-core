@@ -162,7 +162,8 @@ inline bool check_file_exists (const char* filename) {
 };
 
 bool tracer_enabled = false;
-bool crypto_show  = false;
+bool crypto_noshow  = false;
+int  crypto_cycles = 0;
 auto tracer = std::unique_ptr<VerilatedVcdC>{new VerilatedVcdC};
 // auto tracer = std::unique_ptr<VerilatedFstC>{new VerilatedFstC};
 // VerilatedFstC* tfp = new VerilatedFstC;
@@ -170,7 +171,7 @@ auto tracer = std::unique_ptr<VerilatedVcdC>{new VerilatedVcdC};
 int exit_program(int result){
     printf("\n\n\n");
     LOG_F(INFO, "======================== Simulation ended ========================");
-    LOG_F(INFO, "Cycles simulated: %lu", mainTime / CLOCK_PERIOD);
+    LOG_F(INFO, "Total/crypto cycles simulated: %lu/%lu.", mainTime / CLOCK_PERIOD, crypto_cycles);
     switch(result){
         case status_success:
             LOG_F(INFO,     "================ Simulation succeeded gracefully =================");
@@ -222,8 +223,8 @@ int main(int argc, char** argv)
                     .help("Maximum of cycles to execute before aborting. Set to 0 for no timeout.") .metavar("INT");
     parser.add_option("--stop-after-sm-violation") .dest("sm_violation_stopcount") .type("long") .set_default(0)
                     .help("If set to larger than 0, stops the simulation X cycles after a SM Violation occured. Default: 0 (stop directly on violation). Set to -1 to continue after violation.") .metavar("X");
-    parser.add_option("--crypto-show") .action("store_true") .dest("crypto_show") 
-                    .help("Enable spinning cursor terminal animation for indicating activity of the CPU's crypto unit (default=off). Passing this flag is not recommended when running sancus-sim from a non-interactive terminal.") ;
+    parser.add_option("--crypto-noshow") .action("store_true") .dest("crypto_noshow") 
+                    .help("Disable spinning cursor terminal animation for indicating activity of the CPU's crypto unit (default=on). Passing this flag is recommended when running sancus-sim from a non-interactive terminal.") ;
 
     optparse::Values options = parser.parse_args(argc, argv);
     vector<string> args = parser.args();
@@ -323,9 +324,9 @@ int main(int argc, char** argv)
         LOG_F(INFO, "Will abort simulation %i cycles after any SM_VIOLATION", sm_violation_stopcount);
     }
 
-    if (options.get("crypto_show"))
+    if (options.get("crypto_noshow"))
     {
-        crypto_show = true;
+        crypto_noshow = true;
     }
 
     // Start verilator
@@ -362,8 +363,8 @@ int main(int argc, char** argv)
     sigaction(SIGINT, &sigIntHandler, NULL);
 
     int spinner_pos = 0;
-    auto *crypto_busy = &(top->tb_openMSP430__DOT__dut__DOT__execution_unit_0__DOT__crypto_busy);
-    auto *spm_cmd = &(top->tb_openMSP430__DOT__dut__DOT__spm_command);
+    auto *crypto_sponge_busy = &(top->tb_openMSP430__DOT__dut__DOT__execution_unit_0__DOT__crypto__DOT__wrap__DOT__sponge__DOT__fsm_instance__DOT__reg_busy);
+    auto crypto_sponge_busy_prev = 0;
 
     while (!isDone)
     {
@@ -414,18 +415,28 @@ int main(int argc, char** argv)
             tracer->dump(mainTime);
         }
 
-        mainTime++;
-
-        /* Hack to show progress spinner while crypto unit is busy for first 6
-         * spm_cmd (SM_DISABLE, SM_ENABLE, SM_VERIFY_ADDR, SM_VERIFY_PREV,
-         * SM_AE_WRAP, SM_AE_UNWRAP) */
-        if (crypto_show && *crypto_busy && (*spm_cmd < 64))
+        /* Hack to show progress spinner while crypto unit is busy. */
+        if (clockEdge && top->dco_clk)
         {
-            char cursor_spin[4]={'\\', '|', '-', '/'};
-            printf(COLOR_CRYPT "[crypto] %c\b\b\b\b\b\b\b\b\b\b" COLOR_RESET, cursor_spin[spinner_pos]);
-            fflush(stdout);
-            spinner_pos = (spinner_pos+1) % 4;
+            if (*crypto_sponge_busy)
+            {
+                crypto_cycles++;
+            }
+
+            if (!crypto_noshow)
+            {
+                if (*crypto_sponge_busy != crypto_sponge_busy_prev)
+                {
+                    char cursor_spin[4]={'\\', '|', '-', '/'};
+                    printf(COLOR_CRYPT "[crypto] %c\b\b\b\b\b\b\b\b\b\b" COLOR_RESET, cursor_spin[spinner_pos]);
+                    fflush(stdout);
+                    spinner_pos = (spinner_pos+1) % 4;
+                }
+                crypto_sponge_busy_prev = *crypto_sponge_busy;
+            }
         }
+
+        mainTime++;
     }
 
     LOG_F(1, "Program memory at exit was..");
@@ -434,5 +445,4 @@ int main(int argc, char** argv)
     LOG_F(1, data_memory.print_memory().c_str());
     
     return exit_program(result);
-
 }
