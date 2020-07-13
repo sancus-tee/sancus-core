@@ -28,7 +28,7 @@
 //----------------------------------------------------------------------------
 //
 // *File Name: omsp_mem_backbone.v
-// 
+//
 // *Module Description:
 //                       Memory interface backbone (decoder + arbiter)
 //
@@ -241,7 +241,7 @@ assign             ext_dmem_sel  = (ext_mem_addr[15:1]>=(`DMEM_BASE>>1)) &
 assign             ext_dmem_en   = ext_mem_en &  ext_dmem_sel & ~eu_dmem_en;
 wire        [15:0] ext_dmem_addr = {1'b0, ext_mem_addr[15:1]}-(`DMEM_BASE>>1);
 
-   
+
 // RAM Interface
 // NOTE: allow DMA ext access on violation
 wire               eu_dmem_en_ok =  eu_dmem_en & ~sm_violation;
@@ -265,7 +265,7 @@ wire        [15:0] eu_pmem_addr  = eu_mab-(PMEM_OFFSET>>1);
 
 // Front-end access
 // NOTE: do not mask __front-end__ program memory accesses on sm_violation,
-// to allow frontendto fetch valid ISR instruction from since pmem 
+// to allow frontendto fetch valid ISR instruction from since pmem
 // TODO prevent jumping to non SM-entry point ISR (?)
 wire               fe_pmem_sel   = (fe_mab>=(PMEM_OFFSET>>1));
 wire               fe_pmem_en    = fe_mb_en & fe_pmem_sel;
@@ -278,7 +278,7 @@ assign             ext_pmem_en  = ext_mem_en & ext_pmem_sel & ~eu_pmem_en & ~fe_
 
 wire        [15:0] ext_pmem_addr = {1'b0, ext_mem_addr[15:1]}-(PMEM_OFFSET>>1);
 
-   
+
 // Program-Memory Interface (Execution unit has priority over the Front-end)
 wire               pmem_cen      = ~(fe_pmem_en | eu_pmem_en | ext_pmem_en);
 wire         [1:0] pmem_wen      =  ext_pmem_en ? ~ext_mem_wr : (eu_pmem_en ? ~eu_mb_wr : 2'b11); //(sergio) corretto
@@ -338,7 +338,7 @@ omsp_clock_gate clock_gate_bckup (.gclk(mclk_bckup),
 `else
 wire mclk_bckup = mclk;
 `endif
-   
+
 reg  [15:0] pmem_dout_bckup;
 always @(posedge mclk_bckup or posedge puc_rst)
   if (puc_rst)           pmem_dout_bckup     <=  16'h0000;
@@ -354,7 +354,7 @@ always @(posedge mclk or posedge puc_rst)
   if (puc_rst)              pmem_dout_bckup_sel <=  1'b0;
   else if (fe_pmem_save)    pmem_dout_bckup_sel <=  1'b1;
   else if (fe_pmem_restore) pmem_dout_bckup_sel <=  1'b0;
-    
+
 assign fe_mdb_in = pmem_dout_bckup_sel ? pmem_dout_bckup : pmem_dout;
 
 
@@ -365,7 +365,7 @@ assign fe_mdb_in = pmem_dout_bckup_sel ? pmem_dout_bckup : pmem_dout;
 reg [1:0] eu_mdb_in_sel;
 always @(posedge mclk or posedge puc_rst)
   if (puc_rst)  eu_mdb_in_sel <= 2'b00;
-  else          eu_mdb_in_sel <= {eu_pmem_en, per_en};
+  else          eu_mdb_in_sel <= {eu_pmem_en, eu_per_en};
 
 // Mux
 wire [15:0]     raw_eu_mdb_in = eu_mdb_in_sel[1] ? pmem_dout    :
@@ -390,12 +390,12 @@ reg   [1:0] ext_mem_din_sel;
 always @(posedge mclk or posedge puc_rst)
   if (puc_rst)  ext_mem_din_sel <= 2'b00;
   else          ext_mem_din_sel <= {ext_pmem_en, ext_per_en};
-     
+
 // Mux
 assign      ext_mem_din  = ext_mem_din_sel[1] ? pmem_dout    :
                            ext_mem_din_sel[0] ? per_dout_val : dmem_dout;
 
-   
+
 endmodule // omsp_mem_backbone
 `ifdef OMSP_NO_INCLUDE
 `else
