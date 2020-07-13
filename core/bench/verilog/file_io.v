@@ -5,6 +5,13 @@ module file_io (
     input  wire [15:0] per_din,
     input  wire        per_en,
     input  wire  [1:0] per_we,
+`ifdef VERILATOR
+    input  wire [7:0]  fio_din,
+    input  wire        fio_dready,
+    output wire [7:0]  fio_dout,
+    output wire        fio_dnxt,
+    output wire        fio_dout_rdy,
+`endif
     input  wire        puc_rst
 );
 
@@ -22,7 +29,6 @@ parameter              DEC_WD    = 2;
 parameter [DEC_WD-1:0] STATUS    = 'h0,
                        DATA      = 'h2;
 
-
 // Register one-hot decoder utilities
 parameter              DEC_SZ    = (1 << DEC_WD);
 parameter [DEC_SZ-1:0] BASE_REG  = {{DEC_SZ-1{1'b0}}, 1'b1};
@@ -30,10 +36,6 @@ parameter [DEC_SZ-1:0] BASE_REG  = {{DEC_SZ-1{1'b0}}, 1'b1};
 // Register one-hot decoder
 parameter [DEC_SZ-1:0] STATUS_D  = (BASE_REG << STATUS),
                        DATA_D    = (BASE_REG << DATA);
-
-// File names
-parameter IN_FILE                = "ififo";
-parameter OUT_FILE               = "ofifo";
 
 //============================================================================
 // 2)  REGISTER DECODER
@@ -68,6 +70,7 @@ integer in_file, out_file;
 
 initial
 begin
+`ifndef VERILATOR
     $display("=== File I/O ===");
 
 `ifdef FILEIO_IN
@@ -91,6 +94,7 @@ begin
 `endif
 
     $display("================");
+`endif /* VERILATOR */
 end
 
 // DATA Register
@@ -102,6 +106,7 @@ wire       data_wr  = DATA[0] ? reg_hi_wr[DATA] : reg_lo_wr[DATA];
 wire [7:0] data_nxt = DATA[0] ? per_din[15:8]   : per_din[7:0];
 
 // Writes to the DATA register
+`ifndef VERILATOR
 `ifdef FILEIO_OUT
 always @ (posedge mclk or posedge puc_rst)
     if (data_wr)
@@ -135,6 +140,35 @@ initial begin
     data_ready <= 1'b0;
 end
 `endif
+
+`else /* VERILATOR */
+
+// Writes to the DATA register
+always @ (posedge mclk or posedge puc_rst)
+    if (puc_rst)
+        fio_dout_rdy <= 0;
+    else if (data_wr) begin
+        fio_dout <= data_nxt;
+        fio_dout_rdy <= 1;
+    end else
+        fio_dout_rdy <= 0;
+
+// Reads from the DATA register
+always @(posedge mclk or posedge puc_rst)
+    if (puc_rst | reg_rd[DATA])
+    begin
+        data <= 8'b0;
+        data_ready <= 1'b0;
+        fio_dnxt <= 1'b1;
+    end
+    else if (fio_dready)
+    begin
+        data <= fio_din;
+        fio_dnxt <= 1'b0;
+        data_ready <= 1'b1;
+    end
+
+`endif /* VERILATOR */
 
 // STATUS Register
 //-----------------

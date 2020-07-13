@@ -168,6 +168,61 @@ auto tracer = std::unique_ptr<VerilatedVcdC>{new VerilatedVcdC};
 // auto tracer = std::unique_ptr<VerilatedFstC>{new VerilatedFstC};
 // VerilatedFstC* tfp = new VerilatedFstC;
 
+FILE *fd_in = NULL, *fd_out = NULL;
+int dprev = 0;
+
+void eval_fileio(unique_ptr<Vtb_openMSP430> &top)
+{
+    if (mainTime < 50*CLOCK_PERIOD) return;
+
+    /* Handle file I/O writes */
+    if (top->fio_dout_rdy)
+    {
+        if (!fd_out)
+        {
+            LOG_F(WARNING, "File I/O write detected but no output file provided; ignoring write..");
+        }
+        else
+        {
+            if (fputc(top->fio_dout, fd_out) == EOF)
+            {
+                LOG_F(ERROR, "File I/O: write error");
+                exit(status_error);
+            }
+            else
+                fflush(fd_out);
+        }
+    }
+
+    /* Handle file I/O reads */
+    if (top->fio_dnxt && !dprev) 
+    {
+        if (!fd_in)
+        {
+            LOG_F(WARNING, "File I/O read detected but no input file provided; ignoring read..");
+            top->fio_din = 0xff;
+            top->fio_dready = 0;
+        }
+        else
+        {
+            char in_char = fgetc(fd_in);
+            if (in_char != EOF)
+            {
+                LOG_F(1,"[fileio] Read %x\n", in_char);
+                top->fio_din = in_char;
+                top->fio_dready = 1;
+            }
+        }
+    }
+    else if (!top->fio_dnxt && dprev)
+    {
+        top->fio_din = 0xff;
+        top->fio_dready = 0;
+    }
+
+    dprev = top->fio_dnxt;
+}
+
 int exit_program(int result){
     printf("\n\n\n");
     LOG_F(INFO, "======================== Simulation ended ========================");
@@ -210,21 +265,25 @@ int main(int argc, char** argv)
         .description("Sancus Simulator based on Verilator. Expects a .elf file as input.")
         .usage("usage: %prog [OPTIONS] ELF-FILE");
 
-    parser.add_option("-d", "--dumpfile") .dest("vcd_filename") .set_default("")
-                    .help("Name of the optional outputted simulation vcd file.") .metavar("OUTFILE");
     parser.add_option("-t", "--type") .dest("type") .set_default("elf")
                     .help("File type (default=elf). Override to pass a binary file.") .metavar("TYPE");
-    // parser.add_option("-v", "--verbose")
-    //                 .action("store_true") .dest("verbose") .set_default("0")
-    //                 .help("Print debug messages to stdout");
+    parser.add_option("-d", "--dumpfile") .dest("vcd_filename") .set_default("")
+                    .help("Name of the optional outputted simulation vcd file.") .metavar("OUTFILE");
     parser.add_option("-l", "--log") .dest("logfile") .set_default("")
                     .help("Prints all log messages to a debug log file.") .metavar("LOGFILE");
+    parser.add_option("--fileio-in") .dest("fio_in") .set_default("")
+                    .help("Optional I/O file for simulator input.") .metavar("FILEIO_IN");
+    parser.add_option("--fileio-out") .dest("fio_out") .set_default("")
+                    .help("Optional I/O file for simulator output.") .metavar("FILEIO_OUT");
     parser.add_option("-c", "--cycles") .dest("cycles") .type("int") .set_default(MAX_CYCLES)
                     .help("Maximum of cycles to execute before aborting. Set to 0 for no timeout.") .metavar("INT");
     parser.add_option("--stop-after-sm-violation") .dest("sm_violation_stopcount") .type("long") .set_default(0)
                     .help("If set to larger than 0, stops the simulation X cycles after a SM Violation occured. Default: 0 (stop directly on violation). Set to -1 to continue after violation.") .metavar("X");
     parser.add_option("--crypto-noshow") .action("store_true") .dest("crypto_noshow") 
                     .help("Disable spinning cursor terminal animation for indicating activity of the CPU's crypto unit (default=on). Passing this flag is recommended when running sancus-sim from a non-interactive terminal.") ;
+    // parser.add_option("-v", "--verbose")
+    //                 .action("store_true") .dest("verbose") .set_default("0")
+    //                 .help("Print debug messages to stdout");
 
     optparse::Values options = parser.parse_args(argc, argv);
     vector<string> args = parser.args();
@@ -329,11 +388,37 @@ int main(int argc, char** argv)
         crypto_noshow = true;
     }
 
+    const char* in_filename = options["fio_in"].c_str();
+    if (strlen(in_filename) > 0)
+    {
+        LOG_F(INFO, "Opening '%s' as file I/O input file.", in_filename);
+        fd_in  = fopen(in_filename, "r");
+        if (!fd_in)
+        {
+            LOG_F(ERROR, "Failed to open '%s' as an input file.", in_filename);
+            exit(status_error);
+        }
+    }
+
+    const char* out_filename = options["fio_out"].c_str();
+    if (strlen(out_filename) > 0)
+    {
+        LOG_F(INFO, "Opening '%s' as file I/O output file.", out_filename);
+        fd_out = fopen(out_filename, "w");
+        if (!fd_out)
+        {
+            LOG_F(ERROR, "Failed to open '%s' as an output file.", out_filename);
+            exit(status_error);
+        }
+    }
+
     // Start verilator
     Verilated::commandArgs(argc, argv);
     auto top = std::unique_ptr<Vtb_openMSP430>{new Vtb_openMSP430};
     top->reset_n = 1;
     top->dco_clk = 1;
+    top->fio_din = 0xff;
+    top->fio_dready = 0;
 
     // auto memoryFile = argv[argc - 1];
     // Initialize data memory (ram) as a fresh memory
@@ -374,7 +459,6 @@ int main(int argc, char** argv)
             top->dco_clk = !top->dco_clk;
         }
 
-
         if (mainTime >= 5*CLOCK_PERIOD)
             top->reset_n = 0;
         if (mainTime >= 50*CLOCK_PERIOD)
@@ -388,6 +472,8 @@ int main(int argc, char** argv)
 
         if (clockEdge && top->dco_clk)
         {   
+            eval_fileio(top);
+
             if (mainTime >= MAX_EXECUTION_TIME && check_timeout)
             {
                 isDone = true;

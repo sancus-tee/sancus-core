@@ -57,12 +57,18 @@
   module  tb_openMSP430(
       input reg  dco_clk,
       input reg  reset_n,
-      input wire [15:0] dmem_dout,   // Input of dmem, passed into verilog by verilator
-      input wire [15:0] pmem_dout,   // Input of pmem " --- " -- "
+      input wire [15:0] dmem_dout,          // Input of dmem, passed into verilog by verilator
+      input wire [15:0] pmem_dout,          // Input of pmem " --- " -- "
+
+      input  wire [7:0]  fio_din,           // fileio wires passed into verilog by verilator
+      input  wire        fio_dready,
+      output wire [7:0]  fio_dout,
+      output  wire       fio_dnxt,
+      output  wire       fio_dout_rdy,
   
       output reg cpuoff,
       output wire sm_violation,
-      
+
       output wire [`DMEM_MSB:0] dmem_addr,  // Addressing bits of pmem and dmem, passed to verilator
       output wire               dmem_cen,   // low active
       output wire [15:0]        dmem_din,
@@ -734,6 +740,13 @@ file_io file_io_0 (
     .per_din  (per_din),
     .per_en   (per_en),
     .per_we   (per_we),
+`ifdef VERILATOR
+    .fio_din      (fio_din),
+    .fio_dout     (fio_dout),
+    .fio_dready   (fio_dready),
+    .fio_dnxt     (fio_dnxt),
+    .fio_dout_rdy (fio_dout_rdy),
+`endif
     .puc_rst  (puc_rst)
 );
 
