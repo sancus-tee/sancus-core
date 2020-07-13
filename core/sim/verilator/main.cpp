@@ -170,6 +170,7 @@ auto tracer = std::unique_ptr<VerilatedVcdC>{new VerilatedVcdC};
 
 FILE *fd_in = NULL, *fd_out = NULL;
 int dprev = 0;
+char in_char = EOF;
 
 void eval_fileio(unique_ptr<Vtb_openMSP430> &top)
 {
@@ -189,13 +190,12 @@ void eval_fileio(unique_ptr<Vtb_openMSP430> &top)
                 LOG_F(ERROR, "File I/O: write error");
                 exit(status_error);
             }
-            else
-                fflush(fd_out);
+            fflush(fd_out);
         }
     }
 
     /* Handle file I/O reads */
-    if (top->fio_dnxt && !dprev) 
+    if (top->fio_dnxt && (in_char != EOF || dprev))
     {
         if (!fd_in)
         {
@@ -205,7 +205,7 @@ void eval_fileio(unique_ptr<Vtb_openMSP430> &top)
         }
         else
         {
-            char in_char = fgetc(fd_in);
+            in_char = fgetc(fd_in);
             if (in_char != EOF)
             {
                 LOG_F(1,"[fileio] Read %x\n", in_char);

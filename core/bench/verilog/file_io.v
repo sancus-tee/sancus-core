@@ -157,7 +157,7 @@ always @ (posedge mclk or posedge puc_rst)
 always @(posedge mclk or posedge puc_rst)
     if (puc_rst | reg_rd[DATA])
     begin
-        data <= 8'b0;
+        data <= 8'hff;;
         data_ready <= 1'b0;
         fio_dnxt <= 1'b1;
     end
