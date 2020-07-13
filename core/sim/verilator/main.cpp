@@ -169,8 +169,7 @@ auto tracer = std::unique_ptr<VerilatedVcdC>{new VerilatedVcdC};
 // VerilatedFstC* tfp = new VerilatedFstC;
 
 FILE *fd_in = NULL, *fd_out = NULL;
-int dprev = 0;
-char in_char = EOF;
+int in_char = EOF;
 
 void eval_fileio(unique_ptr<Vtb_openMSP430> &top)
 {
@@ -185,6 +184,7 @@ void eval_fileio(unique_ptr<Vtb_openMSP430> &top)
         }
         else
         {
+            LOG_F(1,"[fileio] Write %#x", top->fio_dout);
             if (fputc(top->fio_dout, fd_out) == EOF)
             {
                 LOG_F(ERROR, "File I/O: write error");
@@ -195,32 +195,21 @@ void eval_fileio(unique_ptr<Vtb_openMSP430> &top)
     }
 
     /* Handle file I/O reads */
-    if (top->fio_dnxt && (in_char != EOF || dprev))
+    if (fd_in && !top->fio_dready)
     {
-        if (!fd_in)
+        in_char = fgetc(fd_in);
+        if (in_char != EOF)
         {
-            LOG_F(WARNING, "File I/O read detected but no input file provided; ignoring read..");
-            top->fio_din = 0xff;
-            top->fio_dready = 0;
+            LOG_F(1,"[fileio] Read %#x", in_char);
+            top->fio_din = in_char;
+            top->fio_dready = 1;
         }
-        else
-        {
-            in_char = fgetc(fd_in);
-            if (in_char != EOF)
-            {
-                LOG_F(1,"[fileio] Read %x\n", in_char);
-                top->fio_din = in_char;
-                top->fio_dready = 1;
-            }
-        }
-    }
-    else if (!top->fio_dnxt && dprev)
-    {
-        top->fio_din = 0xff;
-        top->fio_dready = 0;
     }
 
-    dprev = top->fio_dnxt;
+    if (top->fio_dnxt)
+    {
+        top->fio_dready = 0;
+    }
 }
 
 int exit_program(int result){

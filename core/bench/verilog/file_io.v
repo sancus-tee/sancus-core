@@ -100,13 +100,14 @@ end
 // DATA Register
 //-----------------
 reg  [7:0] data;
-reg        data_ready;
 
 wire       data_wr  = DATA[0] ? reg_hi_wr[DATA] : reg_lo_wr[DATA];
 wire [7:0] data_nxt = DATA[0] ? per_din[15:8]   : per_din[7:0];
 
 // Writes to the DATA register
 `ifndef VERILATOR
+reg        data_ready;
+
 `ifdef FILEIO_OUT
 always @ (posedge mclk or posedge puc_rst)
     if (data_wr)
@@ -141,6 +142,10 @@ initial begin
 end
 `endif
 
+// STATUS Register
+//-----------------
+wire [7:0] status = {7'b0, data_ready};
+
 `else /* VERILATOR */
 
 // Writes to the DATA register
@@ -155,24 +160,23 @@ always @ (posedge mclk or posedge puc_rst)
 
 // Reads from the DATA register
 always @(posedge mclk or posedge puc_rst)
-    if (puc_rst | reg_rd[DATA])
+    if (puc_rst)
     begin
-        data <= 8'hff;;
-        data_ready <= 1'b0;
-        fio_dnxt <= 1'b1;
+        data <= 8'hff;
+        fio_dnxt <= 1'b0;
     end
-    else if (fio_dready)
-    begin
+    else if (reg_rd[DATA])
+        fio_dnxt <= 1'b1;
+    else begin
         data <= fio_din;
         fio_dnxt <= 1'b0;
-        data_ready <= 1'b1;
     end
-
-`endif /* VERILATOR */
 
 // STATUS Register
 //-----------------
-wire [7:0] status = {7'b0, data_ready};
+wire [7:0] status = {7'b0, fio_dready};
+
+`endif /* VERILATOR */
 
 //============================================================================
 // 4) DATA OUTPUT GENERATION
