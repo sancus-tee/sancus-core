@@ -47,6 +47,9 @@
 //`define SHOW_PMEM_WAVES
 //`define SHOW_DMEM_WAVES
 
+`ifdef VERILATOR
+    `define __SANCUS_SIM
+`endif
 
 `ifndef VERILATOR
   module  tb_openMSP430;
