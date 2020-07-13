@@ -59,8 +59,8 @@
    
 `define CHK_IRQ_STACK_R15( str, pc, sr, r15Val ) \
       /*$display({"checking stack memory ", str});*/ \
-      if (mem25E !==pc)        tb_error({"====== STACK MEMORY PC (", str, ") ====="});  \         
-      if (mem25C !==sr)        tb_error({"====== STACK MEMORY SR (", str, ") ====="});  \        
+      if (mem25E !==pc)        tb_error({"====== STACK MEMORY PC (", str, ") ====="});  \
+      if (mem25C !==sr)        tb_error({"====== STACK MEMORY SR (", str, ") ====="});  \
       if (mem25A !==r15Val)    tb_error({"====== STACK MEMORY r15 (", str, ") ====="}); \
       if (mem258 !==`R14_VAL)  tb_error({"====== STACK MEMORY r14 (", str, ") ====="}); \
       if (mem256 !==`R13_VAL)  tb_error({"====== STACK MEMORY r13 (", str, ") ====="}); \

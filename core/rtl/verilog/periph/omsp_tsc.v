@@ -2,6 +2,7 @@ module  omsp_tsc (
 
 // OUTPUTs
     per_dout,                       // Peripheral data output
+    tsc,                            // tsc copy to make it available externally
 
 // INPUTs
     mclk,                           // Main system clock
@@ -15,6 +16,7 @@ module  omsp_tsc (
 // OUTPUTs
 //=========
 output       [15:0] per_dout;       // Peripheral data output
+output       [63:0] tsc;            // tsc copy to make it available externally
 
 // INPUTs
 //=========

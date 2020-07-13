@@ -47,12 +47,44 @@
 //`define SHOW_PMEM_WAVES
 //`define SHOW_DMEM_WAVES
 
+`ifdef VERILATOR
+    `define __SANCUS_SIM
+`endif
 
-module  tb_openMSP430;
+`ifndef VERILATOR
+  module  tb_openMSP430;
+`else
+  module  tb_openMSP430(
+      input reg  dco_clk,
+      input reg  reset_n,
+      input wire [15:0] dmem_dout,          // Input of dmem, passed into verilog by verilator
+      input wire [15:0] pmem_dout,          // Input of pmem " --- " -- "
+
+      input  wire [7:0]  fio_din,           // fileio wires passed into verilog by verilator
+      input  wire        fio_dready,
+      output wire [7:0]  fio_dout,
+      output  wire       fio_dnxt,
+      output  wire       fio_dout_rdy,
+  
+      output reg cpuoff,
+      output wire sm_violation,
+
+      output wire [`DMEM_MSB:0] dmem_addr,  // Addressing bits of pmem and dmem, passed to verilator
+      output wire               dmem_cen,   // low active
+      output wire [15:0]        dmem_din,
+      output wire [1:0]         dmem_wen,   // low active
+      output wire [`PMEM_MSB:0] pmem_addr,
+      output wire               pmem_cen,   // low active
+      output wire [15:0]        pmem_din,
+      output wire [1:0]         pmem_wen    // low active
+  );
+`endif /* VERILATOR */
 
 //
 // Wire & Register definition
 //------------------------------
+
+`ifndef VERILATOR // For Verilator, these are defined as in/outputs above.
 
 // Data Memory interface
 wire [`DMEM_MSB:0] dmem_addr;
@@ -67,6 +99,8 @@ wire               pmem_cen;
 wire        [15:0] pmem_din;
 wire         [1:0] pmem_wen;
 wire        [15:0] pmem_dout;
+
+`endif /* VERILATOR */
 
 // Peripherals interface
 wire        [13:0] per_addr;
@@ -161,6 +195,7 @@ wire               ta_out2_en;
 
 // Time Stamp Counter
 wire        [15:0] per_dout_tsc;
+wire        [63:0] tsc;
 wire        [63:0] cur_tsc;
 
 `ifdef __SANCUS_SIM
@@ -175,7 +210,9 @@ wire         [7:0] led_so;
 wire        [15:0] per_dout_file_io;
 
 // Clock / Reset & Interrupts
+`ifndef VERILATOR // For Verilator, these are defined as in/outputs above.
 reg                dco_clk;
+`endif /* VERILATOR */
 wire               dco_enable;
 wire               dco_wkup;
 reg                dco_local_enable;
@@ -188,7 +225,10 @@ wire               aclk;
 wire               aclk_en;
 wire               smclk;
 wire               smclk_en;
+`ifndef VERILATOR // For Verilator, these are defined as in/outputs above.
 reg                reset_n;
+wire               cpuoff;
+`endif /* VERILATOR */
 wire               puc_rst;
 reg                nmi;
 reg         [13:0] irq;
@@ -197,7 +237,9 @@ wire        [13:0] irq_in;
 reg                cpu_en;
 reg         [13:0] wkup;
 wire        [13:0] wkup_in;
+`ifndef VERILATOR // For Verilator, these are defined as in/outputs above.
 wire               sm_violation;
+`endif /* VERILATOR */
 
 // Scan (ASIC version only)
 reg                scan_enable;
@@ -238,85 +280,91 @@ integer 		   index_mem_dbg;
 //------------------------------
 
 // CPU & Memory registers
-`include "registers.v"
-
-// Sancus-specific register/wire definitions
-`include "sancus-def.v"
-`include "irq_macros.v"
-
-// Debug interface tasks
-`include "dbg_uart_tasks.v"
-
-// Simple uart tasks
-//`include "uart_tasks.v"
-
-`ifndef NO_STIMULUS
-// Verilog stimulus
-`include "stimulus.v"
-`endif
-
-// Direct Memory Access interface background tasks
-// (excluded for sancus-sim simulations)
-`ifndef __SANCUS_SIM
-    `include "dma_tasks.v"
+`ifndef VERILATOR
+  `include "registers.v"
+  
+  /* Sancus-specific register/wire definitions */
+  `include "sancus-def.v"
+  `include "irq_macros.v"
+  
+  // Debug interface tasks
+  `include "dbg_uart_tasks.v"
+  
+  // Simple uart tasks
+  //`include "uart_tasks.v"
+  
+  `ifndef NO_STIMULUS
+    // Verilog stimulus
+    `include "stimulus.v"
+  `endif
+  
+  // Direct Memory Access interface background tasks
+  // (excluded for sancus-sim simulations)
+  `ifndef __SANCUS_SIM
+  `include "dma_tasks.v"
+  `else
+      reg        dma_tfx_cancel;
+  `endif
+     
+  //
+  // Initialize ROM
+  //------------------------------
+  `ifndef PMEM_FILE
+  `define PMEM_FILE "./pmem.mem"
+  `endif
+  
+  initial
+    begin
+      $readmemh(`PMEM_FILE, pmem_0.mem);
+    end
+  
+  
+  // Generate Clock & Reset
+  //------------------------------
+  initial
+    begin
+       dco_clk          = 1'b0;
+       dco_local_enable = 1'b0;
+       forever
+         begin
+  	  #25;   // 20 MHz
+  	  dco_local_enable = (dco_enable===1) ? dco_enable : (dco_wkup===1);
+  	  if (dco_local_enable)
+  	    dco_clk = ~dco_clk;
+         end
+    end
+  
+  initial
+    begin
+       lfxt_clk          = 1'b0;
+       lfxt_local_enable = 1'b0;
+       forever
+         begin
+  	  #763;  // 655 kHz
+  	  lfxt_local_enable = (lfxt_enable===1) ? lfxt_enable : (lfxt_wkup===1);
+  	  if (lfxt_local_enable)
+  	    lfxt_clk = ~lfxt_clk;
+         end
+    end
+  
+  initial
+    begin
+       reset_n       = 1'b1;
+       #93;
+       reset_n       = 1'b0;
+       #593;
+       reset_n       = 1'b1;
+    end
 `else
-    reg dma_tfx_cancel;
-`endif
-
-//
-// Initialize ROM
-//------------------------------
-`ifndef PMEM_FILE
-`define PMEM_FILE "./pmem.mem"
-`endif
+    reg        dma_tfx_cancel;
+`endif /* VERILATOR */
 
 initial
   begin
-    #10 $readmemh(`PMEM_FILE, pmem_0.mem);
-  end
-
-//
-// Generate Clock & Reset
-//------------------------------
-initial
-  begin
-     dco_clk          = 1'b0;
-     dco_local_enable = 1'b0;
-     forever
-       begin
-	  #25;   // 20 MHz
-	  dco_local_enable = (dco_enable===1) ? dco_enable : (dco_wkup===1);
-	  if (dco_local_enable)
-	    dco_clk = ~dco_clk;
-       end
-  end
-
-initial
-  begin
-     lfxt_clk          = 1'b0;
-     lfxt_local_enable = 1'b0;
-     forever
-       begin
-	  #763;  // 655 kHz
-	  lfxt_local_enable = (lfxt_enable===1) ? lfxt_enable : (lfxt_wkup===1);
-	  if (lfxt_local_enable)
-	    lfxt_clk = ~lfxt_clk;
-       end
-  end
-
-initial
-  begin
-     reset_n       = 1'b1;
-     #93;
-     reset_n       = 1'b0;
-     #593;
-     reset_n       = 1'b1;
-  end
-
-initial
-  begin
-  	 tmp_seed         = `SEED;
+  `ifndef VERILATOR
+     tmp_seed         = `SEED;
      tmp_seed         = $urandom(tmp_seed);
+  `endif
      error            = 0;
      stimulus_done    = 1;
      irq              = 14'h0000;
@@ -359,7 +407,7 @@ initial
      scan_mode        = 1'b0;
   end
 
-
+`ifndef VERILATOR   
 //
 // Program Memory
 //----------------------------------
@@ -394,6 +442,7 @@ ram #(`DMEM_MSB, `DMEM_SIZE) dmem_0 (
     .ram_din     (dmem_din),           // Data Memory data input
     .ram_wen     (dmem_wen)            // Data Memory write enable (low active)
 );
+`endif /* VERILATOR  */
 
 
 //
@@ -432,6 +481,7 @@ openMSP430 dut (
     .smclk        (smclk),             // ASIC ONLY: SMCLK
     .smclk_en     (smclk_en),          // FPGA ONLY: SMCLK enable
     .spm_violation (sm_violation),
+    .cpuoff       (cpuoff),            // For simulation: Access to finished computation bit
 
 // INPUTs
     .cpu_en       (cpu_en),            // Enable CPU code execution (asynchronous)
@@ -634,6 +684,7 @@ template_periph_16b #(.BASE_ADDR((15'd`PER_SIZE-15'h0070) & 15'h7ff8)) template_
 //----------------------------------
 omsp_tsc tsc_0(
     .per_dout (per_dout_tsc),
+    .tsc      (tsc),
     .mclk     (mclk),
     .per_addr (per_addr),
     .per_din  (per_din),
@@ -642,7 +693,7 @@ omsp_tsc tsc_0(
     .puc_rst  (puc_rst)
 );
 
-assign cur_tsc = tsc_0.tsc;
+assign cur_tsc = tsc;
 
 `ifdef __SANCUS_SIM
 //
@@ -689,6 +740,13 @@ file_io file_io_0 (
     .per_din  (per_din),
     .per_en   (per_en),
     .per_we   (per_we),
+`ifdef VERILATOR
+    .fio_din      (fio_din),
+    .fio_dout     (fio_dout),
+    .fio_dready   (fio_dready),
+    .fio_dnxt     (fio_dnxt),
+    .fio_dout_rdy (fio_dout_rdy),
+`endif
     .puc_rst  (puc_rst)
 );
 
@@ -783,11 +841,11 @@ msp_debug msp_debug_0 (
     .puc_rst      (puc_rst)            // Main system reset
 );
 
+`ifndef VERILATOR
 
 //
 // Generate Waveform
 //----------------------------------------
-
 initial
   begin
    `ifdef NODUMP
@@ -918,5 +976,6 @@ initial // Normal end of test
       end
    endtask
 
+`endif /* VERILATOR */
 
 endmodule
