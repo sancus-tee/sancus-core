@@ -1,5 +1,5 @@
 # sancus-core
-[![Build Status](https://travis-ci.org/sancus-pma/sancus-core.svg?branch=master)](https://travis-ci.org/sancus-pma/sancus-core)
+[![Build Status](https://travis-ci.org/sancus-tee/sancus-core.svg?branch=master)](https://travis-ci.org/sancus-tee/sancus-core)
 
 Minimal OpenMSP430 hardware extensions for isolation and attestation.
 
