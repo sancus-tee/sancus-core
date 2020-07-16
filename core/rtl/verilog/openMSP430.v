@@ -253,6 +253,7 @@ wire         [15:0] current_inst_pc;
 wire         [15:0] prev_inst_pc;
 wire          [3:0] irq_num;
 wire                irq_detect;
+wire                irq_pnd;
 
 wire                spm_busy;
 wire                spm_violation_eu;
@@ -367,6 +368,7 @@ omsp_frontend frontend_0 (
     .prev_inst_pc (prev_inst_pc),
     .irq_num      (irq_num),
     .irq_detect   (irq_detect),
+    .irq_pnd      (irq_pnd),
 			     
 // INPUTs
     .cpu_en_s     (cpu_en_s),      // Enable CPU code execution (synchronous)
@@ -450,6 +452,7 @@ omsp_execution_unit execution_unit_0 (
     .prev_inst_pc (prev_inst_pc),
     .irq_num      (irq_num),
     .irq_detect   (irq_detect),
+    .irq_pnd      (irq_pnd),
     .dma_addr     (dma_addr)
 );
 

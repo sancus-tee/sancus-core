@@ -12,6 +12,7 @@ wire        crypto_start        = dut.execution_unit_0.crypto.start;
 wire        crypto_busy         = dut.execution_unit_0.crypto.busy;
 
 wire [15:0] stack_guard         = dut.execution_unit_0.register_file_0.stack_guard;
+wire        r2_z                = dut.execution_unit_0.register_file_0.r2_z;
 
 wire [15:0] sm_current_id       = dut.execution_unit_0.spm_control_0.spm_current_id;
 wire [15:0] sm_prev_id          = dut.execution_unit_0.spm_control_0.spm_prev_id;

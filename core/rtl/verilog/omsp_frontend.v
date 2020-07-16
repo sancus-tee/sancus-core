@@ -81,6 +81,7 @@ module  omsp_frontend (
     prev_inst_pc,
     irq_num,
     irq_detect,
+    irq_pnd,
 
 // INPUTs
     cpu_en_s,                      // Enable CPU code execution (synchronous)
@@ -144,6 +145,7 @@ output       [15:0] current_inst_pc;
 output       [15:0] prev_inst_pc;
 output        [3:0] irq_num;
 output              irq_detect;
+output              irq_pnd;
 
 // INPUTs
 //=========

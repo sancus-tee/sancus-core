@@ -14,6 +14,7 @@ mkdir  ./log
 # Sancus-specific tests
 stdbuf -oL ../bin/msp430sim sancus/sm_eint                 | tee ./log/sancus-sm_eint.log
 stdbuf -oL ../bin/msp430sim sancus/sm_irq                  | tee ./log/sancus-sm_irq.log
+stdbuf -oL ../bin/msp430sim sancus/crypto_irq              | tee ./log/sancus-sm_crypto_irq.log
 stdbuf -oL ../bin/msp430sim sancus/sm_irq_public_end       | tee ./log/sancus-sm_irq_public_end.log
 stdbuf -oL ../bin/msp430sim sancus/sm_irq_exec_violation   | tee ./log/sancus-sm_irq_exec_violation.log
 stdbuf -oL ../bin/msp430sim sancus/sm_irq_mem_violation    | tee ./log/sancus-sm_irq_mem_violation.log

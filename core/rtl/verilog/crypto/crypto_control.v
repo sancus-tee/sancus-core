@@ -3,6 +3,7 @@
 module crypto_control(
     input  wire                    clk,
     input  wire                    reset,
+    input  wire                    irq_pnd,
     input  wire                    start,
     input  wire                    cmd_key,
     input  wire                    cmd_disable,
@@ -40,7 +41,10 @@ module crypto_control(
     output reg              [15:0] reg_data_out,
     output reg                     sm_key_write,
     output wire [KEY_IDX_SIZE-1:0] sm_key_idx,
-    output reg              [15:0] data_out
+    output reg              [15:0] data_out,
+    output reg                     stat_z,
+    output reg                     stat_wr,
+    output reg                     sm_cancel
 );
 
 parameter KEY_IDX_SIZE = -1;
@@ -125,7 +129,12 @@ localparam [STATE_SIZE-1:0] IDLE              =  0,
 
 reg [STATE_SIZE-1:0] state, next_state;
 
+wire irq_state_ok = state!=IDLE & state!=CHECK_SM & state!=FAIL & state!=SUCCESS;
+
 always @(*)
+    /* fail the currently executing crypto instruction on IRQ arrival; this
+    should also stop the crypto unit in case of an SM memory violation */
+    if (irq_pnd & irq_state_ok) next_state = FAIL; else
     case (state)
         IDLE:              next_state = ~start      ? IDLE              :
                                         cmd_key     ? ENABLE_SM         :
@@ -258,6 +267,9 @@ begin
     sm_key_write = 0;
     sm_request = 0;
     load_key_block = 0;
+    stat_z = 0;
+    stat_wr = 0;
+    sm_cancel = 0;
 
     case (next_state)
         IDLE:
@@ -663,11 +675,17 @@ begin
             set_reg_write = 1;
             dest_reg_val = 16'h8000;
             reg_data = 16'h0;
+            /* set zero flag to distinguish IRQ from verification failure */
+            stat_z = irq_pnd;
+            stat_wr = 1;
+            sm_cancel = cmd_key;
         end
 
         SUCCESS:
         begin
             set_reg_write = 1;
+            stat_z = 0;
+            stat_wr = 1;
             dest_reg_val = cmd_disable ? 16'h0001 : 16'h8000;
             sm_request = `SM_REQ_ID;
             reg_data = return_id   ? sm_data    :

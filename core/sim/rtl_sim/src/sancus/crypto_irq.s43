@@ -1,0 +1,154 @@
+/*===========================================================================*/
+/*                 INTERRUPTIBLE CRYPTO CORE                                 */
+/*---------------------------------------------------------------------------*/
+/* An IRQ while executing a crypto instruction should fail that instruction. */
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+/*===========================================================================*/
+
+.include "pmem_defs.asm"
+.include "sancus_macros.asm"
+
+.set unprotected_stack_base, DMEM_240
+.set bar_stack_base, DMEM_260
+
+.set foo_secret_start, DMEM_262
+.set foo_secret_end, DMEM_268
+.set bar_secret_start, foo_secret_end
+.set bar_secret_end, DMEM_26E
+.set bar_sp_save, (bar_secret_end - 4)
+; IRQ logic stores sp at memory location pointed to by last private address
+.set bar_sp_save_loc, (bar_secret_end - 2)
+
+; (un)wrap one word of associated data and plaintext
+.set ad, DMEM_202
+.set ad_end, (ad+2)
+.set body, ad_end
+.set body_end, (body+2)
+.set cipher, body_end
+.set cipher_end, (cipher+2)
+.set tag, cipher_end
+.set ad_val, 0xc0de
+.set body_val, 0xbeef
+
+.global main
+main:
+    disable_wdt
+    eint
+    clr &bar_sp_save
+    mov #unprotected_stack_base, r1
+    mov #ad_val, &ad
+    mov #body_val, &body
+    clr &cipher
+    clr &tag
+    clr &tag+2,
+    clr &tag+4
+    clr &tag+6
+    mov #0x1000, r4
+    clr r4
+        
+    ; === UNPROTECTED SANCUS_ENABLE ===
+    sancus_enable #1234, #bar_public_start, #bar_public_end, #bar_secret_start, #bar_secret_end
+    ; should continue here after IRQ
+    call #bar_public_start
+
+    ; should not come here
+    jmp fail_test
+    
+    /* ----------------------         END OF TEST        --------------- */
+end_of_test:
+	mov #0x2000, r4
+	br #0xffff
+
+fail_test:
+    clr r4
+    br #0xffff
+
+    /* ----------------------         SANCUS MODULE      --------------- */
+
+bar_public_start:
+    mov #bar_sp_save, &bar_sp_save_loc
+    mov &bar_sp_save, r4
+    bit #0x1, r4
+    jz entry_call
+    
+    ; return from interrupt
+    mov r4, r1
+    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15
+    reti
+
+entry_call:
+    mov #bar_stack_base, r1
+    ; === SANCUS_GET_CALLER_ID ===
+    sancus_get_caller_id
+    tst r15
+    jnz fail_test
+
+    ; === PROTECTED SANCUS_ENABLE ===
+    sancus_enable #1234, #foo_public_start, #foo_public_end, #foo_secret_start, #foo_secret_end
+    ; should continue here after IRQ
+
+    ; === SANCUS_GET_ID ===
+    mov #foo_public_start, r15
+    sancus_get_id
+    cmp #2, r15
+    jne fail_test
+    
+    ; === SANCUS_WRAP ===
+    ; #0 -> use SM private HW key
+    sancus_wrap #0, #ad, #ad_end, #body, #body_end, #cipher, #tag
+
+    clr &body
+    mov #0x1000, r4    
+    ; ensure non-zero cipher/tag values
+    tst &cipher
+    jz fail_test
+    tst &tag
+    jz fail_test
+    
+    ; === SANCUS_UNWRAP ===
+    ; #0 -> use SM private HW key
+    sancus_unwrap #0, #ad, #ad_end, #cipher, #cipher_end, #body, #tag 
+    
+    ; ensure tag verification and unwrap(cipher) == plaintext
+    tst r15
+    jz fail_test
+    cmp #body_val, &body
+    jne fail_test
+    br #end_of_test
+bar_public_end:
+
+foo_public_start:
+    ; should not come here
+    br #fail_test
+foo_public_end:
+
+    /* ----------------------      INTERRUPT ROUTINES    --------------- */
+
+IRQ_VECTOR:
+    tst r15
+    jnz 1f
+    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15    
+    reti
+1:  mov #unprotected_stack_base, r1
+    do_reti r15
+
+    /* ----------------------         INTERRUPT VECTORS  --------------- */
+
+.section .vectors, "a"
+.word end_of_test  ; Interrupt  0 (lowest priority)    <unused>
+.word end_of_test  ; Interrupt  1                      <unused>
+.word end_of_test  ; Interrupt  2                      <unused>
+.word end_of_test  ; Interrupt  3                      <unused>
+.word end_of_test  ; Interrupt  4                      <unused>
+.word end_of_test  ; Interrupt  5                      <unused>
+.word end_of_test  ; Interrupt  6                      <unused>
+.word end_of_test  ; Interrupt  7                      <unused>
+.word end_of_test  ; Interrupt  8                      <unused>
+.word IRQ_VECTOR   ; Interrupt  9                      TEST IRQ
+.word end_of_test  ; Interrupt 10                      Watchdog timer
+.word end_of_test  ; Interrupt 11                      <unused>
+.word end_of_test  ; Interrupt 12                      <unused>
+.word end_of_test  ; Interrupt 13                      SM_IRQ
+.word end_of_test  ; Interrupt 14                      NMI
+.word main         ; Interrupt 15 (highest priority)   RESET

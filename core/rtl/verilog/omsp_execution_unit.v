@@ -95,6 +95,7 @@ module  omsp_execution_unit (
     prev_inst_pc,
     irq_num,
     irq_detect,
+    irq_pnd,
     dma_addr
 );
 
@@ -148,6 +149,7 @@ input        [15:0] current_inst_pc;
 input        [15:0] prev_inst_pc;
 input         [3:0] irq_num;
 input               irq_detect;
+input               irq_pnd;
 input        [15:1] dma_addr;
 
 //=============================================================================
@@ -219,6 +221,9 @@ always @(posedge mclk or posedge puc_rst)
 // restoring its internal call stack and eint)
 assign gie = r2_gie & ~enter_sm;
 
+wire crypto_stat_z;
+wire crypto_stat_wr;
+
 //=============================================================================
 // 2)  REGISTER FILE
 //=============================================================================
@@ -284,6 +289,8 @@ omsp_register_file register_file_0 (
 // INPUTs
     .alu_stat     (alu_stat),     // ALU Status {V,N,Z,C}
     .alu_stat_wr  (alu_stat_wr),  // ALU Status write {V,N,Z,C}
+    .crypto_stat_z (crypto_stat_z),
+    .crypto_stat_wr (crypto_stat_wr),
     .inst_bw      (inst_bw),      // Decoded Inst: byte width
     .inst_dest    (dest_reg),     // Register destination selection
     .inst_src     (inst_src),     // Register source selection
@@ -551,6 +558,9 @@ wire        sm_data_select_type;
 wire [15:0] sm_key_select;
 wire [15:0] crypto_data_out;
 wire        exec_sm;
+wire        sm_cancel;
+wire        do_sm_update = sm_update | sm_cancel;
+wire        do_sm_enable = sm_enable & ~sm_cancel;
 
 // use parameter instead of localparam to work around a bug in XST
 parameter KEY_IDX_SIZE = $clog2(`SECURITY / 16 + 1);
@@ -569,8 +579,9 @@ omsp_spm_control #(
   .eu_mab                 (mab),
   .eu_mb_en               (mb_en),
   .eu_mb_wr               (mb_wr),
-  .update_spm             (sm_update),
-  .enable_spm             (sm_enable),
+  .update_spm             (do_sm_update),
+  .enable_spm             (do_sm_enable),
+  .cancel_spm             (sm_cancel),
   .disable_spm            (sm_disable),
   .verify_spm             (sm_verify),
   .r10                    (r10),
@@ -638,6 +649,7 @@ crypto_control #(
   // inputs
   .clk                    (mclk),
   .reset                  (puc_rst),
+  .irq_pnd                (irq_pnd),
   .start                  (crypto_start),
   .cmd_key                (sm_enable),
   .cmd_disable            (sm_disable),
@@ -675,7 +687,10 @@ crypto_control #(
   .reg_data_out           (crypto_reg_data_out),
   .sm_key_write           (sm_write_key),
   .sm_key_idx             (sm_key_idx),
-  .data_out               (crypto_data_out)
+  .data_out               (crypto_data_out),
+  .stat_z                 (crypto_stat_z),
+  .stat_wr                (crypto_stat_wr),
+  .sm_cancel              (sm_cancel)
 );
 
 endmodule // omsp_execution_unit

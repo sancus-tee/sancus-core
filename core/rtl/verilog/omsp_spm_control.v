@@ -16,6 +16,7 @@ module omsp_spm_control(
   input  wire                    update_spm,
   input  wire                    enable_spm,
   input  wire                    disable_spm,
+  input  wire                    cancel_spm,
   input  wire                    verify_spm,
   input  wire             [15:0] r10,
   input  wire             [15:0] r12,
@@ -80,6 +81,9 @@ always @(posedge mclk or posedge puc_rst)
     next_id <= 16'h1;
   else if (update_spm && enable_spm)
     next_id <= next_id + 16'h1;
+  else if (update_spm && cancel_spm)
+    /* the ID was never really assigned, so it's safe to reuse it */
+    next_id <= next_id - 16'h1;
 
 assign violation = |spms_violation || (next_id == 16'hfff0);
 assign dma_violation = |spms_dma_violation;
@@ -159,6 +163,7 @@ omsp_spm #(
   .eu_mb_wr             (eu_mb_wr),
   .update_spm           (spms_update),
   .enable_spm           (enable_spm),
+  .cancel_spm           (cancel_spm),
   .disable_spm          (disable_spm),
   .check_new_spm        (spms_check),
   .verify_spm           (verify_spm),

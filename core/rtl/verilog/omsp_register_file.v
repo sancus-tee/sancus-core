@@ -71,6 +71,8 @@ module  omsp_register_file (
 // INPUTs
     alu_stat,                     // ALU Status {V,N,Z,C}
     alu_stat_wr,                  // ALU Status write {V,N,Z,C}
+    crypto_stat_z,
+    crypto_stat_wr,
     inst_bw,                      // Decoded Inst: byte width
     inst_dest,                    // Register destination selection
     inst_src,                     // Register source selection
@@ -117,6 +119,8 @@ output              sp_overflow;
 //=========
 input         [3:0] alu_stat;     // ALU Status {V,N,Z,C}
 input         [3:0] alu_stat_wr;  // ALU Status write {V,N,Z,C}
+input               crypto_stat_z;
+input               crypto_stat_wr;
 input               inst_bw;      // Decoded Inst: byte width
 input        [15:0] inst_dest;    // Register destination selection
 input        [15:0] inst_src;     // Register source selection
@@ -225,7 +229,8 @@ wire        r2_wr  = (inst_dest[2] & reg_dest_wr) | reg_sr_wr;
 `ifdef CLOCK_GATING                                                              //      -- WITH CLOCK GATING --
 wire        r2_c   = alu_stat_wr[0] ? alu_stat[0]          : reg_dest_val_in[0]; // C
 
-wire        r2_z   = alu_stat_wr[1] ? alu_stat[1]          : reg_dest_val_in[1]; // Z
+wire        r2_z   = alu_stat_wr[1] ? alu_stat[1]          :
+                     crypto_stat_wr ? crypto_stat_z        : reg_dest_val_in[1]; // Z
 
 wire        r2_n   = alu_stat_wr[2] ? alu_stat[2]          : reg_dest_val_in[2]; // N
 
@@ -233,7 +238,7 @@ wire  [7:3] r2_nxt = r2_wr          ? reg_dest_val_in[7:3] : r2[7:3];
 
 wire        r2_v   = alu_stat_wr[3] ? alu_stat[3]          : reg_dest_val_in[8]; // V
 
-wire        r2_en  = |alu_stat_wr | r2_wr | reg_sr_clr;
+wire        r2_en  = |alu_stat_wr | r2_wr | reg_sr_clr | crypto_stat_wr;
 wire        mclk_r2;
 omsp_clock_gate clock_gate_r2 (.gclk(mclk_r2),
                                .clk (mclk), .enable(r2_en), .scan_enable(scan_enable));
@@ -243,6 +248,7 @@ wire        r2_c   = alu_stat_wr[0] ? alu_stat[0]          :
                      r2_wr          ? reg_dest_val_in[0]   : r2[0];              // C
 
 wire        r2_z   = alu_stat_wr[1] ? alu_stat[1]          :
+                     crypto_stat_wr ? crypto_stat_z        :
                      r2_wr          ? reg_dest_val_in[1]   : r2[1];              // Z
 
 wire        r2_n   = alu_stat_wr[2] ? alu_stat[2]          :

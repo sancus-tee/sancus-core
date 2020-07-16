@@ -45,7 +45,7 @@ foo_gadget_wr:
     mov r4, &foo_private_data
 	br #end_of_test
 foo_gadget_wrap:
-    sancus_wrap
+    .word 0x1384
     br #end_of_test
 foo_gadget_disable:
     sancus_disable #end_of_test
