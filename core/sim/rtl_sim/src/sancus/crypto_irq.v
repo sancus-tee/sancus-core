@@ -100,6 +100,11 @@ initial
       $display(" ===============================================");
       $display("|                 START SIMULATION              |");
       $display(" ===============================================");
+
+`ifndef UNPROTECTED_IRQ_REG_PUSH
+`define UNPROTECTED_IRQ_REG_PUSH
+`endif
+
       repeat(5) @(posedge mclk);
       stimulus_done = 0;
       tsc_val1 <= 0;

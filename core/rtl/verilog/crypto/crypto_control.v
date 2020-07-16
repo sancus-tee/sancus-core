@@ -865,6 +865,8 @@ always @(posedge clk)
         $display("Vendor key: %h", key);
     else if (state == SUCCESS & cmd_key)
         $display("SM key: %h", key);
+    else if (stat_wr && stat_z)
+        $display("\tCrypto IRQ @0x%h", pc);
 
 // module instantiations *******************************************************
 wire        wrap_busy;

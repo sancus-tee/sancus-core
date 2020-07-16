@@ -145,9 +145,10 @@ begin
   begin
     if (mem_violation)
     begin
-      $display("mem violation @0x%h, from ", eu_mab);
-      if (handling_irq) $display("IRQ");
-      else              $display("0x%h", pc);
+      if (handling_irq) 
+        $display("mem violation @0x%h from IRQ", eu_mab);
+      else              
+        $display("mem violation @0x%h from 0x%h", eu_mab, pc);
     end
     else if (exec_violation)
       $display("exec violation %h -> %h", prev_pc, pc);
