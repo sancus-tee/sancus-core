@@ -23,8 +23,8 @@ env:
 jobs: # Add jobs that only compile but do not run the tests.
   include:
     - name: "Only compile, bionic"
-      script: cmake --build .
+      script: cd build && cmake --build .
     - name: "Only compile, focal"
       dist: focal
       os: linux
-      script: cmake --build .
+      script: cd build && cmake --build .
