@@ -24,4 +24,4 @@ jobs:
   include:
     - dist: focal
       os: linux
-      env: TARGET=run_all_sancus
+      script: ls
