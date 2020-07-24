@@ -8,9 +8,9 @@ module file_io (
 `ifdef VERILATOR
     input  wire [7:0]  fio_din,
     input  wire        fio_dready,
-    output wire [7:0]  fio_dout,
-    output wire        fio_dnxt,
-    output wire        fio_dout_rdy,
+    output reg [7:0]   fio_dout,
+    output reg         fio_dnxt,
+    output reg         fio_dout_rdy,
 `endif
     input  wire        puc_rst
 );
