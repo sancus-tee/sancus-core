@@ -10,15 +10,15 @@
 .include "sancus_macros.asm"
 
 .set unprotected_stack_base, DMEM_20F
-.set stack_base, DMEM_260
+.set stack_base, DMEM_240
 .set reg_offset, 0x1234
 .set clobber_val, 0xf00d
 .set tst_val, 0xbabe
 .set tst_addr, DMEM_200
-.set sm_secret_start, DMEM_262
+.set sm_secret_start, DMEM_230
 .set sm_secret_end, DMEM_26E
-.set sm_sp_save_loc,(sm_secret_end - 2)
-.set sm_sp_save, (sm_secret_end - 4)
+.set sm_ssa_loc,(sm_secret_end - 2)
+.set sm_ssa, (sm_secret_end - 4)
 .set do_exit, sm_secret_end ; end boundary is exclusive
 
 .global main
@@ -43,27 +43,31 @@ cont_test:
 
     /* ----------------------         END OF TEST        --------------- */
 end_of_test:
-	mov #0x2000, r15
-	clr r15
-	br #0xffff
+    mov #0x2000, r15
+    clr r15
+    br #0xffff
 
 
     /* ----------------------         SANCUS MODULE      --------------- */
 sm_public_start:
-    mov #sm_sp_save, &sm_sp_save_loc
+    mov #sm_ssa, &sm_ssa_loc
     cmp #0xffff, r4
     jne init_regs
 
     ; restore interrupted execution context
-    mov &sm_sp_save, r1
-    clr &sm_sp_save
-    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15    
-    reti
+    mov #sm_ssa-2, r15
+    mov #sm_ssa-4, r14
+
+    mov #sm_ssa-30, r1
+    repeat pop, r2, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15    
+    mov &sm_ssa, r1
+    clr &sm_ssa
+    br &sm_ssa-2
 
 init_regs:
     ; initialize registers with known values
-    clr &sm_sp_save
-   	mov #stack_base, r1
+    clr &sm_ssa
+    mov #stack_base, r1
     mov #reg_offset+0x4, r4
     mov #reg_offset+0x5, r5
     mov #reg_offset+0x6, r6

@@ -961,7 +961,7 @@ always @(*)
       E_IDLE     : e_state_nxt =  e_first_state;
 
       /* IRQ_0-3: push SR/PC */
-      E_IRQ_PRE  : e_state_nxt =  E_IRQ_0;
+      E_IRQ_PRE  : e_state_nxt =  exec_sm           ? E_IRQ_SP_RD : E_IRQ_0;
       E_IRQ_0    : e_state_nxt =  E_IRQ_1;
       E_IRQ_1    : e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_2;
       E_IRQ_2    : e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_3;
@@ -973,14 +973,14 @@ always @(*)
 
       /* IRQ_EXT: push GP registers */
       E_IRQ_EXT_0: e_state_nxt =  sm_irq            ? E_IRQ_4     :
-                                  inst_src[1]       ? E_IRQ_SP_RD : E_IRQ_EXT_1;
+                                  inst_src[1]       ? E_IRQ_4     : E_IRQ_EXT_1;
       E_IRQ_EXT_1: e_state_nxt =  sm_irq |
                                   (inst_src[1] &
                                   ~exec_sm)         ? E_IRQ_4     : E_IRQ_EXT_0;
 
       /* IRQ_SP: store SP in SM secret data */
       E_IRQ_SP_RD: e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_SP_WR;
-      E_IRQ_SP_WR: e_state_nxt =  E_IRQ_4;
+      E_IRQ_SP_WR: e_state_nxt =  E_IRQ_0;
 
       /* IRQ_4: vector to ISR */
       E_IRQ_4    : e_state_nxt =  E_EXEC;

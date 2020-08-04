@@ -7,10 +7,9 @@
 /*===========================================================================*/
 //`define LONG_TIMEOUT
 
-`define STACK_BASE              (`PER_SIZE + 'h60)
-`define STACK_IRQ               (`STACK_BASE - 16'd28)
+`define STACK_BASE              (16'h240) //`PER_SIZE + 'h60)
+`define STACK_IRQ               (`STACK_BASE) //- 16'd28)
 `define STACK_IRQ_INTERRUPTED   (`STACK_IRQ | 16'h1)
-`define STACK_RETI              (`STACK_BASE - 16'd4)
 
 `define SM_SP_ADDR              (mem26C)
 `define SM_SP_SAVE              (mem26A)
@@ -30,9 +29,9 @@ initial
       $display("|                 START SIMULATION              |");
       $display(" ===============================================");
 
-`ifndef UNPROTECTED_IRQ_REG_PUSH
-`define UNPROTECTED_IRQ_REG_PUSH
-`endif
+// TODO with the SSA frame we cannot support this option anymore and should
+// get rid of all ifdefs in the code base
+`undef UNPROTECTED_IRQ_REG_PUSH
 
       repeat(5) @(posedge mclk);
       stimulus_done = 0;

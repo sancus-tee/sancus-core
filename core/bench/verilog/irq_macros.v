@@ -59,20 +59,20 @@
    
 `define CHK_IRQ_STACK_R15( str, pc, sr, r15Val ) \
       /*$display({"checking stack memory ", str});*/ \
-      if (mem25E !==pc)        tb_error({"====== STACK MEMORY PC (", str, ") ====="});  \
-      if (mem25C !==sr)        tb_error({"====== STACK MEMORY SR (", str, ") ====="});  \
-      if (mem25A !==r15Val)    tb_error({"====== STACK MEMORY r15 (", str, ") ====="}); \
-      if (mem258 !==`R14_VAL)  tb_error({"====== STACK MEMORY r14 (", str, ") ====="}); \
-      if (mem256 !==`R13_VAL)  tb_error({"====== STACK MEMORY r13 (", str, ") ====="}); \
-      if (mem254 !==`R12_VAL)  tb_error({"====== STACK MEMORY r12 (", str, ") ====="}); \
-      if (mem252 !==`R11_VAL)  tb_error({"====== STACK MEMORY r11 (", str, ") ====="}); \
-      if (mem250 !==`R10_VAL)  tb_error({"====== STACK MEMORY r10 (", str, ") ====="}); \
-      if (mem24E !==`R9_VAL)   tb_error({"====== STACK MEMORY r9 (", str, ") ====="});  \
-      if (mem24C !==`R8_VAL)   tb_error({"====== STACK MEMORY r8 (", str, ") ====="});  \
-      if (mem24A !==`R7_VAL)   tb_error({"====== STACK MEMORY r7 (", str, ") ====="});  \
-      if (mem248 !==`R6_VAL)   tb_error({"====== STACK MEMORY r6 (", str, ") ====="});  \
-      if (mem246 !==`R5_VAL)   tb_error({"====== STACK MEMORY r5 (", str, ") ====="});  \
-      if (mem244 !==`R4_VAL)   tb_error({"====== STACK MEMORY r4 (", str, ") ====="});
+      if (mem268 !==pc)        tb_error({"====== STACK MEMORY PC (", str, ") ====="});  \
+      if (mem266 !==sr)        tb_error({"====== STACK MEMORY SR (", str, ") ====="});  \
+      if (mem264 !==r15Val)    tb_error({"====== STACK MEMORY r15 (", str, ") ====="}); \
+      if (mem262 !==`R14_VAL)  tb_error({"====== STACK MEMORY r14 (", str, ") ====="}); \
+      if (mem260 !==`R13_VAL)  tb_error({"====== STACK MEMORY r13 (", str, ") ====="}); \
+      if (mem25E !==`R12_VAL)  tb_error({"====== STACK MEMORY r12 (", str, ") ====="}); \
+      if (mem25C !==`R11_VAL)  tb_error({"====== STACK MEMORY r11 (", str, ") ====="}); \
+      if (mem25A !==`R10_VAL)  tb_error({"====== STACK MEMORY r10 (", str, ") ====="}); \
+      if (mem258 !==`R9_VAL)   tb_error({"====== STACK MEMORY r9 (", str, ") ====="});  \
+      if (mem256 !==`R8_VAL)   tb_error({"====== STACK MEMORY r8 (", str, ") ====="});  \
+      if (mem254 !==`R7_VAL)   tb_error({"====== STACK MEMORY r7 (", str, ") ====="});  \
+      if (mem252 !==`R6_VAL)   tb_error({"====== STACK MEMORY r6 (", str, ") ====="});  \
+      if (mem250 !==`R5_VAL)   tb_error({"====== STACK MEMORY r5 (", str, ") ====="});  \
+      if (mem24E !==`R4_VAL)   tb_error({"====== STACK MEMORY r4 (", str, ") ====="});
 
 `define CHK_IRQ_STACK( str, pc, sr ) \
     `CHK_IRQ_STACK_R15( str, pc, sr, `R15_VAL )

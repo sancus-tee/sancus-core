@@ -236,10 +236,12 @@ wire reg_dest_wr  = ((e_state==`E_EXEC) & (
 wire irq_sp_upd   = ~inst_irq_rst & ((e_state==`E_IRQ_0) | (e_state==`E_IRQ_2) |
                       ((e_state==`E_IRQ_EXT_0) & ~inst_src[1]));
 
-wire reg_sp_wr    =  irq_sp_upd |
+wire reg_sp_wr    =  irq_sp_upd | (e_state==`E_IRQ_SP_WR) |
                      ((e_state==`E_DST_RD) & ((inst_so[`PUSH] | inst_so[`CALL]) &  ~inst_as[`IDX] & ~((inst_as[`INDIR] | inst_as[`INDIR_I]) & inst_src[1]))) |
                      ((e_state==`E_SRC_AD) & ((inst_so[`PUSH] | inst_so[`CALL]) &  inst_as[`IDX])) |
                      ((e_state==`E_SRC_RD) & ((inst_so[`PUSH] | inst_so[`CALL]) &  ((inst_as[`INDIR] | inst_as[`INDIR_I]) & inst_src[1])));
+
+wire [15:0] reg_sp_val = (e_state==`E_IRQ_SP_WR) ? mdb_in : alu_out_add;
 
 wire irq_reg_clr  = irq_exec & exec_sm;
 
@@ -300,7 +302,7 @@ omsp_register_file register_file_0 (
     .reg_dest_val (reg_dest_val), // Selected register destination value
     .reg_dest_wr  (reg_dest_wr),  // Write selected register destination
     .reg_pc_call  (reg_pc_call),  // Trigger PC update for a CALL instruction
-    .reg_sp_val   (alu_out_add),  // Stack Pointer next value
+    .reg_sp_val   (reg_sp_val),  // Stack Pointer next value
     .reg_sp_wr    (reg_sp_wr),    // Stack Pointer write
     .reg_sr_clr   (reg_sr_clr),   // Status register clear for interrupts
     .reg_sr_wr    (reg_sr_wr),    // Status Register update for RETI instruction
@@ -492,6 +494,7 @@ wire        mclk_mdb_out_nxt = mclk;
 always @(posedge mclk_mdb_out_nxt or posedge puc_rst)
   if (puc_rst)                                        mdb_out_nxt <= 16'h0000;
   else if (e_state==`E_DST_RD)                        mdb_out_nxt <= pc_nxt;
+  else if (e_state==`E_IRQ_SP_WR)                     mdb_out_nxt <= r1;
 `ifdef CLOCK_GATING
   else                                                mdb_out_nxt <= alu_out;
 `else
