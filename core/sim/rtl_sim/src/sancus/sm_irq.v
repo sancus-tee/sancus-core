@@ -12,7 +12,7 @@
 `define STACK_IRQ_INTERRUPTED   (`STACK_IRQ | 16'h1)
 
 `define SM_SP_ADDR              (mem26C)
-`define SM_SP_SAVE              (mem26A)
+`define SM_SP_SAVE              (mem268)
 `define SM_SP_SAVE_LOC          (16'h26A)
 `define TST_MEM                 (mem200)
 `define TST_VAL                 (16'hbabe)
@@ -32,7 +32,7 @@ initial
 // TODO with the SSA frame we cannot support this option anymore and should
 // get rid of all ifdefs in the code base
 `undef UNPROTECTED_IRQ_REG_PUSH
-
+`define LONG_TIMEOUT
       repeat(5) @(posedge mclk);
       stimulus_done = 0;
       saved_pc <= 0;
@@ -65,7 +65,7 @@ initial
       repeat(2) @(posedge mclk);
       $display("IRQ logic done: %d cycles", tsc_val2 - tsc_val1);
       if (r2!==`IRQ_UNPR_STATUS)    tb_error("====== UNPROTECTED IRQ SR ======");
-      `CHK_IRQ_STACK("after unprotected irq", saved_pc, saved_sr)
+      `CHK_IRQ_STACK_UNPROTECTED("after unprotected irq", saved_pc, saved_sr)
       if (`SM_SP_SAVE!==16'h0)      tb_error("====== UNPROTECTED IRQ SP WRITE ======");
       @(`TST_MEM);
       if(`TST_MEM!==`TST_VAL)       tb_error("====== ISR INSTR TWO EXT WORDS ======");

@@ -56,10 +56,11 @@
 
 `define CHK_IRQ_REGS( str, spVal, retiAddr, irqStatus) \
     `CHK_IRQ_REGS_SP( str, spVal, retiAddr, irqStatus, 1'b1 )
-   
+
+// protected interrupts are written to SSA starting at sm_secret_end-4
 `define CHK_IRQ_STACK_R15( str, pc, sr, r15Val ) \
       /*$display({"checking stack memory ", str});*/ \
-      if (mem268 !==pc)        tb_error({"====== STACK MEMORY PC (", str, ") ====="});  \
+      if (mem26A !==pc)        tb_error({"====== STACK MEMORY PC (", str, ") ====="});  \
       if (mem266 !==sr)        tb_error({"====== STACK MEMORY SR (", str, ") ====="});  \
       if (mem264 !==r15Val)    tb_error({"====== STACK MEMORY r15 (", str, ") ====="}); \
       if (mem262 !==`R14_VAL)  tb_error({"====== STACK MEMORY r14 (", str, ") ====="}); \
@@ -76,3 +77,9 @@
 
 `define CHK_IRQ_STACK( str, pc, sr ) \
     `CHK_IRQ_STACK_R15( str, pc, sr, `R15_VAL )
+
+// Unprotected interrupts are written to stack starting at stack_base
+`define CHK_IRQ_STACK_UNPROTECTED( str, pc, sr ) \
+      /*$display({"checking stack memory ", str});*/ \
+      if (mem23E !==pc)        tb_error({"====== STACK MEMORY PC (", str, ") ====="});  \
+      if (mem23C !==sr)        tb_error({"====== STACK MEMORY SR (", str, ") ====="});

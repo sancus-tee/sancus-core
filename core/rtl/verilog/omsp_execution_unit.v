@@ -494,7 +494,7 @@ wire        mclk_mdb_out_nxt = mclk;
 always @(posedge mclk_mdb_out_nxt or posedge puc_rst)
   if (puc_rst)                                        mdb_out_nxt <= 16'h0000;
   else if (e_state==`E_DST_RD)                        mdb_out_nxt <= pc_nxt;
-  else if (e_state==`E_IRQ_SP_WR)                     mdb_out_nxt <= r1;
+  else if (e_state==`E_IRQ_SP_WR)                     mdb_out_nxt <= r1 | 16'h0001;
 `ifdef CLOCK_GATING
   else                                                mdb_out_nxt <= alu_out;
 `else

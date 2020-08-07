@@ -15,7 +15,7 @@
 .set clobber_val, 0xf00d
 .set tst_val, 0xbabe
 .set tst_addr, DMEM_200
-.set sm_secret_start, DMEM_230
+.set sm_secret_start, DMEM_242
 .set sm_secret_end, DMEM_26E
 .set sm_ssa_loc,(sm_secret_end - 2)
 .set sm_ssa, (sm_secret_end - 4)
@@ -55,14 +55,11 @@ sm_public_start:
     jne init_regs
 
     ; restore interrupted execution context
-    mov #sm_ssa-2, r15
-    mov #sm_ssa-4, r14
-
-    mov #sm_ssa-30, r1
-    repeat pop, r2, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15    
-    mov &sm_ssa, r1
-    clr &sm_ssa
-    br &sm_ssa-2
+    mov #sm_ssa-28, r1
+    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r2
+    mov &sm_ssa-2, r1
+    ;clr &sm_ssa-2
+    br &sm_ssa
 
 init_regs:
     ; initialize registers with known values
@@ -96,17 +93,19 @@ IRQ_VECTOR:
     ; dummy instruction with two extension words for testing purposes
     mov #tst_val, &tst_addr
     clr &tst_addr
-    repeat_to mov, #clobber_val, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14
 
     tst r1  ; SM interrupted ?
     jnz 1f
+    ; Only clobber if we interrupted an SM as non-SMs have their registers not pushed automatically
+    repeat_to mov, #clobber_val, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14
+    
     mov #0xffff, r4
     mov #2, &do_exit
     mov #unprotected_stack_base, r1
     do_reti r15
 
 1:  mov #1, &do_exit
-    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15    
+    ; repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15    
     reti
 
     /* ----------------------         INTERRUPT VECTORS  --------------- */
