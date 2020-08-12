@@ -726,8 +726,9 @@
 `define E_IRQ_PRE   5'h10
 `define E_IRQ_EXT_0 5'h11
 `define E_IRQ_EXT_1 5'h12
-`define E_IRQ_SSA_RD 5'h13
-`define E_IRQ_SP_WR 5'h14
+`define E_IRQ_SSA_RD_1 5'h13
+`define E_IRQ_SSA_RD_2 5'h14
+`define E_IRQ_SP_WR    5'h15
 
 // ALU control signals
 `define ALU_SRC_INV   0

@@ -329,7 +329,7 @@ omsp_register_file register_file_0 (
 
 wire src_reg_pc_sel     = (e_state==`E_IRQ_PRE);
 
-wire src_sm_req_sel     = irq_prepare_sp_wr   | (e_state==`E_IRQ_SSA_RD) |
+wire src_sm_req_sel     = irq_prepare_sp_wr   | (e_state==`E_IRQ_SSA_RD_1) |
                           (e_state==`E_IRQ_4) | (irq_exec & sm_data_select_valid);
 
 wire src_reg_src_sel    =  (e_state==`E_IRQ_1)                    |
@@ -388,7 +388,7 @@ wire dst_mdb_in_bw_sel  = ((e_state==`E_DST_WR) &   inst_so[`RETI]) |
 
 wire dst_fffe_sel       = (e_state==`E_IRQ_PRE)                         |
                           irq_sp_upd                                    |
-                          irq_prepare_sp_wr | (e_state==`E_IRQ_SSA_RD)   |
+                          irq_prepare_sp_wr | (e_state==`E_IRQ_SSA_RD_1)   |
                           ((e_state==`E_DST_RD) & (inst_so[`PUSH] | inst_so[`CALL]) & ~inst_so[`RETI]) |
                           ((e_state==`E_SRC_AD) & (inst_so[`PUSH] | inst_so[`CALL]) & inst_as[`IDX]) |
                           ((e_state==`E_SRC_RD) & (inst_so[`PUSH] | inst_so[`CALL]) & (inst_as[`INDIR] | inst_as[`INDIR_I]) & inst_src[1]);
@@ -443,7 +443,7 @@ wire        irq_sp_mb_wr    = ((e_state==`E_IRQ_1)    |
 
 wire        irq_mb_wr       = irq_sp_mb_wr | (e_state==`E_IRQ_SP_WR);
 
-wire        irq_mb_rd       = (e_state==`E_IRQ_SSA_RD);
+wire        irq_mb_rd       = (e_state==`E_IRQ_SSA_RD_1);
 
 wire        irq_mdb_out_bis = ((e_state==`E_IRQ_EXT_1) & inst_src[1])? 1'b1 : 1'b0;
 
@@ -637,7 +637,7 @@ wire sm_busy = crypto_busy;
 wire  [2:0] crypto_sm_request;
 wire [15:0] crypto_sm_data_select;
 wire        crypto_sm_data_select_type;
-wire        irq_secret_end_select   = (e_state==`E_IRQ_EXT_0) | (e_state==`E_IRQ_SSA_RD);
+wire        irq_secret_end_select   = (e_state==`E_IRQ_EXT_0) | (e_state==`E_IRQ_SSA_RD_1);
 wire        irq_reti_addr_select    = (e_state==`E_IRQ_4) | irq_exec;
 assign sm_request          = irq_secret_end_select  ? `SM_REQ_SECEND     :
                              irq_reti_addr_select   ? `SM_REQ_PUBSTART   : crypto_sm_request;
