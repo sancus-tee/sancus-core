@@ -75,6 +75,7 @@ inline bool check_file_exists (const char* filename) {
 
     bool eval(bool clockedge)
     {
+        // 1) Write to memory
         bool updated = false;
         if (! *_chip_enable            // chip enable is low active
             && *_write_enable != 0b11  // write enable is low active
@@ -83,8 +84,11 @@ inline bool check_file_exists (const char* filename) {
             write(*_addr, *_write_enable, *_din);
         }
         
+        // 2) Read from memory as defined in dmem_addr of last cycle
         if(clockedge) *_dout = read(prev_address, clockedge);
-        prev_address = *_addr;
+        
+        // 3) Update address to read from next time if chip is enabled (otherwise keep reading the old address)
+        if (! *_chip_enable) prev_address = *_addr;
 
         // For very low-level debugging, the following line might help. But otherwise, 
         // logging at other times than the rising edge is probably not useful.
