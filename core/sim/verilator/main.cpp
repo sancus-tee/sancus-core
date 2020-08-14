@@ -69,7 +69,7 @@ inline bool check_file_exists (const char* filename) {
                 Word word = b0 | (b1 << 8) ; // little endian
                 memory_.push_back(word);
             }
-            LOG_F(INFO,"Read program memory of %lu bytes.\n", memoryBytes.size());
+            LOG_F(INFO,"Read program memory of %lu bytes.", memoryBytes.size());
         }
     }
 
@@ -86,7 +86,9 @@ inline bool check_file_exists (const char* filename) {
         if(clockedge) *_dout = read(prev_address, clockedge);
         prev_address = *_addr;
 
-        LOG_F(1,"[Memory] %s Regs are: cen: %x wen: %x, addr: %2x, in: %2x, out:%2x\n",_name.c_str(), *_chip_enable, *_write_enable, *_addr, *_din, *_dout);
+        // For very low-level debugging, the following line might help. But otherwise, 
+        // logging at other times than the rising edge is probably not useful.
+        // LOG_F(MAX,"[Memory] %s Regs are: cen: %x wen: %x, addr: %2x, in: %2x, out:%2x",_name.c_str(), *_chip_enable, *_write_enable, *_addr, *_din, *_dout);
 
         return true;
     }
@@ -115,7 +117,7 @@ inline bool check_file_exists (const char* filename) {
     {
         ensureEnoughMemory(address);
         Word memoryValue = memory_[(prev_address)];
-        LOG_F(1,"[Memory] %s [Read] %x : %x\n", _name.c_str(), prev_address, memoryValue);
+        LOG_F(MAX,"[Memory] %s [Read] %x : %x", _name.c_str(), prev_address, memoryValue);
 
         return memoryValue;
     }
@@ -135,7 +137,7 @@ inline bool check_file_exists (const char* filename) {
         memoryValue &= ~bitMask;
         memoryValue |= value & bitMask;
 
-        LOG_F(1,"[Memory] %s [Write] %x : %x\n", _name.c_str(), address, memoryValue);
+        LOG_F(MAX,"[Memory] %s [Write] %x : %x", _name.c_str(), address, memoryValue);
     }
 
     void ensureEnoughMemory(Address address)
@@ -163,7 +165,7 @@ inline bool check_file_exists (const char* filename) {
 
 bool tracer_enabled = false;
 bool crypto_noshow  = false;
-int  crypto_cycles = 0;
+uint32_t  crypto_cycles = 0;
 auto tracer = std::unique_ptr<VerilatedVcdC>{new VerilatedVcdC};
 // auto tracer = std::unique_ptr<VerilatedFstC>{new VerilatedFstC};
 // VerilatedFstC* tfp = new VerilatedFstC;
@@ -215,7 +217,7 @@ void eval_fileio(unique_ptr<Vtb_openMSP430> &top)
 int exit_program(int result){
     printf("\n\n\n");
     LOG_F(INFO, "======================== Simulation ended ========================");
-    LOG_F(INFO, "Total/crypto cycles simulated: %lu/%lu.", mainTime / CLOCK_PERIOD, crypto_cycles);
+    LOG_F(INFO, "Total/crypto cycles simulated: %lu/%u.", mainTime / CLOCK_PERIOD, crypto_cycles);
     switch(result){
         case status_success:
             LOG_F(INFO,     "================ Simulation succeeded gracefully =================");
@@ -514,10 +516,10 @@ int main(int argc, char** argv)
         mainTime++;
     }
 
-    LOG_F(1, "Program memory at exit was..");
-    LOG_F(1, program_memory.print_memory().c_str());
-    LOG_F(1, "Data memory at exit was..");
-    LOG_F(1, data_memory.print_memory().c_str());
+    LOG_F(MAX, "Program memory at exit was..");
+    LOG_F(MAX, program_memory.print_memory().c_str());
+    LOG_F(MAX, "Data memory at exit was..");
+    LOG_F(MAX, data_memory.print_memory().c_str());
     
     return exit_program(result);
 }
