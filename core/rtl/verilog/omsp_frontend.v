@@ -966,10 +966,7 @@ always @(*)
       E_IRQ_0    : e_state_nxt =  E_IRQ_1;
       E_IRQ_1    : e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_2;
       E_IRQ_2    : e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_3;
-      E_IRQ_3    : e_state_nxt =  (sm_irq | inst_irq_rst)
-      `ifndef UNPROTECTED_IRQ_REG_PUSH
-                                  | ~exec_sm
-      `endif
+      E_IRQ_3    : e_state_nxt =  sm_irq | inst_irq_rst | ~exec_sm
                                                     ? E_IRQ_4     : E_IRQ_EXT_0;
 
       /* IRQ_EXT: push GP registers */

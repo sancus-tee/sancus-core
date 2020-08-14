@@ -659,10 +659,6 @@
 `define SM_SELECT_BY_ADDR 1'b0
 `define SM_SELECT_BY_ID   1'b1
 
-// enable/disable general purpose register pushing when interrupting the
-// unprotected domain
-//`define UNPROTECTED_IRQ_REG_PUSH
-
 // Conditional jump
 `define JNE    0
 `define JEQ    1
