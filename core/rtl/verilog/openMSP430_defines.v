@@ -272,6 +272,20 @@
 `define PER_CUSTOM_AWIDTH        8
 `define PER_CUSTOM_SIZE        512
 
+
+//-------------------------------------------------------
+// Sancus modifications to Status register
+//-------------------------------------------------------
+// For e.g. availability guarantees, modifications of
+// certain flags in R2 may be restricted to the first
+// loaded SM (e.g. a protected Scheduler).
+// These defines allow to restrict certain settings to the
+// first SM with ID 1
+`define SANCUS_RESTRICT_CPUOFF
+`define SANCUS_RESTRICT_SCG0
+`define SANCUS_RESTRICT_GIE
+
+
 //-------------------------------------------------------
 // ASIC version
 //-------------------------------------------------------

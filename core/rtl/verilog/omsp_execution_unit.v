@@ -243,8 +243,6 @@ wire reg_sp_wr    =  irq_sp_upd | (e_state==`E_IRQ_SP_WR) |
 
 wire [15:0] reg_sp_val = (e_state==`E_IRQ_SP_WR) ? mdb_in : alu_out_add;
 
-wire irq_reg_clr  = irq_exec & exec_sm;
-
 wire reg_sr_wr    =  (e_state==`E_DST_RD) & inst_so[`RETI];
 
 // GIE bit should be cleared one cycle before E_EXEC cycle of IRQ logic
@@ -308,10 +306,11 @@ omsp_register_file register_file_0 (
     .reg_sr_wr    (reg_sr_wr),    // Status Register update for RETI instruction
     .reg_incr     (reg_incr),     // Increment source register
     .scan_enable  (scan_enable),  // Scan enable (active during scan shifting)
-    //TODO this should be a bitmask to support not clearing registers on syscall/unprotected irq
-    .irq_reg_clr  (irq_reg_clr),
+    .irq_exec     (irq_exec),
+    .exec_sm      (exec_sm),
     .reg_sg_wr    (sm_stack_guard),
-    .handling_irq (handling_irq)
+    .handling_irq (handling_irq),
+    .sm_current_id (sm_current_id)
 );
 
 
