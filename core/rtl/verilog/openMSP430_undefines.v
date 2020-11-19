@@ -188,6 +188,18 @@
 `undef NMI
 `endif
 
+`ifdef SANCUS_RESTRICT_CPUOFF
+`undef SANCUS_RESTRICT_CPUOFF
+`endif
+
+`ifdef SANCUS_RESTRICT_SCG0
+`undef SANCUS_RESTRICT_SCG0
+`endif
+
+`ifdef SANCUS_RESTRICT_GIE
+`undef SANCUS_RESTRICT_GIE
+`endif
+
 //----------------------------------------------------------------------------
 // EXPERT SYSTEM CONFIGURATION ( !!!! EXPERTS ONLY !!!! )
 //----------------------------------------------------------------------------

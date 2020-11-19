@@ -253,7 +253,8 @@ wire        r2_z   = alu_stat_wr[1] ? alu_stat[1]          :
 
 wire        r2_n   = alu_stat_wr[2] ? alu_stat[2]          : reg_dest_val_in[2]; // N
 
-wire  [7:3] r2_nxt = r2_wr          ? reg_dest_val_in[7:3] : r2[7:3];
+// with clock gating we ignore the GIE bit modifications. Clock gating not supported with Sancus.
+wire  [7:3] r2_nxt = r2_wr          ? reg_dest_val_in[7:3] : r2[7:3]; 
 
 wire        r2_v   = alu_stat_wr[3] ? alu_stat[3]          : reg_dest_val_in[8]; // V
 
@@ -273,7 +274,18 @@ wire        r2_z   = alu_stat_wr[1] ? alu_stat[1]          :
 wire        r2_n   = alu_stat_wr[2] ? alu_stat[2]          :
                      r2_wr          ? reg_dest_val_in[2]   : r2[2];              // N
 
-wire  [7:3] r2_nxt = r2_wr          ? reg_dest_val_in[7:3] : r2[7:3];
+// GIE is treated differently in privileged mode:
+//  Writing to R2 is allowed if we switch on interrupts. Switching off is ignored if not privileged.
+// Without restrictions on GIE, all writes to r2 go through
+wire gie_next_write = r2_wr         ? reg_dest_val_in[3]   : r2[3];
+`ifdef SANCUS_RESTRICT_GIE
+   // SM 1 is unrestricted in its operation, all others can not disable interrupts
+   wire gie_next = sm_current_id == 16'h0001 ? gie_next_write : 0'b1 ;
+`else
+   wire gie_next = gie_next_write;
+`endif
+
+wire  [7:4] r2_nxt = r2_wr          ? reg_dest_val_in[7:4] : r2[7:4];
 
 wire        r2_v   = alu_stat_wr[3] ? alu_stat[3]          :
                      r2_wr          ? reg_dest_val_in[8]   : r2[8];              // V
@@ -323,20 +335,14 @@ wire        mclk_r2 = mclk;
 `else
    wire [15:0] scg1_mask_en = scg1_mask;
 `endif
-`ifdef SANCUS_RESTRICT_GIE
-   wire [15:0] gie_mask_en = sm_current_id == 16'h0001 ? 16'h0008 : 16'h0000;
-`else
-   wire [15:0] gie_mask_en = 16'h0008;
-`endif
 
    // Depending on Sancus settings, some r2_masks may be disabled. Writing to them is simply ignored
-   wire [15:0] r2_mask_en  = cpuoff_mask_en | scg1_mask_en | gie_mask_en | 16'h0107;
-   wire [15:0] r2_mask     = (cpuoff_mask    | oscoff_mask | scg0_mask | scg1_mask | 16'h010f) & r2_mask_en;
+   wire [15:0] r2_mask     = (cpuoff_mask_en | oscoff_mask | scg0_mask | scg1_mask_en | 16'h010f) & r2_mask_en;
  
 always @(posedge mclk_r2 or posedge puc_rst)
   if (puc_rst | irq_reg_clr) r2 <= 16'h0000;
   else if (reg_sr_clr )      r2 <= 16'h0000;
-  else                       r2 <= {r2_sm_interrupted, 6'h00, r2_v, r2_nxt, r2_n, r2_z, r2_c} & r2_mask;
+  else                       r2 <= {r2_sm_interrupted, 6'h00, r2_v, r2_nxt, gie_next, r2_n, r2_z, r2_c} & r2_mask;
 
 assign status = {r2[8], r2[2:0]};
 assign gie    =  r2[3];
