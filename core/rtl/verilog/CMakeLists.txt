@@ -4,6 +4,12 @@ if (NOT RESET_ON_VIOLATION)
     set(RESET_CONFIG "// ${RESET_CONFIG}")
 endif ()
 
+set(NEMESIS_CONFIG "`define NEMESIS_RESISTANT")
+
+if (NOT NEMESIS_RESISTANT)
+    set(NEMESIS_CONFIG "// ${NEMESIS_CONFIG}")
+endif ()
+
 configure_file(config.v.in ${CMAKE_CURRENT_SOURCE_DIR}/config.v)
 
 set(SRC

@@ -27,6 +27,7 @@ if (NOT MASTER_KEY)
 endif ()
 
 option(RESET_ON_VIOLATION "Enable CPU reset on violation" ON)
+option(NEMESIS_RESISTANT  "Enable Nemesis defense" ON)
 
 add_subdirectory(core)
 add_subdirectory(tools)
