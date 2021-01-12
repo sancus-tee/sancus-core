@@ -144,7 +144,7 @@ input        [15:0] pc;            // Program counter
 input        [15:0] pc_nxt;        // Next PC value (for CALL & IRQ)
 input               puc_rst;       // Main system reset
 input               scan_enable;   // Scan enable (active during scan shifting)
-input         [8:0] sm_command;
+input         [9:0] sm_command;
 input        [15:0] current_inst_pc;
 input        [15:0] prev_inst_pc;
 input         [3:0] irq_num;
@@ -180,6 +180,7 @@ wire         [15:0] r15;
 wire         [15:0] r1;
 wire                sm_violation;
 wire                sp_overflow;
+wire                atom_violation;
 wire         [15:0] sm_current_id;
 wire         [15:0] sm_prev_id;
 wire                violation;
@@ -197,13 +198,14 @@ wire sm_id_prev     = sm_command[`SM_PREV_ID];
 wire sm_stack_guard = sm_command[`SM_STACK_GUARD];
 wire sm_update      = (do_sm_inst & sm_enable) | (sm_disable & ~sm_busy);
 wire sm_verify      = sm_verify_addr | sm_verify_prev;
+wire sm_clix        = sm_command[`SM_CLIX];
 
 
 //=============================================================================
 // 1)   INTERRUPT LOGIC
 //=============================================================================
 
-assign violation = (sm_violation | sp_overflow);
+assign violation = (sm_violation | sp_overflow | atom_violation);
 
 // Keep track of if we are currently handling an IRQ (with handling we mean the
 // handling by hardware, *not* running the software ISR)
@@ -211,15 +213,34 @@ wire handling_irq       = inst_so[`IRQ] | inst_irq_rst;
 wire irq_exec           = handling_irq & (e_state==`E_EXEC);
 wire irq_prepare_sp_wr  = (e_state==`E_IRQ_EXT_0) & inst_src[1];
 
+`ifdef ATOMICITY_MONITOR
+    omsp_atomicity_monitor atomicity_monitor_0 (
+    // INPUTS
+        .mclk                   (mclk),
+        .puc_rst                (puc_rst),
+        .inst_clix              (sm_clix),
+        .sm_current_id          (sm_current_id),
+        .r15                    (r15),
+        .irq_detect             (irq_detect),
+        .enter_sm               (enter_sm),
+        .gie_request            (r2_gie),
+    // OUTPUTS
+        .gie                    (gie),
+        .atom_violation         (atom_violation)
+    );
+`else
+  // clear interrupts one cycle after entering an SM (to allow it to dint before
+  // restoring its internal call stack and eint)
+  assign gie = r2_gie & ~enter_sm;
+  assign atom_violation   = 1'b0;
+`endif
+
 // current_id changes on irq_detect
 reg [15:0] sm_reti_id;
 always @(posedge mclk or posedge puc_rst)
     if (puc_rst)            sm_reti_id <= 16'h0;
     else if (irq_detect)    sm_reti_id <= sm_current_id;
 
-// clear interrupts one cycle after entering an SM (to allow it to dint before
-// restoring its internal call stack and eint)
-assign gie = r2_gie & ~enter_sm;
 
 wire crypto_stat_z;
 wire crypto_stat_wr;

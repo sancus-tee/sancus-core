@@ -140,7 +140,7 @@ output              nmi_acc;       // Non-Maskable interrupt request accepted
 output       [15:0] pc;            // Program counter
 output       [15:0] pc_nxt;        // Next PC value (for CALL & IRQ)
 output              sm_irq;
-output        [8:0] spm_command;
+output        [9:0] spm_command;
 output       [15:0] current_inst_pc;
 output       [15:0] prev_inst_pc;
 output        [3:0] irq_num;
@@ -622,11 +622,12 @@ always @(posedge mclk_decode or posedge puc_rst)
 // 10'b0000010000: SM_AE_WRAP
 // 10'b0000100000: SM_AE_UNWRAP
 // 10'b0001000000: SM_ID
-// 10'b0010000000: SM_PREV_ID
+// 10'b0010000000: SM_PREV_ID       == .word 0x1387
 // 10'b0100000000: SM_STACK_GUARD
-reg  [8:0]  spm_command;
+// 10'b1000000000: SM_CLIX          == .word 0x1389
+reg  [9:0]  spm_command;
 wire [15:0] spm_command_to_1hot = one_hot16(ir[3:0]) & {16{inst_so_nxt[`SANCUS]}};
-wire [8:0]  spm_command_nxt = spm_command_to_1hot[8:0];
+wire [9:0]  spm_command_nxt = spm_command_to_1hot[9:0];
 
 always @(posedge mclk_decode or posedge puc_rst)
   if (puc_rst)     spm_command <= 9'h00;

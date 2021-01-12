@@ -10,6 +10,7 @@ set(SRC
     config.v
     omsp_alu.v
     omsp_and_gate.v
+    omsp_atomicity_monitor.v
     omsp_clock_gate.v
     omsp_clock_module.v
     omsp_clock_mux.v

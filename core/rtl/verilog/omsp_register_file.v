@@ -279,8 +279,9 @@ wire        r2_n   = alu_stat_wr[2] ? alu_stat[2]          :
 // Without restrictions on GIE, all writes to r2 go through
 wire gie_next_write = r2_wr         ? reg_dest_val_in[3]   : r2[3];
 `ifdef SANCUS_RESTRICT_GIE
-   // SM 1 is unrestricted in its operation, all others can not disable interrupts
-   wire gie_next = sm_current_id == 16'h0001 ? gie_next_write : 0'b1 ;
+   // SM 1 is unrestricted in its operation, all others can only control gie bit if it was off previously.
+   wire gie_next = sm_current_id == 16'h0001 ? gie_next_write :
+                   r2[3]                     ? r2[3]          : gie_next_write; // only allow writes if gie bit is off
 `else
    wire gie_next = gie_next_write;
 `endif
@@ -331,13 +332,13 @@ wire        mclk_r2 = mclk;
    wire [15:0] cpuoff_mask_en = cpuoff_mask;
 `endif
 `ifdef SANCUS_RESTRICT_SCG1
-   wire [15:0] scg1_mask_en = sm_current_id == 16'h0001 ? scg1_mask : 16'h0000;
+   wire [15:0] scg1_mask_en   = sm_current_id == 16'h0001 ? scg1_mask   : 16'h0000;
 `else
-   wire [15:0] scg1_mask_en = scg1_mask;
+   wire [15:0] scg1_mask_en   = scg1_mask;
 `endif
 
    // Depending on Sancus settings, some r2_masks may be disabled. Writing to them is simply ignored
-   wire [15:0] r2_mask     = (cpuoff_mask_en | oscoff_mask | scg0_mask | scg1_mask_en | 16'h010f) & r2_mask_en;
+   wire [15:0] r2_mask     = (cpuoff_mask_en | oscoff_mask | scg0_mask | scg1_mask_en | 16'h010f);
  
 always @(posedge mclk_r2 or posedge puc_rst)
   if (puc_rst | irq_reg_clr) r2 <= 16'h0000;
