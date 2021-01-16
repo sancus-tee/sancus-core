@@ -92,7 +92,8 @@ module  omsp_register_file (
     exec_sm,
     reg_sg_wr,
     handling_irq,
-    sm_current_id
+    sm_current_id,
+    gie_in
 );
 
 // OUTPUTs
@@ -143,6 +144,7 @@ input               exec_sm;
 input               reg_sg_wr;
 input               handling_irq;
 input        [15:0] sm_current_id;
+input               gie_in;
 
 //=============================================================================
 // 0)  Sancus state machine
@@ -279,9 +281,8 @@ wire        r2_n   = alu_stat_wr[2] ? alu_stat[2]          :
 // Without restrictions on GIE, all writes to r2 go through
 wire gie_next_write = r2_wr         ? reg_dest_val_in[3]   : r2[3];
 `ifdef SANCUS_RESTRICT_GIE
-   // SM 1 is unrestricted in its operation, all others can only control gie bit if it was off previously.
-   wire gie_next = sm_current_id == 16'h0001 ? gie_next_write :
-                   r2[3]                     ? r2[3]          : gie_next_write; // only allow writes if gie bit is off
+   // only allow writes if gie bit is off and r2 is written to. Otherwise use old gie value
+   wire gie_next = (~gie_in & r2_wr) ? gie_next_write      : gie_in; 
 `else
    wire gie_next = gie_next_write;
 `endif

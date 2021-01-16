@@ -331,7 +331,8 @@ omsp_register_file register_file_0 (
     .exec_sm      (exec_sm),
     .reg_sg_wr    (sm_stack_guard),
     .handling_irq (handling_irq),
-    .sm_current_id (sm_current_id)
+    .sm_current_id (sm_current_id),
+    .gie_in        (gie)
 );
 
 
