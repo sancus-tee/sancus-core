@@ -264,6 +264,8 @@ int main(int argc, char** argv)
                     .help("File type (default=elf). Override to pass a binary file.") .metavar("TYPE");
     parser.add_option("-d", "--dumpfile") .dest("vcd_filename") .set_default("")
                     .help("Name of the optional outputted simulation vcd file.") .metavar("OUTFILE");
+    parser.add_option("--start-dump-at") .dest("vcd_start") .type("long") .set_default(0)
+                    .help("Starts dumping only when reaching cycle X.") .metavar("X");
     parser.add_option("-l", "--log") .dest("logfile") .set_default("")
                     .help("Prints all log messages to a debug log file.") .metavar("LOGFILE");
     parser.add_option("--fileio-in") .dest("fio_in") .set_default("")
@@ -274,6 +276,8 @@ int main(int argc, char** argv)
                     .help("Maximum of cycles to execute before aborting. Set to 0 for no timeout.") .metavar("INT");
     parser.add_option("--stop-after-sm-violation") .dest("sm_violation_stopcount") .type("long") .set_default(0)
                     .help("If set to larger than 0, stops the simulation X cycles after a SM Violation occured. Default: 0 (stop directly on violation). Set to -1 to continue after violation.") .metavar("X");
+    parser.add_option("--print-progress-at") .dest("progress_count") .type("long") .set_default(0)
+                    .help("If set to larger than 0, prints a status message every X cycles.") .metavar("X");
     parser.add_option("--crypto-noshow") .action("store_true") .dest("crypto_noshow") 
                     .help("Disable spinning cursor terminal animation for indicating activity of the CPU's crypto unit (default=on). Passing this flag is recommended when running sancus-sim from a non-interactive terminal.") ;
     // parser.add_option("-v", "--verbose")
@@ -356,6 +360,10 @@ int main(int argc, char** argv)
         LOG_F(INFO, "Using %s as simulation file.", sim_filename );
         tracer_enabled = true;
     }
+    uint64_t vcd_start = (uint64_t) options.get("vcd_start");
+    if(vcd_start > 0){
+        LOG_F(INFO, "Writing to simulation file will only start after %li cycles.", vcd_start);
+    }
 
     // Set up Max cycles and whether we want to abort on timeouts
     MAX_CYCLES = (uint64_t) options.get("cycles");
@@ -407,6 +415,12 @@ int main(int argc, char** argv)
         }
     }
 
+    // We may want to print a progress status message every X cycles
+    uint64_t progress_count = (uint64_t) options.get("progress_count");
+    if(progress_count > 0){
+        LOG_F(INFO, "Will print a status message every %li cycles.", progress_count);
+    }
+
     // Start verilator
     Verilated::commandArgs(argc, argv);
     auto top = std::unique_ptr<Vtb_openMSP430>{new Vtb_openMSP430};
@@ -430,10 +444,17 @@ int main(int argc, char** argv)
         tracer->open(sim_filename);
     }
 
+    // Enable dumping from the beginning by default
+    auto tracer_running = false;
+    if(vcd_start == 0){
+        tracer_running = true;
+    }
+
     mainTime = 0;
     auto isDone = false;
     int result = 0;
     int cpuoff_timer = 10; // After CPUOFF, do 10 more cycles for nicer GTKWave outputs.
+    long cycle_count = 0;
 
     // Register sigabort handler to finish writing vcd file
     struct sigaction sigIntHandler; 
@@ -481,7 +502,18 @@ int main(int argc, char** argv)
                 result = status_success;
             }
 
-            // Finish simulation if requested after sm violation
+            // If requested, print a progress count every X cycles
+            if(progress_count > 0 && mainTime / CLOCK_PERIOD > 0 && (mainTime / CLOCK_PERIOD) % progress_count == 0){
+                LOG_F(INFO, "%li cycle mark. Overall %li cycles simulated.", progress_count, mainTime / CLOCK_PERIOD);
+            }
+
+            // If tracer is not enabled yet, check at clock edges if we want to enable it now
+            if(tracer_enabled && !tracer_running && mainTime / CLOCK_PERIOD >= vcd_start){
+                tracer_running = true;
+                LOG_F(INFO, "%li cycle requirement passed. Starting to dump simulation.", vcd_start);
+            }
+
+            // Finish simulation after sm violation (if requested)
             if (stop_on_sm_violation){
                 if (top->sm_violation){
                     sm_violation_occured = true;
@@ -492,7 +524,7 @@ int main(int argc, char** argv)
                 }
             }
         }
-        if(tracer_enabled){
+        if(tracer_running){
             tracer->dump(mainTime);
         }
 
