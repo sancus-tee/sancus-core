@@ -283,8 +283,8 @@
 // first SM with ID 1
 // Since it is nice to use the simulator, CPUOFF is not 
 // restricted by default since the simulator does not terminate otherwise
-// `define SANCUS_RESTRICT_CPUOFF
-// `define SANCUS_RESTRICT_SCG0
+`define SANCUS_RESTRICT_CPUOFF
+`define SANCUS_RESTRICT_SCG0
 `define SANCUS_RESTRICT_GIE
 
 
