@@ -296,7 +296,9 @@ wire        mclk_r2 = mclk;
 `endif
 
   // Bit 15 in R2 is the sm_interrupted bit. It is high if the last interrupt interrupted an SM and low else.
-  wire r2_sm_interrupted = irq_exec ? exec_sm : r2[15];
+  reg r2_sm_interrupted_prev;
+  wire r2_sm_interrupted = irq_exec ? exec_sm : r2_sm_interrupted_prev;
+  always @(posedge mclk_r2) r2_sm_interrupted_prev <= r2_sm_interrupted;
 
 `ifdef ASIC
    `ifdef CPUOFF_EN
@@ -338,13 +340,15 @@ wire        mclk_r2 = mclk;
    wire [15:0] scg1_mask_en   = scg1_mask;
 `endif
 
-   // Depending on Sancus settings, some r2_masks may be disabled. Writing to them is simply ignored
-   wire [15:0] r2_mask     = (cpuoff_mask_en | oscoff_mask | scg0_mask | scg1_mask_en | 16'h010f);
+wire [15:0] sm_interrupted_mask = 16'h8000;
+
+// Depending on Sancus settings, some r2_masks may be disabled. Writing to them is simply ignored
+wire [15:0] r2_mask     = (sm_interrupted_mask | cpuoff_mask_en | oscoff_mask | scg0_mask | scg1_mask_en | 16'h010f);
  
 always @(posedge mclk_r2 or posedge puc_rst)
-  if (puc_rst | irq_reg_clr) r2 <= 16'h0000;
-  else if (reg_sr_clr )      r2 <= 16'h0000;
-  else                       r2 <= {r2_sm_interrupted, 6'h00, r2_v, r2_nxt, gie_next, r2_n, r2_z, r2_c} & r2_mask;
+  if (puc_rst | reg_sr_clr) r2 <= 16'h0000;
+  else if (irq_reg_clr )    r2 <= {r2_sm_interrupted, 15'h0000}; // We do not want to clear the sm_interrupted flag.
+  else                      r2 <= {r2_sm_interrupted, 6'h00, r2_v, r2_nxt, gie_next, r2_n, r2_z, r2_c} & r2_mask;
 
 assign status = {r2[8], r2[2:0]};
 assign gie    =  r2[3];
