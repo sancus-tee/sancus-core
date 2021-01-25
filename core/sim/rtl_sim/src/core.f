@@ -40,6 +40,7 @@
 ../../../rtl/verilog/openMSP430.v
 ../../../rtl/verilog/omsp_frontend.v
 ../../../rtl/verilog/omsp_execution_unit.v
+../../../rtl/verilog/omsp_atomicity_monitor.v
 ../../../rtl/verilog/omsp_register_file.v
 ../../../rtl/verilog/omsp_alu.v
 ../../../rtl/verilog/omsp_sfr.v
