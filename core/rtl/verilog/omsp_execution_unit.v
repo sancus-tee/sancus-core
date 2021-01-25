@@ -231,7 +231,7 @@ wire priv_mode = sm_enabled ? (sm_current_id == 16'h0001) : 1'b1;
         .r15                    (r15),
         .irq_detect             (irq_detect),
         .enter_sm               (enter_sm),
-        .gie_request            (r2_gie),
+        .r2_gie                 (r2_gie),
     // OUTPUTS
         .gie                    (gie),
         .atom_violation         (atom_violation)

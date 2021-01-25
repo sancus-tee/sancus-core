@@ -13,7 +13,7 @@ module omsp_atomicity_monitor (
   input  wire             [15:0] r15,
   input  wire                    irq_detect,
   input  wire                    enter_sm,
-  input  wire                    gie_request,
+  input  wire                    r2_gie,      // access control in omsp_register_file
   
   output wire                    gie,
   output wire                    atom_violation
@@ -37,7 +37,7 @@ reg                         inside_entry_prev;
 
 // clix is stopped when atom_clix_cnt reaches zero or r2 has gie set. 
 // This is assumed to be a request to end the clix and allows to early-out
-wire                        clix_finished  = (inside_clix  & ((atom_clix_cnt  == 0) | gie_request));
+wire                        clix_finished  = (inside_clix  & ((atom_clix_cnt  == 0) | r2_gie));
 // SM entry section is completed after expiring or on entering a clix instruction
 wire                        entry_finished = (inside_entry & ((atom_entry_cnt == 0) | inst_clix)); 
 
@@ -106,24 +106,8 @@ begin
     end
 
 end
-// unconditionally disable all interrupts on ISR entry, until expl re-enabled
-// NOTE: ISR length is *not* limited by HW (IVT is part of CPU time resource)
-// Also, make sure to clear interrupts one cycle after entering the scheduler 
-// if the sancus_restrict_gie define is set
-reg cli;
-always @(posedge mclk or posedge puc_rst)
-  if (puc_rst)
-    cli <= 1'b1; // clear GIE on reset to be compatibile with MSP430 spec
-  else if (irq_detect
-  `ifdef SANCUS_RESTRICT_GIE
-              | (enter_sm & priv_mode )
-  `endif
-  )     cli <= 1'b1;
-  else if (gie_request)
-        cli <= 1'b0;
-  //else  cli <= 1'b0;
 
-assign gie = ~cli 
+assign gie = r2_gie
 `ifdef SANCUS_RESTRICT_GIE
             // Disable interrupts in SM ID 1 if GIE is restricted
              & ~(priv_mode & sm_executing)
