@@ -213,13 +213,21 @@ wire handling_irq       = inst_so[`IRQ] | inst_irq_rst;
 wire irq_exec           = handling_irq & (e_state==`E_EXEC);
 wire irq_prepare_sp_wr  = (e_state==`E_IRQ_EXT_0) & inst_src[1];
 
+// Sancus modification to possibly restrict GIE, CPUOFF, and SCG1 to SM ID 1
+// (only when at least 1 SM is enabled; the CPU behaves according to the MSP430
+// spec as long as no SMs are loaded)
+wire priv_mode = sm_enabled ? (sm_current_id == 16'h0001) : 1'b1;
+
+
+
 `ifdef ATOMICITY_MONITOR
     omsp_atomicity_monitor atomicity_monitor_0 (
     // INPUTS
         .mclk                   (mclk),
         .puc_rst                (puc_rst),
         .inst_clix              (sm_clix),
-        .sm_current_id          (sm_current_id),
+        .sm_executing           (exec_sm),
+        .priv_mode              (priv_mode),
         .r15                    (r15),
         .irq_detect             (irq_detect),
         .enter_sm               (enter_sm),
@@ -331,8 +339,8 @@ omsp_register_file register_file_0 (
     .exec_sm      (exec_sm),
     .reg_sg_wr    (sm_stack_guard),
     .handling_irq (handling_irq),
-    .sm_current_id (sm_current_id),
-    .gie_in        (gie)
+    .gie_in        (gie),
+    .priv_mode     (priv_mode)
 );
 
 
@@ -583,6 +591,7 @@ wire [15:0] sm_key_select;
 wire [15:0] crypto_data_out;
 wire        exec_sm;
 wire        sm_cancel;
+wire        sm_enabled;
 wire        do_sm_update = sm_update | sm_cancel;
 wire        do_sm_enable = sm_enable & ~sm_cancel;
 
@@ -630,7 +639,8 @@ omsp_spm_control #(
   .exec_sm                (exec_sm),
   .enter_sm               (enter_sm),
   .dma_addr               (dma_addr),
-  .dma_violation          (dma_violation)
+  .dma_violation          (dma_violation),
+  .enabled                (sm_enabled)
 );
 
 

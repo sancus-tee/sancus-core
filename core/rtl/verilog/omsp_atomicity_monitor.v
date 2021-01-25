@@ -2,12 +2,14 @@
 `else
 `include "openMSP430_defines.v"
 `endif
+`ifdef ATOMICITY_MONITOR
 
 module omsp_atomicity_monitor (
   input  wire                    mclk,
   input  wire                    puc_rst,
   input  wire                    inst_clix,
-  input  wire             [15:0] sm_current_id,
+  input  wire                    sm_executing,
+  input  wire                    priv_mode,
   input  wire             [15:0] r15,
   input  wire                    irq_detect,
   input  wire                    enter_sm,
@@ -66,7 +68,7 @@ begin
             atom_clix_cnt    <= atom_clix_input;
     end
     `ifdef SANCUS_RESTRICT_GIE
-    else if (enter_sm & sm_current_id == 16'h0001 )  // With restrictions on GIE, abort existing clix and disable interrupts on entry of SM ID 1
+    else if (enter_sm & priv_mode )  // With restrictions on GIE, abort existing clix and disable interrupts on entry of SM ID 1
     begin
             inside_clix      <= 0;
             atom_clix_cnt    <= 0;
@@ -75,7 +77,7 @@ begin
     if (~puc_rst & enter_sm)             // Always enter period without interrupts when entering an SM
     begin
         `ifdef SANCUS_RESTRICT_GIE
-        if (sm_current_id == 16'h0001 )  // If entering special ID 1, we disable the atomic period
+        if (priv_mode)                  // If entering special ID 1, we disable the atomic period
         begin
             inside_entry <= 0;
             atom_entry_cnt <= 0;
@@ -110,18 +112,21 @@ end
 // if the sancus_restrict_gie define is set
 reg cli;
 always @(posedge mclk or posedge puc_rst)
-  if (puc_rst | irq_detect
+  if (puc_rst)
+    cli <= 1'b1; // clear GIE on reset to be compatibile with MSP430 spec
+  else if (irq_detect
   `ifdef SANCUS_RESTRICT_GIE
-              | (enter_sm & sm_current_id == 16'h0001 )
+              | (enter_sm & priv_mode )
   `endif
   )     cli <= 1'b1;
-
-  else  cli <= 1'b0;
+  else if (gie_request)
+        cli <= 1'b0;
+  //else  cli <= 1'b0;
 
 assign gie = ~cli 
 `ifdef SANCUS_RESTRICT_GIE
             // Disable interrupts in SM ID 1 if GIE is restricted
-             & ~(sm_current_id == 16'h0001)
+             & ~(priv_mode & sm_executing)
 `endif
              & ~inst_clix
              & ~inside_clix
@@ -135,14 +140,14 @@ assign atom_violation   = (inst_clix & ( inside_clix_prev | (atom_clix_input > `
                             & inside_entry_prev
                             `ifdef SANCUS_RESTRICT_GIE
                               // (but we can enter the SM with ID 1 if GIE is restricted)
-                              & sm_current_id != 16'h0001
+                              & ~priv_mode 
                             `endif
                         );
 
 // DEBUG OUTPUT
 //-----------------------------------------
 
-`ifdef __SANCUS_SIMULATOR
+//`ifdef __SANCUS_SIMULATOR
 initial
 begin
     $display("=== Atomicity parameters  ===");
@@ -159,6 +164,7 @@ begin
     else        $display("%d > %d", atom_clix_input, `ATOM_BOUND);
   end
 end
-`endif
+//`endif
 
 endmodule
+`endif

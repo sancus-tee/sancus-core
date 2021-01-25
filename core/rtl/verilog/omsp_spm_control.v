@@ -32,6 +32,7 @@ module omsp_spm_control(
   input  wire [KEY_IDX_SIZE-1:0] key_idx,
   input  wire             [15:1] dma_addr,
   output wire                    dma_violation,
+  output wire                    enabled,
   output wire                    violation,
   output wire                    spm_data_select_valid,
   output wire                    spm_key_select_valid,
@@ -86,6 +87,7 @@ always @(posedge mclk or posedge puc_rst)
     next_id <= next_id - 16'h1;
 
 assign violation = |spms_violation || (next_id == 16'hfff0);
+assign enabled   = |spms_enabled;
 assign dma_violation = |spms_dma_violation;
 
 generate

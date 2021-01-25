@@ -26,6 +26,7 @@ if (NOT MASTER_KEY)
     set(MASTER_KEY deadbeefcafebabe)
 endif ()
 
+option(ATOMICITY_MONITOR "Availability changes" OFF)
 option(RESET_ON_VIOLATION "Enable CPU reset on violation" OFF)
 
 add_subdirectory(core)

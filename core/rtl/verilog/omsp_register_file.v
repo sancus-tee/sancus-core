@@ -92,7 +92,7 @@ module  omsp_register_file (
     exec_sm,
     reg_sg_wr,
     handling_irq,
-    sm_current_id,
+    priv_mode,
     gie_in
 );
 
@@ -143,8 +143,8 @@ input               irq_exec;
 input               exec_sm;
 input               reg_sg_wr;
 input               handling_irq;
-input        [15:0] sm_current_id;
 input               gie_in;
+input               priv_mode;
 
 //=============================================================================
 // 0)  Sancus state machine
@@ -282,7 +282,7 @@ wire        r2_n   = alu_stat_wr[2] ? alu_stat[2]          :
 wire gie_next_write = r2_wr         ? reg_dest_val_in[3]   : r2[3];
 `ifdef SANCUS_RESTRICT_GIE
    // only allow writes if gie bit is off and r2 is written to. Otherwise use old gie value
-   wire gie_next = (~gie_in & r2_wr) ? gie_next_write      : gie_in; 
+   wire gie_next = (priv_mode | (~gie_in & r2_wr)) ? gie_next_write      : gie_in; 
 `else
    wire gie_next = gie_next_write;
 `endif
@@ -330,12 +330,12 @@ wire        mclk_r2 = mclk;
 
 // Sancus modification to possibly restrict GIE, CPUOFF, and SCG1 to SM ID 1
 `ifdef SANCUS_RESTRICT_CPUOFF
-   wire [15:0] cpuoff_mask_en = sm_current_id == 16'h0001 ? cpuoff_mask : 16'h0000;
+   wire [15:0] cpuoff_mask_en = priv_mode ? cpuoff_mask : 16'h0000;
 `else
    wire [15:0] cpuoff_mask_en = cpuoff_mask;
 `endif
 `ifdef SANCUS_RESTRICT_SCG1
-   wire [15:0] scg1_mask_en   = sm_current_id == 16'h0001 ? scg1_mask   : 16'h0000;
+   wire [15:0] scg1_mask_en   = priv_mode ? scg1_mask   : 16'h0000;
 `else
    wire [15:0] scg1_mask_en   = scg1_mask;
 `endif

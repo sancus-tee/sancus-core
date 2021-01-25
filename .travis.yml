@@ -10,15 +10,17 @@ before_install:
 - sudo apt-get install build-essential cmake iverilog tk binutils-msp430 gcc-msp430 msp430-libc msp430mcu expect-dev verilator -y
 
 install:
-- mkdir build && cd build && cmake .. && cd ..
+- mkdir build && cd build && cmake .. $ATOM && cd ..
 
 script:
 - cd core/sim/rtl_sim/run/
 - ./$TARGET
 
 env:
-  - TARGET=run_all
-  - TARGET=run_all_sancus
+  - TARGET=run_all          ATOM=-DATOMICITY_MONITOR=0
+  - TARGET=run_all          ATOM=-DATOMICITY_MONITOR=1
+  - TARGET=run_all_sancus   ATOM=-DATOMICITY_MONITOR=0
+  - TARGET=run_all_sancus   ATOM=-DATOMICITY_MONITOR=1
 
 jobs: # Add jobs that only compile but do not run the tests.
   include:

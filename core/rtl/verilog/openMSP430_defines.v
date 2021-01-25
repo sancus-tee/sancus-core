@@ -272,22 +272,6 @@
 `define PER_CUSTOM_AWIDTH        8
 `define PER_CUSTOM_SIZE        512
 
-
-//-------------------------------------------------------
-// Sancus modifications to Status register
-//-------------------------------------------------------
-// For e.g. availability guarantees, modifications of
-// certain flags in R2 may be restricted to the first
-// loaded SM (e.g. a protected Scheduler).
-// These defines allow to restrict certain settings to the
-// first SM with ID 1
-// Since it is nice to use the simulator, CPUOFF is not 
-// restricted by default since the simulator does not terminate otherwise
-`define SANCUS_RESTRICT_CPUOFF
-`define SANCUS_RESTRICT_SCG0
-`define SANCUS_RESTRICT_GIE
-
-
 //-------------------------------------------------------
 // ASIC version
 //-------------------------------------------------------
@@ -677,11 +661,24 @@
 `define SM_SELECT_BY_ID   1'b1
 
 // enable/disable atomicity monitor with support for GIE timeout (CLIX) and its length
-`define ATOMICITY_MONITOR
 `ifdef ATOMICITY_MONITOR
-`define ATOM_BOUND 10000
-// # of cycles for atomic period after an sm entry. Allows to safely perform a clix
-`define SM_ENTRY_ATOM_PERIOD 10
+    `define ATOM_BOUND 10000
+    // # of cycles for atomic period after an sm entry. Allows to safely perform a clix
+    `define SM_ENTRY_ATOM_PERIOD 10
+
+    //-------------------------------------------------------
+    // Sancus modifications to Status register
+    //-------------------------------------------------------
+    // For e.g. availability guarantees, modifications of
+    // certain flags in R2 may be restricted to the first
+    // loaded SM (e.g. a protected Scheduler).
+    // These defines allow to restrict certain settings to the
+    // first SM with ID 1
+    // Since it is nice to use the simulator, CPUOFF is not 
+    // restricted by default since the simulator does not terminate otherwise
+    `define SANCUS_RESTRICT_CPUOFF
+    `define SANCUS_RESTRICT_SCG0
+    `define SANCUS_RESTRICT_GIE
 `endif
 
 // Conditional jump
