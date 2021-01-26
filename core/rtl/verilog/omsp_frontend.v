@@ -978,8 +978,8 @@ always @(*)
                                   ~exec_sm)         ? E_IRQ_4     : E_IRQ_EXT_0;
 
       /* IRQ_SP: store SP in SM secret data */
-      E_IRQ_SSA_RD_1: e_state_nxt =  E_IRQ_SSA_RD_2;
-      E_IRQ_SSA_RD_2: e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_SP_WR;
+      //E_IRQ_SSA_RD_1: e_state_nxt =  E_IRQ_SSA_RD_2;
+      E_IRQ_SSA_RD_1: e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_SP_WR;
       E_IRQ_SP_WR: e_state_nxt =  E_IRQ_0;
 
       /* IRQ_4: vector to ISR */

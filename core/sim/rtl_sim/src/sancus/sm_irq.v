@@ -29,9 +29,6 @@ initial
       $display("|                 START SIMULATION              |");
       $display(" ===============================================");
 
-// TODO with the SSA frame we cannot support this option anymore and should
-// get rid of all ifdefs in the code base
-`undef UNPROTECTED_IRQ_REG_PUSH
 `define LONG_TIMEOUT
       repeat(5) @(posedge mclk);
       stimulus_done = 0;

@@ -146,15 +146,15 @@ begin
     if (mem_violation)
     begin
       if (handling_irq) 
-        $display("mem violation @0x%h from IRQ", eu_mab);
+        $display("[SM %1d] mem violation @0x%h from IRQ", id, eu_mab);
       else              
-        $display("mem violation @0x%h from 0x%h", eu_mab, pc);
+        $display("[SM %1d] mem violation @0x%h from 0x%h", id, eu_mab, pc);
     end
     else if (exec_violation)
-      $display("exec violation %h -> %h", prev_pc, pc);
+      $display("[SM %1d] exec violation %h -> %h", id, prev_pc, pc);
     else if (create_violation)
     begin
-      $display("create violation:");
+      $display("[SM %1d] create violation:", id);
       $display("\tme:  %h %h %h %h", public_start, public_end, secret_start, secret_end);
       $display("\tnew: %h %h %h %h", r12, r13, r14, r15);
     end

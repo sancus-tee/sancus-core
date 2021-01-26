@@ -47,10 +47,10 @@
     end \
     irq[9] = 1; \
     tsc_val1 = cur_tsc; \
-    while(~handling_irq) @(posedge mclk); \
-    $display("crypto interrupted at 0x%h : \t%s", current_inst_pc, inst_full); \
-    chk_irq \
+    /*while(~handling_irq) @(posedge mclk); */\
+    $display("crypto irq at 0x%h : \t%s", current_inst_pc, inst_full); \
     @(posedge handling_irq); \
+    chk_irq \
     irq[9] = 0; \
     @(negedge handling_irq); \
     tsc_val2 = cur_tsc; \

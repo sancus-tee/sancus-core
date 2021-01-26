@@ -13,7 +13,7 @@
 `define R14_VAL     (`REG_OFFSET + 16'he)
 `define R15_VAL     (`REG_OFFSET + 16'hf)
 
-`define IRQ_SM_STATUS           16'h0000
+`define IRQ_SM_STATUS           16'h8000
 `define IRQ_UNPR_STATUS         16'h0000
 
 `define CHK_INIT_REGS_R15(str, sp_val, r15Val) \

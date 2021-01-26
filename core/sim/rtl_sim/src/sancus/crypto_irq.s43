@@ -9,16 +9,16 @@
 .include "pmem_defs.asm"
 .include "sancus_macros.asm"
 
-.set unprotected_stack_base, DMEM_240
-.set bar_stack_base, DMEM_260
+.set unprotected_stack_base, DMEM_230
+.set bar_stack_base, unprotected_stack_base
 
-.set foo_secret_start, DMEM_262
-.set foo_secret_end, DMEM_268
+.set foo_secret_start, DMEM_236
+.set foo_secret_end, DMEM_242
 .set bar_secret_start, foo_secret_end
 .set bar_secret_end, DMEM_26E
-.set bar_sp_save, (bar_secret_end - 4)
-; IRQ logic stores sp at memory location pointed to by last private address
-.set bar_sp_save_loc, (bar_secret_end - 2)
+.set bar_ssa_loc,(bar_secret_end - 2)
+.set bar_ssa, (bar_secret_end - 4)
+.set bar_ssa_sp, (bar_ssa - 2)
 
 ; (un)wrap one word of associated data and plaintext
 .set ad, DMEM_202
@@ -35,7 +35,6 @@
 main:
     disable_wdt
     eint
-    clr &bar_sp_save
     mov #unprotected_stack_base, r1
     mov #ad_val, &ad
     mov #body_val, &body
@@ -67,15 +66,16 @@ fail_test:
     /* ----------------------         SANCUS MODULE      --------------- */
 
 bar_public_start:
-    mov #bar_sp_save, &bar_sp_save_loc
-    mov &bar_sp_save, r4
-    bit #0x1, r4
+    mov #bar_ssa, &bar_ssa_loc
+    tst &bar_ssa_sp
     jz entry_call
-    
-    ; return from interrupt
-    mov r4, r1
-    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15
-    reti
+
+    ; restore interrupted execution context
+    mov #bar_ssa-28, r1
+    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r2
+    mov &bar_ssa_sp, r1
+    clr &bar_ssa_sp
+    br &bar_ssa
 
 entry_call:
     mov #bar_stack_base, r1
@@ -124,14 +124,13 @@ foo_public_start:
 foo_public_end:
 
     /* ----------------------      INTERRUPT ROUTINES    --------------- */
-
 IRQ_VECTOR:
-    tst r15
+    tst r1  ; SM interrupted ?
     jnz 1f
-    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15    
-    reti
-1:  mov #unprotected_stack_base, r1
+    mov #unprotected_stack_base, r1
     do_reti r15
+
+1:  reti
 
     /* ----------------------         INTERRUPT VECTORS  --------------- */
 
