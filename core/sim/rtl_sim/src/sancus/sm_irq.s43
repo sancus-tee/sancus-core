@@ -15,6 +15,8 @@
 .set clobber_val, 0xf00d
 .set tst_val, 0xbabe
 .set tst_addr, DMEM_200
+.set dummy_sm_secret_start, DMEM_240
+.set dummy_sm_secret_end, DMEM_242
 .set sm_secret_start, DMEM_242
 .set sm_secret_end, DMEM_26E
 .set sm_ssa_loc,(sm_secret_end - 2)
@@ -35,6 +37,10 @@ main:
 cont_test:
     cmp #2, &do_exit
     jeq end_of_test
+
+    ; first enable a dummy privileged "scheduler" sancus enclave to make sure
+    ; the test enclave is interruptible
+    sancus_enable #1234, #dummy_sm_public_start, #dummy_sm_public_end, #dummy_sm_secret_start, #dummy_sm_secret_end
 
     ; enable sancus module and jump to its entry point
     sancus_enable #1234, #sm_public_start, #sm_public_end, #sm_secret_start, #sm_secret_end
@@ -79,6 +85,7 @@ init_regs:
     mov #reg_offset+0xf, r15
  
     ; busy waiting for the interrupt
+    eint
 loop:
     tst &do_exit
     jnz cont_test
@@ -86,6 +93,11 @@ loop:
     jmp loop
 
 sm_public_end:
+
+dummy_sm_public_start:
+    ; should not come here
+    br #end_of_test
+dummy_sm_public_end:
 
     /* ----------------------      INTERRUPT ROUTINES    --------------- */
 

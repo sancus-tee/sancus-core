@@ -229,7 +229,6 @@ wire priv_mode = sm_enabled ? (sm_current_id == 16'h0001) : 1'b1;
         .sm_executing           (exec_sm),
         .priv_mode              (priv_mode),
         .r15                    (r15),
-        .irq_detect             (irq_detect),
         .enter_sm               (enter_sm),
         .r2_gie                 (r2_gie),
     // OUTPUTS

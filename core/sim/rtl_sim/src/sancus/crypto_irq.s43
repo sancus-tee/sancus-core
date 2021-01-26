@@ -12,6 +12,8 @@
 .set unprotected_stack_base, DMEM_230
 .set bar_stack_base, unprotected_stack_base
 
+.set dummy_sm_secret_start, DMEM_234
+.set dummy_sm_secret_end, DMEM_236
 .set foo_secret_start, DMEM_236
 .set foo_secret_end, DMEM_242
 .set bar_secret_start, foo_secret_end
@@ -43,9 +45,14 @@ main:
     clr &tag+2,
     clr &tag+4
     clr &tag+6
+
+    ; first enable a dummy privileged "scheduler" sancus enclave to make sure
+    ; the test enclave is interruptible
+    sancus_enable #1234, #dummy_sm_public_start, #dummy_sm_public_end, #dummy_sm_secret_start, #dummy_sm_secret_end
+
     mov #0x1000, r4
     clr r4
-        
+
     ; === UNPROTECTED SANCUS_ENABLE ===
     sancus_enable #1234, #bar_public_start, #bar_public_end, #bar_secret_start, #bar_secret_end
     ; should continue here after IRQ
@@ -91,7 +98,7 @@ entry_call:
     ; === SANCUS_GET_ID ===
     mov #foo_public_start, r15
     sancus_get_id
-    cmp #2, r15
+    cmp #3, r15
     jne fail_test
     
     ; === SANCUS_WRAP ===
@@ -122,6 +129,11 @@ foo_public_start:
     ; should not come here
     br #fail_test
 foo_public_end:
+
+dummy_sm_public_start:
+    ; should not come here
+    br #fail_test
+dummy_sm_public_end:
 
     /* ----------------------      INTERRUPT ROUTINES    --------------- */
 IRQ_VECTOR:

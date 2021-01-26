@@ -41,7 +41,7 @@ initial
       @(r15);
       `CHK_INIT_REGS("init", `STACK_BASE)
       if (`SM_SP_ADDR !== `SM_SP_SAVE_LOC)  tb_error("====== INIT SM IRQ SP SAVE LOCATION ======");
-      if (sm_0_enabled)                    tb_error("====== SM ENABLED ======");
+      if (sm_1_enabled)                    tb_error("====== SM ENABLED ======");
 
       $display("\n--- UNPROTECTED INTERRUPT ---");
       repeat(5) @(posedge mclk);
@@ -75,12 +75,18 @@ initial
       tsc_val2 <= cur_tsc;
       repeat(2) @(posedge mclk);
       $display("SM enabled: %d crypto cycles", tsc_val2 - tsc_val1);
+      @(posedge crypto_start);
+      tsc_val1 <= cur_tsc;
+      @(posedge exec_done);
+      tsc_val2 <= cur_tsc;
+      repeat(2) @(posedge mclk);
+      $display("SM enabled: %d crypto cycles", tsc_val2 - tsc_val1);
 
-      while(~sm_0_executing) @(posedge mclk);
+      while(~sm_1_executing) @(posedge mclk);
       @(r15);
       `CHK_INIT_REGS("init", `STACK_BASE)
       if (`SM_SP_ADDR !== `SM_SP_SAVE_LOC)  tb_error("====== INIT SM IRQ SP SAVE LOCATION ======");
-      if (!sm_0_enabled)                    tb_error("====== SM NOT ENABLED ======");
+      if (!sm_1_enabled)                    tb_error("====== SM NOT ENABLED ======");
 
       /* ----------------------  PROTECTED SM INTERRUPT --------------- */
       $display("\n--- SM INTERRUPT ---");
@@ -101,7 +107,7 @@ initial
       tsc_val2 <= cur_tsc;
       repeat(2) @(posedge mclk);
       $display("IRQ logic done: %d cycles", tsc_val2 - tsc_val1);
-      `CHK_IRQ_REGS("after SM irq", 16'h0, sm_0_public_start, `IRQ_SM_STATUS)
+      `CHK_IRQ_REGS("after SM irq", 16'h0, sm_1_public_start, `IRQ_SM_STATUS)
       `CHK_IRQ_STACK("after SM irq", saved_pc, saved_sr)
       if (`SM_SP_SAVE!==`STACK_IRQ_INTERRUPTED) tb_error("====== SM IRQ SP INTERRUPTED WRITE VAL ======");
       @(`TST_MEM);

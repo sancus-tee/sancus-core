@@ -147,7 +147,8 @@ always @(posedge mclk or posedge puc_rst)
 
 assign enter_sm = (prev_cycle_spm_id != spm_current_id 
                 & spm_current_id != 16'h0000    // Ignore leaving the SM (switching to ffff or 0000)
-                & spm_current_id != 16'hffff);  
+                & spm_current_id != 16'hffff)
+                & ~handling_irq;
 
 always @(posedge mclk or posedge puc_rst)
   if (puc_rst)

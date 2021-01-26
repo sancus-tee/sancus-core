@@ -114,13 +114,13 @@ initial
       `CHK_WRAP(`AD_VAL, `BODY_VAL, 16'h0, 16'h0, 16'h0, 16'h0, 16'h0)
       `DUMP_WRAP
       
-      `INTERRUPT_CRYPTO("UNPROTECTED ENABLE", `CHK_NOT_ENABLED(sm_0_enabled), `CHK_ENABLED(sm_0_enabled, sm_0_id, 1))
+      `INTERRUPT_CRYPTO("UNPROTECTED ENABLE", `CHK_NOT_ENABLED(sm_1_enabled), `CHK_ENABLED(sm_1_enabled, sm_1_id, 2))
 
       `SEND_CRYPTO_IRQ( "CALLER ID" ,`CHK_RV(0), 0, 1)
 
-      `INTERRUPT_CRYPTO("PROTECTED ENABLE", `CHK_NOT_ENABLED(sm_1_enabled), `CHK_ENABLED(sm_1_enabled, sm_1_id, 2))
+      `INTERRUPT_CRYPTO("PROTECTED ENABLE", `CHK_NOT_ENABLED(sm_2_enabled), `CHK_ENABLED(sm_2_enabled, sm_2_id, 3))
 
-      `SEND_CRYPTO_IRQ( "GET ID" ,`CHK_RV(2), 0, 1)
+      `SEND_CRYPTO_IRQ( "GET ID" ,`CHK_RV(3), 0, 1)
 
       `CHK_WRAP(`AD_VAL, `BODY_VAL, 16'h0, 16'h0, 16'h0, 16'h0, 16'h0)
       `INTERRUPT_CRYPTO("SANCUS WRAP", `CHK_WRAP(`AD_VAL, `BODY_VAL, `CIPHER_MEM, `TAG_MEM_0, `TAG_MEM_1, `TAG_MEM_2, `TAG_MEM_3), )

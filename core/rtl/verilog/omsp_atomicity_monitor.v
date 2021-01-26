@@ -11,7 +11,6 @@ module omsp_atomicity_monitor (
   input  wire                    sm_executing,
   input  wire                    priv_mode,
   input  wire             [15:0] r15,
-  input  wire                    irq_detect,
   input  wire                    enter_sm,
   input  wire                    r2_gie,      // access control in omsp_register_file
   
@@ -107,14 +106,14 @@ begin
 
 end
 
-assign gie = r2_gie
+assign gie = (r2_gie | entry_finished | clix_finished)
 `ifdef SANCUS_RESTRICT_GIE
             // Disable interrupts in SM ID 1 if GIE is restricted
              & ~(priv_mode & sm_executing)
 `endif
              & ~inst_clix
              & (~inside_clix | clix_finished)
-             & ~inside_entry
+             & (~inside_entry | entry_finished)
              & ~enter_sm;
 
 // nesting of atomic sections (clix or sm entry) is not allowed + do not exceed max bound
