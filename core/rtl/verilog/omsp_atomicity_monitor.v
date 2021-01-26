@@ -113,7 +113,7 @@ assign gie = r2_gie
              & ~(priv_mode & sm_executing)
 `endif
              & ~inst_clix
-             & ~inside_clix
+             & (~inside_clix | clix_finished)
              & ~inside_entry
              & ~enter_sm;
 
