@@ -10,22 +10,25 @@
 .include "pmem_defs.asm"
 .include "sancus_macros.asm"
 
-.set stack_base, DMEM_260
+.set stack_base, DMEM_240
+.set ssa_base, DMEM_260
 .set reg_offset, 0x1234
 .set clobber_val, 0xf00d
 .set tst_val, 0xbabe
 .set tst_addr, DMEM_200
 .set reti_addr, DMEM_202
+.set stack_value, DMEM_204
+.set ssa_limit, DMEM_206
 
 .set foo_secret_start, DMEM_262
 .set foo_secret_end, DMEM_26E
-.set foo_sp_save_loc, (foo_secret_end - 2)
-.set foo_sp_save, (foo_secret_end - 4)
+.set foo_ssa_loc,(foo_secret_end - 2)
+.set foo_ssa, (ssa_base)
 .set foo_cntr, (foo_secret_end - 6)
-.set bar_secret_start, DMEM_204
+.set bar_secret_start, DMEM_208
 
 .macro init_stack
-    mov #stack_base, r1
+    mov &stack_value, r1
     repeat clr, &0x260, &0x25e, &0x25c, &0x25a, &0x258, &0x256, &0x254, &0x252
     repeat clr, &0x250, &0x24e, &0x24c, &0x24a, &0x248, &0x246, &0x244, &0x242
     eint
@@ -40,9 +43,13 @@ main:
     init_stack
     
     ; we first perform the test on an _unprotected_ sancus module
+    mov #foo_ssa+2, &stack_value
+    mov #8, &ssa_limit
     br #foo_public_start
 
 cont_test:
+    mov #stack_base, &stack_value
+    mov #34, &ssa_limit
     clr &foo_cntr
     sancus_enable #1234, #foo_public_start, #foo_public_end, #foo_secret_start, #foo_secret_end
     br #foo_public_start
@@ -54,15 +61,14 @@ end_of_test:
 
     /* ----------------------         SANCUS MODULE      --------------- */
 foo_public_start:
-    tst &foo_sp_save_loc
-    jnz 1f
-    mov #foo_sp_save, &foo_sp_save_loc
-1:  mov #stack_base, r1         ; end restartabe atomic sequence
-    mov #stack_base-1, r15
+    mov #foo_ssa, &foo_ssa_loc
+
+    mov &stack_value, r1         
+    mov #ssa_base+2-1, r15
     mov &foo_cntr, r14
     sub r14, r15
     add #2, r14
-    cmp #32, r14                ; 14 2-byte pushes by HW IRQ logic
+    cmp &ssa_limit, r14
     jl 1f
 
     ; redo the tests for an protected SM, or exit
@@ -80,7 +86,6 @@ foo_public_start:
     sancus_enable #1234, #bar_public_start, #bar_public_end, #bar_secret_start, r15
     
     ; initialize registers with known values
-    clr &foo_sp_save
     mov #reg_offset+0x4, r4
     mov #reg_offset+0x5, r5
     mov #reg_offset+0x6, r6
@@ -121,8 +126,7 @@ IRQ_VECTOR:
     mov r15, &reti_addr
     jmp 2f
 1:  mov #foo_public_start, &reti_addr
-2:  ; early-out ISR atomic section
-    eint
+2:  
     ; disable bar module
     mov #1f, r4
     br #bar_public_start

@@ -9,12 +9,8 @@
 `define LONG_TIMEOUT
 
 `define STACK_BASE              (`PER_SIZE + 'h60)
-`define STACK_IRQ               (`STACK_BASE - 16'd28)
-`define STACK_IRQ_INTERRUPTED   (`STACK_IRQ | 16'h1)
-`define STACK_RETI              (`STACK_BASE - 16'd4)
 
-`define FOO_SP_SAVE             (mem264)
-`define BAR_SECRET              (mem268)
+`define BAR_SECRET              (mem240)
 `define BAR_SECRET_VAL          (16'hf00d)
 `define FOO_PUBLIC_VAL          (16'hcafe)
 `define FOO_ENTRY_VAL           (16'h4303) // NOP
@@ -27,15 +23,17 @@
       saved_sr = r2; \
       /*if (~saved_sr[9]) tb_error("====== SR MEM VIOLATION BIT NOT SET ======");*/ \
       `CHK_INIT_REGS_R15("before SM irq", `STACK_BASE, r15val) \
-      if (`FOO_SP_SAVE!==16'h0) tb_error("====== SP_SAVE before SM irq != 0x0 ======"); \
       @(negedge handling_irq); \
       `CHK_IRQ_REGS("after SM irq", 16'h0, sm_0_public_start, `IRQ_SM_STATUS) \
       `CHK_IRQ_STACK_R15("after SM irq", saved_pc, saved_sr, r15val) \
-      if (`FOO_SP_SAVE!==`STACK_IRQ_INTERRUPTED) tb_error("====== SM IRQ SP WRITE VAL ======"); \
       $display("waiting for foo re-entry..."); \
       while(~sm_0_executing) @(posedge mclk); \
-      @(inst_so[`RETI]); \
+      while(~inst_branch) @(posedge mclk); \
       @(exec_done); \
+      repeat(2) @(posedge mclk);\
+      while(~inst_branch) @(posedge mclk); \
+      @(exec_done); \
+      repeat(2) @(posedge mclk);\
       `CHK_INIT_REGS_R15("foo reti", `STACK_BASE, r15val)
 
 reg [15:0] saved_pc;

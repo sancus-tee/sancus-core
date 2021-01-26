@@ -5,6 +5,7 @@ wire [15:0] pc_nxt              = dut.frontend_0.pc_nxt;
 wire [15:0] current_inst_pc     = dut.frontend_0.current_inst_pc;
 wire        gie                 = dut.frontend_0.gie;
 wire [8:0]  inst_so             = dut.frontend_0.inst_so;
+wire        inst_branch         = dut.frontend_0.inst_branch;
 wire        inst_irq_rst        = dut.frontend_0.inst_irq_rst;
 
 wire        handling_irq        = dut.execution_unit_0.handling_irq;

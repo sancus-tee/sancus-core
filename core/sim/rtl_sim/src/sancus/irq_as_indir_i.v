@@ -33,10 +33,6 @@ initial
       $display("|                 START SIMULATION              |");
       $display(" ===============================================");
 
-`ifndef UNPROTECTED_IRQ_REG_PUSH
-`define UNPROTECTED_IRQ_REG_PUSH
-`endif
-
       repeat(5) @(posedge mclk);
       stimulus_done = 0;
 
@@ -55,10 +51,9 @@ initial
 
 
       $display("Waiting for ISR...");
+      @(negedge handling_irq);
       @(`TST_MEM);
       if(`TST_MEM!==`TST_VAL)   tb_error("====== ISR INSTR TWO EXT WORDS ======");
-      @(r15==16'hffff);
-      @(r15==16'h0);
       `CHECK_REGISTERS("ISR pop", 16'h2, `STACK_BASE-6)
 
       $display("Waiting for completion...");

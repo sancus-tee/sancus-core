@@ -53,10 +53,6 @@ IRQ_VECTOR:
     ; dummy instruction with two extension words for testing purposes
     mov #tst_val, &tst_addr
     clr &tst_addr
-    ; clobber registers
-    repeat_to mov, #-1, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15
-    ; restore registers pushed by hw irq logic
-    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15
     mov #0x1000, r15
     reti
     

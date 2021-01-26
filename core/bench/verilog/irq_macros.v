@@ -30,7 +30,7 @@
       if (r6  !==`R6_VAL)   tb_error({"====== r6 value (", str, ") ====="});  \
       if (r5  !==`R5_VAL)   tb_error({"====== r5 value (", str, ") ====="});  \
       if (r4  !==`R4_VAL)   tb_error({"====== r4 value (", str, ") ====="});  \
-      if (r1  !==sp_val)    tb_error({"====== sp value (", str, ") ====="});
+      if (r1  !==sp_val)    tb_error({"====== sp value (", str, ") ====="});\
 
 `define CHK_INIT_REGS( str, sp_val ) \
     `CHK_INIT_REGS_R15(str, sp_val, `R15_VAL)
