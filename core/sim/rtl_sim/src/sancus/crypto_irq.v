@@ -8,7 +8,12 @@
 
 `define LONG_TIMEOUT
 `define IRQ_TIMEOUT         16'd10
-`define NB_IRQS             16'd2
+
+`ifdef ATOMICITY_MONITOR
+    `define NB_IRQS         16'd2
+`else
+    `define NB_IRQS         16'd1
+`endif
 
 `define AD_MEM              mem202
 `define AD_VAL              16'hc0de
@@ -32,7 +37,11 @@
       if (`TAG_MEM_2 != tag2)       tb_error("====== TAG 2 VAL ======"); \
       if (`TAG_MEM_3 != tag3)       tb_error("====== TAG 3 VAL ======");
 
-`define CHK_RV(r15Val) \
+`define CHK_RV_FAIL(r15Val) \
+    if (~r2_z) tb_error("====== R2 ZERO FLAG NOT SET ====="); \
+    if (r15!=r15Val) tb_error("====== CRYPTO RETURN VALUE =====");
+
+`define CHK_RV_SUCCESS(r15Val) \
     if (r2_z) tb_error("====== R2 ZERO FLAG SET ====="); \
     if (r15!=r15Val) tb_error("====== CRYPTO RETURN VALUE =====");
 
@@ -48,8 +57,9 @@
     irq[9] = 1; \
     tsc_val1 = cur_tsc; \
     /*while(~handling_irq) @(posedge mclk); */\
-    $display("crypto irq at 0x%h : \t%s", current_inst_pc, inst_full); \
+    $display("irq_pnd at 0x%h : \t%s", current_inst_pc, inst_full); \
     @(posedge handling_irq); \
+    $display("handling_irq at 0x%h", current_inst_pc); \
     chk_irq \
     irq[9] = 0; \
     @(negedge handling_irq); \
@@ -68,11 +78,17 @@
 `define INTERRUPT_CRYPTO( str, chk_irq, chk_final ) \
     nb = `NB_IRQS; \
     while(nb !== 16'd0) begin \
+      `ifdef ATOMICITY_MONITOR \
         `SEND_CRYPTO_IRQ( str, chk_irq, nb, `IRQ_TIMEOUT ) \
+      `else \
+        `SEND_CRYPTO_IRQ( str, chk_final, nb, `IRQ_TIMEOUT ) \
+      `endif \
         nb = nb - 16'd1; \
     end \
+  `ifdef ATOMICITY_MONITOR \
     `PASS_CRYPTO( str ) \
-    chk_final
+    chk_final \
+  `endif \
 
 `define CHK_NOT_ENABLED( sm_en) \
     if (~r2_z) tb_error("====== R2 ZERO FLAG NOT SET ====="); \
@@ -80,6 +96,7 @@
     if (r15!=0) tb_error("====== SANCUS_ENABLE RETURN VALUE =====");
     
 `define CHK_ENABLED( sm_en, sm_id, sm_id_val ) \
+    if (r2_z)               tb_error("====== R2 ZERO FLAG SET ====="); \
     if (~sm_en)             tb_error("====== SM FINAL NOT ENABLED ====="); \
     if (r15!=sm_id)         tb_error("====== SANCUS_ENABLE FINAL RETURN VALUE ====="); \
     if (sm_id!=sm_id_val)   tb_error("====== SM FINAL ID VALUE =====");
@@ -101,10 +118,6 @@ initial
       $display("|                 START SIMULATION              |");
       $display(" ===============================================");
 
-`ifndef UNPROTECTED_IRQ_REG_PUSH
-`define UNPROTECTED_IRQ_REG_PUSH
-`endif
-
       repeat(5) @(posedge mclk);
       stimulus_done = 0;
       tsc_val1 <= 0;
@@ -116,14 +129,15 @@ initial
       
       `INTERRUPT_CRYPTO("UNPROTECTED ENABLE", `CHK_NOT_ENABLED(sm_1_enabled), `CHK_ENABLED(sm_1_enabled, sm_1_id, 2))
 
-      `SEND_CRYPTO_IRQ( "CALLER ID" ,`CHK_RV(0), 0, 1)
+      `SEND_CRYPTO_IRQ( "CALLER ID" ,`CHK_RV_SUCCESS(0), /*nb=*/1, /*timeout=*/1)
 
       `INTERRUPT_CRYPTO("PROTECTED ENABLE", `CHK_NOT_ENABLED(sm_2_enabled), `CHK_ENABLED(sm_2_enabled, sm_2_id, 3))
 
-      `SEND_CRYPTO_IRQ( "GET ID" ,`CHK_RV(3), 0, 1)
+      `SEND_CRYPTO_IRQ( "GET ID" ,`CHK_RV_SUCCESS(3), /*nb=*/1, /*timeout=*/1)
 
       `CHK_WRAP(`AD_VAL, `BODY_VAL, 16'h0, 16'h0, 16'h0, 16'h0, 16'h0)
-      `INTERRUPT_CRYPTO("SANCUS WRAP", `CHK_WRAP(`AD_VAL, `BODY_VAL, `CIPHER_MEM, `TAG_MEM_0, `TAG_MEM_1, `TAG_MEM_2, `TAG_MEM_3), )
+      `INTERRUPT_CRYPTO("SANCUS WRAP", `CHK_RV_FAIL(0),
+        `CHK_RV_SUCCESS(1) `CHK_WRAP(`AD_VAL, `BODY_VAL, `CIPHER_MEM, `TAG_MEM_0, `TAG_MEM_1, `TAG_MEM_2, `TAG_MEM_3))
       cipherVal = `CIPHER_MEM;
       tagVal_0 = `TAG_MEM_0;
       tagVal_1 = `TAG_MEM_1;
@@ -133,11 +147,12 @@ initial
       `DUMP_WRAP
       
       `INTERRUPT_CRYPTO("SANCUS UNWRAP",
-        `CHK_WRAP(`AD_VAL, `BODY_MEM, cipherVal, tagVal_0, tagVal_1, tagVal_2, tagVal_3),
-        `CHK_WRAP(`AD_VAL, `BODY_VAL, cipherVal, tagVal_0, tagVal_1, tagVal_2, tagVal_3))
+        `CHK_RV_FAIL(0) `CHK_WRAP(`AD_VAL, `BODY_MEM, cipherVal, tagVal_0, tagVal_1, tagVal_2, tagVal_3),
+        `CHK_RV_SUCCESS(1) `CHK_WRAP(`AD_VAL, `BODY_VAL, cipherVal, tagVal_0, tagVal_1, tagVal_2, tagVal_3))
       `DUMP_WRAP
       
       /* ----------------------  END OF TEST ---------------- */
+      $display("waiting for end of test...");
       @(r4==16'h2000);
       stimulus_done = 1;
    end

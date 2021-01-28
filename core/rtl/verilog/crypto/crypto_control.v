@@ -129,7 +129,12 @@ localparam [STATE_SIZE-1:0] IDLE              =  0,
 
 reg [STATE_SIZE-1:0] state, next_state;
 
-wire irq_state_ok = state!=IDLE & state!=CHECK_SM & state!=FAIL & state!=SUCCESS;
+// NOTE: only support interrupt-restart crypto when the atomicity monitor is included
+`ifdef ATOMICITY_MONITOR
+    wire irq_state_ok = state!=IDLE & state!=CHECK_SM & state!=FAIL & state!=SUCCESS;
+`else
+    wire irq_state_ok = 1'b0;
+`endif
 
 always @(*)
     /* fail the currently executing crypto instruction on IRQ arrival; this
@@ -173,7 +178,15 @@ always @(*)
         WRITE_VKEY:        next_state =               WRITE_VKEY_WAIT;
         WRITE_VKEY_WAIT:   next_state = key_done    ? WRITE_VKEY_DONE   :
                                         wrap_busy   ? WRITE_VKEY_WAIT   : WRITE_VKEY;
-        WRITE_VKEY_DONE:   next_state = do_decrypt  ? DEC_INIT          : GEN_SMKEY_INIT_PS;
+        WRITE_VKEY_DONE:   next_state = 
+                                        do_decrypt  ? 
+        /* NOTE: disable confidential loading (incompatible with interrupt-restart crypto) */
+        `ifdef ATOMICITY_MONITOR
+                                                        FAIL
+        `else
+                                                        DEC_INIT
+        `endif
+                                                                        : GEN_SMKEY_INIT_PS;
         GEN_SMKEY_INIT_PS: next_state =               GEN_SMKEY_INIT_PE;
         GEN_SMKEY_INIT_PE: next_state =               WRAP_TEXT_WAIT;
         WRAP_TEXT:         next_state =               WRAP_TEXT_WAIT;

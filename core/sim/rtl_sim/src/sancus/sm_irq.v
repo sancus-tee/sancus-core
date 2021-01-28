@@ -119,6 +119,7 @@ initial
 
 
       /* ----------------------  END OF TEST --------------- */
+      $display("waiting for end of test...");
       @(r15==16'h2000);
       if (r1!==`STACK_BASE)         tb_error("====== FINAL SP VALUE =====");
 
