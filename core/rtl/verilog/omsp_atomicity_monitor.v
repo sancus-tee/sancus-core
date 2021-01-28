@@ -13,6 +13,7 @@ module omsp_atomicity_monitor (
   input  wire             [15:0] r15,
   input  wire                    enter_sm,
   input  wire                    r2_gie,      // access control in omsp_register_file
+  input  wire                    handling_irq,
   
   output wire                    gie,
   output wire                    atom_violation
@@ -36,9 +37,10 @@ reg                         inside_entry_prev;
 
 // clix is stopped when atom_clix_cnt reaches zero or r2 has gie set. 
 // This is assumed to be a request to end the clix and allows to early-out
-wire                        clix_finished  = (inside_clix  & ((atom_clix_cnt  == 0) | r2_gie));
+// also stop when handling_irq in response to an sm_violation
+wire                        clix_finished  = (inside_clix  & ((atom_clix_cnt  == 0) | r2_gie | handling_irq));
 // SM entry section is completed after expiring or on entering a clix instruction
-wire                        entry_finished = (inside_entry & ((atom_entry_cnt == 0) | inst_clix)); 
+wire                        entry_finished = (inside_entry & ((atom_entry_cnt == 0) | inst_clix | handling_irq)); 
 
 
 always @(posedge mclk or posedge puc_rst)
@@ -118,6 +120,7 @@ assign gie = (r2_gie | entry_finished | clix_finished)
 
 // nesting of atomic sections (clix or sm entry) is not allowed + do not exceed max bound
 assign atom_violation   = (inst_clix & ( inside_clix_prev | (atom_clix_input > `ATOM_BOUND)))
+                        | (enter_sm & inside_clix)
                         // we also can't enter another sm if we are already in an atomic entry section
                         | (enter_sm 
                             & inside_entry_prev

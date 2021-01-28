@@ -11,9 +11,10 @@
 `define STACK_IRQ               (`STACK_BASE) //- 16'd28)
 `define STACK_IRQ_INTERRUPTED   (`STACK_IRQ | 16'h1)
 
-`define SM_SP_ADDR              (mem26C)
-`define SM_SP_SAVE              (mem268)
-`define SM_SP_SAVE_LOC          (16'h26A)
+`define SM_SSA_PT               (mem26C)
+`define SM_SSA_SP               (mem268)
+`define SM_SSA_BASE             (16'h26A)
+
 `define TST_MEM                 (mem200)
 `define TST_VAL                 (16'hbabe)
 
@@ -40,7 +41,7 @@ initial
       /* ----------------------  UNPROTECTED SM INTERRUPT --------------- */
       @(r15);
       `CHK_INIT_REGS("init", `STACK_BASE)
-      if (`SM_SP_ADDR !== `SM_SP_SAVE_LOC)  tb_error("====== INIT SM IRQ SP SAVE LOCATION ======");
+      if (`SM_SSA_PT !== `SM_SSA_BASE)  tb_error("====== INIT SSA_PT ======");
       if (sm_1_enabled)                    tb_error("====== SM ENABLED ======");
 
       $display("\n--- UNPROTECTED INTERRUPT ---");
@@ -55,7 +56,7 @@ initial
       saved_pc <= r0-2;
       saved_sr <= r2;
       `CHK_INIT_REGS("before unprotected irq", `STACK_BASE)
-      if (`SM_SP_SAVE!==16'h0)      tb_error("====== SP_SAVE before unprotected irq != 0x0 ======");
+      if (`SM_SSA_SP!==16'h0)      tb_error("====== SSA_SP before unprotected irq != 0x0 ======");
       
       @(negedge handling_irq);
       tsc_val2 <= cur_tsc;
@@ -63,7 +64,8 @@ initial
       $display("IRQ logic done: %d cycles", tsc_val2 - tsc_val1);
       if (r2!==`IRQ_UNPR_STATUS)    tb_error("====== UNPROTECTED IRQ SR ======");
       `CHK_IRQ_STACK_UNPROTECTED("after unprotected irq", saved_pc, saved_sr)
-      if (`SM_SP_SAVE!==16'h0)      tb_error("====== UNPROTECTED IRQ SP WRITE ======");
+      if (`SM_SSA_PT !== `SM_SSA_BASE)  tb_error("====== INIT SSA_PT ======");
+      if (`SM_SSA_SP!==16'h0)      tb_error("====== UNPROTECTED IRQ SSA_SP WRITE ======");
       @(`TST_MEM);
       if(`TST_MEM!==`TST_VAL)       tb_error("====== ISR INSTR TWO EXT WORDS ======");
 
@@ -85,7 +87,7 @@ initial
       while(~sm_1_executing) @(posedge mclk);
       @(r15);
       `CHK_INIT_REGS("init", `STACK_BASE)
-      if (`SM_SP_ADDR !== `SM_SP_SAVE_LOC)  tb_error("====== INIT SM IRQ SP SAVE LOCATION ======");
+      if (`SM_SSA_PT !== `SM_SSA_BASE)  tb_error("====== INIT SSA_PT ======");
       if (!sm_1_enabled)                    tb_error("====== SM NOT ENABLED ======");
 
       /* ----------------------  PROTECTED SM INTERRUPT --------------- */
@@ -95,21 +97,23 @@ initial
       irq[9] <= 1;
       
       $display("waiting for handling IRQ...");
+      if (`SM_SSA_PT !== `SM_SSA_BASE)  tb_error("====== INIT SSA_PT ======");
       @(posedge handling_irq);
       tsc_val1 <= cur_tsc;
       irq[9] <= 0;
       saved_pc <= r0-2;
       saved_sr <= r2;
       `CHK_INIT_REGS("before SM irq", `STACK_BASE)
-      if (`SM_SP_SAVE!==16'h0)      tb_error("====== SP_SAVE before SM irq != 0x0 ======");
+      if (`SM_SSA_SP!==16'h0)      tb_error("====== SSA_SP before SM irq != 0x0 ======");
       
       @(negedge handling_irq);
       tsc_val2 <= cur_tsc;
       repeat(2) @(posedge mclk);
       $display("IRQ logic done: %d cycles", tsc_val2 - tsc_val1);
       `CHK_IRQ_REGS("after SM irq", 16'h0, sm_1_public_start, `IRQ_SM_STATUS)
-      `CHK_IRQ_STACK("after SM irq", saved_pc, saved_sr)
-      if (`SM_SP_SAVE!==`STACK_IRQ_INTERRUPTED) tb_error("====== SM IRQ SP INTERRUPTED WRITE VAL ======");
+      `CHK_IRQ_SSA("after SM irq", saved_pc, saved_sr)
+      if (`SM_SSA_PT !== `SM_SSA_BASE)  tb_error("====== SSA_PT WRITE ======");
+      if (`SM_SSA_SP!==`STACK_IRQ_INTERRUPTED) tb_error("====== SM IRQ SSA_SP INTERRUPTED WRITE VAL ======");
       @(`TST_MEM);
       if(`TST_MEM!==`TST_VAL)       tb_error("====== ISR INSTR TWO EXT WORDS ======");
 

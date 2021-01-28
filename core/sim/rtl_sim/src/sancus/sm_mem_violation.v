@@ -10,24 +10,32 @@
 
 `define STACK_BASE              (`PER_SIZE + 'h60)
 
-`define BAR_SECRET              (mem240)
+`define BAR_SECRET              (mem220)
 `define BAR_SECRET_VAL          (16'hf00d)
 `define FOO_PUBLIC_VAL          (16'hcafe)
 `define FOO_ENTRY_VAL           (16'h4303) // NOP
 
-`define CHK_VIOLATION_IRQ( str, r15val ) \
+`define BAR_SSA_BASE            (mem23E)
+`define BAR_SSA_BASE_ADDR       (16'h23E)
+`define BAR_SSA_PT              (mem240)
+
+`define CHK_VIOLATION_IRQ_SM( str, r15val, sm_pubstart) \
       $display({"\n--- ", str, " ---"}); \
       $display("waiting for handling IRQ..."); \
       @(posedge handling_irq); \
       saved_pc = r0-2; \
       saved_sr = r2; \
-      /*if (~saved_sr[9]) tb_error("====== SR MEM VIOLATION BIT NOT SET ======");*/ \
+      if (~r2[14]) tb_error("====== SR MEM VIOLATION BIT NOT SET ======"); \
       `CHK_INIT_REGS_R15("before SM irq", `STACK_BASE, r15val) \
       @(negedge handling_irq); \
-      `CHK_IRQ_REGS("after SM irq", 16'h0, sm_0_public_start, `IRQ_SM_STATUS) \
-      `CHK_IRQ_STACK_R15("after SM irq", saved_pc, saved_sr, r15val) \
+      `CHK_IRQ_REGS("after SM irq", 16'h0, sm_pubstart, `IRQ_SM_STATUS) \
+      if (r2[14]) tb_error("====== SR MEM VIOLATION BIT NOT CLEARED ======"); \
+ 
+`define CHK_VIOLATION_IRQ( str, r15val ) \
+      `CHK_VIOLATION_IRQ_SM( str, r15val, sm_1_public_start); \
+      `CHK_IRQ_SSA_R15("after SM irq", saved_pc, saved_sr, r15val, 1) \
       $display("waiting for foo re-entry..."); \
-      while(~sm_0_executing) @(posedge mclk); \
+      while(~sm_1_executing) @(posedge mclk); \
       while(~inst_branch) @(posedge mclk); \
       @(exec_done); \
       repeat(2) @(posedge mclk);\
@@ -61,12 +69,12 @@ initial
       /* ----------------------  INITIALIZATION --------------- */
 
       $display("waiting for bar entry...");
-      while(~sm_1_executing) @(posedge mclk);
+      while(~sm_0_executing) @(posedge mclk);
       @(`BAR_SECRET);
       if (`BAR_SECRET !== `BAR_SECRET_VAL) tb_error("====== BAR SECRET INIT ======");
       
       $display("waiting for foo entry...");
-      while(~sm_0_executing) @(posedge mclk);
+      while(~sm_1_executing) @(posedge mclk);
       @(r15);
       `CHK_INIT_REGS("foo init", `STACK_BASE)
 
@@ -89,11 +97,19 @@ initial
       `CHK_VIOLATION_IRQ("TEXT READ", 16'h0)
       
       `CHK_VIOLATION_IRQ("ENTRY POINT READ", 16'h0)
+
+      `ifdef ATOMICITY_MONITOR
+        if (`BAR_SSA_PT !== `BAR_SSA_BASE_ADDR)   tb_error("====== BAR SSA_PT INIT ======");
+        if (`BAR_SSA_BASE !== 16'h0)              tb_error("====== BAR SSA INIT ======");
+        `CHK_VIOLATION_IRQ_SM("ATOM VIOLATION (CLIX)", 16'hdead, sm_0_public_start);
+        if (`BAR_SECRET !== `BAR_SECRET_VAL)      tb_error("====== BAR SECRET AFTER ATOM IRQ ======");
+        if (`BAR_SSA_PT !== `BAR_SSA_BASE_ADDR)   tb_error("====== BAR SSA_PT AFTER ATOM IRQ ======");
+        if (`BAR_SSA_BASE !== 16'h0)              tb_error("====== BAR SSA AFTER ATOM IRQ ======");
+      `endif
       
       /* ----------------------  END OF TEST --------------- */
       $display("waiting for end of test...");
       @(r15==16'h2000);
-      if (r1!==`STACK_BASE)         tb_error("====== FINAL SP VALUE =====");
 
       stimulus_done = 1;
    end

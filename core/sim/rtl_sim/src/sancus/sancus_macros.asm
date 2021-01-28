@@ -18,6 +18,12 @@
     .word 0x1388
 .endm
 
+; set up clix length and call clix; clobbers r15
+.macro clix clix_len:req
+    mov \clix_len, r15
+    .word 0x1389
+.endm
+
 .macro sancus_enable vendor:req, ps:req, pe:req, ss:req, se:req
     clr r9
     clr r10

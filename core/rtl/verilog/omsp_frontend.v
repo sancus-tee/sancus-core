@@ -236,8 +236,7 @@ parameter E_DST_WR2   = `E_DST_WR2;
 parameter E_IRQ_PRE   = `E_IRQ_PRE;
 parameter E_IRQ_EXT_0 = `E_IRQ_EXT_0;
 parameter E_IRQ_EXT_1 = `E_IRQ_EXT_1;
-parameter E_IRQ_SSA_RD_1 = `E_IRQ_SSA_RD_1;
-parameter E_IRQ_SSA_RD_2 = `E_IRQ_SSA_RD_2;
+parameter E_IRQ_SSA_RD  = `E_IRQ_SSA_RD;
 parameter E_IRQ_SP_WR = `E_IRQ_SP_WR;
 
 
@@ -957,13 +956,20 @@ wire [4:0] e_first_state = ~dbg_halt_st  & inst_so_nxt[`IRQ] ? E_IRQ_PRE:
 // State machine
 //--------------------------------
 
+/* NOTE: don't touch SSA when violation irq in atomic section (eg illegal enclave entry) */
+reg sm_ssa;
+always @(posedge mclk or posedge puc_rst)
+  if (puc_rst)              sm_ssa <= 0;
+  else if (irq_detect)      sm_ssa <= (exec_sm & gie);
+
 // States Transitions
 always @(*)
     case(e_state)
       E_IDLE     : e_state_nxt =  e_first_state;
 
       /* IRQ_0-3: push SR/PC */
-      E_IRQ_PRE  : e_state_nxt =  exec_sm           ? E_IRQ_SSA_RD_1 : E_IRQ_0;
+      E_IRQ_PRE  : e_state_nxt =  sm_ssa            ? E_IRQ_SSA_RD :
+                                  exec_sm           ? E_IRQ_4      : E_IRQ_0;
       E_IRQ_0    : e_state_nxt =  E_IRQ_1;
       E_IRQ_1    : e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_2;
       E_IRQ_2    : e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_3;
@@ -978,8 +984,7 @@ always @(*)
                                   ~exec_sm)         ? E_IRQ_4     : E_IRQ_EXT_0;
 
       /* IRQ_SP: store SP in SM secret data */
-      //E_IRQ_SSA_RD_1: e_state_nxt =  E_IRQ_SSA_RD_2;
-      E_IRQ_SSA_RD_1: e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_SP_WR;
+      E_IRQ_SSA_RD: e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_SP_WR;
       E_IRQ_SP_WR: e_state_nxt =  E_IRQ_0;
 
       /* IRQ_4: vector to ISR */

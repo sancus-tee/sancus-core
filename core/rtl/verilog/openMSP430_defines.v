@@ -146,7 +146,8 @@
 ///-------------------------------------------------------
 // Include/Exclude Non-Maskable-Interrupt support
 //-------------------------------------------------------
-`define NMI
+// NOTE: disable NMI to ensure (restricted) atomicity for Sancus enclaves
+//`define NMI
 
 
 //-------------------------------------------------------
@@ -165,10 +166,9 @@
 //         when 0. Therefore make sure it is glitch free.
 //
 //-------------------------------------------------------
-`define SYNC_NMI
+//`define SYNC_NMI
 //`define SYNC_CPU_EN
 //`define SYNC_DBG_EN
-
 
 //-------------------------------------------------------
 // Peripheral Memory Space:
@@ -744,8 +744,7 @@
 `define E_IRQ_PRE   5'h10
 `define E_IRQ_EXT_0 5'h11
 `define E_IRQ_EXT_1 5'h12
-`define E_IRQ_SSA_RD_1 5'h13
-`define E_IRQ_SSA_RD_2 5'h14
+`define E_IRQ_SSA_RD   5'h13
 `define E_IRQ_SP_WR    5'h15
 
 // ALU control signals

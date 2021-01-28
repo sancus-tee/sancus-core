@@ -15,8 +15,12 @@
 .set bar_clobber_val, 0xf00d
 .set tst_val, 0xbabe
 .set tst_addr, DMEM_200
-.set bar_secret_start, DMEM_240
+
+.set bar_secret_start, DMEM_220
 .set bar_secret_end, DMEM_242
+.set bar_ssa_loc,(bar_secret_end - 2)
+.set bar_ssa, (bar_secret_end - 4)
+
 .set foo_secret_start, DMEM_242
 .set foo_secret_end, DMEM_26E
 .set foo_ssa_loc,(foo_secret_end - 2)
@@ -28,8 +32,9 @@ main:
     eint
     clr r4
 
-    sancus_enable #1234, #foo_text_start, #foo_text_end, #foo_secret_start, #foo_secret_end
     sancus_enable #1234, #bar_text_start, #bar_text_end, #bar_secret_start, #bar_secret_end
+    sancus_enable #1234, #foo_text_start, #foo_text_end, #foo_secret_start, #foo_secret_end
+    mov #bar_clobber_val, r15
     br #bar_text_start
 
     ; should not come here
@@ -54,6 +59,9 @@ foo_text_start:
     repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r2
     mov &foo_ssa-2, r1
     br &foo_ssa
+
+foo_text_value:
+    .word 0xcafe
 
 init_regs:
     ; initialize registers with known values
@@ -104,16 +112,19 @@ init_regs:
     
     ; === TEXT ENTRY READ VIOLATION ===
     mov &bar_text_start, r15
-    
-    br #end_of_test
-foo_text_value:
-    .word 0xcafe
+
+    ; === ATOM VIOLATION ===
+    clix #100
+    mov #0xdead, r15
+    ; not allowed to enter new SM (bar) while in clix 
 foo_text_end:
 
 bar_text_start:
-    nop
-    mov #bar_clobber_val, &bar_secret_start
-    br #foo_text_start
+    mov r15, &bar_secret_start
+    mov #bar_ssa, &bar_ssa_loc
+    cmp #0xdead, r15
+    jne foo_text_start
+    br #end_of_test
 bar_text_value:
     .word 0xbeef
 bar_text_end:
@@ -122,6 +133,8 @@ bar_text_end:
     /* ----------------------      INTERRUPT ROUTINES    --------------- */
 
 IRQ_VECTOR:
+    cmp #bar_text_start, r15
+    jeq end_of_test
     mov #0xffff, r4
     mov #unprotected_stack_base, r1
     do_reti r15
