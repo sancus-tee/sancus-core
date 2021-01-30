@@ -1,5 +1,5 @@
 #include "Vtb_openMSP430.h"
-
+#include <errno.h>
 #include <verilated.h>
 #include <verilated_vcd_c.h>
 // #include <verilated_fst_c.h>
