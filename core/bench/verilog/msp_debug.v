@@ -169,6 +169,7 @@ always @(e_state_bin)
       5'h11   : e_state =  "IRQ_EXT_0";
       5'h12   : e_state =  "IRQ_EXT_1";
       5'h13   : e_state =  "IRQ_SSA_RD";
+      5'h14   : e_state =  "IRQ_SSA_WAIT";
       5'h15   : e_state =  "IRQ_SP_WR";
       default : e_state =  "xxxx";
     endcase
