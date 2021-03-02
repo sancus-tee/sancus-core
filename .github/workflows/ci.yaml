@@ -18,6 +18,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
       - name: System setup
         run: sudo apt-get install build-essential cmake iverilog tk binutils-msp430 gcc-msp430 msp430-libc msp430mcu expect-dev verilator -y
       - name: Build Sancus
@@ -30,6 +32,8 @@ jobs:
   test-sancus:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
       - name: System setup
         run: sudo apt-get install build-essential cmake iverilog tk binutils-msp430 gcc-msp430 msp430-libc msp430mcu expect-dev verilator -y
       - name: Build Sancus
@@ -40,9 +44,15 @@ jobs:
           ./run_all
   
   only-build:
-    runs-on: [ubuntu-18.04, ubuntu-16.04]
+    name: Test building on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04, ubuntu-16.04]
     steps:
-      - name: System setup
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: System setup on ${{ matrix.os }}
         run: sudo apt-get install build-essential cmake iverilog tk binutils-msp430 gcc-msp430 msp430-libc msp430mcu expect-dev verilator -y
-      - name: Build Sancus
+      - name: Build Sancus on ${{ matrix.os }}
         run: cd build && cmake --build .
