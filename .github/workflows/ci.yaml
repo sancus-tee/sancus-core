@@ -1,0 +1,48 @@
+# This is the ci workflow
+
+name: CI
+
+# Run action after the docker push
+on:
+   push:
+    # Publish `master` as Docker `latest` image.
+    branches:
+      - master
+   pull_request:
+
+  # Allows to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  test-original:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: System setup
+        run: sudo apt-get install build-essential cmake iverilog tk binutils-msp430 gcc-msp430 msp430-libc msp430mcu expect-dev verilator -y
+      - name: Build Sancus
+        run: mkdir build && cd build && cmake .. && cd ..
+      - name: Run all tests
+        run: |
+          cd core/sim/rtl_sim/run/
+          ./run_all
+          
+  test-sancus:
+    runs-on: ubuntu-latest
+    steps:
+      - name: System setup
+        run: sudo apt-get install build-essential cmake iverilog tk binutils-msp430 gcc-msp430 msp430-libc msp430mcu expect-dev verilator -y
+      - name: Build Sancus
+        run: mkdir build && cd build && cmake .. && cd ..
+      - name: Run all tests
+        run: |
+          cd core/sim/rtl_sim/run/
+          ./run_all
+  
+  only-build:
+    runs-on: [ubuntu-18.04, ubuntu-16.04]
+    steps:
+      - name: System setup
+        run: sudo apt-get install build-essential cmake iverilog tk binutils-msp430 gcc-msp430 msp430-libc msp430mcu expect-dev verilator -y
+      - name: Build Sancus
+        run: cd build && cmake --build .
