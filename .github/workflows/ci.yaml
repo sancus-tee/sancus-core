@@ -55,4 +55,4 @@ jobs:
       - name: System setup on ${{ matrix.os }}
         run: sudo apt-get install build-essential cmake iverilog tk binutils-msp430 gcc-msp430 msp430-libc msp430mcu expect-dev verilator -y
       - name: Build Sancus on ${{ matrix.os }}
-        run: cd build && cmake --build .
+        run: mkdir build && cd build && cmake .. && cd ..
