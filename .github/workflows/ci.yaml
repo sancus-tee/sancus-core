@@ -5,9 +5,9 @@ name: CI
 # Run action after the docker push
 on:
   push:
-  # Publish `master` as Docker `latest` image.
-  branches:
-    - master
+    # Publish `master` as Docker `latest` image.
+    branches:
+      - master
   pull_request:
 
   # Allows to run this workflow manually from the Actions tab
