@@ -21,5 +21,8 @@ jobs:
         run: mkdir build && cd build && cmake .. && cd ..
       - name: Run test bench
         env:
-          TARGET: test
-        run: echo ./$TARGET
+          TARGET: jo
+        run: |
+          cd core/sim/rtl_sim/run/
+          echo ./$TARGET
+          echo ./${{ matrix.target }}
