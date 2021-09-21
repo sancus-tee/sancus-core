@@ -1,58 +1,27 @@
-# This is the ci workflow
-
 name: CI
 
-# Run action after the docker push
-on:
-  push:
-    # Publish `master` as Docker `latest` image.
-    branches:
-      - master
-  pull_request:
-
-  # Allows to run this workflow manually from the Actions tab
-  workflow_dispatch:
+on: [push]
 
 jobs:
-  test-original:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
-      - name: System setup
-        run: sudo apt-get install build-essential cmake iverilog tk binutils-msp430 gcc-msp430 msp430-libc msp430mcu expect-dev verilator -y
-      - name: Build Sancus
-        run: mkdir build && cd build && cmake .. && cd ..
-      - name: Run all tests
-        run: |
-          cd core/sim/rtl_sim/run/
-          ./run_all
-          
-  test-sancus:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
-      - name: System setup
-        run: sudo apt-get install build-essential cmake iverilog tk binutils-msp430 gcc-msp430 msp430-libc msp430mcu expect-dev verilator -y
-      - name: Build Sancus
-        run: mkdir build && cd build && cmake .. && cd ..
-      - name: Run all tests
-        run: |
-          cd core/sim/rtl_sim/run/
-          ./run_all
-  
-  only-build:
-    name: Test building on ${{ matrix.os }}
+  bench:
+    name: Building and test bench on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04, ubuntu-16.04]
+        os: [ubuntu-latest, ubuntu-18.04, ubuntu-20.04]
+        include:
+          - target: ["run_all", "run_all_sancus"]
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
-      - name: System setup on ${{ matrix.os }}
+      - name: Install dependencies
         run: sudo apt-get install build-essential cmake iverilog tk binutils-msp430 gcc-msp430 msp430-libc msp430mcu expect-dev verilator -y
-      - name: Build Sancus on ${{ matrix.os }}
+      - name: Build sancus-core
         run: mkdir build && cd build && cmake .. && cd ..
+      - name: Run test bench
+        env:
+          TARGET: ${{ matrix.target }}
+        run: |
+          cd core/sim/rtl_sim/run/
+          ./$(TARGET)
