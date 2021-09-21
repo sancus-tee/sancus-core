@@ -1,6 +1,10 @@
 name: CI
-
-on: [push]
+on:
+  push:
+  pull_request:
+  # trigger a cron job every monday at 8am
+  schedule:
+    - cron: '00 08 * * MON'
 
 jobs:
   bench:
@@ -8,7 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, ubuntu-18.04, ubuntu-20.04]
+        os: [ubuntu-20.04, ubuntu-18.04]
         target: [run_all, run_all_sancus]
 
     steps:
