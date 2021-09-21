@@ -4,13 +4,14 @@ on: [push]
 
 jobs:
   bench:
-    name: Building and test bench on ${{ matrix.os }}
+    name: ${{ matrix.target }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, ubuntu-18.04, ubuntu-20.04]
         include:
-          - target: ["run_all", "run_all_sancus"]
+          - target: "run_all"
+          - target: "run_all_sancus"
 
     steps:
       - name: Check out repository
@@ -20,9 +21,6 @@ jobs:
       - name: Build sancus-core
         run: mkdir build && cd build && cmake .. && cd ..
       - name: Run test bench
-        env:
-          TARGET: jo
         run: |
           cd core/sim/rtl_sim/run/
-          echo ./$TARGET
-          echo ./${{ matrix.target }}
+          ./${{ matrix.target }}
