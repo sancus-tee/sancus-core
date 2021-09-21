@@ -9,9 +9,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, ubuntu-18.04, ubuntu-20.04]
-        include:
-          - target: "run_all"
-          - target: "run_all_sancus"
+        target: [run_all, run_all_sancus]
 
     steps:
       - name: Check out repository
