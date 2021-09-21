@@ -24,4 +24,4 @@ jobs:
           TARGET: ${{ matrix.target }}
         run: |
           cd core/sim/rtl_sim/run/
-          ./$(TARGET)
+          ./$TARGET
