@@ -12,6 +12,7 @@
 #omsp_dbg_uart.v
 #omsp_dbg.v
 #omsp_execution_unit.v
+#omsp_atomicity_monitor.v
 #omsp_frontend.v
 #omsp_hmac_16bit.v
 #omsp_hmac_control.v

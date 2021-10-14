@@ -1,7 +1,11 @@
 set(RESET_CONFIG "`define RESET_ON_VIOLATION")
-
 if (NOT RESET_ON_VIOLATION)
     set(RESET_CONFIG "// ${RESET_CONFIG}")
+endif ()
+
+set(ATOM_CONFIG "`define ATOMICITY_MONITOR")
+if (NOT ATOMICITY_MONITOR)
+    set(ATOM_CONFIG "// ${ATOM_CONFIG}")
 endif ()
 
 configure_file(config.v.in ${CMAKE_CURRENT_SOURCE_DIR}/config.v)
@@ -10,6 +14,7 @@ set(SRC
     config.v
     omsp_alu.v
     omsp_and_gate.v
+    omsp_atomicity_monitor.v
     omsp_clock_gate.v
     omsp_clock_module.v
     omsp_clock_mux.v

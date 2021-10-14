@@ -14,14 +14,12 @@
 .set stack_base, DMEM_260
 .set bar_val, 0xbabe
 
-.set foo_secret_start, DMEM_262
-.set foo_secret_end, DMEM_268
-.set foo_sp_save_loc, (foo_secret_end - 2)
-.set foo_sp_save, (foo_secret_end - 4)
-.set bar_secret_start, foo_secret_end
-.set bar_secret_end, DMEM_26E
-.set bar_sp_save_loc, (bar_secret_end - 2)
-.set bar_sp_save, (bar_secret_end - 4)
+.set bar_secret_start, DMEM_240
+.set bar_secret_end, DMEM_242
+.set foo_secret_start, bar_secret_end
+.set foo_secret_end, DMEM_26E
+.set foo_ssa_loc,(foo_secret_end - 2)
+.set foo_ssa, (foo_secret_end - 4)
 
 .global main
 
@@ -32,8 +30,8 @@ main:
     mov #0x1000, r15
     clr r4
     
-    sancus_enable #1234, #foo_public_start, #foo_public_end, #foo_secret_start, #foo_secret_end
     sancus_enable #1234, #bar_public_start, #bar_public_end, #bar_secret_start, #bar_secret_end
+    sancus_enable #1234, #foo_public_start, #foo_public_end, #foo_secret_start, #foo_secret_end
     br #foo_public_start
     
     /* ----------------------         END OF TEST        --------------- */
@@ -43,14 +41,17 @@ end_of_test:
 
     /* ----------------------         SANCUS MODULE      --------------- */
 foo_public_start:
-    mov #foo_sp_save, &foo_sp_save_loc
+    mov #foo_ssa, &foo_ssa_loc
     cmp #0xffff, r4
     jne 1f
-    ; restore reti state
-    mov &foo_sp_save, r1
-    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15
+
+    ; restore interrupted execution context
+    mov #foo_ssa-28, r1
+    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r2
+    mov &foo_ssa-2, r1
+
     ; continue at bar entry point
-    reti
+    br &foo_ssa
 
 1:  mov #0x3000, r15
     br #bar_public_start

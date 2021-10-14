@@ -81,6 +81,7 @@ module  omsp_frontend (
     prev_inst_pc,
     irq_num,
     irq_detect,
+    irq_pnd,
 
 // INPUTs
     cpu_en_s,                      // Enable CPU code execution (synchronous)
@@ -139,11 +140,12 @@ output              nmi_acc;       // Non-Maskable interrupt request accepted
 output       [15:0] pc;            // Program counter
 output       [15:0] pc_nxt;        // Next PC value (for CALL & IRQ)
 output              sm_irq;
-output        [8:0] spm_command;
+output        [9:0] spm_command;
 output       [15:0] current_inst_pc;
 output       [15:0] prev_inst_pc;
 output        [3:0] irq_num;
 output              irq_detect;
+output              irq_pnd;
 
 // INPUTs
 //=========
@@ -234,7 +236,8 @@ parameter E_DST_WR2   = `E_DST_WR2;
 parameter E_IRQ_PRE   = `E_IRQ_PRE;
 parameter E_IRQ_EXT_0 = `E_IRQ_EXT_0;
 parameter E_IRQ_EXT_1 = `E_IRQ_EXT_1;
-parameter E_IRQ_SP_RD = `E_IRQ_SP_RD;
+parameter E_IRQ_SSA_RD  = `E_IRQ_SSA_RD;
+parameter E_IRQ_SSA_WAIT  = `E_IRQ_SSA_WAIT;
 parameter E_IRQ_SP_WR = `E_IRQ_SP_WR;
 
 
@@ -619,11 +622,12 @@ always @(posedge mclk_decode or posedge puc_rst)
 // 10'b0000010000: SM_AE_WRAP
 // 10'b0000100000: SM_AE_UNWRAP
 // 10'b0001000000: SM_ID
-// 10'b0010000000: SM_PREV_ID
+// 10'b0010000000: SM_PREV_ID       == .word 0x1387
 // 10'b0100000000: SM_STACK_GUARD
-reg  [8:0]  spm_command;
+// 10'b1000000000: SM_CLIX          == .word 0x1389
+reg  [9:0]  spm_command;
 wire [15:0] spm_command_to_1hot = one_hot16(ir[3:0]) & {16{inst_so_nxt[`SANCUS]}};
-wire [8:0]  spm_command_nxt = spm_command_to_1hot[8:0];
+wire [9:0]  spm_command_nxt = spm_command_to_1hot[9:0];
 
 always @(posedge mclk_decode or posedge puc_rst)
   if (puc_rst)     spm_command <= 9'h00;
@@ -953,32 +957,37 @@ wire [4:0] e_first_state = ~dbg_halt_st  & inst_so_nxt[`IRQ] ? E_IRQ_PRE:
 // State machine
 //--------------------------------
 
+/* NOTE: don't touch SSA when violation irq in atomic section (eg illegal enclave entry) */
+reg sm_ssa;
+always @(posedge mclk or posedge puc_rst)
+  if (puc_rst)              sm_ssa <= 0;
+  else if (irq_detect)      sm_ssa <= (exec_sm & gie);
+
 // States Transitions
 always @(*)
     case(e_state)
       E_IDLE     : e_state_nxt =  e_first_state;
 
       /* IRQ_0-3: push SR/PC */
-      E_IRQ_PRE  : e_state_nxt =  E_IRQ_0;
+      E_IRQ_PRE  : e_state_nxt =  sm_ssa            ? E_IRQ_SSA_RD :
+                                  exec_sm           ? E_IRQ_4      : E_IRQ_0;
       E_IRQ_0    : e_state_nxt =  E_IRQ_1;
       E_IRQ_1    : e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_2;
       E_IRQ_2    : e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_3;
-      E_IRQ_3    : e_state_nxt =  (sm_irq | inst_irq_rst)
-      `ifndef UNPROTECTED_IRQ_REG_PUSH
-                                  | ~exec_sm
-      `endif
+      E_IRQ_3    : e_state_nxt =  sm_irq | inst_irq_rst | ~exec_sm
                                                     ? E_IRQ_4     : E_IRQ_EXT_0;
 
       /* IRQ_EXT: push GP registers */
       E_IRQ_EXT_0: e_state_nxt =  sm_irq            ? E_IRQ_4     :
-                                  inst_src[1]       ? E_IRQ_SP_RD : E_IRQ_EXT_1;
+                                  inst_src[1]       ? E_IRQ_4     : E_IRQ_EXT_1;
       E_IRQ_EXT_1: e_state_nxt =  sm_irq |
                                   (inst_src[1] &
                                   ~exec_sm)         ? E_IRQ_4     : E_IRQ_EXT_0;
 
       /* IRQ_SP: store SP in SM secret data */
-      E_IRQ_SP_RD: e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_SP_WR;
-      E_IRQ_SP_WR: e_state_nxt =  E_IRQ_4;
+      E_IRQ_SSA_RD: e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_SSA_WAIT;
+      E_IRQ_SSA_WAIT: e_state_nxt =  E_IRQ_SP_WR; // one stall cycle to settle memory bus
+      E_IRQ_SP_WR: e_state_nxt =  E_IRQ_0;
 
       /* IRQ_4: vector to ISR */
       E_IRQ_4    : e_state_nxt =  E_EXEC;

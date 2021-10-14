@@ -1,5 +1,5 @@
 #include "Vtb_openMSP430.h"
-
+#include <errno.h>
 #include <verilated.h>
 #include <verilated_vcd_c.h>
 // #include <verilated_fst_c.h>
@@ -69,12 +69,13 @@ inline bool check_file_exists (const char* filename) {
                 Word word = b0 | (b1 << 8) ; // little endian
                 memory_.push_back(word);
             }
-            LOG_F(INFO,"Read program memory of %lu bytes.\n", memoryBytes.size());
+            LOG_F(INFO,"Read program memory of %lu bytes.", memoryBytes.size());
         }
     }
 
     bool eval(bool clockedge)
     {
+        // 1) Write to memory
         bool updated = false;
         if (! *_chip_enable            // chip enable is low active
             && *_write_enable != 0b11  // write enable is low active
@@ -83,10 +84,15 @@ inline bool check_file_exists (const char* filename) {
             write(*_addr, *_write_enable, *_din);
         }
         
+        // 2) Read from memory as defined in dmem_addr of last cycle
         if(clockedge) *_dout = read(prev_address, clockedge);
-        prev_address = *_addr;
+        
+        // 3) Update address to read from next time if chip is enabled (otherwise keep reading the old address)
+        if (! *_chip_enable) prev_address = *_addr;
 
-        LOG_F(1,"[Memory] %s Regs are: cen: %x wen: %x, addr: %2x, in: %2x, out:%2x\n",_name.c_str(), *_chip_enable, *_write_enable, *_addr, *_din, *_dout);
+        // For very low-level debugging, the following line might help. But otherwise, 
+        // logging at other times than the rising edge is probably not useful.
+        // LOG_F(MAX,"[Memory] %s Regs are: cen: %x wen: %x, addr: %2x, in: %2x, out:%2x",_name.c_str(), *_chip_enable, *_write_enable, *_addr, *_din, *_dout);
 
         return true;
     }
@@ -115,7 +121,7 @@ inline bool check_file_exists (const char* filename) {
     {
         ensureEnoughMemory(address);
         Word memoryValue = memory_[(prev_address)];
-        LOG_F(1,"[Memory] %s [Read] %x : %x\n", _name.c_str(), prev_address, memoryValue);
+        LOG_F(MAX,"[Memory] %s [Read] %x : %x", _name.c_str(), prev_address, memoryValue);
 
         return memoryValue;
     }
@@ -135,7 +141,7 @@ inline bool check_file_exists (const char* filename) {
         memoryValue &= ~bitMask;
         memoryValue |= value & bitMask;
 
-        LOG_F(1,"[Memory] %s [Write] %x : %x\n", _name.c_str(), address, memoryValue);
+        LOG_F(MAX,"[Memory] %s [Write] %x : %x", _name.c_str(), address, memoryValue);
     }
 
     void ensureEnoughMemory(Address address)
@@ -163,7 +169,7 @@ inline bool check_file_exists (const char* filename) {
 
 bool tracer_enabled = false;
 bool crypto_noshow  = false;
-int  crypto_cycles = 0;
+uint32_t  crypto_cycles = 0;
 auto tracer = std::unique_ptr<VerilatedVcdC>{new VerilatedVcdC};
 // auto tracer = std::unique_ptr<VerilatedFstC>{new VerilatedFstC};
 // VerilatedFstC* tfp = new VerilatedFstC;
@@ -215,7 +221,7 @@ void eval_fileio(unique_ptr<Vtb_openMSP430> &top)
 int exit_program(int result){
     printf("\n\n\n");
     LOG_F(INFO, "======================== Simulation ended ========================");
-    LOG_F(INFO, "Total/crypto cycles simulated: %lu/%lu.", mainTime / CLOCK_PERIOD, crypto_cycles);
+    LOG_F(INFO, "Total/crypto cycles simulated: %lu/%u.", mainTime / CLOCK_PERIOD, crypto_cycles);
     switch(result){
         case status_success:
             LOG_F(INFO,     "================ Simulation succeeded gracefully =================");
@@ -258,6 +264,8 @@ int main(int argc, char** argv)
                     .help("File type (default=elf). Override to pass a binary file.") .metavar("TYPE");
     parser.add_option("-d", "--dumpfile") .dest("vcd_filename") .set_default("")
                     .help("Name of the optional outputted simulation vcd file.") .metavar("OUTFILE");
+    parser.add_option("--start-dump-at") .dest("vcd_start") .type("long") .set_default(0)
+                    .help("Starts dumping only when reaching cycle X.") .metavar("X");
     parser.add_option("-l", "--log") .dest("logfile") .set_default("")
                     .help("Prints all log messages to a debug log file.") .metavar("LOGFILE");
     parser.add_option("--fileio-in") .dest("fio_in") .set_default("")
@@ -268,6 +276,8 @@ int main(int argc, char** argv)
                     .help("Maximum of cycles to execute before aborting. Set to 0 for no timeout.") .metavar("INT");
     parser.add_option("--stop-after-sm-violation") .dest("sm_violation_stopcount") .type("long") .set_default(0)
                     .help("If set to larger than 0, stops the simulation X cycles after a SM Violation occured. Default: 0 (stop directly on violation). Set to -1 to continue after violation.") .metavar("X");
+    parser.add_option("--print-progress-at") .dest("progress_count") .type("long") .set_default(0)
+                    .help("If set to larger than 0, prints a status message every X cycles.") .metavar("X");
     parser.add_option("--crypto-noshow") .action("store_true") .dest("crypto_noshow") 
                     .help("Disable spinning cursor terminal animation for indicating activity of the CPU's crypto unit (default=on). Passing this flag is recommended when running sancus-sim from a non-interactive terminal.") ;
     // parser.add_option("-v", "--verbose")
@@ -350,6 +360,10 @@ int main(int argc, char** argv)
         LOG_F(INFO, "Using %s as simulation file.", sim_filename );
         tracer_enabled = true;
     }
+    uint64_t vcd_start = (uint64_t) options.get("vcd_start");
+    if(vcd_start > 0){
+        LOG_F(INFO, "Writing to simulation file will only start after %li cycles.", vcd_start);
+    }
 
     // Set up Max cycles and whether we want to abort on timeouts
     MAX_CYCLES = (uint64_t) options.get("cycles");
@@ -401,6 +415,12 @@ int main(int argc, char** argv)
         }
     }
 
+    // We may want to print a progress status message every X cycles
+    uint64_t progress_count = (uint64_t) options.get("progress_count");
+    if(progress_count > 0){
+        LOG_F(INFO, "Will print a status message every %li cycles.", progress_count);
+    }
+
     // Start verilator
     Verilated::commandArgs(argc, argv);
     auto top = std::unique_ptr<Vtb_openMSP430>{new Vtb_openMSP430};
@@ -424,10 +444,17 @@ int main(int argc, char** argv)
         tracer->open(sim_filename);
     }
 
+    // Enable dumping from the beginning by default
+    auto tracer_running = false;
+    if(vcd_start == 0){
+        tracer_running = true;
+    }
+
     mainTime = 0;
     auto isDone = false;
     int result = 0;
     int cpuoff_timer = 10; // After CPUOFF, do 10 more cycles for nicer GTKWave outputs.
+    long cycle_count = 0;
 
     // Register sigabort handler to finish writing vcd file
     struct sigaction sigIntHandler; 
@@ -475,7 +502,18 @@ int main(int argc, char** argv)
                 result = status_success;
             }
 
-            // Finish simulation if requested after sm violation
+            // If requested, print a progress count every X cycles
+            if(progress_count > 0 && mainTime / CLOCK_PERIOD > 0 && (mainTime / CLOCK_PERIOD) % progress_count == 0){
+                LOG_F(INFO, "%li cycle mark. Overall %li cycles simulated.", progress_count, mainTime / CLOCK_PERIOD);
+            }
+
+            // If tracer is not enabled yet, check at clock edges if we want to enable it now
+            if(tracer_enabled && !tracer_running && mainTime / CLOCK_PERIOD >= vcd_start){
+                tracer_running = true;
+                LOG_F(INFO, "%li cycle requirement passed. Starting to dump simulation.", vcd_start);
+            }
+
+            // Finish simulation after sm violation (if requested)
             if (stop_on_sm_violation){
                 if (top->sm_violation){
                     sm_violation_occured = true;
@@ -486,7 +524,7 @@ int main(int argc, char** argv)
                 }
             }
         }
-        if(tracer_enabled){
+        if(tracer_running){
             tracer->dump(mainTime);
         }
 
@@ -514,10 +552,10 @@ int main(int argc, char** argv)
         mainTime++;
     }
 
-    LOG_F(1, "Program memory at exit was..");
-    LOG_F(1, program_memory.print_memory().c_str());
-    LOG_F(1, "Data memory at exit was..");
-    LOG_F(1, data_memory.print_memory().c_str());
+    LOG_F(MAX, "Program memory at exit was..");
+    LOG_F(MAX, program_memory.print_memory().c_str());
+    LOG_F(MAX, "Data memory at exit was..");
+    LOG_F(MAX, data_memory.print_memory().c_str());
     
     return exit_program(result);
 }

@@ -73,7 +73,7 @@ fi
 if [ "${OMSP_SIMULATOR:-iverilog}" = iverilog ]; then
 
     rm -rf simv
-    IVERILOG_CMD="iverilog -Wall -Wno-timescale -Winfloop -o simv -c $3"
+    IVERILOG_CMD="iverilog -o simv -c $3" #-Wall -Wno-timescale -Winfloop 
     NODUMP=${OMSP_NODUMP-0}
     if [ -z "${__SANCUS_SIM}" ]; then
       SIM_FLAG=''

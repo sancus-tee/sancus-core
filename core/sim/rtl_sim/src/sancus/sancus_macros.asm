@@ -3,17 +3,25 @@
 ; return callerID in r15
 .macro sancus_get_caller_id
     .word 0x1387
+    jz . /* should never fail */
 .endm
 
 ; return ID of SM @r15 in r15
 .macro sancus_get_id
     .word 0x1386
+    jz . /* should never fail */
 .endm
 
 ; set stack overflow guard address (0x0 to disable); clobbers r15
 .macro sancus_stack_guard addr:req
     mov \addr, r15
     .word 0x1388
+.endm
+
+; set up clix length and call clix; clobbers r15
+.macro clix clix_len:req
+    mov \clix_len, r15
+    .word 0x1389
 .endm
 
 .macro sancus_enable vendor:req, ps:req, pe:req, ss:req, se:req
@@ -23,16 +31,36 @@
     mov \ps, r12
     mov \pe, r13
     mov \ss, r14
+1\@:
     mov \se, r15
     .word 0x1381
+    jz 1\@b /* restart on IRQ */
 .endm
 
-.macro sancus_wrap
+.macro sancus_wrap key:req, ad:req, ad_end:req, body:req, body_end:req, cipher:req, tag:req
+    mov \key, r9
+    mov \ad, r10
+    mov \ad_end, r11
+    mov \body, r12
+    mov \body_end, r13
+    mov \cipher, r14
+1\@:
+    mov \tag, r15
     .word 0x1384
+    jz 1\@b /* restart on IRQ */
 .endm
 
-.macro sancus_unwrap
+.macro sancus_unwrap key:req, ad:req, ad_end:req, cipher:req, cipher_end:req, body:req, tag:req
+    mov \key, r9
+    mov \ad, r10
+    mov \ad_end, r11
+    mov \cipher, r12
+    mov \cipher_end, r13
+    mov \body, r14
+1\@:
+    mov \tag, r15
     .word 0x1385
+    jz 1\@b /* restart on IRQ */
 .endm
 
 ; TODO should take continuation argument

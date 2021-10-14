@@ -168,8 +168,9 @@ always @(e_state_bin)
       5'h10   : e_state =  "IRQ_PRE";
       5'h11   : e_state =  "IRQ_EXT_0";
       5'h12   : e_state =  "IRQ_EXT_1";
-      5'h13   : e_state =  "IRQ_SP_RD";
-      5'h14   : e_state =  "IRQ_SP_WR";
+      5'h13   : e_state =  "IRQ_SSA_RD";
+      5'h14   : e_state =  "IRQ_SSA_WAIT";
+      5'h15   : e_state =  "IRQ_SP_WR";
       default : e_state =  "xxxx";
     endcase
 
@@ -455,6 +456,8 @@ always @(inst_type or inst_name or inst_bw or inst_as or inst_ad)
        inst_full = "SM_CALLER_ID";
      if (opcode==16'h1388)
        inst_full = "SM_STACK_GUARD";
+     if (opcode==16'h1388)
+       inst_full = "CLIX";
   end
    
 

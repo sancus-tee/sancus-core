@@ -13,26 +13,29 @@
 .set stack_base, DMEM_260
 .set reg_offset, 0x1234
 .set bar_clobber_val, 0xf00d
+.set tst_val, 0xbabe
+.set tst_addr, DMEM_200
 
-.set foo_secret_start, DMEM_262
-.set foo_secret_end, DMEM_268
-.set foo_sp_save_loc, (foo_secret_end - 2)
-.set foo_sp_save, (foo_secret_end - 4)
-.set bar_secret_start, foo_secret_end
-.set bar_secret_end, DMEM_26E
-.set bar_sp_save_loc, (bar_secret_end - 2)
+.set bar_secret_start, DMEM_220
+.set bar_secret_end, DMEM_242
+.set bar_ssa_loc,(bar_secret_end - 2)
+.set bar_ssa, (bar_secret_end - 4)
+
+.set foo_secret_start, DMEM_242
+.set foo_secret_end, DMEM_26E
+.set foo_ssa_loc,(foo_secret_end - 2)
+.set foo_ssa, (foo_secret_end - 4)
 
 .global main
 main:
     disable_wdt
     eint
-    clr &foo_sp_save_loc
-    clr &bar_sp_save_loc
     clr r4
 
-    sancus_enable #1234, #foo_text_start, #foo_text_end, #foo_secret_start, #foo_secret_end
     sancus_enable #1234, #bar_text_start, #bar_text_end, #bar_secret_start, #bar_secret_end
-    call #bar_text_start
+    sancus_enable #1234, #foo_text_start, #foo_text_end, #foo_secret_start, #foo_secret_end
+    mov #bar_clobber_val, r15
+    br #bar_text_start
 
     ; should not come here
     br #0xffff
@@ -47,15 +50,18 @@ fail_test:
 
 foo_text_start:
     nop
-    mov #foo_sp_save, &foo_sp_save_loc
+    mov #foo_ssa, &foo_ssa_loc
     cmp #0xffff, r4
     jne init_regs
 
-    ; return from interrupt
-    mov &foo_sp_save, r1
-    clr &foo_sp_save
-    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15
-    reti
+    ; restore interrupted execution context
+    mov #foo_ssa-28, r1
+    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r2
+    mov &foo_ssa-2, r1
+    br &foo_ssa
+
+foo_text_value:
+    .word 0xcafe
 
 init_regs:
     ; initialize registers with known values
@@ -106,16 +112,19 @@ init_regs:
     
     ; === TEXT ENTRY READ VIOLATION ===
     mov &bar_text_start, r15
-    
-    br #end_of_test
-foo_text_value:
-    .word 0xcafe
+
+    ; === ATOM VIOLATION ===
+    clix #100
+    mov #0xdead, r15
+    ; not allowed to enter new SM (bar) while in clix 
 foo_text_end:
 
 bar_text_start:
-    nop
-    mov #bar_clobber_val, &bar_secret_start
-    br #foo_text_start
+    mov r15, &bar_secret_start
+    mov #bar_ssa, &bar_ssa_loc
+    cmp #0xdead, r15
+    jne foo_text_start
+    br #end_of_test
 bar_text_value:
     .word 0xbeef
 bar_text_end:
@@ -124,6 +133,8 @@ bar_text_end:
     /* ----------------------      INTERRUPT ROUTINES    --------------- */
 
 IRQ_VECTOR:
+    cmp #bar_text_start, r15
+    jeq end_of_test
     mov #0xffff, r4
     mov #unprotected_stack_base, r1
     do_reti r15

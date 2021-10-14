@@ -146,7 +146,8 @@
 ///-------------------------------------------------------
 // Include/Exclude Non-Maskable-Interrupt support
 //-------------------------------------------------------
-`define NMI
+// NOTE: disable NMI to ensure (restricted) atomicity for Sancus enclaves
+//`define NMI
 
 
 //-------------------------------------------------------
@@ -165,10 +166,9 @@
 //         when 0. Therefore make sure it is glitch free.
 //
 //-------------------------------------------------------
-`define SYNC_NMI
+//`define SYNC_NMI
 //`define SYNC_CPU_EN
 //`define SYNC_DBG_EN
-
 
 //-------------------------------------------------------
 // Peripheral Memory Space:
@@ -654,14 +654,32 @@
 `define SM_ID           6
 `define SM_PREV_ID      7
 `define SM_STACK_GUARD  8
+`define SM_CLIX         9
 
 // SPM data select types
 `define SM_SELECT_BY_ADDR 1'b0
 `define SM_SELECT_BY_ID   1'b1
 
-// enable/disable general purpose register pushing when interrupting the
-// unprotected domain
-//`define UNPROTECTED_IRQ_REG_PUSH
+// enable/disable atomicity monitor with support for GIE timeout (CLIX) and its length
+`ifdef ATOMICITY_MONITOR
+    `define ATOM_BOUND 10000
+    // # of cycles for atomic period after an sm entry. Allows to safely perform a clix
+    `define SM_ENTRY_ATOM_PERIOD 10
+
+    //-------------------------------------------------------
+    // Sancus modifications to Status register
+    //-------------------------------------------------------
+    // For e.g. availability guarantees, modifications of
+    // certain flags in R2 may be restricted to the first
+    // loaded SM (e.g. a protected Scheduler).
+    // These defines allow to restrict certain settings to the
+    // first SM with ID 1
+    // Since it is nice to use the simulator, CPUOFF is not 
+    // restricted by default since the simulator does not terminate otherwise
+    `define SANCUS_RESTRICT_CPUOFF
+    `define SANCUS_RESTRICT_SCG0
+    `define SANCUS_RESTRICT_GIE
+`endif
 
 // Conditional jump
 `define JNE    0
@@ -726,8 +744,9 @@
 `define E_IRQ_PRE   5'h10
 `define E_IRQ_EXT_0 5'h11
 `define E_IRQ_EXT_1 5'h12
-`define E_IRQ_SP_RD 5'h13
-`define E_IRQ_SP_WR 5'h14
+`define E_IRQ_SSA_RD   5'h13
+`define E_IRQ_SSA_WAIT 5'h14
+`define E_IRQ_SP_WR    5'h15
 
 // ALU control signals
 `define ALU_SRC_INV   0

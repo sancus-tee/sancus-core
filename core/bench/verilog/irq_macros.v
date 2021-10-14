@@ -13,7 +13,7 @@
 `define R14_VAL     (`REG_OFFSET + 16'he)
 `define R15_VAL     (`REG_OFFSET + 16'hf)
 
-`define IRQ_SM_STATUS           16'h0000
+`define IRQ_SM_STATUS           16'h8000
 `define IRQ_UNPR_STATUS         16'h0000
 
 `define CHK_INIT_REGS_R15(str, sp_val, r15Val) \
@@ -30,7 +30,7 @@
       if (r6  !==`R6_VAL)   tb_error({"====== r6 value (", str, ") ====="});  \
       if (r5  !==`R5_VAL)   tb_error({"====== r5 value (", str, ") ====="});  \
       if (r4  !==`R4_VAL)   tb_error({"====== r4 value (", str, ") ====="});  \
-      if (r1  !==sp_val)    tb_error({"====== sp value (", str, ") ====="});
+      if (r1  !==sp_val)    tb_error({"====== sp value (", str, ") ====="});\
 
 `define CHK_INIT_REGS( str, sp_val ) \
     `CHK_INIT_REGS_R15(str, sp_val, `R15_VAL)
@@ -50,29 +50,42 @@
       if (r5  !==16'h0)     tb_error({"====== r5 IRQ clear (", str, ") ====="}); \
       if (r4  !==16'h0)     tb_error({"====== r4 IRQ clear (", str, ") ====="}); \
       if (r2  !==irqStatus) tb_error({"====== r2 IRQ sr value (", str, ") ====="}); \
+      if (r2[14])           tb_error("====== r2 SM_VIOLATION BIT NOT CLEARED ======"); \
       if (chkSp && (r1!==spVal)) tb_error({"====== r1 IRQ sp value (", str, ") ====="}); \
       if (gie)              tb_error({"====== GIE IRQ clear (", str, ") ====="}); \
       //if (stack_guard !==16'h0)  tb_error({"====== stack guard IRQ clear (", str, ") ====="});
 
 `define CHK_IRQ_REGS( str, spVal, retiAddr, irqStatus) \
     `CHK_IRQ_REGS_SP( str, spVal, retiAddr, irqStatus, 1'b1 )
-   
-`define CHK_IRQ_STACK_R15( str, pc, sr, r15Val ) \
-      /*$display({"checking stack memory ", str});*/ \
-      if (mem25E !==pc)        tb_error({"====== STACK MEMORY PC (", str, ") ====="});  \
-      if (mem25C !==sr)        tb_error({"====== STACK MEMORY SR (", str, ") ====="});  \
-      if (mem25A !==r15Val)    tb_error({"====== STACK MEMORY r15 (", str, ") ====="}); \
-      if (mem258 !==`R14_VAL)  tb_error({"====== STACK MEMORY r14 (", str, ") ====="}); \
-      if (mem256 !==`R13_VAL)  tb_error({"====== STACK MEMORY r13 (", str, ") ====="}); \
-      if (mem254 !==`R12_VAL)  tb_error({"====== STACK MEMORY r12 (", str, ") ====="}); \
-      if (mem252 !==`R11_VAL)  tb_error({"====== STACK MEMORY r11 (", str, ") ====="}); \
-      if (mem250 !==`R10_VAL)  tb_error({"====== STACK MEMORY r10 (", str, ") ====="}); \
-      if (mem24E !==`R9_VAL)   tb_error({"====== STACK MEMORY r9 (", str, ") ====="});  \
-      if (mem24C !==`R8_VAL)   tb_error({"====== STACK MEMORY r8 (", str, ") ====="});  \
-      if (mem24A !==`R7_VAL)   tb_error({"====== STACK MEMORY r7 (", str, ") ====="});  \
-      if (mem248 !==`R6_VAL)   tb_error({"====== STACK MEMORY r6 (", str, ") ====="});  \
-      if (mem246 !==`R5_VAL)   tb_error({"====== STACK MEMORY r5 (", str, ") ====="});  \
-      if (mem244 !==`R4_VAL)   tb_error({"====== STACK MEMORY r4 (", str, ") ====="});
 
-`define CHK_IRQ_STACK( str, pc, sr ) \
-    `CHK_IRQ_STACK_R15( str, pc, sr, `R15_VAL )
+// protected interrupts are written to SSA starting at sm_secret_end-4
+`define CHK_IRQ_SSA_R15( str, pc, sr, r15Val, violation) \
+      /*$display({"checking stack memory ", str});*/ \
+      if (mem26A !==pc)        tb_error({"====== SSA MEMORY PC  (", str, ") ====="});  \
+      if (mem266 !==sr)        tb_error({"====== SSA MEMORY SR  (", str, ") ====="});  \
+      if (violation) begin                                                             \
+        if (~mem266[14])       tb_error("====== SR MEM VIOLATION BIT NOT SET ======"); \
+      end else begin                                                                   \
+        if (mem266[14])        tb_error("====== SR MEM VIOLATION BIT SET ======");     \
+      end                                                                              \
+      if (mem264 !==r15Val)    tb_error({"====== SSA MEMORY r15 (", str, ") ====="});  \
+      if (mem262 !==`R14_VAL)  tb_error({"====== SSA MEMORY r14 (", str, ") ====="});  \
+      if (mem260 !==`R13_VAL)  tb_error({"====== SSA MEMORY r13 (", str, ") ====="});  \
+      if (mem25E !==`R12_VAL)  tb_error({"====== SSA MEMORY r12 (", str, ") ====="});  \
+      if (mem25C !==`R11_VAL)  tb_error({"====== SSA MEMORY r11 (", str, ") ====="});  \
+      if (mem25A !==`R10_VAL)  tb_error({"====== SSA MEMORY r10 (", str, ") ====="});  \
+      if (mem258 !==`R9_VAL)   tb_error({"====== SSA MEMORY r9  (", str, ") ====="});  \
+      if (mem256 !==`R8_VAL)   tb_error({"====== SSA MEMORY r8  (", str, ") ====="});  \
+      if (mem254 !==`R7_VAL)   tb_error({"====== SSA MEMORY r7  (", str, ") ====="});  \
+      if (mem252 !==`R6_VAL)   tb_error({"====== SSA MEMORY r6  (", str, ") ====="});  \
+      if (mem250 !==`R5_VAL)   tb_error({"====== SSA MEMORY r5  (", str, ") ====="});  \
+      if (mem24E !==`R4_VAL)   tb_error({"====== SSA MEMORY r4  (", str, ") ====="});
+
+`define CHK_IRQ_SSA( str, pc, sr ) \
+    `CHK_IRQ_SSA_R15( str, pc, sr, `R15_VAL, 0)
+
+// Unprotected interrupts are written to stack starting at stack_base
+`define CHK_IRQ_STACK_UNPROTECTED( str, pc, sr ) \
+      /*$display({"checking stack memory ", str});*/ \
+      if (mem23E !==pc)        tb_error({"====== STACK MEMORY PC (", str, ") ====="});  \
+      if (mem23C !==sr)        tb_error({"====== STACK MEMORY SR (", str, ") ====="});

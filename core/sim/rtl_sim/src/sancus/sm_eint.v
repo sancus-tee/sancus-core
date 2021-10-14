@@ -8,16 +8,7 @@
 /*===========================================================================*/
 //`define LONG_TIMEOUT
 
-`define STACK_BASE              (`PER_SIZE + 'h60)
-`define STACK_IRQ               (`STACK_BASE - 16'd28)
-`define STACK_IRQ_INTERRUPTED   (`STACK_IRQ | 16'h1)
-`define STACK_RETI              (`STACK_BASE - 16'd4)
-
-`define SM_SECRET               (mem262)
-`define SM_SP_ADDR              (mem26C)
-`define SM_SP_SAVE              (mem26A)
-`define SM_SP_SAVE_LOC          (16'h26A)
-`define TST_MEM                 (mem200)
+`define TST_MEM                 (mem242)
 `define TST_VAL                 (16'hbabe)
 
 reg [15:0] saved_pc;
@@ -49,10 +40,19 @@ initial
       $display("SM enabled: %d crypto cycles", tsc_val2 - tsc_val1);
       if (!sm_0_enabled)                    tb_error("====== SM NOT ENABLED ======");
 
+      @(posedge crypto_start);
+      tsc_val1 <= cur_tsc;
+      @(posedge exec_done);
+      tsc_val2 <= cur_tsc;
+      repeat(2) @(posedge mclk);
+      $display("SM enabled: %d crypto cycles", tsc_val2 - tsc_val1);
+      if (!sm_1_enabled)                    tb_error("====== SM NOT ENABLED ======");
+
       /* ----------------------  PROTECTED SM INTERRUPT --------------- */
       $display("\n--- SM ENTRY AND INTERRUPT ---");
 
-      @(posedge sm_0_executing);
+      @(posedge sm_1_executing);
+      if(`TST_MEM !== 16'h0)        tb_error("====== TST_MEM init ======");
       $display("sending interrupt...");
       irq[9] <= 1;
       
@@ -65,8 +65,8 @@ initial
       tsc_val2 <= cur_tsc;
       repeat(2) @(posedge mclk);
       $display("IRQ logic done: %d cycles", tsc_val2 - tsc_val1);
-      if(`TST_MEM!==`TST_VAL)       tb_error("====== SM IRQ served too early ======");
-      if(`SM_SECRET==`TST_VAL)      tb_error("====== SM IRQ served too early (arbitrary in-SM write) ======");
+      if(`TST_MEM !== 16'h0)       tb_error("====== SM IRQ served too early (TST_MEM clobbered) ======");
+      if(`TST_MEM==`TST_VAL)       tb_error("====== PoC arbitrary in-enclave write ======");
 
       /* ----------------------  END OF TEST --------------- */
       @(r15==16'h2000);

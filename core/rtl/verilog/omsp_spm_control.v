@@ -16,6 +16,7 @@ module omsp_spm_control(
   input  wire                    update_spm,
   input  wire                    enable_spm,
   input  wire                    disable_spm,
+  input  wire                    cancel_spm,
   input  wire                    verify_spm,
   input  wire             [15:0] r10,
   input  wire             [15:0] r12,
@@ -31,6 +32,7 @@ module omsp_spm_control(
   input  wire [KEY_IDX_SIZE-1:0] key_idx,
   input  wire             [15:1] dma_addr,
   output wire                    dma_violation,
+  output wire                    enabled,
   output wire                    violation,
   output wire                    spm_data_select_valid,
   output wire                    spm_key_select_valid,
@@ -80,8 +82,12 @@ always @(posedge mclk or posedge puc_rst)
     next_id <= 16'h1;
   else if (update_spm && enable_spm)
     next_id <= next_id + 16'h1;
+  else if (update_spm && cancel_spm)
+    /* the ID was never really assigned, so it's safe to reuse it */
+    next_id <= next_id - 16'h1;
 
 assign violation = |spms_violation || (next_id == 16'hfff0);
+assign enabled   = |spms_enabled;
 assign dma_violation = |spms_dma_violation;
 
 generate
@@ -139,7 +145,10 @@ always @(posedge mclk or posedge puc_rst)
   else
     prev_cycle_spm_id <= spm_current_id;
 
-assign enter_sm = (prev_cycle_spm_id != spm_current_id);
+assign enter_sm = (prev_cycle_spm_id != spm_current_id 
+                & spm_current_id != 16'h0000    // Ignore leaving the SM (switching to ffff or 0000)
+                & spm_current_id != 16'hffff)
+                & ~handling_irq;
 
 always @(posedge mclk or posedge puc_rst)
   if (puc_rst)
@@ -159,6 +168,7 @@ omsp_spm #(
   .eu_mb_wr             (eu_mb_wr),
   .update_spm           (spms_update),
   .enable_spm           (enable_spm),
+  .cancel_spm           (cancel_spm),
   .disable_spm          (disable_spm),
   .check_new_spm        (spms_check),
   .verify_spm           (verify_spm),

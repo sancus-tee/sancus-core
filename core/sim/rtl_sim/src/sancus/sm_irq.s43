@@ -10,15 +10,17 @@
 .include "sancus_macros.asm"
 
 .set unprotected_stack_base, DMEM_20F
-.set stack_base, DMEM_260
+.set stack_base, DMEM_240
 .set reg_offset, 0x1234
 .set clobber_val, 0xf00d
 .set tst_val, 0xbabe
 .set tst_addr, DMEM_200
-.set sm_secret_start, DMEM_262
+.set dummy_sm_secret_start, DMEM_240
+.set dummy_sm_secret_end, DMEM_242
+.set sm_secret_start, DMEM_242
 .set sm_secret_end, DMEM_26E
-.set sm_sp_save_loc,(sm_secret_end - 2)
-.set sm_sp_save, (sm_secret_end - 4)
+.set sm_ssa_loc,(sm_secret_end - 2)
+.set sm_ssa, (sm_secret_end - 4)
 .set do_exit, sm_secret_end ; end boundary is exclusive
 
 .global main
@@ -36,6 +38,10 @@ cont_test:
     cmp #2, &do_exit
     jeq end_of_test
 
+    ; first enable a dummy privileged "scheduler" sancus enclave to make sure
+    ; the test enclave is interruptible
+    sancus_enable #1234, #dummy_sm_public_start, #dummy_sm_public_end, #dummy_sm_secret_start, #dummy_sm_secret_end
+
     ; enable sancus module and jump to its entry point
     sancus_enable #1234, #sm_public_start, #sm_public_end, #sm_secret_start, #sm_secret_end
     clr &do_exit
@@ -43,27 +49,28 @@ cont_test:
 
     /* ----------------------         END OF TEST        --------------- */
 end_of_test:
-	mov #0x2000, r15
-	clr r15
-	br #0xffff
+    mov #0x2000, r15
+    clr r15
+    br #0xffff
 
 
     /* ----------------------         SANCUS MODULE      --------------- */
 sm_public_start:
-    mov #sm_sp_save, &sm_sp_save_loc
+    mov #sm_ssa, &sm_ssa_loc
     cmp #0xffff, r4
     jne init_regs
 
     ; restore interrupted execution context
-    mov &sm_sp_save, r1
-    clr &sm_sp_save
-    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15    
-    reti
+    mov #sm_ssa-28, r1
+    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r2
+    mov &sm_ssa-2, r1
+    ;clr &sm_ssa-2
+    br &sm_ssa
 
 init_regs:
     ; initialize registers with known values
-    clr &sm_sp_save
-   	mov #stack_base, r1
+    clr &sm_ssa
+    mov #stack_base, r1
     mov #reg_offset+0x4, r4
     mov #reg_offset+0x5, r5
     mov #reg_offset+0x6, r6
@@ -78,6 +85,7 @@ init_regs:
     mov #reg_offset+0xf, r15
  
     ; busy waiting for the interrupt
+    eint
 loop:
     tst &do_exit
     jnz cont_test
@@ -86,23 +94,30 @@ loop:
 
 sm_public_end:
 
+dummy_sm_public_start:
+    ; should not come here
+    br #end_of_test
+dummy_sm_public_end:
+
     /* ----------------------      INTERRUPT ROUTINES    --------------- */
 
 IRQ_VECTOR:
     ; dummy instruction with two extension words for testing purposes
     mov #tst_val, &tst_addr
     clr &tst_addr
-    repeat_to mov, #clobber_val, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14
 
     tst r1  ; SM interrupted ?
     jnz 1f
+    ; Only clobber if we interrupted an SM as non-SMs have their registers not pushed automatically
+    repeat_to mov, #clobber_val, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14
+    
     mov #0xffff, r4
     mov #2, &do_exit
     mov #unprotected_stack_base, r1
     do_reti r15
 
 1:  mov #1, &do_exit
-    repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15    
+    ; repeat pop, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15    
     reti
 
     /* ----------------------         INTERRUPT VECTORS  --------------- */

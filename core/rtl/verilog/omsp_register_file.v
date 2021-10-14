@@ -71,6 +71,8 @@ module  omsp_register_file (
 // INPUTs
     alu_stat,                     // ALU Status {V,N,Z,C}
     alu_stat_wr,                  // ALU Status write {V,N,Z,C}
+    crypto_stat_z,
+    crypto_stat_wr,
     inst_bw,                      // Decoded Inst: byte width
     inst_dest,                    // Register destination selection
     inst_src,                     // Register source selection
@@ -86,9 +88,13 @@ module  omsp_register_file (
     reg_sr_clr,                   // Status register clear for interrupts
     reg_incr,                     // Increment source register
     scan_enable,                  // Scan enable (active during scan shifting)
-    irq_reg_clr,
+    irq_exec,
+    exec_sm,
     reg_sg_wr,
-    handling_irq
+    handling_irq,
+    priv_mode,
+    gie_in,
+    violation
 );
 
 // OUTPUTs
@@ -117,6 +123,8 @@ output              sp_overflow;
 //=========
 input         [3:0] alu_stat;     // ALU Status {V,N,Z,C}
 input         [3:0] alu_stat_wr;  // ALU Status write {V,N,Z,C}
+input               crypto_stat_z;
+input               crypto_stat_wr;
 input               inst_bw;      // Decoded Inst: byte width
 input        [15:0] inst_dest;    // Register destination selection
 input        [15:0] inst_src;     // Register source selection
@@ -132,9 +140,28 @@ input               reg_sr_wr;    // Status register update for RETI instruction
 input               reg_sr_clr;   // Status register clear for interrupts
 input               reg_incr;     // Increment source register
 input               scan_enable;  // Scan enable (active during scan shifting)
-input               irq_reg_clr;
+input               irq_exec;
+input               exec_sm;
 input               reg_sg_wr;
 input               handling_irq;
+input               gie_in;
+input               priv_mode;
+input               violation;
+
+//=============================================================================
+// 0)  Sancus state machine
+//=============================================================================
+// For Sancus, we keep track of whether an irq is currently executed and 
+// whether that IRQ is happening during an SM
+// 1) If interrupting an SM, we need to set irq_reg_clr to clear all registers
+//    We also need to set the Bit 15 in R2 that denotes whether an SM was
+//    interrupted
+// 2) If not interrupting, or not interrupting an SM, we set the irq_reg_clr to zero
+// 3) If interrupting but not interrupting an SM, we use irq_exec state to set 
+//    the bit 15 in r2 to zero.
+
+//TODO this should be a bitmask to support not clearing registers on syscall/unprotected irq
+wire irq_reg_clr  = irq_exec & exec_sm;
 
 //=============================================================================
 // 1)  AUTOINCREMENT UNIT
@@ -225,15 +252,17 @@ wire        r2_wr  = (inst_dest[2] & reg_dest_wr) | reg_sr_wr;
 `ifdef CLOCK_GATING                                                              //      -- WITH CLOCK GATING --
 wire        r2_c   = alu_stat_wr[0] ? alu_stat[0]          : reg_dest_val_in[0]; // C
 
-wire        r2_z   = alu_stat_wr[1] ? alu_stat[1]          : reg_dest_val_in[1]; // Z
+wire        r2_z   = alu_stat_wr[1] ? alu_stat[1]          :
+                     crypto_stat_wr ? crypto_stat_z        : reg_dest_val_in[1]; // Z
 
 wire        r2_n   = alu_stat_wr[2] ? alu_stat[2]          : reg_dest_val_in[2]; // N
 
-wire  [7:3] r2_nxt = r2_wr          ? reg_dest_val_in[7:3] : r2[7:3];
+// with clock gating we ignore the GIE bit modifications. Clock gating not supported with Sancus.
+wire  [7:3] r2_nxt = r2_wr          ? reg_dest_val_in[7:3] : r2[7:3]; 
 
 wire        r2_v   = alu_stat_wr[3] ? alu_stat[3]          : reg_dest_val_in[8]; // V
 
-wire        r2_en  = |alu_stat_wr | r2_wr | reg_sr_clr;
+wire        r2_en  = |alu_stat_wr | r2_wr | reg_sr_clr | crypto_stat_wr;
 wire        mclk_r2;
 omsp_clock_gate clock_gate_r2 (.gclk(mclk_r2),
                                .clk (mclk), .enable(r2_en), .scan_enable(scan_enable));
@@ -243,18 +272,41 @@ wire        r2_c   = alu_stat_wr[0] ? alu_stat[0]          :
                      r2_wr          ? reg_dest_val_in[0]   : r2[0];              // C
 
 wire        r2_z   = alu_stat_wr[1] ? alu_stat[1]          :
+                     crypto_stat_wr ? crypto_stat_z        :
                      r2_wr          ? reg_dest_val_in[1]   : r2[1];              // Z
 
 wire        r2_n   = alu_stat_wr[2] ? alu_stat[2]          :
                      r2_wr          ? reg_dest_val_in[2]   : r2[2];              // N
 
-wire  [7:3] r2_nxt = r2_wr          ? reg_dest_val_in[7:3] : r2[7:3];
+// GIE is treated differently in privileged mode:
+//  Writing to R2 is allowed if we switch on interrupts. Switching off is ignored if not privileged.
+// Without restrictions on GIE, all writes to r2 go through
+wire gie_next_write = r2_wr         ? reg_dest_val_in[3]   : r2[3];
+`ifdef SANCUS_RESTRICT_GIE
+   // only allow writes if gie bit is off and r2 is written to. Otherwise use old gie value
+   wire gie_next = (priv_mode | (~gie_in & r2_wr)) ? gie_next_write      : gie_in; 
+`else
+   wire gie_next = gie_next_write;
+`endif
+
+wire  [7:4] r2_nxt = r2_wr          ? reg_dest_val_in[7:4] : r2[7:4];
 
 wire        r2_v   = alu_stat_wr[3] ? alu_stat[3]          :
                      r2_wr          ? reg_dest_val_in[8]   : r2[8];              // V
 
 wire        mclk_r2 = mclk;
 `endif
+
+  // Bit 15 in R2 is the sm_interrupted bit. It is high if the last interrupt interrupted an SM and low else.
+  reg r2_sm_interrupted_prev;
+  wire r2_sm_interrupted = irq_exec ? exec_sm : r2_sm_interrupted_prev;
+  always @(posedge mclk_r2) r2_sm_interrupted_prev <= r2_sm_interrupted;
+
+  // Bit 14 in R2 is the violation bit, which will be saved in the interrupted
+  // SSA frame and can be checked by the enclave to detect the previous IRQ was
+  // due to a violation. Will be cleared before vectoring to the ISR.
+  wire r2_violation;
+  wire r2_violation_nxt = violation ? 1'b1 : r2_violation;
 
 `ifdef ASIC
    `ifdef CPUOFF_EN
@@ -283,13 +335,28 @@ wire        mclk_r2 = mclk;
    wire [15:0] scg0_mask   = 16'h0000; //                       - the SCG0 is not supported
    wire [15:0] scg1_mask   = 16'h0080; //                       - the SCG1 mode is emulated
 `endif
-   
-   wire [15:0] r2_mask     = cpuoff_mask | oscoff_mask | scg0_mask | scg1_mask | 16'h010f;
+
+// Sancus modification to possibly restrict GIE, CPUOFF, and SCG1 to SM ID 1
+`ifdef SANCUS_RESTRICT_CPUOFF
+   wire [15:0] cpuoff_mask_en = priv_mode ? cpuoff_mask : 16'h0000;
+`else
+   wire [15:0] cpuoff_mask_en = cpuoff_mask;
+`endif
+`ifdef SANCUS_RESTRICT_SCG1
+   wire [15:0] scg1_mask_en   = priv_mode ? scg1_mask   : 16'h0000;
+`else
+   wire [15:0] scg1_mask_en   = scg1_mask;
+`endif
+
+wire [15:0] sm_mask = 16'hc000;
+
+// Depending on Sancus settings, some r2_masks may be disabled. Writing to them is simply ignored
+wire [15:0] r2_mask     = (sm_mask | cpuoff_mask_en | oscoff_mask | scg0_mask | scg1_mask_en | 16'h010f);
  
 always @(posedge mclk_r2 or posedge puc_rst)
-  if (puc_rst | irq_reg_clr) r2 <= 16'h0000;
-  else if (reg_sr_clr )      r2 <= 16'h0000;
-  else                       r2 <= {7'h00, r2_v, r2_nxt, r2_n, r2_z, r2_c} & r2_mask;
+  if (puc_rst | reg_sr_clr) r2 <= 16'h0000;
+  else if (irq_reg_clr )    r2 <= {r2_sm_interrupted, 15'h0000}; // We do not want to clear the sm_interrupted flag.
+  else                      r2 <= {r2_sm_interrupted, r2_violation_nxt, 5'h00, r2_v, r2_nxt, gie_next, r2_n, r2_z, r2_c} & r2_mask;
 
 assign status = {r2[8], r2[2:0]};
 assign gie    =  r2[3];
@@ -297,6 +364,7 @@ assign cpuoff =  r2[4] | (r2_nxt[4] & r2_wr & cpuoff_mask[4]);
 assign oscoff =  r2[5];
 assign scg0   =  r2[6];
 assign scg1   =  r2[7];
+assign r2_violation = r2[14];
 
 
 // R3: Constant generator

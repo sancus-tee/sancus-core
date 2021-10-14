@@ -95,6 +95,7 @@ module  omsp_execution_unit (
     prev_inst_pc,
     irq_num,
     irq_detect,
+    irq_pnd,
     dma_addr
 );
 
@@ -143,11 +144,12 @@ input        [15:0] pc;            // Program counter
 input        [15:0] pc_nxt;        // Next PC value (for CALL & IRQ)
 input               puc_rst;       // Main system reset
 input               scan_enable;   // Scan enable (active during scan shifting)
-input         [8:0] sm_command;
+input         [9:0] sm_command;
 input        [15:0] current_inst_pc;
 input        [15:0] prev_inst_pc;
 input         [3:0] irq_num;
 input               irq_detect;
+input               irq_pnd;
 input        [15:1] dma_addr;
 
 //=============================================================================
@@ -178,6 +180,7 @@ wire         [15:0] r15;
 wire         [15:0] r1;
 wire                sm_violation;
 wire                sp_overflow;
+wire                atom_violation;
 wire         [15:0] sm_current_id;
 wire         [15:0] sm_prev_id;
 wire                violation;
@@ -195,13 +198,14 @@ wire sm_id_prev     = sm_command[`SM_PREV_ID];
 wire sm_stack_guard = sm_command[`SM_STACK_GUARD];
 wire sm_update      = (do_sm_inst & sm_enable) | (sm_disable & ~sm_busy);
 wire sm_verify      = sm_verify_addr | sm_verify_prev;
+wire sm_clix        = sm_command[`SM_CLIX];
 
 
 //=============================================================================
 // 1)   INTERRUPT LOGIC
 //=============================================================================
 
-assign violation = (sm_violation | sp_overflow);
+assign violation = (sm_violation | sp_overflow | atom_violation);
 
 // Keep track of if we are currently handling an IRQ (with handling we mean the
 // handling by hardware, *not* running the software ISR)
@@ -209,15 +213,45 @@ wire handling_irq       = inst_so[`IRQ] | inst_irq_rst;
 wire irq_exec           = handling_irq & (e_state==`E_EXEC);
 wire irq_prepare_sp_wr  = (e_state==`E_IRQ_EXT_0) & inst_src[1];
 
+// Sancus modification to possibly restrict GIE, CPUOFF, and SCG1 to SM ID 1
+// (only when at least 1 SM is enabled; the CPU behaves according to the MSP430
+// spec as long as no SMs are loaded)
+wire priv_mode = sm_enabled ? (sm_current_id == 16'h0001) : 1'b1;
+
+
+
+`ifdef ATOMICITY_MONITOR
+    omsp_atomicity_monitor atomicity_monitor_0 (
+    // INPUTS
+        .mclk                   (mclk),
+        .puc_rst                (puc_rst),
+        .inst_clix              (sm_clix),
+        .sm_executing           (exec_sm),
+        .priv_mode              (priv_mode),
+        .r15                    (r15),
+        .enter_sm               (enter_sm),
+        .r2_gie                 (r2_gie),
+        .handling_irq           (handling_irq),
+    // OUTPUTS
+        .gie                    (gie),
+        .atom_violation         (atom_violation)
+    );
+`else
+  // clear interrupts one cycle after entering an SM (to allow it to dint before
+  // restoring its internal call stack and eint)
+  assign gie = r2_gie & ~enter_sm;
+  assign atom_violation   = 1'b0;
+`endif
+
 // current_id changes on irq_detect
 reg [15:0] sm_reti_id;
 always @(posedge mclk or posedge puc_rst)
     if (puc_rst)            sm_reti_id <= 16'h0;
     else if (irq_detect)    sm_reti_id <= sm_current_id;
 
-// clear interrupts one cycle after entering an SM (to allow it to dint before
-// restoring its internal call stack and eint)
-assign gie = r2_gie & ~enter_sm;
+
+wire crypto_stat_z;
+wire crypto_stat_wr;
 
 //=============================================================================
 // 2)  REGISTER FILE
@@ -231,12 +265,12 @@ wire reg_dest_wr  = ((e_state==`E_EXEC) & (
 wire irq_sp_upd   = ~inst_irq_rst & ((e_state==`E_IRQ_0) | (e_state==`E_IRQ_2) |
                       ((e_state==`E_IRQ_EXT_0) & ~inst_src[1]));
 
-wire reg_sp_wr    =  irq_sp_upd |
+wire reg_sp_wr    =  irq_sp_upd | (e_state==`E_IRQ_SP_WR) |
                      ((e_state==`E_DST_RD) & ((inst_so[`PUSH] | inst_so[`CALL]) &  ~inst_as[`IDX] & ~((inst_as[`INDIR] | inst_as[`INDIR_I]) & inst_src[1]))) |
                      ((e_state==`E_SRC_AD) & ((inst_so[`PUSH] | inst_so[`CALL]) &  inst_as[`IDX])) |
                      ((e_state==`E_SRC_RD) & ((inst_so[`PUSH] | inst_so[`CALL]) &  ((inst_as[`INDIR] | inst_as[`INDIR_I]) & inst_src[1])));
 
-wire irq_reg_clr  = irq_exec & exec_sm;
+wire [15:0] reg_sp_val = (e_state==`E_IRQ_SP_WR) ? mdb_in : alu_out_add;
 
 wire reg_sr_wr    =  (e_state==`E_DST_RD) & inst_so[`RETI];
 
@@ -284,6 +318,8 @@ omsp_register_file register_file_0 (
 // INPUTs
     .alu_stat     (alu_stat),     // ALU Status {V,N,Z,C}
     .alu_stat_wr  (alu_stat_wr),  // ALU Status write {V,N,Z,C}
+    .crypto_stat_z (crypto_stat_z),
+    .crypto_stat_wr (crypto_stat_wr),
     .inst_bw      (inst_bw),      // Decoded Inst: byte width
     .inst_dest    (dest_reg),     // Register destination selection
     .inst_src     (inst_src),     // Register source selection
@@ -293,16 +329,19 @@ omsp_register_file register_file_0 (
     .reg_dest_val (reg_dest_val), // Selected register destination value
     .reg_dest_wr  (reg_dest_wr),  // Write selected register destination
     .reg_pc_call  (reg_pc_call),  // Trigger PC update for a CALL instruction
-    .reg_sp_val   (alu_out_add),  // Stack Pointer next value
+    .reg_sp_val   (reg_sp_val),  // Stack Pointer next value
     .reg_sp_wr    (reg_sp_wr),    // Stack Pointer write
     .reg_sr_clr   (reg_sr_clr),   // Status register clear for interrupts
     .reg_sr_wr    (reg_sr_wr),    // Status Register update for RETI instruction
     .reg_incr     (reg_incr),     // Increment source register
     .scan_enable  (scan_enable),  // Scan enable (active during scan shifting)
-    //TODO this should be a bitmask to support not clearing registers on syscall/unprotected irq
-    .irq_reg_clr  (irq_reg_clr),
+    .irq_exec     (irq_exec),
+    .exec_sm      (exec_sm),
     .reg_sg_wr    (sm_stack_guard),
-    .handling_irq (handling_irq)
+    .handling_irq (handling_irq),
+    .gie_in       (gie),
+    .priv_mode    (priv_mode),
+    .violation    (violation)
 );
 
 
@@ -320,7 +359,7 @@ omsp_register_file register_file_0 (
 
 wire src_reg_pc_sel     = (e_state==`E_IRQ_PRE);
 
-wire src_sm_req_sel     = irq_prepare_sp_wr   | (e_state==`E_IRQ_SP_RD) |
+wire src_sm_req_sel     = irq_prepare_sp_wr   | (e_state==`E_IRQ_SSA_RD) |
                           (e_state==`E_IRQ_4) | (irq_exec & sm_data_select_valid);
 
 wire src_reg_src_sel    =  (e_state==`E_IRQ_1)                    |
@@ -379,7 +418,7 @@ wire dst_mdb_in_bw_sel  = ((e_state==`E_DST_WR) &   inst_so[`RETI]) |
 
 wire dst_fffe_sel       = (e_state==`E_IRQ_PRE)                         |
                           irq_sp_upd                                    |
-                          irq_prepare_sp_wr | (e_state==`E_IRQ_SP_RD)   |
+                          irq_prepare_sp_wr | (e_state==`E_IRQ_SSA_RD)   |
                           ((e_state==`E_DST_RD) & (inst_so[`PUSH] | inst_so[`CALL]) & ~inst_so[`RETI]) |
                           ((e_state==`E_SRC_AD) & (inst_so[`PUSH] | inst_so[`CALL]) & inst_as[`IDX]) |
                           ((e_state==`E_SRC_RD) & (inst_so[`PUSH] | inst_so[`CALL]) & (inst_as[`INDIR] | inst_as[`INDIR_I]) & inst_src[1]);
@@ -434,7 +473,7 @@ wire        irq_sp_mb_wr    = ((e_state==`E_IRQ_1)    |
 
 wire        irq_mb_wr       = irq_sp_mb_wr | (e_state==`E_IRQ_SP_WR);
 
-wire        irq_mb_rd       = (e_state==`E_IRQ_SP_RD);
+wire        irq_mb_rd       = (e_state==`E_IRQ_SSA_RD);
 
 wire        irq_mdb_out_bis = ((e_state==`E_IRQ_EXT_1) & inst_src[1])? 1'b1 : 1'b0;
 
@@ -485,6 +524,7 @@ wire        mclk_mdb_out_nxt = mclk;
 always @(posedge mclk_mdb_out_nxt or posedge puc_rst)
   if (puc_rst)                                        mdb_out_nxt <= 16'h0000;
   else if (e_state==`E_DST_RD)                        mdb_out_nxt <= pc_nxt;
+  else if (e_state==`E_IRQ_SP_WR)                     mdb_out_nxt <= r1 | 16'h0001;
 `ifdef CLOCK_GATING
   else                                                mdb_out_nxt <= alu_out;
 `else
@@ -551,6 +591,10 @@ wire        sm_data_select_type;
 wire [15:0] sm_key_select;
 wire [15:0] crypto_data_out;
 wire        exec_sm;
+wire        sm_cancel;
+wire        sm_enabled;
+wire        do_sm_update = sm_update | sm_cancel;
+wire        do_sm_enable = sm_enable & ~sm_cancel;
 
 // use parameter instead of localparam to work around a bug in XST
 parameter KEY_IDX_SIZE = $clog2(`SECURITY / 16 + 1);
@@ -569,8 +613,9 @@ omsp_spm_control #(
   .eu_mab                 (mab),
   .eu_mb_en               (mb_en),
   .eu_mb_wr               (mb_wr),
-  .update_spm             (sm_update),
-  .enable_spm             (sm_enable),
+  .update_spm             (do_sm_update),
+  .enable_spm             (do_sm_enable),
+  .cancel_spm             (sm_cancel),
   .disable_spm            (sm_disable),
   .verify_spm             (sm_verify),
   .r10                    (r10),
@@ -595,7 +640,8 @@ omsp_spm_control #(
   .exec_sm                (exec_sm),
   .enter_sm               (enter_sm),
   .dma_addr               (dma_addr),
-  .dma_violation          (dma_violation)
+  .dma_violation          (dma_violation),
+  .enabled                (sm_enabled)
 );
 
 
@@ -623,7 +669,7 @@ wire sm_busy = crypto_busy;
 wire  [2:0] crypto_sm_request;
 wire [15:0] crypto_sm_data_select;
 wire        crypto_sm_data_select_type;
-wire        irq_secret_end_select   = (e_state==`E_IRQ_EXT_0) | (e_state==`E_IRQ_SP_RD);
+wire        irq_secret_end_select   = (e_state==`E_IRQ_EXT_0) | (e_state==`E_IRQ_SSA_RD);
 wire        irq_reti_addr_select    = (e_state==`E_IRQ_4) | irq_exec;
 assign sm_request          = irq_secret_end_select  ? `SM_REQ_SECEND     :
                              irq_reti_addr_select   ? `SM_REQ_PUBSTART   : crypto_sm_request;
@@ -638,6 +684,7 @@ crypto_control #(
   // inputs
   .clk                    (mclk),
   .reset                  (puc_rst),
+  .irq_pnd                (irq_pnd),
   .start                  (crypto_start),
   .cmd_key                (sm_enable),
   .cmd_disable            (sm_disable),
@@ -675,7 +722,10 @@ crypto_control #(
   .reg_data_out           (crypto_reg_data_out),
   .sm_key_write           (sm_write_key),
   .sm_key_idx             (sm_key_idx),
-  .data_out               (crypto_data_out)
+  .data_out               (crypto_data_out),
+  .stat_z                 (crypto_stat_z),
+  .stat_wr                (crypto_stat_wr),
+  .sm_cancel              (sm_cancel)
 );
 
 endmodule // omsp_execution_unit

@@ -12,6 +12,7 @@ module omsp_spm(
   input  wire                    eu_mb_en,
   input  wire              [1:0] eu_mb_wr,
   input  wire                    update_spm,
+  input  wire                    cancel_spm,
   input  wire                    enable_spm,
   input  wire                    disable_spm,
   input  wire                    check_new_spm,
@@ -68,25 +69,19 @@ function do_overlap;
   end
 endfunction
 
-initial
-begin
-  public_start = 0;
-  public_end = 0;
-  secret_start = 0;
-  secret_end = 0;
-  enabled = 0;
-end
+`define INIT_SM         \
+    id <= 0;            \
+    public_start <= 0;  \
+    public_end <= 0;    \
+    secret_start <= 0;  \
+    secret_end <= 0;    \
+    enabled <= 0;
 
 always @(posedge mclk or posedge puc_rst)
 begin
   if (puc_rst)
   begin
-    id <= 0;
-    public_start <= 0;
-    public_end <= 0;
-    secret_start <= 0;
-    secret_end <= 0;
-    enabled <= 0;
+    `INIT_SM
   end
   else if (update_spm)
   begin
@@ -100,22 +95,22 @@ begin
         secret_start <= r14;
         secret_end <= r15;
         enabled <= 1;
-        $display("New SM config: %h %h %h %h, %b", r12, r13, r14, r15, |r10);
+        $display("New SM %1d config: %h %h %h %h, %b", next_id, r12, r13, r14, r15, |r10);
       end
       else
       begin
         $display("Invalid SM config: %h %h %h %h, %b", r12, r13, r14, r15, |r10);
       end
     end
-    else if (pc >= public_start && pc < public_end)
+    else if (cancel_spm & key_selected)
     begin
-      id <= 0;
-      public_start <= 0;
-      public_end <= 0;
-      secret_start <= 0;
-      secret_end <= 0;
-      enabled <= 0;
-      $display("SM disabled");
+      `INIT_SM
+      $display("SM %1d cancelled", id);
+    end
+    else if (~cancel_spm & (pc >= public_start && pc < public_end))
+    begin
+      `INIT_SM
+      $display("SM %1d disabled", id);
     end
   end
   else if (key_selected & write_key)
@@ -150,15 +145,16 @@ begin
   begin
     if (mem_violation)
     begin
-      $display("mem violation @0x%h, from ", eu_mab);
-      if (handling_irq) $display("IRQ");
-      else              $display("0x%h", pc);
+      if (handling_irq) 
+        $display("[SM %1d] mem violation @0x%h from IRQ", id, eu_mab);
+      else              
+        $display("[SM %1d] mem violation @0x%h from 0x%h", id, eu_mab, pc);
     end
     else if (exec_violation)
-      $display("exec violation %h -> %h", prev_pc, pc);
+      $display("[SM %1d] exec violation %h -> %h", id, prev_pc, pc);
     else if (create_violation)
     begin
-      $display("create violation:");
+      $display("[SM %1d] create violation:", id);
       $display("\tme:  %h %h %h %h", public_start, public_end, secret_start, secret_end);
       $display("\tnew: %h %h %h %h", r12, r13, r14, r15);
     end
