@@ -123,6 +123,7 @@ localparam [STATE_SIZE-1:0] IDLE              =  0,
                             CLEAR_DATA_INIT2  = 59,
                             CLEAR_DATA        = 60,
                             FAIL              = 49,
+                            IRQ_FAIL          = 62,
                             SUCCESS           = 50,
                             WAIT              = 61,
                             INTERNAL_ERROR    = {STATE_SIZE{1'bx}};
@@ -131,7 +132,7 @@ reg [STATE_SIZE-1:0] state, next_state;
 
 // NOTE: only support interrupt-restart crypto when the atomicity monitor is included
 `ifdef ATOMICITY_MONITOR
-    wire irq_state_ok = state!=IDLE & state!=CHECK_SM & state!=FAIL & state!=SUCCESS;
+    wire irq_state_ok = state!=IDLE & state!=CHECK_SM & state!=FAIL & state!=SUCCESS & state!=IRQ_FAIL;
 `else
     wire irq_state_ok = 1'b0;
 `endif
@@ -139,7 +140,7 @@ reg [STATE_SIZE-1:0] state, next_state;
 always @(*)
     /* fail the currently executing crypto instruction on IRQ arrival; this
     should also stop the crypto unit in case of an SM memory violation */
-    if (irq_pnd & irq_state_ok) next_state = FAIL; else
+    if (irq_pnd & irq_state_ok) next_state = IRQ_FAIL; else
     case (state)
         IDLE:              next_state = ~start      ? IDLE              :
                                         cmd_key     ? ENABLE_SM         :
@@ -228,6 +229,7 @@ always @(*)
         CLEAR_DATA_INIT2:  next_state =               CLEAR_DATA;
         CLEAR_DATA:        next_state = mem_done    ? SUCCESS           : CLEAR_DATA;
         FAIL:              next_state =               IDLE;
+        IRQ_FAIL:          next_state =               IDLE;
         SUCCESS:           next_state = cmd_disable ? WAIT              : IDLE;
         WAIT:              next_state =               IDLE;
 
@@ -684,6 +686,16 @@ begin
         end
 
         FAIL:
+        begin
+            set_reg_write = 1;
+            dest_reg_val = 16'h8000;
+            reg_data = 16'h0;
+	    stat_z = 0;
+	    stat_wr = 1;
+            sm_cancel = cmd_key;
+        end
+
+        IRQ_FAIL:
         begin
             set_reg_write = 1;
             dest_reg_val = 16'h8000;
