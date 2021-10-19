@@ -76,7 +76,6 @@ inline bool check_file_exists (const char* filename) {
     bool eval(bool clockedge)
     {
         // 1) Write to memory
-        bool updated = false;
         if (! *_chip_enable            // chip enable is low active
             && *_write_enable != 0b11  // write enable is low active
             && clockedge)              // only write on rising clockedges
@@ -85,7 +84,7 @@ inline bool check_file_exists (const char* filename) {
         }
         
         // 2) Read from memory as defined in dmem_addr of last cycle
-        if(clockedge) *_dout = read(prev_address, clockedge);
+        if(clockedge) *_dout = read(prev_address);
         
         // 3) Update address to read from next time if chip is enabled (otherwise keep reading the old address)
         if (! *_chip_enable) prev_address = *_addr;
@@ -117,11 +116,11 @@ inline bool check_file_exists (const char* filename) {
     using Word = uint16_t;
     using Mask = uint8_t;
 
-    Word read(Address address, bool clockedge)
+    Word read(Address address)
     {
         ensureEnoughMemory(address);
-        Word memoryValue = memory_[(prev_address)];
-        LOG_F(MAX,"[Memory] %s [Read] %x : %x", _name.c_str(), prev_address, memoryValue);
+        Word memoryValue = memory_[address];
+        LOG_F(MAX,"[Memory] %s [Read] %x : %x", _name.c_str(), address, memoryValue);
 
         return memoryValue;
     }
@@ -481,10 +480,14 @@ int main(int argc, char** argv)
             top->reset_n = 1;
         
 
+	// NOTE: in real hardware the core (top) and memory work in parallel.
+	// This is important as core signals may influence the memory and vica
+	// verca. Hence, to have cycle-accurate behavior and avoid glitches, we
+	// evaluate the core twice: before _and_ after the memory evaluations.
         top->eval();
         data_memory.eval(clockEdge && top->dco_clk);
         program_memory.eval(clockEdge && top->dco_clk);
-        // top->eval();
+        top->eval();
 
         if (clockEdge && top->dco_clk)
         {   
