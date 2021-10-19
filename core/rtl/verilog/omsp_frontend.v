@@ -237,7 +237,6 @@ parameter E_IRQ_PRE   = `E_IRQ_PRE;
 parameter E_IRQ_EXT_0 = `E_IRQ_EXT_0;
 parameter E_IRQ_EXT_1 = `E_IRQ_EXT_1;
 parameter E_IRQ_SSA_RD  = `E_IRQ_SSA_RD;
-parameter E_IRQ_SSA_WAIT  = `E_IRQ_SSA_WAIT;
 parameter E_IRQ_SP_WR = `E_IRQ_SP_WR;
 
 
@@ -985,8 +984,7 @@ always @(*)
                                   ~exec_sm)         ? E_IRQ_4     : E_IRQ_EXT_0;
 
       /* IRQ_SP: store SP in SM secret data */
-      E_IRQ_SSA_RD: e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_SSA_WAIT;
-      E_IRQ_SSA_WAIT: e_state_nxt =  E_IRQ_SP_WR; // one stall cycle to settle memory bus
+      E_IRQ_SSA_RD: e_state_nxt =  sm_irq            ? E_IRQ_4     : E_IRQ_SP_WR;
       E_IRQ_SP_WR: e_state_nxt =  E_IRQ_0;
 
       /* IRQ_4: vector to ISR */
