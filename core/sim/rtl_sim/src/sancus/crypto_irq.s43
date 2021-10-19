@@ -74,7 +74,7 @@ fail_test:
 
 bar_public_start:
     mov #bar_ssa, &bar_ssa_loc
-    tst &bar_ssa_sp
+    bit #0x1, &bar_ssa_sp
     jz entry_call
 
     ; restore interrupted execution context
