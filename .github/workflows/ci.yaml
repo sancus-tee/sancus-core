@@ -1,0 +1,29 @@
+name: CI
+on:
+  push:
+  pull_request:
+  # trigger a cron job every monday at 8am
+  schedule:
+    - cron: '00 08 * * MON'
+
+jobs:
+  bench:
+    name: ${{ matrix.target }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04] 
+        target: [run_all]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: sudo apt-get install build-essential cmake iverilog tk binutils-msp430 gcc-msp430 msp430-libc msp430mcu expect-dev verilator -y
+      - name: Build sancus-core
+        run: mkdir build && cd build && cmake .. && cd ..
+      - name: Run test bench
+        run: |
+          cd core/sim/rtl_sim/run/
+          ./${{ matrix.target }}
