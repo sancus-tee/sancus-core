@@ -8,13 +8,14 @@ on:
 
 jobs:
   bench:
-    name: ${{ matrix.target }} on ${{ matrix.os }}
+    name: ${{ matrix.target }} ${{ matrix.env }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04] 
         target: [run_all]
+        env: [-DNEMESIS_RESISTANT=1]
 
     steps:
       - name: Check out repository
@@ -22,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get install build-essential cmake iverilog tk binutils-msp430 gcc-msp430 msp430-libc msp430mcu expect-dev verilator -y
       - name: Build sancus-core
-        run: mkdir build && cd build && cmake .. && cd ..
+        run: mkdir build && cd build && cmake ${{ matrix.env }} .. && cd ..
       - name: Run test bench
         run: |
           cd core/sim/rtl_sim/run/
