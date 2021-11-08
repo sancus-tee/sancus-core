@@ -189,6 +189,9 @@ reg                stimulus_done;
 // CPU & Memory registers
 `include "registers.v"
 
+/* Sancus-specific register/wire definitions */
+`include "sancus-def.v"
+
 // Debug interface tasks
 `include "dbg_uart_tasks.v"
 

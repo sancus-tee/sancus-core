@@ -74,12 +74,13 @@ if [ "${OMSP_SIMULATOR:-iverilog}" = iverilog ]; then
 
     rm -rf simv
     
+    SIM_FLAG="-D__SECRET=${__SECRET}"
     NODUMP=${OMSP_NODUMP-0}
     if [ $NODUMP -eq 1 ]
       then
-        iverilog -o simv -c $3 -D NODUMP
+        iverilog -o simv -c $3 -D NODUMP ${SIM_FLAG}
       else
-        iverilog -o simv -c $3
+        iverilog -o simv -c $3 ${SIM_FLAG}
     fi
     
 if [ `uname -o` = "Cygwin" ]
