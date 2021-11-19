@@ -16,10 +16,10 @@ main:
     clr r14
 
     ; set up the timer interrupt
-    mov #0x4, &0x0160
-    mov #0x9, &0x0172
-    mov #0x0, &0x0162
-    mov #0x212, &0x0160
+    mov #0x4, &TACTL
+    mov #0x9, &TACCR0
+    mov #0x0, &TACCTL0
+    mov #0x212, &TACTL
 
     mov #0x0, &is_first_irq
 
@@ -29,10 +29,12 @@ main:
 enclave_start:
     cmp #__SECRET, r14
     jz 1f
+    add #42, r6
     jmp 2f
 1:
     mov r6, r6
     mov r6, r6
+    jmp 2f
 2:
     mov r7, r7
 enclave_end:

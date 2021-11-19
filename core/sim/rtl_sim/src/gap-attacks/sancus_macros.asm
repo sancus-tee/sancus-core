@@ -1,5 +1,10 @@
 ; GNU assembler syntax (https://sourceware.org/binutils/docs-2.26/as/)
 
+; TIMER_A registers
+.set TACTL, 0x160
+.set TACCTL0, 0x162
+.set TACCR0, 0x172
+
 ; return callerID in r15
 .macro sancus_get_caller_id
     .word 0x1387
