@@ -28,6 +28,7 @@ export __SECRET
 
 # Sancus-specific tests
 stdbuf -oL ../bin/msp430sim gap-attacks/test-env                 | tee ./log/gap-attacks-test-env.log
+stdbuf -oL ../bin/msp430sim gap-attacks/B-1-dependent-length     | tee ./log/gap-attacks-B-1-dependent-length.log
 
 # Report regression results
 ../bin/parse_results

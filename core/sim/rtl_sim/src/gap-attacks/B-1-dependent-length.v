@@ -8,9 +8,6 @@ initial
       repeat(5) @(posedge mclk);
       stimulus_done = 0;
 
-      @(r15==16'h1000);
-      if (r14!=0)                           tb_error("====== R14 INIT ======");
-
       /* ----------------------  SM INITIALIZATION --------------- */
       $display("\n--- SM INIT ---");
       @(posedge crypto_start);

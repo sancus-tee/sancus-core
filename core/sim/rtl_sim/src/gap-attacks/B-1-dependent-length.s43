@@ -1,25 +1,57 @@
 .include "pmem_defs.asm"
 .include "sancus_macros.asm"
 
-.set foo_secret_start, DMEM_240
-.set foo_secret_end, DMEM_242
+.set is_first_irq, DMEM_200
+.set secret_data_start, DMEM_240
+.set secret_data_end, DMEM_242
 
 .global main
 main:
     disable_wdt
     eint
 
-    clr r14
-	mov #0x1000, r15
-
     ; enable sancus module and jump to its entry point
-    sancus_enable #1234, #foo_public_start, #foo_public_end, #foo_secret_start, #foo_secret_end
-    br #foo_public_start
+    sancus_enable #1234, #enclave_start, #enclave_end, #secret_data_start, #secret_data_end
+
+    clr r14
+
+    ; set up the timer interrupt
+    mov #0x4, &0x0160
+    mov #0x9, &0x0172
+    mov #0x0, &0x0162
+    mov #0x212, &0x0160
+
+    mov #0x0, &is_first_irq
+
+    br #enclave_start
 
     /* ----------------------       SANCUS MODULE        ---------------------- */
-foo_public_start:
-    mov #__SECRET, r14
-foo_public_end:
+enclave_start:
+    cmp #__SECRET, r14
+    jz 1f
+    jmp 2f
+1:
+    mov r6, r6
+    mov r6, r6
+2:
+    mov r7, r7
+enclave_end:
+
+    /* ----------------------     INTERRUPT ROUTINES     ---------------------- */
+
+IRQ_VECTOR:
+    cmp #0x1, &is_first_irq
+    jz 3f
+    mov #0x1, &is_first_irq
+    mov #0x4, &0x0160
+    mov #0x1, &0x0172
+    mov #0x0, &0x0162
+    mov #0x212, &0x0160
+    reti
+3:
+    mov r5, r6
+    mov #0x0, &0x0160
+    mov &0x170, r14
 
     /* ----------------------        END OF TEST         ---------------------- */
 end_of_test:
@@ -27,7 +59,8 @@ end_of_test:
     clr r15
 	br #0xffff
 
-    /* ----------------------     INTERRUPT ROUTINES     ---------------------- */
+    ; we do not need to return from the second interrupt
+    reti
 
     /* ----------------------     INTERRUPT VECTORS      ---------------------- */
 
@@ -40,7 +73,7 @@ end_of_test:
 .word end_of_test  ; Interrupt  5                      <unused>
 .word end_of_test  ; Interrupt  6                      <unused>
 .word end_of_test  ; Interrupt  7                      <unused>
-.word end_of_test  ; Interrupt  8                      <unused>
+.word IRQ_VECTOR   ; Interrupt  8                      IRQ
 .word end_of_test  ; Interrupt  9                      <unused>
 .word end_of_test  ; Interrupt 10                      Watchdog timer
 .word end_of_test  ; Interrupt 11                      <unused>
