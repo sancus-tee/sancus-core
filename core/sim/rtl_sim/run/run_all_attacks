@@ -26,9 +26,13 @@ fi
 echo "run_all_attacks with SECRET=$__SECRET"
 export __SECRET
 
-# Sancus-specific tests
 stdbuf -oL ../bin/msp430sim gap-attacks/test-env                 | tee ./log/gap-attacks-test-env.log
 stdbuf -oL ../bin/msp430sim gap-attacks/B-1-dependent-length     | tee ./log/gap-attacks-B-1-dependent-length.log
+stdbuf -oL ../bin/msp430sim gap-attacks/B-2-maxlen               | tee ./log/gap-attacks-B-2-maxlen.log
+stdbuf -oL ../bin/msp430sim gap-attacks/B-3-shadow-register      | tee ./log/gap-attacks-B-3-shadow-register.log
+stdbuf -oL ../bin/msp430sim gap-attacks/B-4-reentering-from-isr  | tee ./log/gap-attacks-B-4-reentering-from-isr.log
+stdbuf -oL ../bin/msp430sim gap-attacks/B-5-multiple-enclaves    | tee ./log/gap-attacks-B-5-multiple-enclaves.log
+stdbuf -oL ../bin/msp430sim gap-attacks/B-6-untrusted-memory     | tee ./log/gap-attacks-B-6-untrusted-memory.log
 
 # Report regression results
 ../bin/parse_results
