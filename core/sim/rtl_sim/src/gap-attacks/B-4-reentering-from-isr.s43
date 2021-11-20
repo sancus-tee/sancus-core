@@ -13,6 +13,7 @@ main:
 
     ; enable sancus module and jump to its entry point
     sancus_enable #1234, #enclave_start, #enclave_end, #is_modified, #secret_data_end
+    clr r14
 
     mov #0x4, &TACTL
     mov #0x8, &TACCR0
@@ -28,14 +29,26 @@ enclave_start:
     add #0x1, &user_credit
     mov #0x1, &is_modified
 1:
-    mov &user_credit, r5  ; should always return 1
+    cmp #__SECRET, r14
+    jeq 2f
+    mov &user_credit, r5
+    jmp enclave_end
+2:
+    nop
+    nop
+    mov #1, r5
+    jmp enclave_end
 enclave_end:
 
     /* ----------------------        END OF TEST         ---------------------- */
 end_of_test:
-	mov #0x2000, r15
+    cmp #2, r5
+    jne 3f
+    mov #1, r14
+3:
+    mov #0x2000, r15
     clr r15
-	br #0xffff
+    br #0xffff
 
     /* ----------------------     INTERRUPT ROUTINES     ---------------------- */
 

@@ -9,11 +9,9 @@ main:
     disable_wdt
     eint
 
-    clr r14
-	mov #0x1000, r15
-
     ; enable sancus module and jump to its entry point
     sancus_enable #1234, #foo_public_start, #foo_public_end, #foo_secret_start, #foo_secret_end
+
     br #foo_public_start
 
     /* ----------------------       SANCUS MODULE        ---------------------- */
@@ -23,9 +21,9 @@ foo_public_end:
 
     /* ----------------------        END OF TEST         ---------------------- */
 end_of_test:
-	mov #0x2000, r15
+    mov #0x2000, r15
     clr r15
-	br #0xffff
+    br #0xffff
 
     /* ----------------------     INTERRUPT ROUTINES     ---------------------- */
 

@@ -12,7 +12,6 @@ main:
 
     ; enable sancus module and jump to its entry point
     sancus_enable #1234, #enclave_start, #enclave_end, #secret_data_start, #secret_data_end
-
     clr r14
 
     ; set up the timer interrupt
@@ -39,6 +38,7 @@ enclave_start:
 
 2:
     mov r7, r7
+    clr r6
 enclave_end:
 
     /* ----------------------     INTERRUPT ROUTINES     ---------------------- */
@@ -59,9 +59,9 @@ IRQ_VECTOR:
 
     /* ----------------------        END OF TEST         ---------------------- */
 end_of_test:
-	mov #0x2000, r15
+    mov #0x2000, r15
     clr r15
-	br #0xffff
+    br #0xffff
 
     ; we do not need to return from the second interrupt
     reti
