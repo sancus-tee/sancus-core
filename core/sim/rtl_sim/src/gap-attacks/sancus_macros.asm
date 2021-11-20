@@ -3,7 +3,11 @@
 ; TIMER_A registers
 .set TACTL, 0x160
 .set TACCTL0, 0x162
+.set TAR, 0x170
 .set TACCR0, 0x172
+
+; watchdog register
+.set WDTCTL, 0x120
 
 ; return callerID in r15
 .macro sancus_get_caller_id

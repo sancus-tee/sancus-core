@@ -1,7 +1,6 @@
 .include "pmem_defs.asm"
 .include "sancus_macros.asm"
 
-.set is_first_irq, DMEM_200
 .set secret_data_start, DMEM_240
 .set secret_data_end, DMEM_242
 
@@ -15,24 +14,29 @@ main:
 
     clr r14
 
-    ; set up the timer interrupt
     mov #0x4, &TACTL
-    mov #0x9, &TACCR0
+    mov #0x5, &TACCR0
     mov #0x0, &TACCTL0
     mov #0x212, &TACTL
 
-    mov #0x0, &is_first_irq
-
     br #enclave_start
+
+dummy:
+    nop
 
     /* ----------------------       SANCUS MODULE        ---------------------- */
 enclave_start:
     cmp #__SECRET, r14
     jz 1f
 
-    add #42, r6
+    mov &dummy, &dummy
     jmp 2f
 1:
+    mov r6, r6
+    mov r6, r6
+    mov r6, r6
+    mov r6, r6
+    mov r6, r6
     mov r6, r6
     mov r6, r6
     jmp 2f
@@ -44,18 +48,16 @@ enclave_end:
     /* ----------------------     INTERRUPT ROUTINES     ---------------------- */
 
 IRQ_VECTOR:
-    cmp #0x1, &is_first_irq
-    jz 3f
-    mov #0x1, &is_first_irq
-    mov #0x4, &TACTL
-    mov #0x1, &TACCR0
-    mov #0x0, &TACCTL0
-    mov #0x212, &TACTL
-    reti
-3:
-    mov r5, r6
     mov #0x0, &TACTL
     mov &TAR, r14
+
+    ; TAR == 1 occurs if SECRET == 0, so we set r14 accordingly
+    cmp #1, r14
+    jz 1f
+    mov #1, r14
+    br #end_of_test
+1:
+    mov #0, r14
 
     /* ----------------------        END OF TEST         ---------------------- */
 end_of_test:
@@ -63,7 +65,7 @@ end_of_test:
     clr r15
 	br #0xffff
 
-    ; we do not need to return from the second interrupt
+    ; we do not need to return from the interrupt
     reti
 
     /* ----------------------     INTERRUPT VECTORS      ---------------------- */
