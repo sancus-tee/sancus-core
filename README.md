@@ -29,7 +29,7 @@ and earlier. All subsequent commits implement our test framework and
 proof-of-concept attacks.
 
 All of our attacks are integrated into the existing openMSP430 testing framework.
-Specifically, the `core/sim/rtl_sim/src/gap-attacks/` directory contains one
+Specifically, the [`core/sim/rtl_sim/src/gap-attacks/`](core/sim/rtl_sim/src/gap-attacks) directory contains one
 assembly file per attack (containing therein both the victim enclave and
 untrusted runtime attacker code), plus a corresponding Verilog stimulus file
 that validates the contextual equivalence breach.
