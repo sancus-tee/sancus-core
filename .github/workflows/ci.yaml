@@ -2,13 +2,10 @@ name: CI
 on:
   push:
   pull_request:
-  # trigger a cron job every monday at 8am
-  schedule:
-    - cron: '00 08 * * MON'
 
 jobs:
   bench:
-    name: ${{ matrix.target }} SECRET=${{ matrix.secret }} on ${{ matrix.os }}
+    name: ${{ matrix.target }} ${{ matrix.target == 'run_all_attacks' && 'SECRET=' || ''}} ${{ matrix.secret }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
