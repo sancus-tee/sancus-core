@@ -33,6 +33,10 @@ stdbuf -oL ../bin/msp430sim gap-attacks/B-3-shadow-register      | tee ./log/gap
 stdbuf -oL ../bin/msp430sim gap-attacks/B-4-reentering-from-isr  | tee ./log/gap-attacks-B-4-reentering-from-isr.log
 stdbuf -oL ../bin/msp430sim gap-attacks/B-5-multiple-enclaves    | tee ./log/gap-attacks-B-5-multiple-enclaves.log
 stdbuf -oL ../bin/msp430sim gap-attacks/B-6-untrusted-memory     | tee ./log/gap-attacks-B-6-untrusted-memory.log
+stdbuf -oL ../bin/msp430sim gap-attacks/B-7-gie                  | tee ./log/gap-attacks-B-7-gie.log
+stdbuf -oL ../bin/msp430sim gap-attacks/B-7-ivt                  | tee ./log/gap-attacks-B-7-ivt.log
+stdbuf -oL ../bin/msp430sim gap-attacks/B-7-peripheral           | tee ./log/gap-attacks-B-7-peripheral.log
+stdbuf -oL ../bin/msp430sim gap-attacks/C-2-watchdog             | tee ./log/gap-attacks-C-2-watchdog.log
 
 # Report regression results
 ../bin/parse_results
