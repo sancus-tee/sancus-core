@@ -37,6 +37,9 @@ main:
 
     br #enclave_start
 
+dummy:
+    nop
+
     /* ----------------------       SANCUS MODULE        ---------------------- */
 enclave_start:
     cmp #__SECRET, r14
