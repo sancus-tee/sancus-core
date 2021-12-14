@@ -2,16 +2,63 @@
 
 [![CI](https://github.com/martonbognar/sancus-core-gap/actions/workflows/ci.yaml/badge.svg)](https://github.com/martonbognar/sancus-core-gap/actions/workflows/ci.yaml)
 
-This repository contains part of the source code accompanying our paper
-"Showcasing the gap between formal guarantees and real-world security in
-embedded architectures" to appear at the IEEE Symposium on Security and Privacy 2022.
+This repository contains part of the source code accompanying our paper "Mind
+the Gap: Studying the Insecurity of Provably Secure Embedded Trusted Execution
+Architectures" to appear at the IEEE Symposium on Security and Privacy 2022.
 More information on the paper and links to other investigated systems can be
 found in the top-level [gap-attacks](https://github.com/martonbognar/gap-attacks) repository.
+
+> M. Bognar, J. Van Bulck, and F. Piessens, "Mind the Gap: Studying the Insecurity of Provably Secure Embedded Trusted Execution Architectures," in 2022 IEEE Symposium on Security and Privacy (S&P).
 
 **:heavy_check_mark: Continuous integration.** 
 A full reproducible build and reference output for all of the Sancus_V attack
 experiments, executed via a cycle-accurate `iverilog` simulation of the
 openMSP430 core, can be viewed in the [GitHub Actions log](https://github.com/martonbognar/sancus-core-gap/actions).
+
+**:no_entry_sign: Mitigations.**
+Where applicable, we provide simple patches for the identified implementation
+flaws in a separate [mitigations](https://github.com/martonbognar/sancus-core-gap/tree/mitigations)
+branch, referenced in the table below.
+Note, however, that these patches merely fix the identified vulnerabilities in
+the Sancus_V reference implementation in an _ad-hoc_ manner.
+Specifically, our patches do not address the root cause for these oversights
+(i.e., in terms of preventing implementation-model mismatch, missing attacker
+capabilities) and cannot in any other way guarantee the absence of further
+vulnerabilities.
+We provide more discussion on mitigations and guidelines in the paper.
+
+## Overview
+
+### Implementation/model mismatches
+
+| Paper reference | Proof-of-concept attack | Mitigation? | Description |
+|-----------------|---------------|-------------|-------------|
+| V-B1            | [B-1-dependent-length.s43](core/sim/rtl_sim/src/gap-attacks/B-1-dependent-length.s43) | :heavy_check_mark: [patch](todo) | Variable instruction length following `reti`. |
+| V-B2            | [B-2-maxlen.s43](core/sim/rtl_sim/src/gap-attacks/B-2-maxlen.s43) | :heavy_check_mark: [patch](todo) | Instructions with execution time T > 6. |
+| V-B3            | [B-3-shadow-register.s43](core/sim/rtl_sim/src/gap-attacks/B-3-shadow-register.s43) | :heavy_check_mark: [patch](todo) | Resuming an enclave with `reti` multiple times. |
+| V-B4            | [B-4-reentering-from-isr.s43](core/sim/rtl_sim/src/gap-attacks/B-4-reentering-from-isr.s43) | :heavy_check_mark: [patch](todo) | Restarting enclaves from the ISR. |
+| V-B5            | [B-5-multiple-enclaves.s43](core/sim/rtl_sim/src/gap-attacks/B-5-multiple-enclaves.s43) | :heavy_check_mark: [patch](todo) | Multiple enclaves. |
+| V-B6            | [B-6-untrusted-memory.s43](core/sim/rtl_sim/src/gap-attacks/B-6-untrusted-memory.s43) | :heavy_check_mark: [patch](todo) | Enclave accessing unprotected memory. |
+| V-B7            | [B-7-gie.s43](core/sim/rtl_sim/src/gap-attacks/B-7-gie.s43); [B-7-ivt.s43](core/sim/rtl_sim/src/gap-attacks/B-7-ivt.s43); [B-7-peripheral.s43](core/sim/rtl_sim/src/gap-attacks/B-7-peripheral.s43) | :heavy_check_mark: [patch](todo) | Manipulating interrupt behavior from the enclave. |
+
+### Missing attacker capabilities
+
+| Paper reference | Proof-of-concept attack | Mitigation? | Description |
+|-----------------|---------------|-------------|-------------|
+| V-C1            | [sancus-examples/dma](https://github.com/sancus-tee/sancus-examples/blob/master/dma/main.c) | :x: | DMA side-channel leakage (see also note below). |
+| V-C2            | [C-2-watchdog.s43](core/sim/rtl_sim/src/gap-attacks/C-2-watchdog.s43) | :heavy_check_mark: [patch](todo) | Scheduling interrupts with the watchdog timer. |
+
+**Note (DMA side-channel).** As explained in our paper, the Sancus_V implementation is
+based on an older version of the openMSP430 core without DMA capabilities.
+Hence, the DMA attack does _not_ directly affect the current version of Sancus_V, and we
+demonstrate the DMA side channel on the more recent (non-formalized) [upstream
+version of Sancus](https://github.com/sancus-tee/sancus-core/).
+Continuous integration for the DMA side-channel attack is, therefore,
+integrated in the separate
+[sancus-examples](https://github.com/sancus-tee/sancus-examples) repository,
+referenced in the table above.
+Also note that, as discussed in the paper, no straightforward mitigation
+(apart from disabling DMA completely) exists at this point for the DMA side channel.
 
 ## Source code organization
 
