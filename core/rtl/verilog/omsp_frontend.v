@@ -1034,7 +1034,7 @@ always @(posedge mclk or posedge puc_rst)
   end
 
 reg [2:0] irq_padding;
-wire [2:0] irq_padding_nxt = 5 - reti_padding_nxt;
+wire [2:0] irq_padding_nxt = `MAX_TIME - 1 - reti_padding_nxt;
 
 wire irq_padding_dec = e_state == E_SM_IRQ_PAD;
 
