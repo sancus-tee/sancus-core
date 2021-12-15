@@ -261,7 +261,8 @@ omsp_register_file register_file_0 (
     .reg_incr     (reg_incr),     // Increment source register
     .scan_enable  (scan_enable),  // Scan enable (active during scan shifting)
     .sm_irq_save_regs(sm_irq_save_regs),
-    .sm_irq_restore_regs(sm_irq_restore_regs)
+    .sm_irq_restore_regs(sm_irq_restore_regs),
+    .sm_executing(sm_executing)
 );
 
 
