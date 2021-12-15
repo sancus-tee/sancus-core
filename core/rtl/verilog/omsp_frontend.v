@@ -1005,11 +1005,12 @@ wire exec_done =
 // -------
 `ifdef NEMESIS_RESISTANT
 reg prev_irq;
-wire irq_arrived = |irq && !prev_irq;
+wire unified_irq = |irq || wdt_irq;
+wire irq_arrived = unified_irq && !prev_irq;
 
 always @(posedge mclk or posedge puc_rst)
   if (puc_rst) prev_irq <= 0;
-  else         prev_irq <= |irq;
+  else         prev_irq <= unified_irq;
 
 reg [2:0] reti_padding, reti_padding_nxt;
 reg reti_padding_inc;
