@@ -80,6 +80,7 @@ module  omsp_frontend (
     irq_num,
     sm_irq_save_regs,
     sm_irq_restore_regs,
+    sm_irq_busy,
 
 // INPUTs
     cpu_en_s,                      // Enable CPU code execution (synchronous)
@@ -140,6 +141,7 @@ output              handling_irq;
 output        [3:0] irq_num;
 output              sm_irq_save_regs;
 output              sm_irq_restore_regs;
+output              sm_irq_busy;
 
 // INPUTs
 //=========
