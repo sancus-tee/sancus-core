@@ -950,8 +950,8 @@ always @(*)
       E_SM_IRQ_WAIT : e_state_nxt = E_EXEC;
 
 `ifdef NEMESIS_RESISTANT
-      E_SM_RETI_REGS : e_state_nxt = reti_padding == 0 ? e_first_state : E_SM_RETI_PAD;
-      E_SM_RETI_PAD  : e_state_nxt = reti_padding == 0 ? e_first_state : E_SM_RETI_PAD;
+      E_SM_RETI_REGS : e_state_nxt = reti_padding == 0 ? E_JUMP : E_SM_RETI_PAD;
+      E_SM_RETI_PAD  : e_state_nxt = reti_padding == 0 ? E_JUMP : E_SM_RETI_PAD;
 `else
       E_SM_RETI_REGS : e_state_nxt = e_first_state;
 `endif
@@ -994,7 +994,7 @@ always @(posedge mclk or posedge puc_rst)
 
 wire exec_done =
 `ifdef NEMESIS_RESISTANT
-                (e_state == E_SM_RETI_REGS || e_state == E_SM_RETI_PAD) ? reti_padding == 0 :
+                (e_state == E_SM_RETI_REGS || e_state == E_SM_RETI_PAD) ? (e_state==E_JUMP) :
 `endif
                  exec_jmp        ? (e_state==E_JUMP)                   :
                  exec_dst_wr     ? (e_state==E_DST_WR & ~pmem_writing) :
