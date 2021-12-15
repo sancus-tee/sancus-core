@@ -1060,6 +1060,8 @@ always @(posedge mclk or posedge puc_rst)
     sm_irq_busy <= 0;
   end else if (sm_irq_save_regs) begin
     sm_irq_busy <= 1;
+  end else if (sm_irq_restore_regs) begin
+    sm_irq_busy <= 0;
   end
 
 wire sm_irq_save_regs = e_state == E_SM_IRQ_REGS;
