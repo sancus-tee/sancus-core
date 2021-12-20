@@ -16,8 +16,15 @@ main:
     eint
 
     sancus_enable #1234, #enclave_start_1, #enclave_end_1, #secret_data_start_1, #secret_data_end_1
+    ; check successful enclave creation
+    cmp #0x0, r15
+    jz end_of_test
 
     sancus_enable #1235, #enclave_start_2, #enclave_end_2, #is_modified, #secret_data_end_2
+    ; check successful enclave creation
+    cmp #0x0, r15
+    jz end_of_test
+
     clr r14
 
     mov #1, &is_first_irq

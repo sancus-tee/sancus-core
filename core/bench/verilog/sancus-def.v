@@ -20,15 +20,14 @@ wire [15:0] sm_prev_cycle_id    = dut.execution_unit_0.spm_control_0.prev_cycle_
 
 wire [15:0] sm_0_public_start   = dut.execution_unit_0.spm_control_0.omsp_spms[0].public_start;
 wire [15:0] sm_0_public_end     = dut.execution_unit_0.spm_control_0.omsp_spms[0].public_end;
-wire [15:0] sm_1_public_start   = dut.execution_unit_0.spm_control_0.omsp_spms[1].public_start;
+// wire [15:0] sm_1_public_start   = dut.execution_unit_0.spm_control_0.omsp_spms[1].public_start;
 wire [15:0] sm_0_secret_end     = dut.execution_unit_0.spm_control_0.omsp_spms[0].secret_end;
 wire        sm_0_enabled        = dut.execution_unit_0.spm_control_0.omsp_spms[0].enabled;
-wire        sm_1_enabled        = dut.execution_unit_0.spm_control_0.omsp_spms[1].enabled;
-wire        sm_2_enabled        = dut.execution_unit_0.spm_control_0.omsp_spms[2].enabled;
+// wire        sm_1_enabled        = dut.execution_unit_0.spm_control_0.omsp_spms[1].enabled;
+// wire        sm_2_enabled        = dut.execution_unit_0.spm_control_0.omsp_spms[2].enabled;
 wire [15:0] sm_0_id             = dut.execution_unit_0.spm_control_0.omsp_spms[0].id;
-wire [15:0] sm_1_id             = dut.execution_unit_0.spm_control_0.omsp_spms[1].id;
-wire [15:0] sm_2_id             = dut.execution_unit_0.spm_control_0.omsp_spms[2].id;
+// wire [15:0] sm_1_id             = dut.execution_unit_0.spm_control_0.omsp_spms[1].id;
+// wire [15:0] sm_2_id             = dut.execution_unit_0.spm_control_0.omsp_spms[2].id;
 wire        sm_0_executing      = dut.execution_unit_0.spm_control_0.omsp_spms[0].executing;
-wire        sm_1_executing      = dut.execution_unit_0.spm_control_0.omsp_spms[1].executing;
-wire        sm_2_executing      = dut.execution_unit_0.spm_control_0.omsp_spms[2].executing;
-
+// wire        sm_1_executing      = dut.execution_unit_0.spm_control_0.omsp_spms[1].executing;
+// wire        sm_2_executing      = dut.execution_unit_0.spm_control_0.omsp_spms[2].executing;
