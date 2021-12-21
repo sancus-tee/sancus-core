@@ -31,24 +31,24 @@ We provide more discussion on mitigations and guidelines in the paper.
 
 ### Implementation/model mismatches
 
-| Paper reference | Proof-of-concept attack | Mitigation? | Description |
-|-----------------|---------------|-------------|-------------|
-| V-B1            | [B-1-dependent-length.s43](core/sim/rtl_sim/src/gap-attacks/B-1-dependent-length.s43) | :heavy_check_mark: [patch](todo) | Variable instruction length following `reti`. |
-| V-B2            | [B-2-maxlen.s43](core/sim/rtl_sim/src/gap-attacks/B-2-maxlen.s43) | :heavy_check_mark: [patch](todo) | Instructions with execution time T > 6. |
-| V-B3            | [B-3-shadow-register.s43](core/sim/rtl_sim/src/gap-attacks/B-3-shadow-register.s43) | :heavy_check_mark: [patch](todo) | Resuming an enclave with `reti` multiple times. |
-| V-B4            | [B-4-reentering-from-isr.s43](core/sim/rtl_sim/src/gap-attacks/B-4-reentering-from-isr.s43) | :heavy_check_mark: [patch](todo) | Restarting enclaves from the ISR. |
-| V-B5            | [B-5-multiple-enclaves.s43](core/sim/rtl_sim/src/gap-attacks/B-5-multiple-enclaves.s43) | :heavy_check_mark: [patch](todo) | Multiple enclaves. |
-| V-B6            | [B-6-untrusted-memory.s43](core/sim/rtl_sim/src/gap-attacks/B-6-untrusted-memory.s43) | :heavy_check_mark: [patch](todo) | Enclave accessing unprotected memory. |
-| V-B7            | [B-7-gie.s43](core/sim/rtl_sim/src/gap-attacks/B-7-gie.s43); [B-7-ivt.s43](core/sim/rtl_sim/src/gap-attacks/B-7-ivt.s43); [B-7-peripheral.s43](core/sim/rtl_sim/src/gap-attacks/B-7-peripheral.s43) | :heavy_check_mark: [patch](todo) | Manipulating interrupt behavior from the enclave. |
+| Paper reference | Proof-of-concept attack | Patch? | Description |
+|-----------------|---------------|:-------------:|-------------|
+| V-B1            | [B-1-dependent-length.s43](core/sim/rtl_sim/src/gap-attacks/B-1-dependent-length.s43) | [`e8cf011`](https://github.com/martonbognar/sancus-core-gap/commit/e8cf0114c9b3d2b823cd5a5f38e06da5049225ce) | Variable instruction length following `reti`. |
+| V-B2            | [B-2-maxlen.s43](core/sim/rtl_sim/src/gap-attacks/B-2-maxlen.s43) | [`3170d5d`](https://github.com/martonbognar/sancus-core-gap/commit/3170d5d6a4431db93bac4f11a7f91559f7c07620) | Instructions with execution time T > 6. |
+| V-B3            | [B-3-shadow-register.s43](core/sim/rtl_sim/src/gap-attacks/B-3-shadow-register.s43) | [`6475709`](https://github.com/martonbognar/sancus-core-gap/commit/64757098191824238df9a502f7fd8cfbcadb61b2) | Resuming an enclave with `reti` multiple times. |
+| V-B4            | [B-4-reentering-from-isr.s43](core/sim/rtl_sim/src/gap-attacks/B-4-reentering-from-isr.s43) | [`3636536`](https://github.com/martonbognar/sancus-core-gap/commit/3636536772baac7523d59fa3708df6b52518d267) | Restarting enclaves from the ISR. |
+| V-B5            | [B-5-multiple-enclaves.s43](core/sim/rtl_sim/src/gap-attacks/B-5-multiple-enclaves.s43) | [`b17b013`](https://github.com/martonbognar/sancus-core-gap/commit/b17b013e65411df1d557cc34a2c4f7c46ebf7a58) | Multiple enclaves. |
+| V-B6            | [B-6-untrusted-memory.s43](core/sim/rtl_sim/src/gap-attacks/B-6-untrusted-memory.s43) | [`d54f031`](https://github.com/martonbognar/sancus-core-gap/commit/d54f031b8705109509f598602899dec9c9dbd871) | Enclave accessing unprotected memory. |
+| V-B7            | [B-7-gie.s43](core/sim/rtl_sim/src/gap-attacks/B-7-gie.s43); [B-7-ivt.s43](core/sim/rtl_sim/src/gap-attacks/B-7-ivt.s43); [B-7-peripheral.s43](core/sim/rtl_sim/src/gap-attacks/B-7-peripheral.s43) | [`264f135`](https://github.com/martonbognar/sancus-core-gap/commit/264f135e9fb7d903a90933861cfb81d6d2fba51d) [`093f51c`](https://github.com/martonbognar/sancus-core-gap/commit/093f51c73abdd84fbb95165bd6100ab8315993a3) | Manipulating interrupt behavior from the enclave. |
 
 ### Missing attacker capabilities
 
-| Paper reference | Proof-of-concept attack | Mitigation? | Description |
-|-----------------|---------------|-------------|-------------|
+| Paper reference | Proof-of-concept attack | Patch? | Description |
+|-----------------|---------------|:-------------:|-------------|
 | V-C1            | [sancus-examples/dma](https://github.com/sancus-tee/sancus-examples/blob/master/dma/main.c) | :x: | DMA side-channel leakage (see also note below). |
-| V-C2            | [C-2-watchdog.s43](core/sim/rtl_sim/src/gap-attacks/C-2-watchdog.s43) | :heavy_check_mark: [patch](todo) | Scheduling interrupts with the watchdog timer. |
+| V-C2            | [C-2-watchdog.s43](core/sim/rtl_sim/src/gap-attacks/C-2-watchdog.s43) | [`c3dcf6e`](https://github.com/martonbognar/sancus-core-gap/commit/c3dcf6ef08d62e63ff66a8a69125abd66b7c892b) | Scheduling interrupts with the watchdog timer. |
 
-**Note (DMA side-channel).** As explained in our paper, the Sancus_V implementation is
+**:bulb: DMA side channel.** As explained in our paper, the Sancus_V implementation is
 based on an older version of the openMSP430 core without DMA capabilities.
 Hence, the DMA attack does _not_ directly affect the current version of Sancus_V, and we
 demonstrate the DMA side channel on the more recent (non-formalized) [upstream
@@ -80,6 +80,8 @@ Specifically, the [`core/sim/rtl_sim/src/gap-attacks/`](core/sim/rtl_sim/src/gap
 assembly file per attack (containing therein both the victim enclave and
 untrusted runtime attacker code), plus a corresponding Verilog stimulus file
 that validates the contextual equivalence breach.
+
+![sancus-v-overview](sancus-v-overview.png)
 
 ## Installation
 

@@ -1,0 +1,49 @@
+#!/bin/bash
+
+EXPECTED_ARGS=1
+if [ $# -ne $EXPECTED_ARGS ]; then
+  echo "ERROR    : wrong number of arguments"
+  echo "USAGE    : run_gap <attack name>"
+  echo "Possible gap attacks are:"
+  cd ../src/gap-attacks/
+  ls *.s43 | sed 's:.s43*$::' 
+  exit 1
+fi
+
+# Enable/Disable waveform dumping
+OMSP_NODUMP=1
+export OMSP_NODUMP
+OMSP_SIMULATOR=iverilog
+export OMSP_SIMULATOR
+
+rm -rf cov_work
+rm -rf log
+mkdir log
+
+echo "*** running attack $1 with SECRET=0"
+export __SECRET=0
+stdbuf -oL ../bin/msp430sim gap-attacks/$1 | tee ./log/gap-attacks-$1-zero.log
+
+echo "*** running attack $1 with SECRET=1"
+export __SECRET=1
+stdbuf -oL ../bin/msp430sim gap-attacks/$1 | tee ./log/gap-attacks-$1-one.log
+
+# Report regression results
+# NOTE: contextual equivalence only considered breached when attack succeeds in
+# recognizing both SECRET=0 and SECRET=1
+../bin/parse_results
+EXIT_CODE=$?
+echo "parse_results returned with exit code $EXIT_CODE"
+
+if [[ "$EXPECT_FAIL" = "false" ]]; then
+    echo "expecting success.."
+else
+    echo "expecting failure; inverting exit code.."
+    if [[ "$EXIT_CODE" -eq "0" ]]; then
+        EXIT_CODE=1
+    else
+        EXIT_CODE=0
+    fi
+fi
+
+exit $EXIT_CODE
