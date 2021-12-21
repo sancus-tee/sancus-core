@@ -81,6 +81,8 @@ assembly file per attack (containing therein both the victim enclave and
 untrusted runtime attacker code), plus a corresponding Verilog stimulus file
 that validates the contextual equivalence breach.
 
+![sancus-v-overview](sancus-v-overview.png)
+
 ## Installation
 
 The general installation instructions of Sancus can be found [here](https://github.com/sancus-tee/sancus-main).
