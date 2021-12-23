@@ -43,7 +43,8 @@ jobs:
         run: mkdir build && cd build && cmake -DNEMESIS_RESISTANT=1 .. && cd ..
       - name: Run test bench
         env:
-          EXPECT_FAIL: ${{ github.ref_name == 'mitigations' && matrix.never-fail != 1 }}
+          # mitigations applied upstream -> expect failure, unless explicitly declared as a non-attack test case
+          EXPECT_FAIL: ${{ (github.repository_owner == 'sancus-tee' || github.ref_name == 'mitigations') && matrix.never-fail != 1 }}
         run: |
           cd core/sim/rtl_sim/run/
           ${{ matrix.runner }} ${{ matrix.target }}
