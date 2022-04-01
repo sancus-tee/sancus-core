@@ -1,0 +1,130 @@
+/*===========================================================================*/
+/*                 SANCUS MODULE INTERRUPT LOGIC                             */
+/*---------------------------------------------------------------------------*/
+/* Test interrupting/resuming a protected and unprotected Sancus module.     */
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+/*===========================================================================*/
+
+.include "pmem_defs.asm"
+.include "sancus_macros.asm"
+
+.set dummy_sm_secret_start, DMEM_240
+.set dummy_sm_secret_end, DMEM_242
+
+.set sm_secret_start, DMEM_242
+.set sm_secret_end, DMEM_26E
+.set sm_ssa_loc,(sm_secret_end - 2)
+.set sm_ssa, (sm_secret_end - 4)
+
+; proxy SM data starts in MMIO space and continues into RAM from 0x200 onwards
+.set sm_proxy_secret_start, DMEM_200
+.set sm_proxy_secret_end, DMEM_240
+
+.set ivt_start, 0xffe0
+.set ivt_end, 0xfffe
+
+.set tsc_proxy, 0x300
+.set tsc_isr, 0x310
+
+.global main
+main:
+    disable_wdt
+    eint
+
+    ; enable proxy enclave
+    sancus_enable #1234, #sm_proxy_start, #sm_proxy_end, #WDTCTL, #sm_proxy_secret_end
+
+    ; enable IVT enclave
+    sancus_enable #1234, #ivt_start, #ivt_end, #dummy_sm_secret_start, #dummy_sm_secret_end
+
+    ; enable victim enclave
+    sancus_enable #1234, #sm_public_start, #sm_public_end, #sm_secret_start, #sm_secret_end
+
+    br #untrusted_os
+
+    /* ----------------------         END OF TEST        --------------- */
+end_of_test:
+    mov #0x2000, r15
+    clr r15
+    br #0xffff
+
+    /* ----------------------         PROXY ENCLAVE      --------------- */
+sm_proxy_start:
+    dint
+    mov &TAR, r11
+    mov #TACTL_DISABLE, &TACTL
+
+    ; called by IRQ or untrusted OS?
+    sancus_get_caller_id
+    cmp #0xfff0, r15
+    jnc init_timer 
+
+pad_irq:
+    sub #35+3, r11      ; substract fixed SM IRQ HW latency
+    add #'0', r11       ; move into ASCII 0-9 range
+    putchar r11
+
+    br #IRQ_VECTOR
+
+init_timer:
+    disable_wdt
+
+    ; program Timer_A with provided interval
+    mov r10, &TACCR0
+    mov #TACCTL_DISABLE, &TACCTL0
+    mov #TACTL_ENABLE, &TACTL
+
+    br #untrusted_os_cont
+sm_proxy_end:
+
+    /* ----------------------         VICTIM ENCLAVE      --------------- */
+sm_public_start:
+    dint
+    ; init SSA and check for reti
+    mov #sm_ssa, &sm_ssa_loc
+    eint
+
+.rep 100
+    ;nop
+    mov &sm_secret_start, &sm_secret_start+2
+.endr
+    br #end_of_test
+sm_public_end:
+
+    /* ----------------------      UNTRUSTED OS    --------------- */
+
+    ; 1. program timer
+untrusted_os:
+    mov #100, r10
+    br #sm_proxy_start
+
+    ; 2. enter victim enclave
+untrusted_os_cont:
+    eint
+    br #sm_public_start
+
+    ; 3. measure IRQ latency
+IRQ_VECTOR:
+    mov #0xdead, r10
+    br #end_of_test
+
+    /* ----------------------         INTERRUPT VECTORS  --------------- */
+
+.section .vectors, "a"
+.word end_of_test    ; Interrupt  0 (lowest priority)    <unused>
+.word end_of_test    ; Interrupt  1                      <unused>
+.word end_of_test    ; Interrupt  2                      <unused>
+.word end_of_test    ; Interrupt  3                      <unused>
+.word end_of_test    ; Interrupt  4                      <unused>
+.word end_of_test    ; Interrupt  5                      <unused>
+.word end_of_test    ; Interrupt  6                      <unused>
+.word end_of_test    ; Interrupt  7                      <unused>
+.word sm_proxy_start ; Interrupt  8                      TIMER_A
+.word sm_proxy_start ; Interrupt  9                      TIMER_A
+.word end_of_test    ; Interrupt 10                      Watchdog timer
+.word end_of_test    ; Interrupt 11                      <unused>
+.word end_of_test    ; Interrupt 12                      <unused>
+.word end_of_test    ; Interrupt 13                      SM_IRQ
+.word end_of_test    ; Interrupt 14                      NMI
+.word main           ; Interrupt 15 (highest priority)   RESET

@@ -1,5 +1,18 @@
 ; GNU assembler syntax (https://sourceware.org/binutils/docs-2.26/as/)
 
+; watchdog register
+.set WDTCTL, 0x120
+
+; TIMER_A registers
+.set TACTL, 0x160
+.set TACCTL0, 0x162
+.set TAR, 0x170
+.set TACCR0, 0x172
+
+.set TACTL_DISABLE, 0x04
+.set TACTL_ENABLE, 0x212
+.set TACCTL_DISABLE, 0x0
+
 ; return callerID in r15
 .macro sancus_get_caller_id
     .word 0x1387
@@ -96,7 +109,7 @@
 .endm
 
 .macro disable_wdt
-    mov #0x5a80, &0x0120
+    mov #0x5a80, &WDTCTL
 .endm
 
 .macro enable_wdt_irq
@@ -110,9 +123,15 @@
 ; store current time stamp count in the 64bit memory ptr dest_addr
 ; note: write overhead is 29 cycles 4*6 (mov &ede,&ede) + 1*5 (mov #n, &ede)
 .macro tsc_read dest_addr:req
-    mov.b #1, &0x0190
-    mov &0x0190, &\dest_addr
-    mov &0x0192, &\dest_addr+2
-    mov &0x0194, &\dest_addr+4
-    mov &0x0196, &\dest_addr+6
+    mov.b #1, &0x0100
+    mov &0x0100, &\dest_addr
+    mov &0x0102, &\dest_addr+2
+    mov &0x0104, &\dest_addr+4
+    mov &0x0106, &\dest_addr+6
 .endm
+
+.macro putchar char:req
+    mov \char, &0x0084
+    mov #'\n', &0x0084
+.endm
+
