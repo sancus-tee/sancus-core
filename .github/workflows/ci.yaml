@@ -2,6 +2,9 @@ name: CI
 on:
   push:
   pull_request:
+  # trigger a cron job every monday at 8am
+  schedule:
+    - cron: '00 08 * * MON'
 
 jobs:
   matrix-gen:
