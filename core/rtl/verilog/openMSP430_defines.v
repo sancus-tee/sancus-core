@@ -704,6 +704,7 @@
 `ifdef NEMESIS_RESISTANT
 `define E_SM_IRQ_PAD 5'h13
 `define E_SM_RETI_PAD 5'h14
+`define MAX_TIME 7
 `endif
 
 // ALU control signals

@@ -1,0 +1,53 @@
+name: CI
+on:
+  push:
+  pull_request:
+  # trigger a cron job every monday at 8am
+  schedule:
+    - cron: '00 08 * * MON'
+
+jobs:
+  matrix-gen:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{steps.list_tests.outputs.matrix}}
+    steps:
+      - uses: actions/checkout@v2
+      - id: list_tests
+        run: |
+          cd core/sim/rtl_sim/src/gap-attacks
+          MATRIX=$(ls *.s43 | sed 's:.s43*$::' | jq -cnR '[inputs | select(length>0)]')
+          echo $MATRIX
+          echo "::set-output name=matrix::$MATRIX"
+
+  bench:
+    name: ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    needs: matrix-gen
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ${{ fromJson(needs.matrix-gen.outputs.matrix) }}
+        runner: ['./run_gap']
+        include:
+          - target: ./run_all
+            runner: ''
+            never-fail: 1
+          - target: test-env
+            runner: './run_gap'
+            never-fail: 1
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: sudo apt-get install build-essential cmake iverilog tk binutils-msp430 gcc-msp430 msp430-libc msp430mcu expect-dev verilator -y
+      - name: Build sancus-core
+        run: mkdir build && cd build && cmake -DNEMESIS_RESISTANT=1 .. && cd ..
+      - name: Run test bench
+        env:
+          # mitigations applied upstream -> expect failure, unless explicitly declared as a non-attack test case
+          EXPECT_FAIL: ${{ (github.repository_owner == 'sancus-tee' || github.ref_name == 'mitigations') && matrix.never-fail != 1 }}
+        run: |
+          cd core/sim/rtl_sim/run/
+          ${{ matrix.runner }} ${{ matrix.target }}

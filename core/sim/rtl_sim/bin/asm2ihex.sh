@@ -89,7 +89,7 @@ sed -i "s/PMEM_SIZE/$PMEM_SIZE/g"    pmem_defs.asm
 ###############################################################################
 #                  Compile, link & generate IHEX file                         #
 ###############################################################################
-msp430-as      -alsm         $2     -o $1.o     > $1.l43
+msp430-as      -I ../src/gap-attacks --defsym "__SECRET=${__SECRET}" -alsm         $2     -o $1.o     > $1.l43
 msp430-objdump -xdsStr       $1.o              >> $1.l43
 msp430-ld      -T ./pmem.x   $1.o   -o $1.elf
 msp430-objcopy -O ihex       $1.elf    $1.ihex

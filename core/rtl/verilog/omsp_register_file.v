@@ -85,7 +85,8 @@ module  omsp_register_file (
     reg_incr,                     // Increment source register
     scan_enable,                  // Scan enable (active during scan shifting)
     sm_irq_save_regs,
-    sm_irq_restore_regs
+    sm_irq_restore_regs,
+    sm_executing
 );
 
 // OUTPUTs
@@ -129,6 +130,7 @@ input               reg_incr;     // Increment source register
 input               scan_enable;  // Scan enable (active during scan shifting)
 input               sm_irq_save_regs;
 input               sm_irq_restore_regs;
+input               sm_executing;
 
 //=============================================================================
 // 1)  AUTOINCREMENT UNIT
@@ -206,7 +208,8 @@ wire        r2_z   = alu_stat_wr[1] ? alu_stat[1]          : reg_dest_val_in[1];
 
 wire        r2_n   = alu_stat_wr[2] ? alu_stat[2]          : reg_dest_val_in[2]; // N
 
-wire  [7:3] r2_nxt = r2_wr          ? reg_dest_val_in[7:3] : r2[7:3];
+// do not update GIE (r2[3]) from within an enclave
+wire  [7:3] r2_nxt = r2_wr          ? (sm_executing ? {reg_dest_val_in[7:4], r2[3]} : reg_dest_val_in[7:3]) : r2[7:3];
 
 wire        r2_v   = alu_stat_wr[3] ? alu_stat[3]          : reg_dest_val_in[8]; // V
 
@@ -225,7 +228,8 @@ wire        r2_z   = alu_stat_wr[1] ? alu_stat[1]          :
 wire        r2_n   = alu_stat_wr[2] ? alu_stat[2]          :
                      r2_wr          ? reg_dest_val_in[2]   : r2[2];              // N
 
-wire  [7:3] r2_nxt = r2_wr          ? reg_dest_val_in[7:3] : r2[7:3];
+// do not update GIE (r2[3]) from within an enclave
+wire  [7:3] r2_nxt = r2_wr          ? (sm_executing ? {reg_dest_val_in[7:4], r2[3]} : reg_dest_val_in[7:3]) : r2[7:3];
 
 wire        r2_v   = alu_stat_wr[3] ? alu_stat[3]          :
                      r2_wr          ? reg_dest_val_in[8]   : r2[8];              // V

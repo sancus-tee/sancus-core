@@ -28,6 +28,7 @@ module omsp_spm(
   input  wire                    write_key,
   input  wire             [15:0] key_in,
   input  wire [KEY_IDX_SIZE-1:0] key_idx,
+  input  wire                    sm_irq_busy,
   output reg                     enabled,
   output wire                    executing,
   output wire                    violation,
@@ -39,6 +40,9 @@ module omsp_spm(
 );
 
 parameter KEY_IDX_SIZE = -1;
+
+parameter IVT_START = 'hFF80;
+parameter MMIO_END = 'h01FF;
 
 reg [15:0] public_start;
 reg [15:0] public_end;
@@ -90,13 +94,19 @@ begin
     begin
       if ((r12 < r13) & (r14 <= r15))
       begin
-        id <= next_id;
-        public_start <= r12;
-        public_end <= r13;
-        secret_start <= r14;
-        secret_end <= r15;
-        enabled <= 1;
-        $display("New SM config: %h %h %h %h, %b", r12, r13, r14, r15, |r10);
+        if (r12 <= MMIO_END | r14 <= MMIO_END) begin
+          $display("Invalid SM config: enclave overlaps with the MMIO region.");
+        end else if (r13 >= IVT_START | r15 >= IVT_START) begin
+          $display("Invalid SM config: enclave overlaps with the IVT region.");
+        end else begin
+          id <= next_id;
+          public_start <= r12;
+          public_end <= r13;
+          secret_start <= r14;
+          secret_end <= r15;
+          enabled <= 1;
+          $display("New SM config: %h %h %h %h, %b", r12, r13, r14, r15, |r10);
+        end
       end
       else
       begin
@@ -121,9 +131,10 @@ end
 wire exec_public = exec_spm(pc);
 wire access_public = eu_mb_en & (eu_mab >= public_start) & (eu_mab < public_end);
 wire access_secret = eu_mb_en & (eu_mab >= secret_start) & (eu_mab < secret_end);
+wire access_unprotected = eu_mb_en & ~access_public & ~access_secret;
 wire mem_violation = (access_public & ~(enable_spm | verify_spm | executing)) |
-                     (access_secret & ~exec_public);
-wire exec_violation = exec_public & ~exec_spm(prev_pc) & (pc != public_start);
+                     (access_secret & ~exec_public) | (access_unprotected & exec_public);
+wire exec_violation = exec_public & ~exec_spm(prev_pc) & (pc != public_start || sm_irq_busy);
 wire create_violation = check_new_spm &
                         (do_overlap(r12, r13, public_start, public_end));// |
                          //do_overlap(r12, r13, secret_start, secret_end) |

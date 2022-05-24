@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Disable waveform dumping
+OMSP_NODUMP=1
+export OMSP_NODUMP
+
+# Choose simulator:
+#                   - iverilog  : Icarus Verilog  (default)
+#                   - cver      : CVer
+#                   - verilog   : Verilog-XL
+#                   - ncverilog : NC-Verilog
+#                   - vcs       : VCS
+#                   - vsim      : Modelsim
+#                   - isim      : Xilinx simulator
+OMSP_SIMULATOR=iverilog
+export OMSP_SIMULATOR
+
+rm -rf ./cov_work
+rm -rf ./log/*.log
+mkdir  ./log
+
+if [ -z "${__SECRET}" ]; then
+    __SECRET=0
+fi
+
+echo "run_all_attacks with SECRET=$__SECRET"
+export __SECRET
+
+stdbuf -oL ../bin/msp430sim gap-attacks/test-env                 | tee ./log/gap-attacks-test-env.log
+stdbuf -oL ../bin/msp430sim gap-attacks/B-1-dependent-length     | tee ./log/gap-attacks-B-1-dependent-length.log
+stdbuf -oL ../bin/msp430sim gap-attacks/B-2-maxlen               | tee ./log/gap-attacks-B-2-maxlen.log
+stdbuf -oL ../bin/msp430sim gap-attacks/B-3-shadow-register      | tee ./log/gap-attacks-B-3-shadow-register.log
+stdbuf -oL ../bin/msp430sim gap-attacks/B-4-reentering-from-isr  | tee ./log/gap-attacks-B-4-reentering-from-isr.log
+stdbuf -oL ../bin/msp430sim gap-attacks/B-5-multiple-enclaves    | tee ./log/gap-attacks-B-5-multiple-enclaves.log
+stdbuf -oL ../bin/msp430sim gap-attacks/B-6-untrusted-memory     | tee ./log/gap-attacks-B-6-untrusted-memory.log
+stdbuf -oL ../bin/msp430sim gap-attacks/B-7-gie                  | tee ./log/gap-attacks-B-7-gie.log
+stdbuf -oL ../bin/msp430sim gap-attacks/B-7-ivt                  | tee ./log/gap-attacks-B-7-ivt.log
+stdbuf -oL ../bin/msp430sim gap-attacks/B-7-peripheral           | tee ./log/gap-attacks-B-7-peripheral.log
+stdbuf -oL ../bin/msp430sim gap-attacks/C-2-watchdog             | tee ./log/gap-attacks-C-2-watchdog.log
+
+# Report regression results
+../bin/parse_results
+
+exit $?

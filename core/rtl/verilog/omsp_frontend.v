@@ -80,6 +80,7 @@ module  omsp_frontend (
     irq_num,
     sm_irq_save_regs,
     sm_irq_restore_regs,
+    sm_irq_busy,
 
 // INPUTs
     cpu_en_s,                      // Enable CPU code execution (synchronous)
@@ -140,6 +141,7 @@ output              handling_irq;
 output        [3:0] irq_num;
 output              sm_irq_save_regs;
 output              sm_irq_restore_regs;
+output              sm_irq_busy;
 
 // INPUTs
 //=========
@@ -948,8 +950,8 @@ always @(*)
       E_SM_IRQ_WAIT : e_state_nxt = E_EXEC;
 
 `ifdef NEMESIS_RESISTANT
-      E_SM_RETI_REGS : e_state_nxt = reti_padding == 0 ? e_first_state : E_SM_RETI_PAD;
-      E_SM_RETI_PAD  : e_state_nxt = reti_padding == 0 ? e_first_state : E_SM_RETI_PAD;
+      E_SM_RETI_REGS : e_state_nxt = reti_padding == 0 ? E_JUMP : E_SM_RETI_PAD;
+      E_SM_RETI_PAD  : e_state_nxt = reti_padding == 0 ? E_JUMP : E_SM_RETI_PAD;
 `else
       E_SM_RETI_REGS : e_state_nxt = e_first_state;
 `endif
@@ -992,7 +994,7 @@ always @(posedge mclk or posedge puc_rst)
 
 wire exec_done =
 `ifdef NEMESIS_RESISTANT
-                (e_state == E_SM_RETI_REGS || e_state == E_SM_RETI_PAD) ? reti_padding == 0 :
+                (e_state == E_SM_RETI_REGS || e_state == E_SM_RETI_PAD) ? (e_state==E_JUMP) :
 `endif
                  exec_jmp        ? (e_state==E_JUMP)                   :
                  exec_dst_wr     ? (e_state==E_DST_WR & ~pmem_writing) :
@@ -1005,11 +1007,12 @@ wire exec_done =
 // -------
 `ifdef NEMESIS_RESISTANT
 reg prev_irq;
-wire irq_arrived = |irq && !prev_irq;
+wire unified_irq = |irq || wdt_irq;
+wire irq_arrived = unified_irq && !prev_irq;
 
 always @(posedge mclk or posedge puc_rst)
   if (puc_rst) prev_irq <= 0;
-  else         prev_irq <= |irq;
+  else         prev_irq <= unified_irq;
 
 reg [2:0] reti_padding, reti_padding_nxt;
 reg reti_padding_inc;
@@ -1034,7 +1037,7 @@ always @(posedge mclk or posedge puc_rst)
   end
 
 reg [2:0] irq_padding;
-wire [2:0] irq_padding_nxt = 5 - reti_padding_nxt;
+wire [2:0] irq_padding_nxt = `MAX_TIME - 1 - reti_padding_nxt;
 
 wire irq_padding_dec = e_state == E_SM_IRQ_PAD;
 
@@ -1060,6 +1063,8 @@ always @(posedge mclk or posedge puc_rst)
     sm_irq_busy <= 0;
   end else if (sm_irq_save_regs) begin
     sm_irq_busy <= 1;
+  end else if (sm_irq_restore_regs) begin
+    sm_irq_busy <= 0;
   end
 
 wire sm_irq_save_regs = e_state == E_SM_IRQ_REGS;

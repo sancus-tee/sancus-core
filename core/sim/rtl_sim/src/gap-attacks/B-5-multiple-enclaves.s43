@@ -1,0 +1,109 @@
+.include "pmem_defs.asm"
+.include "sancus_macros.asm"
+
+.set is_first_irq, DMEM_200
+
+.set secret_data_start_1, DMEM_240
+.set secret_data_end_1, DMEM_242
+
+.set is_modified, DMEM_250
+.set user_credit, DMEM_252
+.set secret_data_end_2, DMEM_254
+
+.global main
+main:
+    disable_wdt
+    eint
+
+    sancus_enable #1234, #enclave_start_1, #enclave_end_1, #secret_data_start_1, #secret_data_end_1
+    ; check successful enclave creation
+    cmp #0x0, r15
+    jz end_of_test
+
+    sancus_enable #1235, #enclave_start_2, #enclave_end_2, #is_modified, #secret_data_end_2
+    ; check successful enclave creation
+    cmp #0x0, r15
+    jz end_of_test
+
+    clr r14
+
+    mov #1, &is_first_irq
+
+    mov #0x4, &TACTL
+    mov #0x8, &TACCR0
+    mov #0x0, &TACCTL0
+    mov #0x212, &TACTL
+
+    br #enclave_start_2
+
+    /* ----------------------       SANCUS MODULES       ---------------------- */
+
+enclave_start_1:
+    br #enclave_start_2
+enclave_end_1:
+
+enclave_start_2:
+    cmp #0x0, &is_modified
+    jnz 1f
+    add #0x1, &user_credit
+    mov #0x1, &is_modified
+1:
+    cmp #__SECRET, r14
+    jeq 2f
+    mov &user_credit, r5
+    jmp enclave_end_2
+2:
+    nop
+    nop
+    mov #1, r5
+    jmp enclave_end_2
+enclave_end_2:
+
+    /* ----------------------        END OF TEST         ---------------------- */
+end_of_test:
+    cmp #2, r5
+    jne 3f
+    mov #1, r14
+3:
+    mov #0x2000, r15
+    clr r15
+    br #0xffff
+
+    /* ----------------------     INTERRUPT ROUTINES     ---------------------- */
+
+IRQ_VECTOR:
+    cmp #0, &is_first_irq
+    jz disable
+    mov #0, &is_first_irq
+
+    mov #0x4, &TACTL
+    mov #0x4, &TACCR0
+    mov #0x0, &TACCTL0
+    mov #0x212, &TACTL
+
+    eint
+    br #enclave_start_1
+
+disable:
+    mov #0x0, &TACTL
+    reti
+
+    /* ----------------------     INTERRUPT VECTORS      ---------------------- */
+
+.section .vectors, "a"
+.word end_of_test  ; Interrupt  0 (lowest priority)    <unused>
+.word end_of_test  ; Interrupt  1                      <unused>
+.word end_of_test  ; Interrupt  2                      <unused>
+.word end_of_test  ; Interrupt  3                      <unused>
+.word end_of_test  ; Interrupt  4                      <unused>
+.word end_of_test  ; Interrupt  5                      <unused>
+.word end_of_test  ; Interrupt  6                      <unused>
+.word end_of_test  ; Interrupt  7                      <unused>
+.word IRQ_VECTOR   ; Interrupt  8                      IRQ
+.word end_of_test  ; Interrupt  9                      <unused>
+.word end_of_test  ; Interrupt 10                      Watchdog timer
+.word end_of_test  ; Interrupt 11                      <unused>
+.word end_of_test  ; Interrupt 12                      <unused>
+.word end_of_test  ; Interrupt 13                      SM_IRQ
+.word end_of_test  ; Interrupt 14                      NMI
+.word main         ; Interrupt 15 (highest priority)   RESET

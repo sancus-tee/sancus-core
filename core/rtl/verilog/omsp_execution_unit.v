@@ -95,7 +95,8 @@ module  omsp_execution_unit (
     handling_irq,
     irq_num,
     sm_irq_save_regs,
-    sm_irq_restore_regs
+    sm_irq_restore_regs,
+    sm_irq_busy
 );
 
 // OUTPUTs
@@ -149,6 +150,7 @@ input               handling_irq;
 input         [3:0] irq_num;
 input               sm_irq_save_regs;
 input               sm_irq_restore_regs;
+input               sm_irq_busy;
 
 
 //=============================================================================
@@ -259,7 +261,8 @@ omsp_register_file register_file_0 (
     .reg_incr     (reg_incr),     // Increment source register
     .scan_enable  (scan_enable),  // Scan enable (active during scan shifting)
     .sm_irq_save_regs(sm_irq_save_regs),
-    .sm_irq_restore_regs(sm_irq_restore_regs)
+    .sm_irq_restore_regs(sm_irq_restore_regs),
+    .sm_executing(sm_executing)
 );
 
 
@@ -534,6 +537,7 @@ omsp_spm_control #(
   .write_key              (sm_write_key),
   .key_in                 (crypto_data_out),
   .key_idx                (sm_key_idx),
+  .sm_irq_busy            (sm_irq_busy),
   .violation              (sm_violation),
   .spm_data_select_valid  (sm_data_select_valid),
   .spm_key_select_valid   (sm_key_select_valid),
