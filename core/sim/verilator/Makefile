@@ -19,13 +19,19 @@ IN_ELF_FILE = program.elf
 VERILATOR_INCLUDES = -I$(BASE_DIR)/rtl/verilog -I$(BASE_DIR)/rtl/verilog/crypto -I$(BASE_DIR)/bench/verilog -I$(BASE_DIR)/rtl/verilog/periph
 VERILATOR_LIBRARIES = '-lpthread'
 
+# hotfix timescale Verilator errors
+UBUNTU_VERSION = $(shell lsb_release -rs)
+ifeq ($(UBUNTU_VERSION), 22.04)
+    VERILATOR_TIMESCALE = -Wno-TIMESCALEMOD
+endif
+
 all: $(EXE_FILE)
 
 $(EXE_FILE): $(BUILD_DIR)/$(VERILATOR_NAME).mk $(DEPENDENCIES)
 	make -C $(BUILD_DIR) -f $(VERILATOR_NAME).mk $(EXE_NAME)
 
 $(BUILD_DIR)/$(VERILATOR_NAME).mk: FORCE
-	verilator --cc --exe --trace $(OPTIMIZATION) -Wno-fatal -Wno-TIMESCALEMOD -Mdir $(BUILD_DIR) $(VERILOG_INPUT) -LDFLAGS $(VERILATOR_LIBRARIES) $(VERILATOR_INCLUDES) $(DEPENDENCIES) -o $(EXE_NAME)
+	verilator --cc --exe --trace $(OPTIMIZATION) -Wno-fatal $(VERILATOR_TIMESCALE) -Mdir $(BUILD_DIR) $(VERILOG_INPUT) -LDFLAGS $(VERILATOR_LIBRARIES) $(VERILATOR_INCLUDES) $(DEPENDENCIES) -o $(EXE_NAME)
 
 FORCE:
 
