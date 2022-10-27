@@ -16,9 +16,9 @@ initial
       /* ----------------------  END OF TEST --------------- */
       @(r15==16'h2000);
 
-      if(r8 !== 16'b0000000001000000)
+      if(r8 !== 16'b0000001000000000)
          tb_error("====== r8 does not mach expected value ======");
-      if(r9 !== 16'b0000000101000000)
+      if(r9 !== 16'b0000001010000000)
          tb_error("====== r9 does not mach expected value ======");
 
       stimulus_done = 1;
