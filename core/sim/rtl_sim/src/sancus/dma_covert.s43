@@ -1,0 +1,69 @@
+.include "pmem_defs.asm"
+.include "sancus_macros.asm"
+
+.set MMIO_ADDR, (0x0090)
+.set DMEM_ADDR, DMEM_200
+.set STACK, DMEM_240
+.set PMEM_ADDR, end_of_test
+
+.global main
+main:
+    clr r15
+
+; starting address: r10
+    mov #mydata, r10
+; number of words: r11
+    mov #4, r11
+; word counter: r12
+    mov #0, r12
+
+wordswitch:
+; word to transmit: r5
+    mov 0(r10), r5
+; bit counter: r8
+    mov #0x10, r8
+bitswitch:
+    mov r5, r6
+    and #1, r6
+    jz true
+    mov &DMEM_ADDR, r3
+true:
+    dec r8
+    rra r5
+    cmp #0, r8
+    jne bitswitch
+
+    inc r12
+    add #2, r10
+    cmp r11, r12
+    jne wordswitch
+
+
+    /* ----------------------         END OF TEST        --------------- */
+end_of_test:
+	mov #0x2000, r15
+    br #0xffff
+
+mydata:
+    .word 0xdead
+    .word 0xbeef
+    .word 0xcafe
+    .word 0xbabe
+
+.section .vectors, "a"
+.word end_of_test  ; Interrupt  0 (lowest priority)    <unused>
+.word end_of_test  ; Interrupt  1                      <unused>
+.word end_of_test  ; Interrupt  2                      <unused>
+.word end_of_test  ; Interrupt  3                      <unused>
+.word end_of_test  ; Interrupt  4                      <unused>
+.word end_of_test  ; Interrupt  5                      <unused>
+.word end_of_test  ; Interrupt  6                      <unused>
+.word end_of_test  ; Interrupt  7                      <unused>
+.word end_of_test  ; Interrupt  8                      <unused>
+.word end_of_test  ; Interrupt  9                      TEST IRQ
+.word end_of_test  ; Interrupt 10                      Watchdog timer
+.word end_of_test  ; Interrupt 11                      <unused>
+.word end_of_test  ; Interrupt 12                      <unused>
+.word end_of_test  ; Interrupt 13                      SM_IRQ
+.word end_of_test  ; Interrupt 14                      NMI
+.word main         ; Interrupt 15 (highest priority)   RESET

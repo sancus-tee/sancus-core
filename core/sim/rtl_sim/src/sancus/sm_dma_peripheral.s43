@@ -7,6 +7,7 @@
 .set dma_addr, (0x0070)
 .set dma_cnt, (0x0072)
 .set dma_trace, (0x0074)
+.set dma_offset, (0x0076)
 
 ; This enclave accepts a guess for a passcode in the r6 register. It also has a
 ; counter to log the number of incorrect guesses.
