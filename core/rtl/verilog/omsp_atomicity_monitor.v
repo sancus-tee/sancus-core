@@ -45,8 +45,18 @@ wire                        entry_finished = (inside_entry & ((atom_entry_cnt ==
 
 always @(posedge mclk or posedge puc_rst)
 begin
-    inside_clix_prev  <= inside_clix;
-    inside_entry_prev <= inside_entry;
+    // Initialize prev signals. On reset they become zero.
+    if (puc_rst)
+    begin
+        inside_clix_prev  <= 0;
+        inside_entry_prev <= 0;
+    end
+    else
+    begin
+        inside_clix_prev  <= inside_clix;
+        inside_entry_prev <= inside_entry;
+    end
+    // Next, distinguish between reset or normal operations
     if (puc_rst)                                     // On System reset, reset monitor too
     begin
             inside_clix      <= 0;
@@ -54,58 +64,60 @@ begin
             inside_entry     <= 0;
             atom_entry_cnt   <= 0;
     end 
-    else if(inside_clix)                             // If inside a clix, decrement counter or complete clix
+    else 
     begin
-      if   (clix_finished)
+      if(inside_clix)                             // If inside a clix, decrement counter or complete clix
+        begin
+            if   (clix_finished)
+            begin
+                  inside_clix      <= 0;
+                  atom_clix_cnt    <= 0;
+            end
+            else  atom_clix_cnt    <= atom_clix_cnt - 1;
+        end
+      else if (inst_clix)                              // If executing a new valid clix, start off from clix input 
+        begin
+                  inside_clix      <= 1;
+                  atom_clix_cnt    <= atom_clix_input;
+        end
+      `ifdef SANCUS_RESTRICT_GIE
+      else if (enter_sm & priv_mode )  // With restrictions on GIE, abort existing clix and disable interrupts on entry of SM ID 1
+        begin
+                inside_clix      <= 0;
+                atom_clix_cnt    <= 0;
+        end
+      `endif
+      if (enter_sm)             // Always enter period without interrupts when entering an SM
       begin
-            inside_clix      <= 0;
-            atom_clix_cnt    <= 0;
+            `ifdef SANCUS_RESTRICT_GIE
+            if (priv_mode)                  // If entering special ID 1, we disable the atomic period
+            begin
+                inside_entry <= 0;
+                atom_entry_cnt <= 0;
+            end
+            else 
+            `endif
+            if(inside_entry_prev)
+            begin                         // entering an sm while inside an entry is forbidden
+                inside_entry <= 0;    //  and will be caught below when throwing an atom_violation
+                atom_entry_cnt <= 0;      //  this if just makes sure that the atom period ends
+            end
+            else
+            begin
+                inside_entry   <= 1;
+                atom_entry_cnt <= `SM_ENTRY_ATOM_PERIOD;
+            end
       end
-      else  atom_clix_cnt    <= atom_clix_cnt - 1;
+      else if (inside_entry)
+      begin
+            if (entry_finished)
+            begin
+                  inside_entry     <= 0;
+                  atom_entry_cnt   <= 0;
+            end
+            else  atom_entry_cnt   <= atom_entry_cnt - 1;
+      end
     end
-    else if (inst_clix)                              // If executing a new valid clix, start off from clix input 
-    begin
-            inside_clix      <= 1;
-            atom_clix_cnt    <= atom_clix_input;
-    end
-    `ifdef SANCUS_RESTRICT_GIE
-    else if (enter_sm & priv_mode )  // With restrictions on GIE, abort existing clix and disable interrupts on entry of SM ID 1
-    begin
-            inside_clix      <= 0;
-            atom_clix_cnt    <= 0;
-    end
-    `endif
-    if (~puc_rst & enter_sm)             // Always enter period without interrupts when entering an SM
-    begin
-        `ifdef SANCUS_RESTRICT_GIE
-        if (priv_mode)                  // If entering special ID 1, we disable the atomic period
-        begin
-            inside_entry <= 0;
-            atom_entry_cnt <= 0;
-        end
-        else 
-        `endif
-        if(inside_entry_prev)
-        begin                         // entering an sm while inside an entry is forbidden
-            inside_entry <= 0;    //  and will be caught below when throwing an atom_violation
-            atom_entry_cnt <= 0;      //  this if just makes sure that the atom period ends
-        end
-        else
-        begin
-            inside_entry   <= 1;
-            atom_entry_cnt <= `SM_ENTRY_ATOM_PERIOD;
-        end
-    end
-    else if (~puc_rst & inside_entry)
-    begin
-        if (entry_finished)
-        begin
-              inside_entry     <= 0;
-              atom_entry_cnt   <= 0;
-        end
-        else  atom_entry_cnt   <= atom_entry_cnt - 1;
-    end
-
 end
 
 assign gie = (r2_gie | entry_finished | clix_finished)
