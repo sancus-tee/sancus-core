@@ -169,8 +169,9 @@ always @(*)
         WRITE_TAG:         next_state =               WRITE_TAG_WAIT;
         WRITE_TAG_WAIT:    next_state = wrap_busy   ? WRITE_TAG_WAIT    :
                                         mem_done    ? SUCCESS           : WRITE_TAG;
-        VERIFY_TAG:        next_state = tag_ok      ? VERIFY_TAG_WAIT   : FAIL;
-        VERIFY_TAG_WAIT:   next_state = mem_done    ? SUCCESS           :
+        VERIFY_TAG:        next_state = VERIFY_TAG_WAIT;
+        VERIFY_TAG_WAIT:   next_state = mem_done    ? 
+                                        (tag_ok_reg  ? SUCCESS           : FAIL) :
                                         wrap_busy   ? VERIFY_TAG_WAIT   : VERIFY_TAG;
         GEN_VKEY_INIT:     next_state =               WRAP_VID;
         WRAP_VID:          next_state =               WRAP_VID_WAIT;
@@ -250,6 +251,7 @@ reg        wrap_data_empty;
 reg [15:0] wrap_data_in_val;
 reg        update_wrap_data_in;
 reg        set_wrap_start_continue;
+reg        tag_ok_reg_init;
 
 always @(*)
 begin
@@ -285,6 +287,7 @@ begin
     stat_z = 0;
     stat_wr = 0;
     sm_cancel = 0;
+    tag_ok_reg_init = 0;
 
     case (next_state)
         IDLE:
@@ -374,6 +377,7 @@ begin
             mab_ctr_base = r15;
             mab_ctr_limit_init = 1;
             mab_ctr_limit = r15 + `SECURITY / 8;
+            tag_ok_reg_init = 1;
         end
 
         WRITE_TAG:
@@ -782,6 +786,14 @@ always @(posedge clk)
 
 // signal to indicate if the tag matches with the memory contents
 wire tag_ok = wrap_data_out_ready ? (wrap_data_out == mem_in) : 1;
+reg tag_ok_reg;
+always @(posedge clk)
+    if (tag_ok_reg_init)
+        tag_ok_reg = 1;
+    else if ( !tag_ok )
+        tag_ok_reg = 0;
+// always @(negedge tag_ok)
+//     tag_ok_reg = 0;
 
 reg [KEY_IDX_SIZE-1:0] key_ctr;
 reg                    key_ctr_reset;
